@@ -118,7 +118,6 @@ bool IsSystemPathId(const KnownPathID& pathid) {
     case KnownPathID::GameData:                               return false;
     case KnownPathID::EngineData:                             return false;
     case KnownPathID::Max:                                    return false;
-#if defined(PLATFORM_WINDOWS)
     case KnownPathID::Windows_AppDataRoaming:                  return true;
     case KnownPathID::Windows_AppDataLocal:                    return true;
     case KnownPathID::Windows_AppDataLocalLow:                 return true;
@@ -131,40 +130,38 @@ bool IsSystemPathId(const KnownPathID& pathid) {
     case KnownPathID::Windows_UserProfile:                     return true;
     case KnownPathID::Windows_CommonProfile:                   return true;
     case KnownPathID::Windows_CurrentUserDesktop:              return true;
-#elif PLATFORM_LINUX
     case KnownPathID::Linux_RootUser:                          return true;
     case KnownPathID::Linux_Home:                              return true;
+    /* Also Linux_ConfigurationFiles */
     case KnownPathID::Linux_Etc:                               return true;
-    case KnownPathID::Linux_ConfigurationFiles:                return true;
+    /* Also LinuxUserBinaries */
     case KnownPathID::Linux_Bin:                               return true;
-    case KnownPathID::Linux_UserBinaries:                      return true;
+    /* Also Linux_SystemBinaries */
     case KnownPathID::Linux_SBin:                              return true;
-    case KnownPathID::Linux_SystemBinaries:                    return true;
+    /* Also KnownPathID::Linux_DeviceFiles */
     case KnownPathID::Linux_Dev:                               return true;
-    case KnownPathID::Linux_DeviceFiles:                       return true;
+    /* Also Linux_ProcessInformation */
     case KnownPathID::Linux_Proc:                              return true;
-    case KnownPathID::Linux_ProcessInformation:                return true;
+    /* Also Linux_VariableFiles */
     case KnownPathID::Linux_Var:                               return true;
-    case KnownPathID::Linux_VariableFiles:                     return true;
+    /* Also Linux_UserPrograms */
     case KnownPathID::Linux_Usr:                               return true;
-    case KnownPathID::Linux_UserPrograms:                      return true;
+    /*  Also Linux_UserProgramsBinaries */
     case KnownPathID::Linux_UsrBin:                            return true;
-    case KnownPathID::Linux_UserProgramsBinaries:              return true;
+    /* Also Linux_UserProgramsSystemBinaries */
     case KnownPathID::Linux_UsrSBin:                           return true;
-    case KnownPathID::Linux_UserProgramsSystemBinaries:        return true;
+    /* Also Linux_BootLoader */
     case KnownPathID::Linux_Boot:                              return true;
-    case KnownPathID::Linux_BootLoader:                        return true;
+    /* Also Linux_SystemLibraries */
     case KnownPathID::Linux_Lib:                               return true;
-    case KnownPathID::Linux_SystemLibraries:                   return true;
+    /* Also Linux_OptionalAddOnApps */
     case KnownPathID::Linux_Opt:                               return true;
-    case KnownPathID::Linux_OptionalAddOnApps:                 return true;
+    /* Also Linux_MountDirectory */
     case KnownPathID::Linux_Mnt:                               return true;
-    case KnownPathID::Linux_MountDirectory:                    return true;
+    /* Also Linux_RemovableDevices */
     case KnownPathID::Linux_Media:                             return true;
-    case KnownPathID::Linux_RemovableDevices:                  return true;
+    /* Also Linux_ServiceData */
     case KnownPathID::Linux_Src:                               return true;
-    case KnownPathID::Linux_ServiceData:                       return true;
-#endif
     default:
         ERROR_AND_DIE("UNSUPPORTED KNOWNPATHID")
     }
@@ -221,8 +218,7 @@ GUID GetKnownPathIdForOS(const KnownPathID& pathid) {
     case KnownPathID::Windows_ProgramFilesx64:
         return FOLDERID_ProgramFiles;
 #else
-    ERROR_AND_DIE("Unknown known folder path id.");
-    break;
+        /* DO NOTHING */
 #endif
     case KnownPathID::Windows_SavedGames:
         return FOLDERID_SavedGames;
