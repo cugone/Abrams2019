@@ -14,7 +14,7 @@
 
 namespace FileUtils {
 
-GUID GetKnownPathIdForOS(const KnownPathID& pathid);
+GUID GetKnownPathIdForWindows(const KnownPathID& pathid);
 
 bool WriteBufferToFile(void* buffer, std::size_t size, const std::string& filePath) {
     namespace FS = std::filesystem;
@@ -186,7 +186,7 @@ std::filesystem::path GetKnownFolderPath(const KnownPathID& pathid) {
     } else {
         {
             PWSTR ppszPath = nullptr;
-            auto hr_path = ::SHGetKnownFolderPath(GetKnownPathIdForOS(pathid), KF_FLAG_DEFAULT, nullptr, &ppszPath);
+            auto hr_path = ::SHGetKnownFolderPath(GetKnownPathIdForWindows(pathid), KF_FLAG_DEFAULT, nullptr, &ppszPath);
             bool success = SUCCEEDED(hr_path);
             if(success) {
                 p = FS::path(ppszPath);
@@ -199,7 +199,7 @@ std::filesystem::path GetKnownFolderPath(const KnownPathID& pathid) {
     return p;
 }
 
-GUID GetKnownPathIdForOS(const KnownPathID& pathid) {
+GUID GetKnownPathIdForWindows(const KnownPathID& pathid) {
     switch(pathid) {
     case KnownPathID::Windows_AppDataRoaming:
         return FOLDERID_RoamingAppData;
