@@ -14,7 +14,7 @@
 
 namespace FileUtils {
 
-GUID GetKnownPathIdForWindows(const KnownPathID& pathid);
+GUID GetKnownFolderPathIdForWindows(const KnownPathID& pathid);
 
 bool WriteBufferToFile(void* buffer, std::size_t size, const std::string& filePath) {
     namespace FS = std::filesystem;
@@ -101,10 +101,10 @@ bool CreateFolders(const std::filesystem::path& filepath) {
 bool IsContentPathId(const KnownPathID& pathid) {
     if(!IsSystemPathId(pathid)) {
         switch(pathid) {
-        case KnownPathID::GameData:                               return true;
-        case KnownPathID::EngineData:                             return true;
-        case KnownPathID::None:                                   return false;
-        case KnownPathID::Max:                                    return false;
+        case KnownPathID::GameData:   return true;
+        case KnownPathID::EngineData: return true;
+        case KnownPathID::None:       return false;
+        case KnownPathID::Max:        return false;
         default:
             ERROR_AND_DIE("UNSUPPORTED KNOWNPATHID")
         }
@@ -114,57 +114,116 @@ bool IsContentPathId(const KnownPathID& pathid) {
 
 bool IsSystemPathId(const KnownPathID& pathid) {
     switch(pathid) {
-    case KnownPathID::None:                                   return false;
-    case KnownPathID::GameData:                               return false;
-    case KnownPathID::EngineData:                             return false;
-    case KnownPathID::Max:                                    return false;
-    case KnownPathID::Windows_AppDataRoaming:                  return true;
-    case KnownPathID::Windows_AppDataLocal:                    return true;
-    case KnownPathID::Windows_AppDataLocalLow:                 return true;
-    case KnownPathID::Windows_ProgramFiles:                    return true;
-    case KnownPathID::Windows_ProgramFilesx86:                 return true;
-    case KnownPathID::Windows_ProgramFilesx64:                 return true;
-    case KnownPathID::Windows_Documents:                       return true;
-    case KnownPathID::Windows_CommonDocuments:                 return true;
-    case KnownPathID::Windows_SavedGames:                      return true;
-    case KnownPathID::Windows_UserProfile:                     return true;
-    case KnownPathID::Windows_CommonProfile:                   return true;
-    case KnownPathID::Windows_CurrentUserDesktop:              return true;
-    case KnownPathID::Linux_RootUser:                          return true;
-    case KnownPathID::Linux_Home:                              return true;
-    /* Also Linux_ConfigurationFiles */
-    case KnownPathID::Linux_Etc:                               return true;
-    /* Also LinuxUserBinaries */
-    case KnownPathID::Linux_Bin:                               return true;
-    /* Also Linux_SystemBinaries */
-    case KnownPathID::Linux_SBin:                              return true;
-    /* Also KnownPathID::Linux_DeviceFiles */
-    case KnownPathID::Linux_Dev:                               return true;
-    /* Also Linux_ProcessInformation */
-    case KnownPathID::Linux_Proc:                              return true;
-    /* Also Linux_VariableFiles */
-    case KnownPathID::Linux_Var:                               return true;
-    /* Also Linux_UserPrograms */
-    case KnownPathID::Linux_Usr:                               return true;
-    /*  Also Linux_UserProgramsBinaries */
-    case KnownPathID::Linux_UsrBin:                            return true;
-    /* Also Linux_UserProgramsSystemBinaries */
-    case KnownPathID::Linux_UsrSBin:                           return true;
-    /* Also Linux_BootLoader */
-    case KnownPathID::Linux_Boot:                              return true;
-    /* Also Linux_SystemLibraries */
-    case KnownPathID::Linux_Lib:                               return true;
-    /* Also Linux_OptionalAddOnApps */
-    case KnownPathID::Linux_Opt:                               return true;
-    /* Also Linux_MountDirectory */
-    case KnownPathID::Linux_Mnt:                               return true;
-    /* Also Linux_RemovableDevices */
-    case KnownPathID::Linux_Media:                             return true;
-    /* Also Linux_ServiceData */
-    case KnownPathID::Linux_Src:                               return true;
+    case KnownPathID::None:                       return false;
+    case KnownPathID::GameData:                   return false;
+    case KnownPathID::EngineData:                 return false;
+    case KnownPathID::Max:                        return false;
+    case KnownPathID::Windows_AppDataRoaming:     return true;
+    case KnownPathID::Windows_AppDataLocal:       return true;
+    case KnownPathID::Windows_AppDataLocalLow:    return true;
+    case KnownPathID::Windows_ProgramFiles:       return true;
+    case KnownPathID::Windows_ProgramFilesx86:    return true;
+    case KnownPathID::Windows_ProgramFilesx64:    return true;
+    case KnownPathID::Windows_Documents:          return true;
+    case KnownPathID::Windows_CommonDocuments:    return true;
+    case KnownPathID::Windows_SavedGames:         return true;
+    case KnownPathID::Windows_UserProfile:        return true;
+    case KnownPathID::Windows_CommonProfile:      return true;
+    case KnownPathID::Windows_CurrentUserDesktop: return true;
+    case KnownPathID::Linux_RootUser:             return true;
+    case KnownPathID::Linux_Home:                 return true;
+    case KnownPathID::Linux_Etc:                  return true;
+    case KnownPathID::Linux_Bin:                  return true;
+    case KnownPathID::Linux_SBin:                 return true;
+    case KnownPathID::Linux_Dev:                  return true;
+    case KnownPathID::Linux_Proc:                 return true;
+    case KnownPathID::Linux_Var:                  return true;
+    case KnownPathID::Linux_Usr:                  return true;
+    case KnownPathID::Linux_UsrBin:               return true;
+    case KnownPathID::Linux_UsrSBin:              return true;
+    case KnownPathID::Linux_Boot:                 return true;
+    case KnownPathID::Linux_Lib:                  return true;
+    case KnownPathID::Linux_Opt:                  return true;
+    case KnownPathID::Linux_Mnt:                  return true;
+    case KnownPathID::Linux_Media:                return true;
+    case KnownPathID::Linux_Src:                  return true;
     default:
         ERROR_AND_DIE("UNSUPPORTED KNOWNPATHID")
     }
+}
+
+bool IsKnownFolderPathIdForWindows(const KnownPathID& pathid) {
+    switch (pathid) {
+    case KnownPathID::Windows_AppDataRoaming:  return true;
+    case KnownPathID::Windows_AppDataLocal:    return true;
+    case KnownPathID::Windows_AppDataLocalLow: return true;
+    case KnownPathID::Windows_ProgramFiles:    return true;
+    case KnownPathID::Windows_ProgramFilesx86: return true;
+    case KnownPathID::Windows_ProgramFilesx64: return true;
+    case KnownPathID::Windows_Documents:       return true;
+    case KnownPathID::Windows_CommonDocuments: return true;
+    case KnownPathID::Windows_SavedGames:      return true;
+    case KnownPathID::Windows_UserProfile:     return true;
+    case KnownPathID::Windows_CommonProfile:   return true;
+    default: return false;
+    }
+}
+
+bool IsKnownFolderPathIdForLinux(const KnownPathID& pathid) {
+    switch (pathid) {
+    case KnownPathID::Linux_RootUser: return true;
+    case KnownPathID::Linux_Home:     return true;
+    case KnownPathID::Linux_Etc:      return true;
+    case KnownPathID::Linux_Bin:      return true;
+    case KnownPathID::Linux_SBin:     return true;
+    case KnownPathID::Linux_Dev:      return true;
+    case KnownPathID::Linux_Proc:     return true;
+    case KnownPathID::Linux_Var:      return true;
+    case KnownPathID::Linux_Usr:      return true;
+    case KnownPathID::Linux_UsrBin:   return true;
+    case KnownPathID::Linux_UsrSBin:  return true;
+    case KnownPathID::Linux_Boot:     return true;
+    case KnownPathID::Linux_Lib:      return true;
+    case KnownPathID::Linux_Opt:      return true;
+    case KnownPathID::Linux_Mnt:      return true;
+    case KnownPathID::Linux_Media:    return true;
+    case KnownPathID::Linux_Src:      return true;
+    default: return false;
+    }
+}
+
+std::filesystem::path GetKnownFolderPathForWindows(const KnownPathID& pathid) {
+    if (!IsKnownFolderPathIdForWindows(pathid)) {
+        return {};
+    }
+    namespace FS = std::filesystem;
+    PWSTR ppszPath = nullptr;
+    auto hr_path = ::SHGetKnownFolderPath(GetKnownFolderPathIdForWindows(pathid), KF_FLAG_DEFAULT, nullptr, &ppszPath);
+    bool success = SUCCEEDED(hr_path);
+    if (success) {
+        auto p = FS::path(ppszPath);
+        ::CoTaskMemFree(ppszPath);
+        p = FS::canonical(p);
+        return p;
+    }
+    return {};
+}
+
+std::filesystem::path GetKnownFolderPathForLinux(const KnownPathID& pathid) {
+    if (!IsKnownFolderPathIdForLinux(pathid)) {
+        return {};
+    }
+    namespace FS = std::filesystem;
+    PWSTR ppszPath = nullptr;
+    auto hr_path = ::SHGetKnownFolderPath(GetKnownFolderPathIdForWindows(pathid), KF_FLAG_DEFAULT, nullptr, &ppszPath);
+    bool success = SUCCEEDED(hr_path);
+    if (success) {
+        auto p = FS::path(ppszPath);
+        ::CoTaskMemFree(ppszPath);
+        p = FS::canonical(p);
+        return p;
+    }
+    return {};
 }
 
 std::filesystem::path GetKnownFolderPath(const KnownPathID& pathid) {
@@ -184,22 +243,19 @@ std::filesystem::path GetKnownFolderPath(const KnownPathID& pathid) {
             p = FS::canonical(p);
         }
     } else {
-        {
-            PWSTR ppszPath = nullptr;
-            auto hr_path = ::SHGetKnownFolderPath(GetKnownPathIdForWindows(pathid), KF_FLAG_DEFAULT, nullptr, &ppszPath);
-            bool success = SUCCEEDED(hr_path);
-            if(success) {
-                p = FS::path(ppszPath);
-                ::CoTaskMemFree(ppszPath);
-                p = FS::canonical(p);
-            }
+        if(IsKnownFolderPathIdForWindows(pathid)) {
+            p = GetKnownFolderPathForWindows(pathid);
+        } else if (IsKnownFolderPathIdForLinux(pathid)) {
+            p = GetKnownFolderPathForLinux(pathid);
+        } else {
+            return p;
         }
     }
     p.make_preferred();
     return p;
 }
 
-GUID GetKnownPathIdForWindows(const KnownPathID& pathid) {
+GUID GetKnownFolderPathIdForWindows(const KnownPathID& pathid) {
     switch(pathid) {
     case KnownPathID::Windows_AppDataRoaming:
         return FOLDERID_RoamingAppData;

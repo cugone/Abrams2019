@@ -71,6 +71,10 @@ bool CreateFolders(const std::filesystem::path& filepath);
 bool IsSystemPathId(const KnownPathID& pathid);
 bool IsContentPathId(const KnownPathID& pathid);
 std::filesystem::path GetKnownFolderPath(const KnownPathID& pathid);
+std::filesystem::path GetKnownFolderPathForWindows(const KnownPathID& pathid);
+std::filesystem::path GetKnownFolderPathForLinux(const KnownPathID& pathid);
+bool IsKnownFolderPathIdForWindows(const KnownPathID& pathid);
+bool IsKnownFolderPathIdForLinux(const KnownPathID& pathid);
 std::filesystem::path GetExePath();
 std::filesystem::path GetWorkingDirectory();
 void SetWorkingDirectory(const std::filesystem::path& p);
@@ -94,7 +98,7 @@ std::vector<std::filesystem::path> GetAllPathsInFolders(const std::filesystem::p
 uint16_t EndianSwap(uint16_t value);
 uint32_t EndianSwap(uint32_t value);
 uint64_t EndianSwap(uint64_t value);
-
+bool IsKnownFolderPathIdForWindows(const KnownPathID& pathid);
 namespace detail {
 
     template<typename DirectoryIteratorType>
