@@ -13,7 +13,6 @@ namespace FileUtils {
 
 enum class KnownPathID {
     None
-#ifdef PLATFORM_WINDOWS
     , Windows_AppDataRoaming
     , Windows_AppDataLocal
     , Windows_AppDataLocalLow
@@ -27,7 +26,6 @@ enum class KnownPathID {
     , Windows_CommonProfile
     , Windows_CurrentUserDesktop
     , Windows_CommonDesktop
-#elif PLATFORM_LINUX
     , Linux_RootUser
     , Linux_Home
     , Linux_Etc
@@ -60,7 +58,6 @@ enum class KnownPathID {
     , Linux_RemovableDevices = Linux_Media
     , Linux_Src
     , Linux_ServiceData = Linux_Src
-#endif
     , GameData
     , EngineData
     , Max
@@ -74,6 +71,10 @@ bool CreateFolders(const std::filesystem::path& filepath);
 bool IsSystemPathId(const KnownPathID& pathid);
 bool IsContentPathId(const KnownPathID& pathid);
 std::filesystem::path GetKnownFolderPath(const KnownPathID& pathid);
+std::filesystem::path GetKnownFolderPathForWindows(const KnownPathID& pathid);
+std::filesystem::path GetKnownFolderPathForLinux(const KnownPathID& pathid);
+bool IsKnownFolderPathIdForWindows(const KnownPathID& pathid);
+bool IsKnownFolderPathIdForLinux(const KnownPathID& pathid);
 std::filesystem::path GetExePath();
 std::filesystem::path GetWorkingDirectory();
 void SetWorkingDirectory(const std::filesystem::path& p);
@@ -97,7 +98,7 @@ std::vector<std::filesystem::path> GetAllPathsInFolders(const std::filesystem::p
 uint16_t EndianSwap(uint16_t value);
 uint32_t EndianSwap(uint32_t value);
 uint64_t EndianSwap(uint64_t value);
-
+bool IsKnownFolderPathIdForWindows(const KnownPathID& pathid);
 namespace detail {
 
     template<typename DirectoryIteratorType>
