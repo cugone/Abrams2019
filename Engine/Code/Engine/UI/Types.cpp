@@ -1,5 +1,7 @@
 #include "Engine/UI/Types.hpp"
 
+#include <algorithm>
+
 namespace UI {
 
 PivotPosition& operator++(PivotPosition& mode) {
@@ -61,7 +63,8 @@ const Vector2& Ratio::GetValue() const {
 }
 
 void Ratio::SetValue(const Vector2& newValue) {
-    value = MathUtils::Clamp(newValue, Vector2::ZERO, Vector2::ONE);
+    value.x = std::clamp(newValue.x, 0.0f, 1.0f);
+    value.y = std::clamp(newValue.y, 0.0f, 1.0f);
 }
 
 } //End UI

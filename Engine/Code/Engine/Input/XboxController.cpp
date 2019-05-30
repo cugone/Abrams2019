@@ -4,6 +4,8 @@
 
 #include "Engine/Math/MathUtils.hpp"
 
+#include <algorithm>
+
 bool XboxController::WasAnyButtonJustPressed() const {
     return (_previousButtonState.to_ulong() < _currentButtonState.to_ulong());
 }
@@ -96,14 +98,14 @@ void XboxController::Update(int controller_number) {
         float leftRadius = _leftThumbDistance.CalcLength();
 
         leftRadius = MathUtils::RangeMap<float>(leftRadius, XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE, 32000, 0.0f, 1.0f);
-        leftRadius = MathUtils::Clamp<float>(leftRadius, 0.0f, 1.0f);
+        leftRadius = std::clamp<float>(leftRadius, 0.0f, 1.0f);
 
         _leftThumbDistance.SetLength(leftRadius);
 
         float rightRadius = _rightThumbDistance.CalcLength();
 
         rightRadius = MathUtils::RangeMap<float>(rightRadius, XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE, 32000, 0.0f, 1.0f);
-        rightRadius = MathUtils::Clamp<float>(rightRadius, 0.0f, 1.0f);
+        rightRadius = std::clamp<float>(rightRadius, 0.0f, 1.0f);
 
         _rightThumbDistance.SetLength(rightRadius);
 

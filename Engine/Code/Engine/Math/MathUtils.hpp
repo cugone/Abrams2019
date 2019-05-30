@@ -260,35 +260,6 @@ float CalculateMatrix2Determinant(float m00, float m01,
 Quaternion SLERP(const Quaternion& a, const Quaternion& b, float t);
 
 template<typename T>
-T Clamp(const T& valueToClamp, const T& minRange, const T& maxRange) {
-    if(valueToClamp < minRange) {
-        return minRange;
-    }
-    if(maxRange < valueToClamp) {
-        return maxRange;
-    }
-    return valueToClamp;
-}
-
-template<>
-Vector2 Clamp<Vector2>(const Vector2& valueToClamp, const Vector2& minRange, const Vector2& maxRange);
-
-template<>
-Vector3 Clamp<Vector3>(const Vector3& valueToClamp, const Vector3& minRange, const Vector3& maxRange);
-
-template<>
-Vector4 Clamp<Vector4>(const Vector4& valueToClamp, const Vector4& minRange, const Vector4& maxRange);
-
-template<>
-IntVector2 Clamp<IntVector2>(const IntVector2& valueToClamp, const IntVector2& minRange, const IntVector2& maxRange);
-
-template<>
-IntVector3 Clamp<IntVector3>(const IntVector3& valueToClamp, const IntVector3& minRange, const IntVector3& maxRange);
-
-template<>
-IntVector4 Clamp<IntVector4>(const IntVector4& valueToClamp, const IntVector4& minRange, const IntVector4& maxRange);
-
-template<typename T>
 T Interpolate(const T& a, const T& b, float t) {
     return ((1.0f - t) * a) + (t * b);
 }

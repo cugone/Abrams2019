@@ -591,9 +591,9 @@ Vector2 CalcClosestPoint(const Vector2& p, const AABB2& aabb) {
 }
 
 Vector3 CalcClosestPoint(const Vector3& p, const AABB3& aabb) {
-    float nearestX = MathUtils::Clamp(p.x, aabb.mins.x, aabb.maxs.x);
-    float nearestY = MathUtils::Clamp(p.y, aabb.mins.y, aabb.maxs.y);
-    float nearestZ = MathUtils::Clamp(p.z, aabb.mins.z, aabb.maxs.z);
+    float nearestX = std::clamp(p.x, aabb.mins.x, aabb.maxs.x);
+    float nearestY = std::clamp(p.y, aabb.mins.y, aabb.maxs.y);
+    float nearestZ = std::clamp(p.z, aabb.mins.z, aabb.maxs.z);
 
     return Vector3(nearestX, nearestY, nearestZ);
 }
@@ -904,7 +904,7 @@ Quaternion SLERP(const Quaternion& a, const Quaternion& b, float t) {
         return result;
     }
 
-    dp = MathUtils::Clamp(dp, -1.0f, 1.0f);
+    dp = std::clamp(dp, -1.0f, 1.0f);
 
     float theta_0 = std::acos(dp);
     float theta = theta_0 * t;
@@ -913,60 +913,6 @@ Quaternion SLERP(const Quaternion& a, const Quaternion& b, float t) {
     float scale1 = std::sin(theta) / std::sin(theta_0);
 
     return (scale0 * start) + (scale1 * end);
-}
-
-template<>
-Vector2 Clamp<Vector2>(const Vector2& valueToClamp, const Vector2& minRange, const Vector2& maxRange) {
-    Vector2 result = valueToClamp;
-    result.x = Clamp(valueToClamp.x, minRange.x, maxRange.x);
-    result.y = Clamp(valueToClamp.y, minRange.y, maxRange.y);
-    return result;
-}
-
-template<>
-Vector3 Clamp<Vector3>(const Vector3& valueToClamp, const Vector3& minRange, const Vector3& maxRange) {
-    Vector3 result = valueToClamp;
-    result.x = Clamp(valueToClamp.x, minRange.x, maxRange.x);
-    result.y = Clamp(valueToClamp.y, minRange.y, maxRange.y);
-    result.z = Clamp(valueToClamp.z, minRange.z, maxRange.z);
-    return result;
-}
-
-template<>
-Vector4 Clamp<Vector4>(const Vector4& valueToClamp, const Vector4& minRange, const Vector4& maxRange) {
-    Vector4 result = valueToClamp;
-    result.x = Clamp(valueToClamp.x, minRange.x, maxRange.x);
-    result.y = Clamp(valueToClamp.y, minRange.y, maxRange.y);
-    result.z = Clamp(valueToClamp.z, minRange.z, maxRange.z);
-    result.w = Clamp(valueToClamp.w, minRange.w, maxRange.w);
-    return result;
-}
-
-template<>
-IntVector2 Clamp<IntVector2>(const IntVector2& valueToClamp, const IntVector2& minRange, const IntVector2& maxRange) {
-    IntVector2 result = valueToClamp;
-    result.x = Clamp(valueToClamp.x, minRange.x, maxRange.x);
-    result.y = Clamp(valueToClamp.y, minRange.y, maxRange.y);
-    return result;
-}
-
-template<>
-IntVector3 Clamp<IntVector3>(const IntVector3& valueToClamp, const IntVector3& minRange, const IntVector3& maxRange) {
-    IntVector3 result = valueToClamp;
-    result.x = Clamp(valueToClamp.x, minRange.x, maxRange.x);
-    result.y = Clamp(valueToClamp.y, minRange.y, maxRange.y);
-    result.z = Clamp(valueToClamp.z, minRange.z, maxRange.z);
-    return result;
-}
-
-template<>
-IntVector4 Clamp<IntVector4>(const IntVector4& valueToClamp, const IntVector4& minRange, const IntVector4& maxRange) {
-    IntVector4 result = valueToClamp;
-    result.x = Clamp(valueToClamp.x, minRange.x, maxRange.x);
-    result.y = Clamp(valueToClamp.y, minRange.y, maxRange.y);
-    result.z = Clamp(valueToClamp.z, minRange.z, maxRange.z);
-    result.w = Clamp(valueToClamp.w, minRange.w, maxRange.w);
-    return result;
 }
 
 template<>
