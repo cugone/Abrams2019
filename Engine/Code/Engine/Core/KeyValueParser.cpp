@@ -130,11 +130,10 @@ std::map<std::string, std::string>&& KeyValueParser::Release() {
     return std::move(_kv_pairs);
 }
 
-bool KeyValueParser::ParseMultiParams(const std::string& input) {
-    std::string whole_line = input;
-    CollapseMultiParamWhitespace(whole_line);
-    ConvertFromMultiParam(whole_line);
-    auto lines = StringUtils::SplitOnUnquoted(whole_line, '\n');
+bool KeyValueParser::ParseMultiParams(std::string input) {
+    CollapseMultiParamWhitespace(input);
+    ConvertFromMultiParam(input);
+    auto lines = StringUtils::SplitOnUnquoted(input, '\n');
     for(const auto& line : lines) {
         bool did_parse = Parse(line);
         if(!did_parse) {
