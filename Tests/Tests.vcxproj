@@ -36,6 +36,7 @@
     <ClInclude Include="EngineMath.hpp" />
     <ClInclude Include="MathUtilsTests.hpp" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="StringUtilsTest.hpp" />
     <ClInclude Include="Vector2Tests.hpp" />
     <ClInclude Include="Vector3Tests.hpp" />
   </ItemGroup>
