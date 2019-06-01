@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.572
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28922.388
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine", "Engine\Code\Engine\Engine.vcxproj", "{ACBDA225-83DE-4FBA-A746-0135429FB391}"
 EndProject
@@ -10,41 +10,27 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
-		Debug|x86 = Debug|x86
 		DebugProfile|x64 = DebugProfile|x64
-		DebugProfile|x86 = DebugProfile|x86
 		FinalBuild|x64 = FinalBuild|x64
-		FinalBuild|x86 = FinalBuild|x86
 		Release|x64 = Release|x64
-		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{ACBDA225-83DE-4FBA-A746-0135429FB391}.Debug|x64.ActiveCfg = Debug|x64
 		{ACBDA225-83DE-4FBA-A746-0135429FB391}.Debug|x64.Build.0 = Debug|x64
-		{ACBDA225-83DE-4FBA-A746-0135429FB391}.Debug|x86.ActiveCfg = Debug|x64
 		{ACBDA225-83DE-4FBA-A746-0135429FB391}.DebugProfile|x64.ActiveCfg = DebugProfile|x64
 		{ACBDA225-83DE-4FBA-A746-0135429FB391}.DebugProfile|x64.Build.0 = DebugProfile|x64
-		{ACBDA225-83DE-4FBA-A746-0135429FB391}.DebugProfile|x86.ActiveCfg = DebugProfile|x64
 		{ACBDA225-83DE-4FBA-A746-0135429FB391}.FinalBuild|x64.ActiveCfg = FinalBuild|x64
 		{ACBDA225-83DE-4FBA-A746-0135429FB391}.FinalBuild|x64.Build.0 = FinalBuild|x64
-		{ACBDA225-83DE-4FBA-A746-0135429FB391}.FinalBuild|x86.ActiveCfg = FinalBuild|x64
 		{ACBDA225-83DE-4FBA-A746-0135429FB391}.Release|x64.ActiveCfg = Release|x64
 		{ACBDA225-83DE-4FBA-A746-0135429FB391}.Release|x64.Build.0 = Release|x64
-		{ACBDA225-83DE-4FBA-A746-0135429FB391}.Release|x86.ActiveCfg = Release|x64
 		{FD802DB6-6B42-4320-8822-BCE4E916D002}.Debug|x64.ActiveCfg = Debug|x64
 		{FD802DB6-6B42-4320-8822-BCE4E916D002}.Debug|x64.Build.0 = Debug|x64
-		{FD802DB6-6B42-4320-8822-BCE4E916D002}.Debug|x86.ActiveCfg = Debug|x64
 		{FD802DB6-6B42-4320-8822-BCE4E916D002}.DebugProfile|x64.ActiveCfg = Debug|x64
 		{FD802DB6-6B42-4320-8822-BCE4E916D002}.DebugProfile|x64.Build.0 = Debug|x64
-		{FD802DB6-6B42-4320-8822-BCE4E916D002}.DebugProfile|x86.ActiveCfg = Release|x64
-		{FD802DB6-6B42-4320-8822-BCE4E916D002}.DebugProfile|x86.Build.0 = Release|x64
 		{FD802DB6-6B42-4320-8822-BCE4E916D002}.FinalBuild|x64.ActiveCfg = Release|x64
 		{FD802DB6-6B42-4320-8822-BCE4E916D002}.FinalBuild|x64.Build.0 = Release|x64
-		{FD802DB6-6B42-4320-8822-BCE4E916D002}.FinalBuild|x86.ActiveCfg = Release|x64
-		{FD802DB6-6B42-4320-8822-BCE4E916D002}.FinalBuild|x86.Build.0 = Release|x64
 		{FD802DB6-6B42-4320-8822-BCE4E916D002}.Release|x64.ActiveCfg = Release|x64
 		{FD802DB6-6B42-4320-8822-BCE4E916D002}.Release|x64.Build.0 = Release|x64
-		{FD802DB6-6B42-4320-8822-BCE4E916D002}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
