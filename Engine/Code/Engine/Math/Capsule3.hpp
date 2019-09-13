@@ -23,32 +23,32 @@ public:
     Capsule3& operator=(Capsule3&& rhs) = default;
     ~Capsule3() = default;
 
-    explicit Capsule3(const LineSegment3& line, float radius);
-    explicit Capsule3(float startX, float startY, float startZ, float endX, float endY, float endZ, float radius);
-    explicit Capsule3(const Vector3& start_position, const Vector3& end_position, float radius);
-    explicit Capsule3(const Vector3& start_position, const Vector3& direction, float length, float radius);
+    explicit Capsule3(const LineSegment3& line, float radius) noexcept;
+    explicit Capsule3(float startX, float startY, float startZ, float endX, float endY, float endZ, float radius) noexcept;
+    explicit Capsule3(const Vector3& start_position, const Vector3& end_position, float radius) noexcept;
+    explicit Capsule3(const Vector3& start_position, const Vector3& direction, float length, float radius) noexcept;
 
-    void SetLengthFromStart(float length);
-    void SetLengthFromCenter(float length);
-    void SetLengthFromEnd(float length);
+    void SetLengthFromStart(float length) noexcept;
+    void SetLengthFromCenter(float length) noexcept;
+    void SetLengthFromEnd(float length) noexcept;
 
-    Vector3 CalcCenter() const;
+    Vector3 CalcCenter() const noexcept;
 
-    float CalcLength() const;
-    float CalcLengthSquared() const;
+    float CalcLength() const noexcept;
+    float CalcLengthSquared() const noexcept;
 
-    void SetStartEndPositions(const Vector3& start_position, const Vector3& end_position);
+    void SetStartEndPositions(const Vector3& start_position, const Vector3& end_position) noexcept;
 
-    void Translate(const Vector3& translation);
+    void Translate(const Vector3& translation) noexcept;
 
-    Vector3 CalcDisplacement() const;
-    Vector3 CalcDirection() const;
+    Vector3 CalcDisplacement() const noexcept;
+    Vector3 CalcDirection() const noexcept;
 
-    Capsule3 operator+(const Vector3& translation) const;
-    Capsule3 operator-(const Vector3& antiTranslation) const;
+    Capsule3 operator+(const Vector3& translation) const noexcept;
+    Capsule3 operator-(const Vector3& antiTranslation) const noexcept;
 
-    Capsule3& operator+=(const Vector3& translation);
-    Capsule3& operator-=(const Vector3& antiTranslation);
+    Capsule3& operator+=(const Vector3& translation) noexcept;
+    Capsule3& operator-=(const Vector3& antiTranslation) noexcept;
 
 protected:
 private:

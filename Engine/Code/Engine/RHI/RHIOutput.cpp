@@ -17,7 +17,7 @@
 
 #include <sstream>
 
-RHIOutput::RHIOutput(const RHIDevice* parent, Window* wnd, IDXGISwapChain4* swapchain)
+RHIOutput::RHIOutput(const RHIDevice* parent, Window* wnd, IDXGISwapChain4* swapchain) noexcept
     : _parent_device(parent)
     , _window(wnd)
     , _dxgi_swapchain(swapchain)
@@ -25,7 +25,7 @@ RHIOutput::RHIOutput(const RHIDevice* parent, Window* wnd, IDXGISwapChain4* swap
     CreateBackbuffer();
 }
 
-RHIOutput::~RHIOutput() {
+RHIOutput::~RHIOutput() noexcept {
     _parent_device = nullptr;
 
     if(_dxgi_swapchain) {
@@ -41,27 +41,23 @@ RHIOutput::~RHIOutput() {
 
 }
 
-const RHIDevice* RHIOutput::GetParentDevice() const {
+const RHIDevice* RHIOutput::GetParentDevice() const noexcept {
     return _parent_device;
 }
 
-RHIDevice* RHIOutput::GetParentDevice() {
-    return const_cast<RHIDevice*>(static_cast<const RHIOutput&>(*this).GetParentDevice());
-}
-
-const Window* RHIOutput::GetWindow() const {
+const Window* RHIOutput::GetWindow() const noexcept {
     return _window;
 }
 
-Window* RHIOutput::GetWindow() {
-    return const_cast<Window*>(static_cast<const RHIOutput&>(*this).GetWindow());
+Window* RHIOutput::GetWindow() noexcept {
+    return _window;
 }
 
-Texture* RHIOutput::GetBackBuffer() {
+Texture* RHIOutput::GetBackBuffer() noexcept {
     return _back_buffer;
 }
 
-IntVector2 RHIOutput::GetDimensions() const {
+IntVector2 RHIOutput::GetDimensions() const noexcept {
     if(_window) {
         return _window->GetDimensions();
     } else {
@@ -69,7 +65,7 @@ IntVector2 RHIOutput::GetDimensions() const {
     }
 }
 
-float RHIOutput::GetAspectRatio() const {
+float RHIOutput::GetAspectRatio() const noexcept {
     if(_window) {
         const auto& dims = GetDimensions();
         if(dims.y < dims.x) {
@@ -81,15 +77,15 @@ float RHIOutput::GetAspectRatio() const {
     return 0.0f;
 }
 
-void RHIOutput::SetDisplayMode(const RHIOutputMode& newMode) {
+void RHIOutput::SetDisplayMode(const RHIOutputMode& newMode) noexcept {
     _window->SetDisplayMode(newMode);
 }
 
-void RHIOutput::SetDimensions(const IntVector2& clientSize) {
+void RHIOutput::SetDimensions(const IntVector2& clientSize) noexcept {
     _window->SetDimensions(clientSize);
 }
 
-void RHIOutput::Present(bool vsync) {
+void RHIOutput::Present(bool vsync) noexcept {
     DXGI_PRESENT_PARAMETERS present_params{};
     present_params.DirtyRectsCount = 0;
     present_params.pDirtyRects = nullptr;
@@ -110,7 +106,7 @@ void RHIOutput::Present(bool vsync) {
     #endif
 }
 
-void RHIOutput::CreateBackbuffer() {
+void RHIOutput::CreateBackbuffer() noexcept {
     if(_back_buffer != nullptr) {
         delete _back_buffer;
     }
@@ -120,7 +116,7 @@ void RHIOutput::CreateBackbuffer() {
     _back_buffer->SetDebugName("__back_buffer");
 }
 
-void RHIOutput::ResetBackbuffer() {
+void RHIOutput::ResetBackbuffer() noexcept {
     delete _back_buffer;
     _back_buffer = nullptr;
     CreateBackbuffer();

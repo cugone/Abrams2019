@@ -1,6 +1,6 @@
 #include "Engine/System/System.hpp"
 
-std::ostream& System::operator<<(std::ostream& out, const System::SystemDesc& desc) {
+std::ostream& System::operator<<(std::ostream& out, const System::SystemDesc& desc) noexcept {
     auto old_fmt = out.flags();
     auto old_w = out.width();
     out << "SYSTEM:\n";
@@ -13,7 +13,7 @@ std::ostream& System::operator<<(std::ostream& out, const System::SystemDesc& de
     return out;
 }
 
-System::SystemDesc System::GetSystemDesc() {
+System::SystemDesc System::GetSystemDesc() noexcept {
     SystemDesc desc{};
     desc.cpu = Cpu::GetCpuDesc();
     desc.ram = Ram::GetRamDesc();

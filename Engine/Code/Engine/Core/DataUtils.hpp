@@ -106,91 +106,93 @@ void ValidateXmlElement(const XMLElement& element,
                         const std::string& requiredChildElements,
                         const std::string& requiredAttributes,
                         const std::string& optionalChildElements = std::string(""),
-                        const std::string& optionalAttributes = std::string(""));
+                        const std::string& optionalAttributes = std::string("")) noexcept;
 
-unsigned int GetAttributeCount(const XMLElement &element);
-unsigned int GetChildElementCount(const XMLElement &element, const std::string& elementName = std::string(""));
+unsigned int GetAttributeCount(const XMLElement &element) noexcept;
+unsigned int GetChildElementCount(const XMLElement &element, const std::string& elementName = std::string("")) noexcept;
 
-std::vector<std::string> GetChildElementNames(const XMLElement& element);
-std::vector<std::string> GetAttributeNames(const XMLElement& element);
+std::string GetElementName(const XMLElement& elem) noexcept;
+std::vector<std::string> GetChildElementNames(const XMLElement& element) noexcept;
+std::string GetAttributeName(const XMLAttribute& attrib) noexcept;
+std::vector<std::string> GetAttributeNames(const XMLElement& element) noexcept;
 
-bool ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, bool defaultValue);
+bool ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, bool defaultValue) noexcept;
 
-unsigned char ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, unsigned char defaultValue);
-signed char ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, signed char defaultValue);
-char ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, char defaultValue);
+unsigned char ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, unsigned char defaultValue) noexcept;
+signed char ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, signed char defaultValue) noexcept;
+char ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, char defaultValue) noexcept;
 
-unsigned short ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, unsigned short defaultValue);
-short ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, short defaultValue);
+unsigned short ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, unsigned short defaultValue) noexcept;
+short ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, short defaultValue) noexcept;
 
-unsigned int ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, unsigned int defaultValue);
-int ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, int defaultValue);
+unsigned int ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, unsigned int defaultValue) noexcept;
+int ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, int defaultValue) noexcept;
 
-unsigned long ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, unsigned long defaultValue);
-long ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, long defaultValue);
+unsigned long ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, unsigned long defaultValue) noexcept;
+long ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, long defaultValue) noexcept;
 
-unsigned long long ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, unsigned long long defaultValue);
-long long ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, long long defaultValue);
+unsigned long long ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, unsigned long long defaultValue) noexcept;
+long long ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, long long defaultValue) noexcept;
 
-float ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, float defaultValue);
-double ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, double defaultValue);
-long double ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, long double defaultValue);
+float ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, float defaultValue) noexcept;
+double ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, double defaultValue) noexcept;
+long double ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, long double defaultValue) noexcept;
 
-Rgba ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const Rgba& defaultValue);
+Rgba ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const Rgba& defaultValue) noexcept;
 
-Vector2 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const Vector2& defaultValue);
-IntVector2 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const IntVector2& defaultValue);
+Vector2 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const Vector2& defaultValue) noexcept;
+IntVector2 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const IntVector2& defaultValue) noexcept;
 
-Vector3 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const Vector3& defaultValue);
-IntVector3 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const IntVector3& defaultValue);
+Vector3 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const Vector3& defaultValue) noexcept;
+IntVector3 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const IntVector3& defaultValue) noexcept;
 
-Vector4 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const Vector4& defaultValue);
-IntVector4 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const IntVector4& defaultValue);
+Vector4 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const Vector4& defaultValue) noexcept;
+IntVector4 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const IntVector4& defaultValue) noexcept;
 
-Matrix4 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const Matrix4& defaultValue);
+Matrix4 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const Matrix4& defaultValue) noexcept;
 
-std::string ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const std::string& defaultValue);
-std::string ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const char* defaultValue);
+std::string ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const std::string& defaultValue) noexcept;
+std::string ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const char* defaultValue) noexcept;
 
-bool ParseXmlElementText(const XMLElement& element, bool defaultValue);
+bool ParseXmlElementText(const XMLElement& element, bool defaultValue) noexcept;
 
-unsigned char ParseXmlElementText(const XMLElement& element, unsigned char defaultValue);
-signed char ParseXmlElementText(const XMLElement& element, signed char defaultValue);
-char ParseXmlElementText(const XMLElement& element, char defaultValue);
+unsigned char ParseXmlElementText(const XMLElement& element, unsigned char defaultValue) noexcept;
+signed char ParseXmlElementText(const XMLElement& element, signed char defaultValue) noexcept;
+char ParseXmlElementText(const XMLElement& element, char defaultValue) noexcept;
 
-unsigned short ParseXmlElementText(const XMLElement& element, unsigned short defaultValue);
-short ParseXmlElementText(const XMLElement& element, short defaultValue);
+unsigned short ParseXmlElementText(const XMLElement& element, unsigned short defaultValue) noexcept;
+short ParseXmlElementText(const XMLElement& element, short defaultValue) noexcept;
 
-unsigned int ParseXmlElementText(const XMLElement& element, unsigned int defaultValue);
-int ParseXmlElementText(const XMLElement& element, int defaultValue);
+unsigned int ParseXmlElementText(const XMLElement& element, unsigned int defaultValue) noexcept;
+int ParseXmlElementText(const XMLElement& element, int defaultValue) noexcept;
 
-unsigned long ParseXmlElementText(const XMLElement& element, unsigned long defaultValue);
-long ParseXmlElementText(const XMLElement& element, long defaultValue);
+unsigned long ParseXmlElementText(const XMLElement& element, unsigned long defaultValue) noexcept;
+long ParseXmlElementText(const XMLElement& element, long defaultValue) noexcept;
 
-unsigned long long ParseXmlElementText(const XMLElement& element, unsigned long long defaultValue);
-long long ParseXmlElementText(const XMLElement& element, long long defaultValue);
+unsigned long long ParseXmlElementText(const XMLElement& element, unsigned long long defaultValue) noexcept;
+long long ParseXmlElementText(const XMLElement& element, long long defaultValue) noexcept;
 
-float ParseXmlElementText(const XMLElement& element, float defaultValue);
-double ParseXmlElementText(const XMLElement& element, double defaultValue);
-long double ParseXmlElementText(const XMLElement& element, long double defaultValue);
+float ParseXmlElementText(const XMLElement& element, float defaultValue) noexcept;
+double ParseXmlElementText(const XMLElement& element, double defaultValue) noexcept;
+long double ParseXmlElementText(const XMLElement& element, long double defaultValue) noexcept;
 
-Rgba ParseXmlElementText(const XMLElement& element, const Rgba& defaultValue);
+Rgba ParseXmlElementText(const XMLElement& element, const Rgba& defaultValue) noexcept;
 
-Vector2 ParseXmlElementText(const XMLElement& element, const Vector2& defaultValue);
-IntVector2 ParseXmlElementText(const XMLElement& element, const IntVector2& defaultValue);
+Vector2 ParseXmlElementText(const XMLElement& element, const Vector2& defaultValue) noexcept;
+IntVector2 ParseXmlElementText(const XMLElement& element, const IntVector2& defaultValue) noexcept;
 
-Vector3 ParseXmlElementText(const XMLElement& element, const Vector3& defaultValue);
-IntVector3 ParseXmlElementText(const XMLElement& element, const IntVector3& defaultValue);
+Vector3 ParseXmlElementText(const XMLElement& element, const Vector3& defaultValue) noexcept;
+IntVector3 ParseXmlElementText(const XMLElement& element, const IntVector3& defaultValue) noexcept;
 
-Vector4 ParseXmlElementText(const XMLElement& element, const Vector4& defaultValue);
-IntVector4 ParseXmlElementText(const XMLElement& element, const IntVector4& defaultValue);
+Vector4 ParseXmlElementText(const XMLElement& element, const Vector4& defaultValue) noexcept;
+IntVector4 ParseXmlElementText(const XMLElement& element, const IntVector4& defaultValue) noexcept;
 
-Matrix4 ParseXmlElementText(const XMLElement& element, const Matrix4& defaultValue);
+Matrix4 ParseXmlElementText(const XMLElement& element, const Matrix4& defaultValue) noexcept;
 
-std::string ParseXmlElementText(const XMLElement& element, const char* defaultValue);
-std::string ParseXmlElementText(const XMLElement& element, const std::string& defaultValue);
+std::string ParseXmlElementText(const XMLElement& element, const char* defaultValue) noexcept;
+std::string ParseXmlElementText(const XMLElement& element, const std::string& defaultValue) noexcept;
 
-void ForEachChildElement(const XMLElement& element, const std::string& childname = std::string{}, const std::function<void(const XMLElement&)>& callback = [](const XMLElement&) { /* DO NOTHING */ });
-void ForEachAttribute(const XMLElement& element, const std::function<void(const XMLAttribute&)>& callback = [](const XMLAttribute&) { /* DO NOTHING */ });
+void ForEachChildElement(const XMLElement& element, const std::string& childname = std::string{}, const std::function<void(const XMLElement&)>& callback = [](const XMLElement&) { /* DO NOTHING */ }) noexcept;
+void ForEachAttribute(const XMLElement& element, const std::function<void(const XMLAttribute&)>& callback = [](const XMLAttribute&) { /* DO NOTHING */ }) noexcept;
 
 }

@@ -13,72 +13,77 @@ class Camera2D;
 class Camera3D {
 public:
     Camera3D() = default;
+    Camera3D(const Camera3D& camera3D) noexcept = default;
+    Camera3D(Camera3D&& camera3D) noexcept = default;
+    Camera3D& operator=(const Camera3D& camera3D) noexcept = default;
+    Camera3D& operator=(Camera3D&& camera3D) noexcept = default;
     ~Camera3D() = default;
-    explicit Camera3D(const Camera2D& camera2D);
-    Camera3D& operator=(const Camera2D& camera2D);
 
-    void SetupView(float fovVerticalDegrees, float aspectRatio = MathUtils::M_16_BY_9_RATIO, float nearDistance = 0.01f, float farDistance = 1.0f, const Vector3& worldUp = Vector3::Y_AXIS);
-    void Update(TimeUtils::FPSeconds deltaSeconds);
+    explicit Camera3D(const Camera2D& camera2D) noexcept;
+    Camera3D& operator=(const Camera2D& camera2D) noexcept;
 
-    const Vector3& GetPosition() const;
-    void SetPosition(const Vector3& newPosition);
-    void SetPosition(float x, float y, float z);
-    void SetPosition(const Vector2& newPosition);
-    void SetPosition(float x, float y);
-    void Translate(const Vector3& displacement);
-    void Translate(float x, float y, float z);
-    void Translate(const Vector2& displacement);
-    void Translate(float x, float y);
+    void SetupView(float fovVerticalDegrees, float aspectRatio = MathUtils::M_16_BY_9_RATIO, float nearDistance = 0.01f, float farDistance = 1.0f, const Vector3& worldUp = Vector3::Y_AXIS) noexcept;
+    void Update(TimeUtils::FPSeconds deltaSeconds) noexcept;
 
-    float CalcFovYDegrees() const;
-    float CalcFovXDegrees() const;
-    float CalcNearViewWidth() const;
-    float CalcNearViewHeight() const;
-    float CalcFarViewWidth() const;
-    float CalcFarViewHeight() const;
+    const Vector3& GetPosition() const noexcept;
+    void SetPosition(const Vector3& newPosition) noexcept;
+    void SetPosition(float x, float y, float z) noexcept;
+    void SetPosition(const Vector2& newPosition) noexcept;
+    void SetPosition(float x, float y) noexcept;
+    void Translate(const Vector3& displacement) noexcept;
+    void Translate(float x, float y, float z) noexcept;
+    void Translate(const Vector2& displacement) noexcept;
+    void Translate(float x, float y) noexcept;
 
-    float GetAspectRatio() const;
-    float GetInverseAspectRatio() const;
-    float GetNearDistance() const;
-    float GetFarDistance() const;
+    float CalcFovYDegrees() const noexcept;
+    float CalcFovXDegrees() const noexcept;
+    float CalcNearViewWidth() const noexcept;
+    float CalcNearViewHeight() const noexcept;
+    float CalcFarViewWidth() const noexcept;
+    float CalcFarViewHeight() const noexcept;
 
-    const Matrix4& GetRotationMatrix() const;
-    Matrix4 CreateBillboardMatrix(const Matrix4& rotationMatrix);
-    Matrix4 CreateReverseBillboardMatrix(const Matrix4& rotationMatrix);
+    float GetAspectRatio() const noexcept;
+    float GetInverseAspectRatio() const noexcept;
+    float GetNearDistance() const noexcept;
+    float GetFarDistance() const noexcept;
 
-    const Matrix4& GetViewMatrix() const;
-    const Matrix4& GetProjectionMatrix() const;
-    const Matrix4& GetViewProjectionMatrix() const;
+    const Matrix4& GetRotationMatrix() const noexcept;
+    Matrix4 CreateBillboardMatrix(const Matrix4& rotationMatrix) noexcept;
+    Matrix4 CreateReverseBillboardMatrix(const Matrix4& rotationMatrix) noexcept;
 
-    const Matrix4& GetInverseViewMatrix() const;
-    const Matrix4& GetInverseProjectionMatrix() const;
-    const Matrix4& GetInverseViewProjectionMatrix() const;
+    const Matrix4& GetViewMatrix() const noexcept;
+    const Matrix4& GetProjectionMatrix() const noexcept;
+    const Matrix4& GetViewProjectionMatrix() const noexcept;
 
-    Vector3 GetEulerAngles() const;
-    void SetEulerAnglesDegrees(const Vector3& eulerAnglesDegrees);
-    void SetEulerAngles(const Vector3& eulerAngles);
-    void SetForwardFromTarget(const Vector3& lookAtPosition);
+    const Matrix4& GetInverseViewMatrix() const noexcept;
+    const Matrix4& GetInverseProjectionMatrix() const noexcept;
+    const Matrix4& GetInverseViewProjectionMatrix() const noexcept;
 
-    Vector3 GetRight() const;
-    Vector3 GetUp() const;
-    Vector3 GetForward() const;
+    Vector3 GetEulerAngles() const noexcept;
+    void SetEulerAnglesDegrees(const Vector3& eulerAnglesDegrees) noexcept;
+    void SetEulerAngles(const Vector3& eulerAngles) noexcept;
+    void SetForwardFromTarget(const Vector3& lookAtPosition) noexcept;
 
-    float GetYawDegrees() const;
-    float GetPitchDegrees() const;
-    float GetRollDegrees() const;
+    Vector3 GetRight() const noexcept;
+    Vector3 GetUp() const noexcept;
+    Vector3 GetForward() const noexcept;
 
-    float GetYaw() const;
-    float GetPitch() const;
-    float GetRoll() const;
+    float GetYawDegrees() const noexcept;
+    float GetPitchDegrees() const noexcept;
+    float GetRollDegrees() const noexcept;
+
+    float GetYaw() const noexcept;
+    float GetPitch() const noexcept;
+    float GetRoll() const noexcept;
 
     float trauma = 0.0f;
     float trauma_recovery_rate = 1.0f;
 protected:
 private:
-    void CalcViewMatrix();
-    void CalcRotationMatrix();
-    void CalcViewProjectionMatrix();
-    void CalcProjectionMatrix();
+    void CalcViewMatrix() noexcept;
+    void CalcRotationMatrix() noexcept;
+    void CalcViewProjectionMatrix() noexcept;
+    void CalcProjectionMatrix() noexcept;
 
     float aspect_ratio = MathUtils::M_16_BY_9_RATIO;
     float fov_vertical_degrees = 60.0f;
@@ -88,15 +93,16 @@ private:
     float far_distance = 1.0f;
     Vector3 position = Vector3::ZERO;
     Vector3 world_up = Vector3::Y_AXIS;
-    Matrix4 view_matrix = Matrix4::GetIdentity();
-    Matrix4 rotation_matrix = Matrix4::GetIdentity();
-    Matrix4 projection_matrix = Matrix4::GetIdentity();
-    Matrix4 view_projection_matrix = Matrix4::GetIdentity();
-    Matrix4 inv_view_matrix = Matrix4::GetIdentity();
-    Matrix4 inv_projection_matrix = Matrix4::GetIdentity();
-    Matrix4 inv_view_projection_matrix = Matrix4::GetIdentity();
 
-    Quaternion rotation = Quaternion::GetIdentity();
+    Matrix4 view_matrix = Matrix4::I;
+    Matrix4 rotation_matrix = Matrix4::I;
+    Matrix4 projection_matrix = Matrix4::I;
+    Matrix4 view_projection_matrix = Matrix4::I;
+    Matrix4 inv_view_matrix = Matrix4::I;
+    Matrix4 inv_projection_matrix = Matrix4::I;
+    Matrix4 inv_view_projection_matrix = Matrix4::I;
+
+    Quaternion rotation = Quaternion::I;
     float rotationPitch = 0.0f;
     float rotationYaw = 0.0f;
     float rotationRoll = 0.0f;

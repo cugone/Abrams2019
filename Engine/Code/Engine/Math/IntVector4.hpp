@@ -45,24 +45,24 @@ public:
     IntVector4(const IntVector4& rhs) = default;
     IntVector4(IntVector4&& rhs) = default;
 
-    explicit IntVector4(const IntVector2& iv2, int initialZ, int initialW);
-    explicit IntVector4(const Vector2& v2, int initialZ, int initialW);
-    explicit IntVector4(const Vector2& xy, const Vector2& zw);
-    explicit IntVector4(const IntVector2& xy, const IntVector2& zw);
-    explicit IntVector4(int initialX, int initialY, int initialZ, int initialW);
-    explicit IntVector4(const IntVector3& iv3, int initialW);
-    explicit IntVector4(const Vector3& v3, int initialW);
-    explicit IntVector4(const Vector4& rhs);
-    explicit IntVector4(const std::string& value);
+    explicit IntVector4(const IntVector2& iv2, int initialZ, int initialW) noexcept;
+    explicit IntVector4(const Vector2& v2, int initialZ, int initialW) noexcept;
+    explicit IntVector4(const Vector2& xy, const Vector2& zw) noexcept;
+    explicit IntVector4(const IntVector2& xy, const IntVector2& zw) noexcept;
+    explicit IntVector4(int initialX, int initialY, int initialZ, int initialW) noexcept;
+    explicit IntVector4(const IntVector3& iv3, int initialW) noexcept;
+    explicit IntVector4(const Vector3& v3, int initialW) noexcept;
+    explicit IntVector4(const Vector4& rhs) noexcept;
+    explicit IntVector4(const std::string& value) noexcept;
 
     IntVector4& operator=(const IntVector4& rhs) = default;
     IntVector4& operator=(IntVector4&& rhs) = default;
 
-    bool operator==(const IntVector4& rhs);
-    bool operator!=(const IntVector4& rhs);
+    bool operator==(const IntVector4& rhs) noexcept;
+    bool operator!=(const IntVector4& rhs) noexcept;
 
-    void SetXYZW(int newX, int newY, int newZ, int newW);
-    std::tuple<int,int,int,int> GetXYZW() const;
+    void SetXYZW(int newX, int newY, int newZ, int newW) noexcept;
+    std::tuple<int, int, int, int> GetXYZW() const noexcept;
 
     int x = 0;
     int y = 0;

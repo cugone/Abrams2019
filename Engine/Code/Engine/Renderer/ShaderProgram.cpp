@@ -5,87 +5,87 @@
 
 #include "Engine/RHI/RHIDevice.hpp"
 
-ShaderProgram::ShaderProgram(ShaderProgramDesc&& desc)
+ShaderProgram::ShaderProgram(ShaderProgramDesc&& desc) noexcept
     : _desc(std::move(desc))
 {
     /* DO NOTHING */
 }
 
-ShaderProgramDesc&& ShaderProgram::GetDescription() {
+ShaderProgramDesc&& ShaderProgram::GetDescription() noexcept {
     return std::move(_desc);
 }
 
-void ShaderProgram::SetDescription(ShaderProgramDesc&& description) {
+void ShaderProgram::SetDescription(ShaderProgramDesc&& description) noexcept {
     _desc = std::move(description);
 }
 
-const std::string& ShaderProgram::GetName() const {
+const std::string& ShaderProgram::GetName() const noexcept {
     return _desc.name;
 }
 
-const RHIDevice* ShaderProgram::GetParentDevice() const {
+const RHIDevice* ShaderProgram::GetParentDevice() const noexcept {
     return _desc.device;
 }
 
-ID3DBlob* ShaderProgram::GetVSByteCode() const {
+ID3DBlob* ShaderProgram::GetVSByteCode() const noexcept {
     return _desc.vs_bytecode;
 }
 
-ID3DBlob* ShaderProgram::GetHSByteCode() const {
+ID3DBlob* ShaderProgram::GetHSByteCode() const noexcept {
     return _desc.hs_bytecode;
 }
 
-ID3DBlob* ShaderProgram::GetDSByteCode() const {
+ID3DBlob* ShaderProgram::GetDSByteCode() const noexcept {
     return _desc.ds_bytecode;
 }
 
-ID3DBlob* ShaderProgram::GetGSByteCode() const {
+ID3DBlob* ShaderProgram::GetGSByteCode() const noexcept {
     return _desc.gs_bytecode;
 }
 
-ID3DBlob* ShaderProgram::GetPSByteCode() const {
+ID3DBlob* ShaderProgram::GetPSByteCode() const noexcept {
     return _desc.ps_bytecode;
 }
 
-ID3DBlob* ShaderProgram::GetCSByteCode() const {
+ID3DBlob* ShaderProgram::GetCSByteCode() const noexcept {
     return _desc.cs_bytecode;
 }
 
-InputLayout* ShaderProgram::GetInputLayout() const {
-    return _desc.input_layout;
+InputLayout* ShaderProgram::GetInputLayout() const noexcept {
+    return _desc.input_layout.get();
 }
 
-ID3D11VertexShader* ShaderProgram::GetVS() const {
+ID3D11VertexShader* ShaderProgram::GetVS() const noexcept {
     return _desc.vs;
 }
 
-ID3D11HullShader* ShaderProgram::GetHS() const {
+ID3D11HullShader* ShaderProgram::GetHS() const noexcept {
     return _desc.hs;
 }
 
-ID3D11DomainShader* ShaderProgram::GetDS() const {
+ID3D11DomainShader* ShaderProgram::GetDS() const noexcept {
     return _desc.ds;
 }
 
-ID3D11GeometryShader* ShaderProgram::GetGS() const {
+ID3D11GeometryShader* ShaderProgram::GetGS() const noexcept {
     return _desc.gs;
 }
 
-ID3D11PixelShader* ShaderProgram::GetPS() const {
+ID3D11PixelShader* ShaderProgram::GetPS() const noexcept {
     return _desc.ps;
 }
 
-ID3D11ComputeShader* ShaderProgram::GetCS() const {
+ID3D11ComputeShader* ShaderProgram::GetCS() const noexcept {
     return _desc.cs;
 }
 
-ShaderProgramDesc::ShaderProgramDesc(ShaderProgramDesc&& other) {
+ShaderProgramDesc::ShaderProgramDesc(ShaderProgramDesc&& other) noexcept {
     name = std::move(other.name);
 
     device = other.device;
     other.device = nullptr;
 
-    input_layout = other.input_layout;
+    input_layout = std::move(other.input_layout);
     other.input_layout = nullptr;
 
     vs = other.vs;
@@ -120,13 +120,13 @@ ShaderProgramDesc::ShaderProgramDesc(ShaderProgramDesc&& other) {
 
 }
 
-ShaderProgramDesc& ShaderProgramDesc::operator=(ShaderProgramDesc&& other) {
+ShaderProgramDesc& ShaderProgramDesc::operator=(ShaderProgramDesc&& other) noexcept {
     name = std::move(other.name);
 
     device = other.device;
     other.device = nullptr;
 
-    input_layout = other.input_layout;
+    input_layout = std::move(other.input_layout);
     other.input_layout = nullptr;
 
     vs = other.vs;
@@ -162,7 +162,7 @@ ShaderProgramDesc& ShaderProgramDesc::operator=(ShaderProgramDesc&& other) {
     return *this;
 }
 
-ShaderProgramDesc::~ShaderProgramDesc() {
+ShaderProgramDesc::~ShaderProgramDesc() noexcept {
     if(vs_bytecode) {
         vs_bytecode->Release();
         vs_bytecode = nullptr;
@@ -188,8 +188,7 @@ ShaderProgramDesc::~ShaderProgramDesc() {
         cs_bytecode = nullptr;
     }
 
-    delete input_layout;
-    input_layout = nullptr;
+    input_layout.reset();
 
     if(vs) {
         vs->Release();

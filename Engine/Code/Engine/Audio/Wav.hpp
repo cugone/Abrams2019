@@ -4,6 +4,7 @@
 #include "Engine/Core/StringUtils.hpp"
 
 #include <string>
+#include <filesystem>
 
 namespace FileUtils {
 
@@ -11,7 +12,7 @@ namespace WavChunkID {
     constexpr const uint32_t FMT = StringUtils::FourCC("fmt ");
     constexpr const uint32_t FACT = StringUtils::FourCC("fact");
     constexpr const uint32_t DATA = StringUtils::FourCC("data");
-    constexpr const bool IsValid(const char* id);
+    constexpr const bool IsValid(const char* id) noexcept;
 } //End WavChunkID
 
 class Wav {
@@ -48,12 +49,12 @@ public:
     static constexpr const unsigned int WAV_ERROR_NOT_A_WAV = 1;
     static constexpr const unsigned int WAV_ERROR_BAD_FILE = 2;
 
-    unsigned int Load(const std::string& filepath);
-    unsigned char* GetFormatAsBuffer();
-    unsigned char* GetDataBuffer() const;
-    const WavFormatChunk& GetFormatChunk() const;
-    const WavDataChunk& GetDataChunk() const;
-    uint32_t GetDataBufferSize() const;
+    unsigned int Load(std::filesystem::path filepath) noexcept;
+    unsigned char* GetFormatAsBuffer() noexcept;
+    unsigned char* GetDataBuffer() const noexcept;
+    const WavFormatChunk& GetFormatChunk() const noexcept;
+    const WavDataChunk& GetDataChunk() const noexcept;
+    uint32_t GetDataBufferSize() const noexcept;
 protected:
 private:
     WavFormatChunk _fmt{};

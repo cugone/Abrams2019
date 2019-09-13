@@ -8,7 +8,7 @@
 
 std::size_t Window::_refCount{};
 
-Window::Window() {
+Window::Window() noexcept {
     if(_refCount == 0) {
         if(Register()) {
             ++_refCount;
@@ -24,7 +24,7 @@ Window::Window() {
 
 }
 
-Window::Window(const IntVector2& position, const IntVector2& dimensions) {
+Window::Window(const IntVector2& position, const IntVector2& dimensions) noexcept {
     if(_refCount == 0) {
         if(Register()) {
             ++_refCount;
@@ -45,7 +45,7 @@ Window::Window(const IntVector2& position, const IntVector2& dimensions) {
     ::GetClipCursor(&_initialClippingArea);
 }
 
-Window::~Window() {
+Window::~Window() noexcept {
     ::ClipCursor(&_initialClippingArea);
     Close();
     if(_refCount != 0) {
@@ -56,7 +56,7 @@ Window::~Window() {
     }
 }
 
-void Window::Open() {
+void Window::Open() noexcept {
     if(Create()) {
         Show();
         SetForegroundWindow();
@@ -67,47 +67,47 @@ void Window::Open() {
     }
 }
 
-void Window::Close() {
+void Window::Close() noexcept {
     ::DestroyWindow(_hWnd);
 }
 
-void Window::Show() {
+void Window::Show() noexcept {
     ::ShowWindow(_hWnd, SW_SHOW);
 }
 
-void Window::Hide() {
+void Window::Hide() noexcept {
     ::ShowWindow(_hWnd, SW_HIDE);
 }
 
-void Window::UnHide() {
+void Window::UnHide() noexcept {
     Show();
 }
 
-bool Window::IsOpen() {
+bool Window::IsOpen() const noexcept {
     return 0 != ::IsWindow(_hWnd);
 }
 
-bool Window::IsClosed() {
+bool Window::IsClosed() const noexcept {
     return !IsOpen();
 }
 
-bool Window::IsWindowed() const {
+bool Window::IsWindowed() const noexcept {
     return true;
 }
 
-bool Window::IsFullscreen() const {
+bool Window::IsFullscreen() const noexcept {
     return !IsWindowed();
 }
 
-IntVector2 Window::GetDimensions() const {
+IntVector2 Window::GetDimensions() const noexcept {
     return IntVector2(_width, _height);
 }
 
-IntVector2 Window::GetPosition() const {
+IntVector2 Window::GetPosition() const noexcept {
     return IntVector2(_positionX, _positionY);
 }
 
-void Window::SetDimensionsAndPosition(const IntVector2& new_position, const IntVector2& new_size) {
+void Window::SetDimensionsAndPosition(const IntVector2& new_position, const IntVector2& new_size) noexcept {
     RECT r;
     r.top = new_position.y;
     r.left = new_position.x;
@@ -120,35 +120,35 @@ void Window::SetDimensionsAndPosition(const IntVector2& new_position, const IntV
     _positionY = r.top;
 }
 
-void Window::SetPosition(const IntVector2& new_position) {
+void Window::SetPosition(const IntVector2& new_position) noexcept {
     SetDimensionsAndPosition(GetDimensions(), new_position);
 }
 
-void Window::SetDimensions(const IntVector2& new_dimensions) {
+void Window::SetDimensions(const IntVector2& new_dimensions) noexcept {
     SetDimensionsAndPosition(GetPosition(), new_dimensions);
 }
 
-void Window::SetForegroundWindow() {
+void Window::SetForegroundWindow() noexcept {
     ::SetForegroundWindow(_hWnd);
 }
 
-void Window::SetFocus() {
+void Window::SetFocus() noexcept {
     ::SetFocus(_hWnd);
 }
 
-HWND Window::GetWindowHandle() const {
+HWND Window::GetWindowHandle() const noexcept {
     return _hWnd;
 }
 
-void Window::SetWindowHandle(HWND hWnd) {
+void Window::SetWindowHandle(HWND hWnd) noexcept {
     _hWnd = hWnd;
 }
 
-const RHIOutputMode& Window::GetDisplayMode() const {
+const RHIOutputMode& Window::GetDisplayMode() const noexcept {
     return _currentDisplayMode;
 }
 
-void Window::SetDisplayMode(const RHIOutputMode& display_mode) {
+void Window::SetDisplayMode(const RHIOutputMode& display_mode) noexcept {
     if(display_mode == _currentDisplayMode) {
         return;
     }
@@ -202,12 +202,12 @@ void Window::SetDisplayMode(const RHIOutputMode& display_mode) {
 
 }
 
-void Window::SetTitle(const std::string& title) {
+void Window::SetTitle(const std::string& title) noexcept {
     _title = title;
     ::SetWindowTextA(_hWnd, _title.data());
 }
 
-bool Window::Register() {
+bool Window::Register() noexcept {
     _hInstance = GetModuleHandle(nullptr);
     memset(&_wc, 0, sizeof(_wc));
     auto window_class_name = "Simple Window Class";
@@ -226,11 +226,11 @@ bool Window::Register() {
     return 0 != RegisterClassEx(&_wc);
 }
 
-bool Window::Unregister() {
+bool Window::Unregister() noexcept {
     return 0 != ::UnregisterClass(_wc.lpszClassName, nullptr);
 }
 
-bool Window::Create() {
+bool Window::Create() noexcept {
     _styleFlags = WS_CAPTION | WS_BORDER | WS_SYSMENU | WS_OVERLAPPED;
     _styleFlagsEx = WS_EX_APPWINDOW;
     _hWnd = ::CreateWindowEx(

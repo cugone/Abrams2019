@@ -13,11 +13,11 @@ public:
     Plane3(Plane3&& rhs) = default;
     Plane3& operator=(const Plane3& rhs) = default;
     Plane3& operator=(Plane3&& rhs) = default;
-    explicit Plane3(const Vector3& normal, float distance_from_origin);
+    explicit Plane3(const Vector3& normal, float distance_from_origin) noexcept;
     ~Plane3() = default;
 
-    float Normalize();
-    Plane3 GetNormalize() const;
+    float Normalize() noexcept;
+    Plane3 GetNormalize() const noexcept;
 
 protected:
 private:

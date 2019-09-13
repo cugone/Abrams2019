@@ -12,47 +12,47 @@ public:
     Config() = default;
     Config(const Config& other) = delete;
     Config& operator=(const Config& rhs) = delete;
-    Config(Config&& other);
-    Config& operator=(Config&& rhs);
-    explicit Config(KeyValueParser&& kvp);
+    Config(Config&& other) noexcept;
+    Config& operator=(Config&& rhs) noexcept;
+    explicit Config(KeyValueParser&& kvp) noexcept;
     ~Config() = default;
 
-    bool HasKey(const std::string& key) const;
+    bool HasKey(const std::string& key) const noexcept;
 
-    void GetValue(const std::string& key, char& value);
-    void GetValue(const std::string& key, unsigned char& value);
-    void GetValue(const std::string& key, signed char& value);
-    void GetValue(const std::string& key, bool& value);
-    void GetValue(const std::string& key, unsigned int& value);
-    void GetValue(const std::string& key, int& value);
-    void GetValue(const std::string& key, long& value);
-    void GetValue(const std::string& key, unsigned long& value);
-    void GetValue(const std::string& key, long long& value);
-    void GetValue(const std::string& key, unsigned long long& value);
-    void GetValue(const std::string& key, float& value);
-    void GetValue(const std::string& key, double& value);
-    void GetValue(const std::string& key, long double& value);
-    void GetValue(const std::string& key, std::string& value);
+    void GetValue(const std::string& key, char& value) const noexcept;
+    void GetValue(const std::string& key, unsigned char& value) const noexcept;
+    void GetValue(const std::string& key, signed char& value) const noexcept;
+    void GetValue(const std::string& key, bool& value) const noexcept;
+    void GetValue(const std::string& key, unsigned int& value) const noexcept;
+    void GetValue(const std::string& key, int& value) const noexcept;
+    void GetValue(const std::string& key, long& value) const noexcept;
+    void GetValue(const std::string& key, unsigned long& value) const noexcept;
+    void GetValue(const std::string& key, long long& value) const noexcept;
+    void GetValue(const std::string& key, unsigned long long& value) const noexcept;
+    void GetValue(const std::string& key, float& value) const noexcept;
+    void GetValue(const std::string& key, double& value) const noexcept;
+    void GetValue(const std::string& key, long double& value) const noexcept;
+    void GetValue(const std::string& key, std::string& value) const noexcept;
 
-    void SetValue(const std::string& key, const char& value);
-    void SetValue(const std::string& key, const unsigned char& value);
-    void SetValue(const std::string& key, const signed char& value);
-    void SetValue(const std::string& key, const bool& value);
-    void SetValue(const std::string& key, const unsigned int& value);
-    void SetValue(const std::string& key, const int& value);
-    void SetValue(const std::string& key, const long& value);
-    void SetValue(const std::string& key, const unsigned long& value);
-    void SetValue(const std::string& key, const long long& value);
-    void SetValue(const std::string& key, const unsigned long long& value);
-    void SetValue(const std::string& key, const float& value);
-    void SetValue(const std::string& key, const double& value);
-    void SetValue(const std::string& key, const long double& value);
-    void SetValue(const std::string& key, const std::string& value);
-    void SetValue(const std::string& key, const char* value);
+    void SetValue(const std::string& key, const char& value) noexcept;
+    void SetValue(const std::string& key, const unsigned char& value) noexcept;
+    void SetValue(const std::string& key, const signed char& value) noexcept;
+    void SetValue(const std::string& key, const bool& value) noexcept;
+    void SetValue(const std::string& key, const unsigned int& value) noexcept;
+    void SetValue(const std::string& key, const int& value) noexcept;
+    void SetValue(const std::string& key, const long& value) noexcept;
+    void SetValue(const std::string& key, const unsigned long& value) noexcept;
+    void SetValue(const std::string& key, const long long& value) noexcept;
+    void SetValue(const std::string& key, const unsigned long long& value) noexcept;
+    void SetValue(const std::string& key, const float& value) noexcept;
+    void SetValue(const std::string& key, const double& value) noexcept;
+    void SetValue(const std::string& key, const long double& value) noexcept;
+    void SetValue(const std::string& key, const std::string& value) noexcept;
+    void SetValue(const std::string& key, const char* value) noexcept;
 
-    void PrintConfigs(std::ostream& output /*= std::cout*/) const;
-    friend std::ostream& operator<<(std::ostream& output, const Config& config);
-    friend std::istream& operator>>(std::istream& input, Config& config);
+    void PrintConfigs(std::ostream& output /*= std::cout*/) const noexcept;
+    friend std::ostream& operator<<(std::ostream& output, const Config& config) noexcept;
+    friend std::istream& operator>>(std::istream& input, Config& config) noexcept;
 
 
 protected:

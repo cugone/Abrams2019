@@ -130,7 +130,7 @@ struct EngineMessage32 {
 
 class EngineSubsystem {
 public:
-    virtual ~EngineSubsystem() = 0;
+    virtual ~EngineSubsystem() noexcept = 0;
 
     virtual void Initialize() = 0;
     virtual void BeginFrame() = 0;
@@ -138,10 +138,10 @@ public:
     virtual void Render() const = 0;
     virtual void EndFrame() = 0;
 
-    virtual bool ProcessSystemMessage(const EngineMessage& msg);
+    virtual bool ProcessSystemMessage(const EngineMessage& msg) noexcept;
 
-    static WindowsSystemMessage GetWindowsSystemMessageFromUintMessage(unsigned int wmMessage);
-    void SetNextHandler(EngineSubsystem* next_handler);
+    static WindowsSystemMessage GetWindowsSystemMessageFromUintMessage(unsigned int wmMessage) noexcept;
+    void SetNextHandler(EngineSubsystem* next_handler) noexcept;
 protected:
 private:
     EngineSubsystem* _next_subsystem = nullptr;

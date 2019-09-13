@@ -3,9 +3,7 @@
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/StringUtils.hpp"
 
-#include "Engine/Renderer/BlendState.hpp"
 #include "Engine/Renderer/ConstantBuffer.hpp"
-#include "Engine/Renderer/DepthStencilState.hpp"
 #include "Engine/Renderer/RasterState.hpp"
 #include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Renderer/Sampler.hpp"
@@ -19,7 +17,7 @@
 #include <sstream>
 #include <system_error>
 
-Shader::Shader(Renderer* renderer, ShaderProgram* shaderProgram /*= nullptr*/, DepthStencilState* depthStencil /*= nullptr*/, RasterState* rasterState /*= nullptr*/, BlendState* blendState /*= nullptr*/, Sampler* sampler /*= nullptr*/)
+Shader::Shader(Renderer* renderer, ShaderProgram* shaderProgram /*= nullptr*/, DepthStencilState* depthStencil /*= nullptr*/, RasterState* rasterState /*= nullptr*/, BlendState* blendState /*= nullptr*/, Sampler* sampler /*= nullptr*/) noexcept
 : _renderer(renderer)
 , _shader_program(shaderProgram)
 , _depth_stencil_state(depthStencil)
@@ -33,7 +31,7 @@ Shader::Shader(Renderer* renderer, ShaderProgram* shaderProgram /*= nullptr*/, D
     _name += ss.str();
 }
 
-Shader::Shader(Renderer* renderer, const XMLElement& element)
+Shader::Shader(Renderer* renderer, const XMLElement& element) noexcept
     : _renderer(renderer)
 {
     std::size_t count = renderer->GetShaderCount();
@@ -45,84 +43,41 @@ Shader::Shader(Renderer* renderer, const XMLElement& element)
 
 }
 
-Shader::~Shader() {
-    _renderer = nullptr;
-    _sampler = nullptr;
-    _raster_state = nullptr;
-    for(auto& cbuffer : _cbuffers) {
-        delete cbuffer;
-        cbuffer = nullptr;
-    }
-    _cbuffers.clear();
-    _cbuffers.shrink_to_fit();
-
-    if(_blend_state) {
-        delete _blend_state;
-        _blend_state = nullptr;
-    }
-    if(_depth_stencil_state) {
-        delete _depth_stencil_state;
-        _depth_stencil_state = nullptr;
-    }
-}
-
-const std::string& Shader::GetName() const {
+const std::string& Shader::GetName() const noexcept {
     return _name;
 }
 
-ShaderProgram* Shader::GetShaderProgram() const {
+ShaderProgram* Shader::GetShaderProgram() const noexcept {
     return _shader_program;
 }
 
-RasterState* Shader::GetRasterState() const {
+RasterState* Shader::GetRasterState() const noexcept {
     return _raster_state;
 }
 
-DepthStencilState* Shader::GetDepthStencilState() const {
-    return _depth_stencil_state;
+DepthStencilState* Shader::GetDepthStencilState() const noexcept {
+    return _depth_stencil_state.get();
 }
 
-BlendState* Shader::GetBlendState() const {
-    return _blend_state;
+BlendState* Shader::GetBlendState() const noexcept {
+    return _blend_state.get();
 }
 
-Sampler* Shader::GetSampler() const {
+Sampler* Shader::GetSampler() const noexcept {
     return _sampler;
 }
 
-const std::vector<ConstantBuffer*>& Shader::GetConstantBuffers() const {
-    return _cbuffers;
+std::vector<std::reference_wrapper<ConstantBuffer>> Shader::GetConstantBuffers() const noexcept {
+    std::vector<std::reference_wrapper<ConstantBuffer>> cbufferRefs{};
+    cbufferRefs.reserve(_cbuffers.size());
+    for(auto& ptr : _cbuffers) {
+        cbufferRefs.push_back(std::ref(*ptr));
+    }
+    cbufferRefs.shrink_to_fit();
+    return cbufferRefs;
 }
 
-void Shader::SetName(const std::string& name) {
-    _name = name;
-}
-
-void Shader::SetShaderProgram(ShaderProgram* sp) {
-    _shader_program = sp;
-}
-
-void Shader::SetRasterState(RasterState* rs) {
-    _raster_state = rs;
-}
-
-void Shader::SetDepthStencilState(DepthStencilState* ds) {
-    _depth_stencil_state = ds;
-}
-
-void Shader::SetBlendState(BlendState* bs) {
-    _blend_state = bs;
-}
-
-void Shader::SetSampler(Sampler* sampler) {
-    _sampler = sampler;
-}
-
-void Shader::SetConstantBuffers(const std::vector<ConstantBuffer*>& cbuffers) {
-    _cbuffers = cbuffers;
-}
-
-bool Shader::LoadFromXml(Renderer* renderer, const XMLElement& element) {
+bool Shader::LoadFromXml(Renderer* renderer, const XMLElement& element) noexcept {
     namespace FS = std::filesystem;
 
     if(renderer == nullptr) {
@@ -174,9 +129,9 @@ bool Shader::LoadFromXml(Renderer* renderer, const XMLElement& element) {
             }
         }
     }
-    _cbuffers = _renderer->CreateConstantBuffersFromShaderProgram(_shader_program);
-    _depth_stencil_state = new DepthStencilState(_renderer->GetDevice(), element);
-    _blend_state = new BlendState(_renderer->GetDevice(), element);
+    _cbuffers = std::move(_renderer->CreateConstantBuffersFromShaderProgram(_shader_program));
+    _depth_stencil_state = std::make_unique<DepthStencilState>(_renderer->GetDevice(), element);
+    _blend_state = std::make_unique<BlendState>(_renderer->GetDevice(), element);
 
     _raster_state = _renderer->GetRasterState("__default");
     if(auto xml_raster = element.FirstChildElement("raster")) {
@@ -200,7 +155,7 @@ bool Shader::LoadFromXml(Renderer* renderer, const XMLElement& element) {
     return true;
 }
 
-PipelineStage Shader::ParseTargets(const XMLElement& element) {
+PipelineStage Shader::ParseTargets(const XMLElement& element) noexcept {
     auto targets = PipelineStage::None;
     if(auto xml_vertex = element.FirstChildElement("vertex")) {
         targets |= PipelineStage::Vs;
@@ -224,7 +179,7 @@ PipelineStage Shader::ParseTargets(const XMLElement& element) {
     return targets;
 }
 
-std::string Shader::ParseEntrypointList(const XMLElement& element) {
+std::string Shader::ParseEntrypointList(const XMLElement& element) noexcept {
     std::string entrypointList{};
     if(auto xml_vertex = element.FirstChildElement("vertex")) {
         auto entrypoint = DataUtils::ParseXmlAttribute(*xml_vertex, "entrypoint", "");
@@ -271,21 +226,24 @@ std::string Shader::ParseEntrypointList(const XMLElement& element) {
     return entrypointList;
 }
 
-void Shader::ValidatePipelineStages(const PipelineStage& targets) {
+void Shader::ValidatePipelineStages(const PipelineStage& targets) noexcept {
     bool result = false;
     if(targets == PipelineStage::None) {
         result = false;
     } else if(targets == PipelineStage::All) {
         result = true;
     } else {
-        //geometry and compute stages are entirely optional and do not rely on each other.
         bool has_vs = (targets & PipelineStage::Vs) == PipelineStage::Vs;
         bool has_ps = (targets & PipelineStage::Ps) == PipelineStage::Ps;
         bool has_hs = (targets & PipelineStage::Hs) == PipelineStage::Hs;
         bool has_ds = (targets & PipelineStage::Ds) == PipelineStage::Ds;
+        bool has_cs = (targets & PipelineStage::Cs) == PipelineStage::Cs;
+        bool has_gs = (targets & PipelineStage::Gs) == PipelineStage::Gs;
         bool valid_vsps = !(has_vs ^ has_ps);
         bool valid_hsds = !(has_hs ^ has_ds);
-        result = valid_vsps && valid_hsds;
+        bool valid_cs = has_cs;
+        bool valid_gs = has_gs;
+        result = valid_cs || valid_gs || valid_vsps || valid_hsds;
     }
     if(!result) {
         std::ostringstream ss;
@@ -294,14 +252,16 @@ void Shader::ValidatePipelineStages(const PipelineStage& targets) {
     }
 }
 
-void Shader::CreateAndRegisterNewSamplerFromXml(const XMLElement& element) {
-    _sampler = new Sampler(_renderer->GetDevice(), element);
+void Shader::CreateAndRegisterNewSamplerFromXml(const XMLElement& element) noexcept {
+    auto new_sampler = std::make_unique<Sampler>(_renderer->GetDevice(), element);
     std::string ns = _name + "_sampler";
-    _renderer->RegisterSampler(ns, _sampler);
+    _sampler = new_sampler.get();
+    _renderer->RegisterSampler(ns, std::move(new_sampler));
 }
 
-void Shader::CreateAndRegisterNewRasterFromXml(const XMLElement& element) {
-    _raster_state = new RasterState(_renderer->GetDevice(), element);
+void Shader::CreateAndRegisterNewRasterFromXml(const XMLElement& element) noexcept {
+    auto new_raster_state = std::make_unique<RasterState>(_renderer->GetDevice(), element);
     std::string nr = _name + "_raster";
-    _renderer->RegisterRasterState(nr, _raster_state);
+    _raster_state = new_raster_state.get();
+    _renderer->RegisterRasterState(nr, std::move(new_raster_state));
 }

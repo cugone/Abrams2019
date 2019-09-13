@@ -11,28 +11,27 @@ struct IDXGISwapChain4;
 
 class RHIOutput {
 public:
-    RHIOutput(const RHIDevice* parent, Window* wnd, IDXGISwapChain4* swapchain);
+    RHIOutput(const RHIDevice* parent, Window* wnd, IDXGISwapChain4* swapchain) noexcept;
 
-    ~RHIOutput();
+    ~RHIOutput() noexcept;
 
-    const RHIDevice* GetParentDevice() const;
-    RHIDevice* GetParentDevice();
+    const RHIDevice* GetParentDevice() const noexcept;
 
-    const Window* GetWindow() const;
-    Window* GetWindow();
+    const Window* GetWindow() const noexcept;
+    Window* GetWindow() noexcept;
 
-    Texture* GetBackBuffer();
-    IntVector2 GetDimensions() const;
-    float GetAspectRatio() const;
+    Texture* GetBackBuffer() noexcept;
+    IntVector2 GetDimensions() const noexcept;
+    float GetAspectRatio() const noexcept;
 
-    void SetDisplayMode(const RHIOutputMode& newMode);
-    void SetDimensions(const IntVector2& clientSize);
+    void SetDisplayMode(const RHIOutputMode& newMode) noexcept;
+    void SetDimensions(const IntVector2& clientSize) noexcept;
 
-    void Present(bool vsync);
+    void Present(bool vsync) noexcept;
 
 protected:
-    void CreateBackbuffer();
-    void ResetBackbuffer();
+    void CreateBackbuffer() noexcept;
+    void ResetBackbuffer() noexcept;
     Window * _window = nullptr;
     const RHIDevice* _parent_device = nullptr;
     Texture* _back_buffer = nullptr;

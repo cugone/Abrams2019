@@ -17,23 +17,23 @@ public:
     AABB2& operator=(const AABB2& rhs) = default;
     AABB2& operator=(AABB2&& rhs) = default;
     ~AABB2() = default;
-    AABB2(float initialX, float initialY);
-    AABB2(float minX, float minY, float maxX, float maxY);
-    AABB2(const Vector2& mins, const Vector2& maxs);
-    AABB2(const Vector2& center, float radiusX, float radiusY);
+    AABB2(float initialX, float initialY) noexcept;
+    AABB2(float minX, float minY, float maxX, float maxY) noexcept;
+    AABB2(const Vector2& mins, const Vector2& maxs) noexcept;
+    AABB2(const Vector2& center, float radiusX, float radiusY) noexcept;
 
-    void StretchToIncludePoint(const Vector2& point);
-    void AddPaddingToSides(float paddingX, float paddingY);
-    void AddPaddingToSidesClamped(float paddingX, float paddingY);
-    void Translate(const Vector2& translation);
+    void StretchToIncludePoint(const Vector2& point) noexcept;
+    void AddPaddingToSides(float paddingX, float paddingY) noexcept;
+    void AddPaddingToSidesClamped(float paddingX, float paddingY) noexcept;
+    void Translate(const Vector2& translation) noexcept;
 
-    Vector2 CalcDimensions() const;
-    Vector2 CalcCenter() const;
+    Vector2 CalcDimensions() const noexcept;
+    Vector2 CalcCenter() const noexcept;
 
-    AABB2 operator+(const Vector2& translation) const;
-    AABB2 operator-(const Vector2& antiTranslation) const;
-    AABB2& operator+=(const Vector2& translation);
-    AABB2& operator-=(const Vector2& antiTranslation);
+    AABB2 operator+(const Vector2& translation) const noexcept;
+    AABB2 operator-(const Vector2& antiTranslation) const noexcept;
+    AABB2& operator+=(const Vector2& translation) noexcept;
+    AABB2& operator-=(const Vector2& antiTranslation) noexcept;
 
 protected:
 private:

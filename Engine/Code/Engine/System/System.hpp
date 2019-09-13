@@ -12,9 +12,9 @@ struct SystemDesc {
     System::Ram::RamDesc ram{};
     System::Cpu::CpuDesc cpu{};
     System::OS::OsDesc os{};
-    friend std::ostream& operator<<(std::ostream& out, const SystemDesc& desc);
+    friend std::ostream& operator<<(std::ostream& out, const SystemDesc& desc) noexcept;
 };
 
-SystemDesc GetSystemDesc();
+SystemDesc GetSystemDesc() noexcept;
 
 }

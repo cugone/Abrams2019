@@ -22,41 +22,38 @@ const IntVector3 IntVector3::ZX_AXIS(1, 0, 1);
 const IntVector3 IntVector3::ZY_AXIS(0, 1, 1);
 const IntVector3 IntVector3::XYZ_AXIS(1, 1, 1);
 
-IntVector3::IntVector3(int initialX, int initialY, int initialZ)
+IntVector3::IntVector3(int initialX, int initialY, int initialZ) noexcept
     : x(initialX)
     , y(initialY)
-    , z(initialZ)
-{
+    , z(initialZ) {
     /* DO NOTHING */
 }
 
-IntVector3::IntVector3(const IntVector2& iv2, int initialZ)
+IntVector3::IntVector3(const IntVector2& iv2, int initialZ) noexcept
     : x(iv2.x)
     , y(iv2.y)
     , z(initialZ) {
     /* DO NOTHING */
 }
 
-IntVector3::IntVector3(const Vector2& v2, int initialZ)
+IntVector3::IntVector3(const Vector2& v2, int initialZ) noexcept
     : x(static_cast<int>(std::floor(v2.x)))
     , y(static_cast<int>(std::floor(v2.y)))
     , z(initialZ) {
     /* DO NOTHING */
 }
 
-IntVector3::IntVector3(const Vector3& v3)
+IntVector3::IntVector3(const Vector3& v3) noexcept
     : x(static_cast<int>(std::floor(v3.x)))
     , y(static_cast<int>(std::floor(v3.y)))
-    , z(static_cast<int>(std::floor(v3.z)))
-{
+    , z(static_cast<int>(std::floor(v3.z))) {
     /* DO NOTHING */
 }
 
-IntVector3::IntVector3(const std::string& value)
+IntVector3::IntVector3(const std::string& value) noexcept
     : x(0)
     , y(0)
-    , z(0)
-{
+    , z(0) {
     if(value[0] == '[') {
         if(value.back() == ']') {
             std::string contents_str = value.substr(1, value.size() - 1);
@@ -64,30 +61,30 @@ IntVector3::IntVector3(const std::string& value)
             auto s = values.size();
             for(std::size_t i = 0; i < s; ++i) {
                 switch(i) {
-                    case 0: x = std::stoi(values[i]); break;
-                    case 1: y = std::stoi(values[i]); break;
-                    case 2: z = std::stoi(values[i]); break;
-                    default: break;
+                case 0: x = std::stoi(values[i]); break;
+                case 1: y = std::stoi(values[i]); break;
+                case 2: z = std::stoi(values[i]); break;
+                default: break;
                 }
             }
         }
     }
 }
 
-void IntVector3::SetXYZ(int newX, int newY, int newZ) {
+void IntVector3::SetXYZ(int newX, int newY, int newZ) noexcept {
     x = newX;
     y = newY;
     z = newZ;
 }
 
-std::tuple<int,int,int> IntVector3::GetXYZ() const {
+std::tuple<int, int, int> IntVector3::GetXYZ() const noexcept {
     return std::make_tuple(x, y, z);
 }
 
-bool IntVector3::operator!=(const IntVector3& rhs) const {
+bool IntVector3::operator!=(const IntVector3& rhs) const noexcept {
     return !(*this == rhs);
 }
 
-bool IntVector3::operator==(const IntVector3& rhs) const {
+bool IntVector3::operator==(const IntVector3& rhs) const noexcept {
     return x == rhs.x && y == rhs.y && z == rhs.z;
 }

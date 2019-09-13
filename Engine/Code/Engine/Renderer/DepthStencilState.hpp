@@ -23,20 +23,20 @@ struct DepthStencilDesc {
     ComparisonFunction stencil_testFront = ComparisonFunction::Always;
     ComparisonFunction stencil_testBack = ComparisonFunction::Always;
     DepthStencilDesc() = default;
-    explicit DepthStencilDesc(const XMLElement& element);
+    explicit DepthStencilDesc(const XMLElement& element) noexcept;
 };
 
 class DepthStencilState {
 public:
-    explicit DepthStencilState(const RHIDevice* device, const DepthStencilDesc& desc);
-    explicit DepthStencilState(const RHIDevice* device, const XMLElement& element);
-    ~DepthStencilState();
-    ID3D11DepthStencilState* GetDxDepthStencilState() const;
-    DepthStencilDesc GetDesc() const;
+    explicit DepthStencilState(const RHIDevice* device, const DepthStencilDesc& desc) noexcept;
+    explicit DepthStencilState(const RHIDevice* device, const XMLElement& element) noexcept;
+    ~DepthStencilState() noexcept;
+    ID3D11DepthStencilState* GetDxDepthStencilState() const noexcept;
+    DepthStencilDesc GetDesc() const noexcept;
     void SetDebugName([[maybe_unused]] const std::string& name) const noexcept;
 protected:
 private:
-    bool CreateDepthStencilState(const RHIDevice* device, const DepthStencilDesc& desc = DepthStencilDesc{});
+    bool CreateDepthStencilState(const RHIDevice* device, const DepthStencilDesc& desc = DepthStencilDesc{}) noexcept;
 
     DepthStencilDesc _desc{};
     ID3D11DepthStencilState* _dx_state = nullptr;

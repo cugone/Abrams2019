@@ -3,7 +3,9 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Matrix4.hpp"
 
-OBB2::OBB2(const Vector2& center, const Vector2& halfExtents, float orientationDegrees)
+#include "Engine/Math/AABB2.hpp"
+
+OBB2::OBB2(const Vector2& center, const Vector2& halfExtents, float orientationDegrees) noexcept
     : half_extents(halfExtents)
     , position(center)
     , orientationDegrees(orientationDegrees)
@@ -11,7 +13,7 @@ OBB2::OBB2(const Vector2& center, const Vector2& halfExtents, float orientationD
     /* DO NOTHING */
 }
 
-OBB2::OBB2(const Vector2& center, float halfExtentX, float halfExtentY, float orientationDegrees)
+OBB2::OBB2(const Vector2& center, float halfExtentX, float halfExtentY, float orientationDegrees) noexcept
     : half_extents(halfExtentX, halfExtentY)
     , position(center)
     , orientationDegrees(orientationDegrees)
@@ -19,52 +21,63 @@ OBB2::OBB2(const Vector2& center, float halfExtentX, float halfExtentY, float or
     /* DO NOTHING */
 }
 
-OBB2::OBB2(const Vector2& initialPosition, float initialOrientationDegrees)
+OBB2::OBB2(const Vector2& initialPosition, float initialOrientationDegrees) noexcept
     : position(initialPosition)
     , orientationDegrees(initialOrientationDegrees)
 {
     /* DO NOTHING */
 }
 
-OBB2::OBB2(float initialX, float initialY, float initialOrientationDegrees)
+OBB2::OBB2(float initialX, float initialY, float initialOrientationDegrees) noexcept
     : position(initialX, initialY)
     , orientationDegrees(initialOrientationDegrees)
 {
     /* DO NOTHING */
 }
 
-void OBB2::SetOrientationDegrees(float newOrientationDegrees) {
-    orientationDegrees = newOrientationDegrees;
+
+OBB2::OBB2(const AABB2& aabb) noexcept
+    : half_extents(aabb.CalcDimensions() * 0.5f)
+    , position(aabb.CalcCenter())
+    , orientationDegrees(0.0f)
+{
+    /* DO NOTHING */
 }
 
-void OBB2::SetOrientation(float newOrientationRadians) {
+
+void OBB2::SetOrientationDegrees(float newOrientationDegrees) noexcept {
+    orientationDegrees = newOrientationDegrees;
+    orientationDegrees = MathUtils::Wrap(orientationDegrees, 0.0f, 360.0f);
+}
+
+void OBB2::SetOrientation(float newOrientationRadians) noexcept {
     SetOrientationDegrees(MathUtils::ConvertRadiansToDegrees(newOrientationRadians));
 }
 
-void OBB2::RotateDegrees(float rotationDegrees) {
+void OBB2::RotateDegrees(float rotationDegrees) noexcept {
     orientationDegrees += rotationDegrees;
 }
 
-void OBB2::Rotate(float rotationRadians) {
+void OBB2::Rotate(float rotationRadians) noexcept {
     RotateDegrees(MathUtils::ConvertRadiansToDegrees(rotationRadians));
 }
 
-void OBB2::StretchToIncludePoint(const Vector2& point) {
+void OBB2::StretchToIncludePoint(const Vector2& point) noexcept {
     const auto disp_to_point = point - position;
     const auto dir_to_point = disp_to_point.GetNormalize();
     Translate(-point);
     AddPaddingToSides(disp_to_point);
 }
 
-void OBB2::AddPaddingToSides(float paddingX, float paddingY) {
+void OBB2::AddPaddingToSides(float paddingX, float paddingY) noexcept {
     AddPaddingToSides(Vector2{paddingX, paddingY});
 }
 
-void OBB2::AddPaddingToSides(const Vector2& padding) {
+void OBB2::AddPaddingToSides(const Vector2& padding) noexcept {
     half_extents += padding;
 }
 
-void OBB2::AddPaddingToSidesClamped(float paddingX, float paddingY) {
+void OBB2::AddPaddingToSidesClamped(float paddingX, float paddingY) noexcept {
     const auto half_width = half_extents.x;
     const auto half_height = half_extents.y;
 
@@ -74,7 +87,7 @@ void OBB2::AddPaddingToSidesClamped(float paddingX, float paddingY) {
     AddPaddingToSides(paddingX, paddingY);
 }
 
-void OBB2::AddPaddingToSidesClamped(const Vector2& padding) {
+void OBB2::AddPaddingToSidesClamped(const Vector2& padding) noexcept {
     const auto half_width = half_extents.x;
     const auto half_height = half_extents.y;
 
@@ -83,51 +96,107 @@ void OBB2::AddPaddingToSidesClamped(const Vector2& padding) {
     AddPaddingToSides(clamped_padding);
 }
 
-void OBB2::Translate(const Vector2& translation) {
+void OBB2::Translate(const Vector2& translation) noexcept {
     position += translation;
 }
 
-Vector2 OBB2::GetRight() const {
+Vector2 OBB2::GetRight() const noexcept {
     auto R = Matrix4::Create2DRotationDegreesMatrix(orientationDegrees);
     return R.TransformDirection(Vector2::X_AXIS);
 }
 
-Vector2 OBB2::GetUp() const {
+Vector2 OBB2::GetUp() const noexcept {
     auto up = GetRight();
-    up.Rotate90Degrees();
+    up.RotateNegative90Degrees();
     return up;
 }
 
-Vector2 OBB2::GetLeft() const {
+Vector2 OBB2::GetLeft() const noexcept {
     return -GetRight();
 }
 
-Vector2 OBB2::GetDown() const {
+Vector2 OBB2::GetDown() const noexcept {
     return -GetUp();
 }
 
-Vector2 OBB2::CalcDimensions() const {
+
+Vector2 OBB2::GetRightEdge() const noexcept {
+    return GetTopRight() - GetBottomRight();
+}
+
+
+Vector2 OBB2::GetTopEdge() const noexcept {
+    return GetTopLeft() - GetTopRight();
+}
+
+
+Vector2 OBB2::GetLeftEdge() const noexcept {
+    return GetBottomLeft() - GetTopLeft();
+}
+
+
+Vector2 OBB2::GetBottomEdge() const noexcept {
+    return GetBottomRight() - GetBottomLeft();
+}
+
+
+Vector2 OBB2::GetBottomLeft() const noexcept {
+    auto S = Matrix4::CreateScaleMatrix(Vector2{ -half_extents.x, +half_extents.y } * 2.0f);
+    auto R = Matrix4::Create2DRotationDegreesMatrix(orientationDegrees);
+    auto T = Matrix4::CreateTranslationMatrix(position);
+    auto M = T * R * S;
+    return M.TransformPosition(Vector2{ +0.5, -0.5 });
+}
+
+
+Vector2 OBB2::GetTopLeft() const noexcept {
+    auto S = Matrix4::CreateScaleMatrix(Vector2{ -half_extents.x, -half_extents.y } * 2.0f);
+    auto R = Matrix4::Create2DRotationDegreesMatrix(orientationDegrees);
+    auto T = Matrix4::CreateTranslationMatrix(position);
+    auto M = T * R * S;
+    return M.TransformPosition(Vector2{ +0.5, -0.5 });
+}
+
+
+Vector2 OBB2::GetTopRight() const noexcept {
+    auto S = Matrix4::CreateScaleMatrix(Vector2{ +half_extents.x, -half_extents.y } * 2.0f);
+    auto R = Matrix4::Create2DRotationDegreesMatrix(orientationDegrees);
+    auto T = Matrix4::CreateTranslationMatrix(position);
+    auto M = T * R * S;
+    return M.TransformPosition(Vector2{ +0.5, -0.5 });
+}
+
+
+Vector2 OBB2::GetBottomRight() const noexcept {
+    auto S = Matrix4::CreateScaleMatrix(Vector2{ +half_extents.x, +half_extents.y } * 2.0f);
+    auto R = Matrix4::Create2DRotationDegreesMatrix(orientationDegrees);
+    auto T = Matrix4::CreateTranslationMatrix(position);
+    auto M = T * R * S;
+    return M.TransformPosition(Vector2{ +0.5, -0.5 });
+}
+
+Vector2 OBB2::CalcDimensions() const noexcept {
     return half_extents * 2.0f;
 }
 
-Vector2 OBB2::CalcCenter() const {
+Vector2 OBB2::CalcCenter() const noexcept {
     return position;
 }
 
-OBB2 OBB2::operator+(const Vector2& translation) const {
+OBB2 OBB2::operator+(const Vector2& translation) const noexcept {
     return OBB2(position + translation, orientationDegrees);
 }
 
-OBB2 OBB2::operator-(const Vector2& antiTranslation) const {
+OBB2 OBB2::operator-(const Vector2& antiTranslation) const noexcept {
     return OBB2(position - antiTranslation, orientationDegrees);
 }
 
-OBB2& OBB2::operator-=(const Vector2& antiTranslation) {
+OBB2& OBB2::operator-=(const Vector2& antiTranslation) noexcept {
     position -= antiTranslation;
     return *this;
 }
 
-OBB2& OBB2::operator+=(const Vector2& translation) {
+OBB2& OBB2::operator+=(const Vector2& translation) noexcept {
     position += translation;
     return *this;
 }

@@ -14,97 +14,92 @@
 
 namespace FileUtils {
 
-GUID GetKnownFolderPathIdForWindows(const KnownPathID& pathid);
+GUID GetKnownPathIdForOS(const KnownPathID& pathid) noexcept;
 
-bool WriteBufferToFile(void* buffer, std::size_t size, const std::string& filePath) {
+bool WriteBufferToFile(void* buffer, std::size_t size, std::filesystem::path filepath) noexcept {
     namespace FS = std::filesystem;
-    FS::path p(filePath);
-    p = FS::canonical(p);
-    p.make_preferred();
-    bool not_valid_path = FS::is_directory(p);
+    filepath = FS::absolute(filepath);
+    filepath.make_preferred();
+    bool not_valid_path = FS::is_directory(filepath);
     bool invalid = not_valid_path;
     if(invalid) {
         return false;
     }
 
-    std::ofstream ofs{p, std::ios_base::binary};
+    std::ofstream ofs{filepath, std::ios_base::binary};
     ofs.write(reinterpret_cast<const char*>(buffer), size);
     ofs.close();
     return true;
 }
 
-bool WriteBufferToFile(const std::string& buffer, const std::string& filePath) {
+bool WriteBufferToFile(const std::string& buffer, std::filesystem::path filepath) noexcept {
     namespace FS = std::filesystem;
-    FS::path p(filePath);
-    p = FS::canonical(p);
-    p.make_preferred();
-    bool not_valid_path = FS::is_directory(p);
+    filepath = FS::absolute(filepath);
+    filepath.make_preferred();
+    bool not_valid_path = FS::is_directory(filepath);
     bool invalid = not_valid_path;
     if(invalid) {
         return false;
     }
 
-    std::ofstream ofs{ p };
+    std::ofstream ofs{ filepath };
     ofs.write(reinterpret_cast<const char*>(buffer.data()), buffer.size());
     ofs.close();
     return true;
 
 }
 
-bool ReadBufferFromFile(std::vector<unsigned char>& out_buffer, const std::string& filePath) {
-
+bool ReadBufferFromFile(std::vector<unsigned char>& out_buffer, std::filesystem::path filepath) noexcept {
     namespace FS = std::filesystem;
-    FS::path p(filePath);
-    p = FS::canonical(p);
-    p.make_preferred();
-    bool path_is_directory = FS::is_directory(p);
-    bool path_not_exist = !FS::exists(p);
+    filepath = FS::canonical(filepath);
+    filepath.make_preferred();
+    bool path_is_directory = FS::is_directory(filepath);
+    bool path_not_exist = !FS::exists(filepath);
     bool not_valid_path = path_is_directory || path_not_exist;
     if(not_valid_path) {
         return false;
     }
 
-    std::size_t byte_size = FS::file_size(p);
+    std::size_t byte_size = FS::file_size(filepath);
     out_buffer.resize(byte_size);
-    std::ifstream ifs{ p, std::ios_base::binary };
+    std::ifstream ifs{ filepath, std::ios_base::binary };
     ifs.read(reinterpret_cast<char*>(out_buffer.data()), out_buffer.size());
     ifs.close();
     out_buffer.shrink_to_fit();
     return true;
 }
 
-bool ReadBufferFromFile(std::string& out_buffer, const std::string& filePath) {
+bool ReadBufferFromFile(std::string& out_buffer, std::filesystem::path filepath) noexcept {
 
     namespace FS = std::filesystem;
-    FS::path p(filePath);
-    p = FS::canonical(p);
-    p.make_preferred();
-    bool path_is_directory = FS::is_directory(p);
-    bool path_not_exist = !FS::exists(p);
+    filepath = FS::canonical(filepath);
+    filepath.make_preferred();
+    bool path_is_directory = FS::is_directory(filepath);
+    bool path_not_exist = !FS::exists(filepath);
     bool not_valid_path = path_is_directory || path_not_exist;
     if(not_valid_path) {
         return false;
     }
 
-    std::ifstream ifs{p};
+    std::ifstream ifs{filepath};
     out_buffer = std::string(static_cast<const std::stringstream&>(std::stringstream() << ifs.rdbuf()).str());
     return true;
 }
 
-bool CreateFolders(const std::filesystem::path& filepath) {
+bool CreateFolders(const std::filesystem::path& filepath) noexcept {
     namespace FS = std::filesystem;
     auto p = filepath;
     p.make_preferred();
     return FS::create_directories(p);
 }
 
-bool IsContentPathId(const KnownPathID& pathid) {
+bool IsContentPathId(const KnownPathID& pathid) noexcept {
     if(!IsSystemPathId(pathid)) {
         switch(pathid) {
-        case KnownPathID::GameData:   return true;
-        case KnownPathID::EngineData: return true;
-        case KnownPathID::None:       return false;
-        case KnownPathID::Max:        return false;
+        case KnownPathID::GameData:                               return true;
+        case KnownPathID::EngineData:                             return true;
+        case KnownPathID::None:                                   return false;
+        case KnownPathID::Max:                                    return false;
         default:
             ERROR_AND_DIE("UNSUPPORTED KNOWNPATHID")
         }
@@ -112,121 +107,65 @@ bool IsContentPathId(const KnownPathID& pathid) {
     return false;
 }
 
-bool IsSystemPathId(const KnownPathID& pathid) {
+bool IsSystemPathId(const KnownPathID& pathid) noexcept {
     switch(pathid) {
-    case KnownPathID::None:                       return false;
-    case KnownPathID::GameData:                   return false;
-    case KnownPathID::EngineData:                 return false;
-    case KnownPathID::Max:                        return false;
-    case KnownPathID::Windows_AppDataRoaming:     return true;
-    case KnownPathID::Windows_AppDataLocal:       return true;
-    case KnownPathID::Windows_AppDataLocalLow:    return true;
-    case KnownPathID::Windows_ProgramFiles:       return true;
-    case KnownPathID::Windows_ProgramFilesx86:    return true;
-    case KnownPathID::Windows_ProgramFilesx64:    return true;
-    case KnownPathID::Windows_Documents:          return true;
-    case KnownPathID::Windows_CommonDocuments:    return true;
-    case KnownPathID::Windows_SavedGames:         return true;
-    case KnownPathID::Windows_UserProfile:        return true;
-    case KnownPathID::Windows_CommonProfile:      return true;
-    case KnownPathID::Windows_CurrentUserDesktop: return true;
-    case KnownPathID::Linux_RootUser:             return true;
-    case KnownPathID::Linux_Home:                 return true;
-    case KnownPathID::Linux_Etc:                  return true;
-    case KnownPathID::Linux_Bin:                  return true;
-    case KnownPathID::Linux_SBin:                 return true;
-    case KnownPathID::Linux_Dev:                  return true;
-    case KnownPathID::Linux_Proc:                 return true;
-    case KnownPathID::Linux_Var:                  return true;
-    case KnownPathID::Linux_Usr:                  return true;
-    case KnownPathID::Linux_UsrBin:               return true;
-    case KnownPathID::Linux_UsrSBin:              return true;
-    case KnownPathID::Linux_Boot:                 return true;
-    case KnownPathID::Linux_Lib:                  return true;
-    case KnownPathID::Linux_Opt:                  return true;
-    case KnownPathID::Linux_Mnt:                  return true;
-    case KnownPathID::Linux_Media:                return true;
-    case KnownPathID::Linux_Src:                  return true;
+    case KnownPathID::None:                                   return false;
+    case KnownPathID::GameData:                               return false;
+    case KnownPathID::EngineData:                             return false;
+    case KnownPathID::Max:                                    return false;
+#if defined(PLATFORM_WINDOWS)
+    case KnownPathID::Windows_AppDataRoaming:                  return true;
+    case KnownPathID::Windows_AppDataLocal:                    return true;
+    case KnownPathID::Windows_AppDataLocalLow:                 return true;
+    case KnownPathID::Windows_ProgramFiles:                    return true;
+    case KnownPathID::Windows_ProgramFilesx86:                 return true;
+    case KnownPathID::Windows_ProgramFilesx64:                 return true;
+    case KnownPathID::Windows_Documents:                       return true;
+    case KnownPathID::Windows_CommonDocuments:                 return true;
+    case KnownPathID::Windows_SavedGames:                      return true;
+    case KnownPathID::Windows_UserProfile:                     return true;
+    case KnownPathID::Windows_CommonProfile:                   return true;
+    case KnownPathID::Windows_CurrentUserDesktop:              return true;
+#elif PLATFORM_LINUX
+    case KnownPathID::Linux_RootUser:                          return true;
+    case KnownPathID::Linux_Home:                              return true;
+    case KnownPathID::Linux_Etc:                               return true;
+    case KnownPathID::Linux_ConfigurationFiles:                return true;
+    case KnownPathID::Linux_Bin:                               return true;
+    case KnownPathID::Linux_UserBinaries:                      return true;
+    case KnownPathID::Linux_SBin:                              return true;
+    case KnownPathID::Linux_SystemBinaries:                    return true;
+    case KnownPathID::Linux_Dev:                               return true;
+    case KnownPathID::Linux_DeviceFiles:                       return true;
+    case KnownPathID::Linux_Proc:                              return true;
+    case KnownPathID::Linux_ProcessInformation:                return true;
+    case KnownPathID::Linux_Var:                               return true;
+    case KnownPathID::Linux_VariableFiles:                     return true;
+    case KnownPathID::Linux_Usr:                               return true;
+    case KnownPathID::Linux_UserPrograms:                      return true;
+    case KnownPathID::Linux_UsrBin:                            return true;
+    case KnownPathID::Linux_UserProgramsBinaries:              return true;
+    case KnownPathID::Linux_UsrSBin:                           return true;
+    case KnownPathID::Linux_UserProgramsSystemBinaries:        return true;
+    case KnownPathID::Linux_Boot:                              return true;
+    case KnownPathID::Linux_BootLoader:                        return true;
+    case KnownPathID::Linux_Lib:                               return true;
+    case KnownPathID::Linux_SystemLibraries:                   return true;
+    case KnownPathID::Linux_Opt:                               return true;
+    case KnownPathID::Linux_OptionalAddOnApps:                 return true;
+    case KnownPathID::Linux_Mnt:                               return true;
+    case KnownPathID::Linux_MountDirectory:                    return true;
+    case KnownPathID::Linux_Media:                             return true;
+    case KnownPathID::Linux_RemovableDevices:                  return true;
+    case KnownPathID::Linux_Src:                               return true;
+    case KnownPathID::Linux_ServiceData:                       return true;
+#endif
     default:
         ERROR_AND_DIE("UNSUPPORTED KNOWNPATHID")
     }
 }
 
-bool IsKnownFolderPathIdForWindows(const KnownPathID& pathid) {
-    switch (pathid) {
-    case KnownPathID::Windows_AppDataRoaming:  return true;
-    case KnownPathID::Windows_AppDataLocal:    return true;
-    case KnownPathID::Windows_AppDataLocalLow: return true;
-    case KnownPathID::Windows_ProgramFiles:    return true;
-    case KnownPathID::Windows_ProgramFilesx86: return true;
-    case KnownPathID::Windows_ProgramFilesx64: return true;
-    case KnownPathID::Windows_Documents:       return true;
-    case KnownPathID::Windows_CommonDocuments: return true;
-    case KnownPathID::Windows_SavedGames:      return true;
-    case KnownPathID::Windows_UserProfile:     return true;
-    case KnownPathID::Windows_CommonProfile:   return true;
-    default: return false;
-    }
-}
-
-bool IsKnownFolderPathIdForLinux(const KnownPathID& pathid) {
-    switch (pathid) {
-    case KnownPathID::Linux_RootUser: return true;
-    case KnownPathID::Linux_Home:     return true;
-    case KnownPathID::Linux_Etc:      return true;
-    case KnownPathID::Linux_Bin:      return true;
-    case KnownPathID::Linux_SBin:     return true;
-    case KnownPathID::Linux_Dev:      return true;
-    case KnownPathID::Linux_Proc:     return true;
-    case KnownPathID::Linux_Var:      return true;
-    case KnownPathID::Linux_Usr:      return true;
-    case KnownPathID::Linux_UsrBin:   return true;
-    case KnownPathID::Linux_UsrSBin:  return true;
-    case KnownPathID::Linux_Boot:     return true;
-    case KnownPathID::Linux_Lib:      return true;
-    case KnownPathID::Linux_Opt:      return true;
-    case KnownPathID::Linux_Mnt:      return true;
-    case KnownPathID::Linux_Media:    return true;
-    case KnownPathID::Linux_Src:      return true;
-    default: return false;
-    }
-}
-
-std::filesystem::path GetKnownFolderPathForWindows(const KnownPathID& pathid) {
-    if (!IsKnownFolderPathIdForWindows(pathid)) {
-        return {};
-    }
-    namespace FS = std::filesystem;
-    PWSTR ppszPath = nullptr;
-    auto hr_path = ::SHGetKnownFolderPath(GetKnownFolderPathIdForWindows(pathid), KF_FLAG_DEFAULT, nullptr, &ppszPath);
-    bool success = SUCCEEDED(hr_path);
-    if (success) {
-        auto p = FS::path(ppszPath);
-        ::CoTaskMemFree(ppszPath);
-        p = FS::canonical(p);
-        return p;
-    }
-    return {};
-}
-
-std::filesystem::path GetKnownFolderPathForLinux(const KnownPathID& pathid) {
-    if (!IsKnownFolderPathIdForLinux(pathid)) {
-        return {};
-    }
-    namespace FS = std::filesystem;
-    PWSTR ppszPath = nullptr;
-    auto hr_path = ::SHGetKnownFolderPath(GetKnownFolderPathIdForWindows(pathid), KF_FLAG_DEFAULT, nullptr, &ppszPath);
-    bool success = SUCCEEDED(hr_path);
-    if (success) {
-        auto p = FS::path(ppszPath);
-        ::CoTaskMemFree(ppszPath);
-        p = FS::canonical(p);
-        return p;
-    }
-    return {};
-}
-
-std::filesystem::path GetKnownFolderPath(const KnownPathID& pathid) {
+std::filesystem::path GetKnownFolderPath(const KnownPathID& pathid) noexcept {
     namespace FS = std::filesystem;
     FS::path p{};
     if(!(IsSystemPathId(pathid) || IsContentPathId(pathid))) {
@@ -243,19 +182,22 @@ std::filesystem::path GetKnownFolderPath(const KnownPathID& pathid) {
             p = FS::canonical(p);
         }
     } else {
-        if(IsKnownFolderPathIdForWindows(pathid)) {
-            p = GetKnownFolderPathForWindows(pathid);
-        } else if (IsKnownFolderPathIdForLinux(pathid)) {
-            p = GetKnownFolderPathForLinux(pathid);
-        } else {
-            return p;
+        {
+            PWSTR ppszPath = nullptr;
+            auto hr_path = ::SHGetKnownFolderPath(GetKnownPathIdForOS(pathid), KF_FLAG_DEFAULT, nullptr, &ppszPath);
+            bool success = SUCCEEDED(hr_path);
+            if(success) {
+                p = FS::path(ppszPath);
+                ::CoTaskMemFree(ppszPath);
+                p = FS::canonical(p);
+            }
         }
     }
     p.make_preferred();
     return p;
 }
 
-GUID GetKnownFolderPathIdForWindows(const KnownPathID& pathid) {
+GUID GetKnownPathIdForOS(const KnownPathID& pathid) noexcept {
     switch(pathid) {
     case KnownPathID::Windows_AppDataRoaming:
         return FOLDERID_RoamingAppData;
@@ -274,7 +216,8 @@ GUID GetKnownFolderPathIdForWindows(const KnownPathID& pathid) {
     case KnownPathID::Windows_ProgramFilesx64:
         return FOLDERID_ProgramFiles;
 #else
-        /* DO NOTHING */
+    ERROR_AND_DIE("Unknown known folder path id.");
+    break;
 #endif
     case KnownPathID::Windows_SavedGames:
         return FOLDERID_SavedGames;
@@ -298,7 +241,7 @@ GUID GetKnownFolderPathIdForWindows(const KnownPathID& pathid) {
     }
 }
 
-std::filesystem::path GetExePath() {
+std::filesystem::path GetExePath() noexcept {
     namespace FS = std::filesystem;
     FS::path result{};
     {
@@ -311,21 +254,21 @@ std::filesystem::path GetExePath() {
     return result;
 }
 
-std::filesystem::path GetWorkingDirectory() {
+std::filesystem::path GetWorkingDirectory() noexcept {
     namespace FS = std::filesystem;
     return FS::current_path();
 }
 
-void SetWorkingDirectory(const std::filesystem::path& p) {
+void SetWorkingDirectory(const std::filesystem::path& p) noexcept {
     namespace FS = std::filesystem;
     FS::current_path(p);
 }
 
-std::filesystem::path GetTempDirectory() {
+std::filesystem::path GetTempDirectory() noexcept {
     return std::filesystem::temp_directory_path();
 }
 
-bool HasDeletePermissions(const std::filesystem::path& p) {
+bool HasDeletePermissions(const std::filesystem::path& p) noexcept {
     namespace FS = std::filesystem;
     auto parent_path = p.parent_path();
     auto parent_status = FS::status(parent_path);
@@ -336,7 +279,7 @@ bool HasDeletePermissions(const std::filesystem::path& p) {
     return true;
 }
 
-bool HasExecuteOrSearchPermissions(const std::filesystem::path& p) {
+bool HasExecuteOrSearchPermissions(const std::filesystem::path& p) noexcept {
     namespace FS = std::filesystem;
     if(FS::is_directory(p)) {
         return HasSearchPermissions(p);
@@ -345,7 +288,7 @@ bool HasExecuteOrSearchPermissions(const std::filesystem::path& p) {
     }
 }
 
-bool HasExecutePermissions(const std::filesystem::path& p) {
+bool HasExecutePermissions(const std::filesystem::path& p) noexcept {
     namespace FS = std::filesystem;
     if(FS::is_directory(p)) {
         return false;
@@ -358,7 +301,7 @@ bool HasExecutePermissions(const std::filesystem::path& p) {
     return true;
 }
 
-bool HasSearchPermissions(const std::filesystem::path& p) {
+bool HasSearchPermissions(const std::filesystem::path& p) noexcept {
     namespace FS = std::filesystem;
     if(!FS::is_directory(p)) {
         return false;
@@ -372,7 +315,7 @@ bool HasSearchPermissions(const std::filesystem::path& p) {
     return true;
 }
 
-bool HasWritePermissions(const std::filesystem::path& p) {
+bool HasWritePermissions(const std::filesystem::path& p) noexcept {
     namespace FS = std::filesystem;
     auto my_status = FS::status(p);
     auto my_perms = my_status.permissions();
@@ -382,7 +325,7 @@ bool HasWritePermissions(const std::filesystem::path& p) {
     return true;
 }
 
-bool HasReadPermissions(const std::filesystem::path& p) {
+bool HasReadPermissions(const std::filesystem::path& p) noexcept {
     namespace FS = std::filesystem;
     auto my_status = FS::status(p);
     auto my_perms = my_status.permissions();
@@ -392,11 +335,8 @@ bool HasReadPermissions(const std::filesystem::path& p) {
     return true;
 }
 
-bool IsSafeWritePath(const std::filesystem::path& p) {
+bool IsSafeWritePath(const std::filesystem::path& p) noexcept {
     namespace FS = std::filesystem;
-    if(!FS::exists(p)) {
-        return false;
-    }
     //Check for any write permissions on the file and parent directory
     if(!(HasWritePermissions(p) || HasDeletePermissions(p))) {
         return false;
@@ -425,7 +365,7 @@ bool IsSafeWritePath(const std::filesystem::path& p) {
 
 }
 
-bool IsSafeReadPath(const std::filesystem::path& p) {
+bool IsSafeReadPath(const std::filesystem::path& p) noexcept {
     namespace FS = std::filesystem;
     if(!FS::exists(p)) {
         return false;
@@ -460,7 +400,7 @@ bool IsSafeReadPath(const std::filesystem::path& p) {
 
 }
 
-bool IsParentOf(const std::filesystem::path& p, const std::filesystem::path& child) {
+bool IsParentOf(const std::filesystem::path& p, const std::filesystem::path& child) noexcept {
     namespace FS = std::filesystem;
     auto p_canon = FS::canonical(p);
     auto child_canon = FS::canonical(child);
@@ -474,14 +414,14 @@ bool IsParentOf(const std::filesystem::path& p, const std::filesystem::path& chi
     return false;
 }
 
-bool IsSiblingOf(const std::filesystem::path& p, const std::filesystem::path& sibling) {
+bool IsSiblingOf(const std::filesystem::path& p, const std::filesystem::path& sibling) noexcept {
     namespace FS = std::filesystem;
     auto my_parent_path = FS::canonical(p.parent_path());
     auto sibling_parent_path = FS::canonical(sibling.parent_path());
     return my_parent_path == sibling_parent_path;
 }
 
-bool IsChildOf(const std::filesystem::path& p, const std::filesystem::path& parent) {
+bool IsChildOf(const std::filesystem::path& p, const std::filesystem::path& parent) noexcept {
     namespace FS = std::filesystem;
     auto parent_canon = FS::canonical(parent);
     auto p_canon = FS::canonical(p);
@@ -495,7 +435,7 @@ bool IsChildOf(const std::filesystem::path& p, const std::filesystem::path& pare
     return false;
 }
 
-void ForEachFileInFolder(const std::filesystem::path& folderpath, const std::string& validExtensionList /*= std::string{}*/, const std::function<void(const std::filesystem::path&)>& callback /*= [](const std::filesystem::path& p) { (void*)p; }*/, bool recursive /*= false*/) {
+void ForEachFileInFolder(const std::filesystem::path& folderpath, const std::string& validExtensionList /*= std::string{}*/, const std::function<void(const std::filesystem::path&)>& callback /*= [](const std::filesystem::path& p) { (void*)p; }*/, bool recursive /*= false*/) noexcept {
     namespace FS = std::filesystem;
     auto preferred_folderpath = FS::canonical(folderpath);
     preferred_folderpath.make_preferred();
@@ -513,7 +453,7 @@ void ForEachFileInFolder(const std::filesystem::path& folderpath, const std::str
     }
 }
 
-int CountFilesInFolders(const std::filesystem::path& folderpath, const std::string& validExtensionList /*= std::string{}*/, bool recursive /*= false*/) {
+int CountFilesInFolders(const std::filesystem::path& folderpath, const std::string& validExtensionList /*= std::string{}*/, bool recursive /*= false*/) noexcept {
     namespace FS = std::filesystem;
     int count = 0;
     auto cb = [&count](const FS::path& /*p*/)->void { ++count; };
@@ -521,7 +461,7 @@ int CountFilesInFolders(const std::filesystem::path& folderpath, const std::stri
     return count;
 }
 
-std::vector<std::filesystem::path> GetAllPathsInFolders(const std::filesystem::path& folderpath, const std::string& validExtensionList /*= std::string{}*/, bool recursive /*= false*/) {
+std::vector<std::filesystem::path> GetAllPathsInFolders(const std::filesystem::path& folderpath, const std::string& validExtensionList /*= std::string{}*/, bool recursive /*= false*/) noexcept {
     namespace FS = std::filesystem;
     std::vector<FS::path> paths{};
     auto add_path_cb = [&paths](const FS::path& p) { paths.push_back(p); };
@@ -529,7 +469,7 @@ std::vector<std::filesystem::path> GetAllPathsInFolders(const std::filesystem::p
     return paths;
 }
 
-void FileUtils::RemoveExceptMostRecentFiles(const std::filesystem::path& folderpath, int mostRecentCountToKeep, const std::string& validExtensionList /*= std::string{}*/) {
+void FileUtils::RemoveExceptMostRecentFiles(const std::filesystem::path& folderpath, int mostRecentCountToKeep, const std::string& validExtensionList /*= std::string{}*/) noexcept {
     auto working_dir = std::filesystem::current_path();
     if(!IsSafeWritePath(folderpath)) {
         return;
@@ -550,15 +490,15 @@ void FileUtils::RemoveExceptMostRecentFiles(const std::filesystem::path& folderp
 }
 
 
-uint16_t EndianSwap(uint16_t value) {
+uint16_t EndianSwap(uint16_t value) noexcept {
     return _byteswap_ushort(value);
 }
 
-uint32_t EndianSwap(uint32_t value) {
+uint32_t EndianSwap(uint32_t value) noexcept {
     return _byteswap_ulong(value);
 }
 
-uint64_t EndianSwap(uint64_t value) {
+uint64_t EndianSwap(uint64_t value) noexcept {
     return _byteswap_uint64(value);
 }
 

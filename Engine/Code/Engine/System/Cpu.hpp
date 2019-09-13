@@ -29,9 +29,9 @@ struct CpuDesc {
     ProcessorArchitecture type{};
     unsigned long socketCount = 0;
     unsigned long logicalCount = 0;
-    friend std::ostream& operator<<(std::ostream& out, const CpuDesc& cpu);
+    friend std::ostream& operator<<(std::ostream& out, const CpuDesc& cpu) noexcept;
 };
 
-CpuDesc GetCpuDesc();
+CpuDesc GetCpuDesc() noexcept;
 
 }

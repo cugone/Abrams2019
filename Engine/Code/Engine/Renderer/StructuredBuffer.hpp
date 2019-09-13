@@ -11,10 +11,10 @@ class RHIDeviceContext;
 
 class StructuredBuffer : public Buffer<void*> {
 public:
-    StructuredBuffer(const RHIDevice* owner, const buffer_t& buffer, std::size_t element_size, std::size_t element_count, const BufferUsage& usage, const BufferBindUsage& bindUsage);
-    virtual ~StructuredBuffer();
+    StructuredBuffer(const RHIDevice* owner, const buffer_t& buffer, std::size_t element_size, std::size_t element_count, const BufferUsage& usage, const BufferBindUsage& bindUsage) noexcept;
+    virtual ~StructuredBuffer() noexcept;
 
-    void Update(RHIDeviceContext* context, const buffer_t& buffer);
+    void Update(RHIDeviceContext* context, const buffer_t& buffer) noexcept;
 
     ID3D11ShaderResourceView* dx_srv = nullptr;
 protected:

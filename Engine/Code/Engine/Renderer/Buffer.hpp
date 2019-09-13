@@ -6,9 +6,9 @@ template<typename T>
 class Buffer {
 public:
     using buffer_t = T;
-    virtual ~Buffer() = 0;
-    ID3D11Buffer* GetDxBuffer() const;
-    bool IsValid() const;
+    virtual ~Buffer() noexcept = 0;
+    ID3D11Buffer* GetDxBuffer() const noexcept;
+    bool IsValid() const noexcept;
 
 protected:
     ID3D11Buffer* _dx_buffer = nullptr;
@@ -16,7 +16,7 @@ private:
 };
 
 template<typename T>
-Buffer<T>::~Buffer() {
+Buffer<T>::~Buffer() noexcept {
     if(IsValid()) {
         _dx_buffer->Release();
         _dx_buffer = nullptr;
@@ -24,11 +24,11 @@ Buffer<T>::~Buffer() {
 }
 
 template<typename T>
-ID3D11Buffer* Buffer<T>::GetDxBuffer() const {
+ID3D11Buffer* Buffer<T>::GetDxBuffer() const noexcept {
     return _dx_buffer;
 }
 
 template<typename T>
-bool Buffer<T>::IsValid() const {
+bool Buffer<T>::IsValid() const noexcept {
     return _dx_buffer != nullptr;
 }

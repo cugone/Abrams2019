@@ -4,7 +4,7 @@
 
 #include <algorithm>
 
-Camera3D::Camera3D(const Camera2D& camera2D)
+Camera3D::Camera3D(const Camera2D& camera2D) noexcept
     : trauma(camera2D.trauma)
     , trauma_recovery_rate(camera2D.trauma_recovery_rate)
     , aspect_ratio(camera2D.GetAspectRatio())
@@ -24,7 +24,7 @@ Camera3D::Camera3D(const Camera2D& camera2D)
     /* DO NOTHING */
 }
 
-Camera3D& Camera3D::operator=(const Camera2D& camera2D) {
+Camera3D& Camera3D::operator=(const Camera2D& camera2D) noexcept {
     trauma = camera2D.trauma;
     trauma_recovery_rate = camera2D.trauma_recovery_rate;
     aspect_ratio = camera2D.GetAspectRatio();
@@ -43,7 +43,7 @@ Camera3D& Camera3D::operator=(const Camera2D& camera2D) {
     return *this;
 }
 
-void Camera3D::SetupView(float fovVerticalDegrees, float aspectRatio /*= MathUtils::M_16_BY_9_RATIO*/, float nearDistance /*= 0.01f*/, float farDistance /*= 1.0f*/, const Vector3& worldUp /*= Vector3::Y_AXIS*/) {
+void Camera3D::SetupView(float fovVerticalDegrees, float aspectRatio /*= MathUtils::M_16_BY_9_RATIO*/, float nearDistance /*= 0.01f*/, float farDistance /*= 1.0f*/, const Vector3& worldUp /*= Vector3::Y_AXIS*/) noexcept {
     fov_vertical_degrees = fovVerticalDegrees;
     aspect_ratio = aspectRatio;
     near_distance = (std::max)(0.01f, nearDistance);
@@ -57,29 +57,29 @@ void Camera3D::SetupView(float fovVerticalDegrees, float aspectRatio /*= MathUti
     CalcViewProjectionMatrix();
 }
 
-void Camera3D::CalcViewProjectionMatrix() {
+void Camera3D::CalcViewProjectionMatrix() noexcept {
     view_projection_matrix = projection_matrix * view_matrix;
     inv_view_projection_matrix = Matrix4::CalculateInverse(view_projection_matrix);
 }
 
-void Camera3D::CalcProjectionMatrix() {
+void Camera3D::CalcProjectionMatrix() noexcept {
     projection_matrix = Matrix4::CreateDXPerspectiveProjection(fov_vertical_degrees, aspect_ratio, near_distance, far_distance);
     inv_projection_matrix = Matrix4::CalculateInverse(projection_matrix);
 }
 
-Matrix4 Camera3D::CreateBillboardMatrix(const Matrix4& rotationMatrix) {
+Matrix4 Camera3D::CreateBillboardMatrix(const Matrix4& rotationMatrix) noexcept {
     return inv_view_matrix.GetRotation() * Matrix4::Create3DYRotationDegreesMatrix(180.0f) * rotationMatrix;
 }
 
-Matrix4 Camera3D::CreateReverseBillboardMatrix(const Matrix4& rotationMatrix) {
+Matrix4 Camera3D::CreateReverseBillboardMatrix(const Matrix4& rotationMatrix) noexcept {
     return inv_view_matrix.GetRotation() * rotationMatrix;
 }
 
-Vector3 Camera3D::GetEulerAngles() const {
+Vector3 Camera3D::GetEulerAngles() const noexcept {
     return Vector3{rotationPitch, rotationYaw, rotationRoll};
 }
 
-void Camera3D::CalcViewMatrix() {
+void Camera3D::CalcViewMatrix() noexcept {
 
     Matrix4 vT = Matrix4::CreateTranslationMatrix(-position);
     Matrix4 vQ = rotation_matrix;
@@ -87,7 +87,7 @@ void Camera3D::CalcViewMatrix() {
     inv_view_matrix = Matrix4::CalculateInverse(view_matrix);
 }
 
-void Camera3D::CalcRotationMatrix() {
+void Camera3D::CalcRotationMatrix() noexcept {
     float c_x_theta = MathUtils::CosDegrees(rotationPitch);
     float s_x_theta = MathUtils::SinDegrees(rotationPitch);
     Matrix4 Rx;
@@ -113,129 +113,129 @@ void Camera3D::CalcRotationMatrix() {
     rotation_matrix = R;
 }
 
-void Camera3D::Update(TimeUtils::FPSeconds deltaSeconds) {
+void Camera3D::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
     trauma -= trauma_recovery_rate * deltaSeconds.count();
 }
 
-const Vector3& Camera3D::GetPosition() const {
+const Vector3& Camera3D::GetPosition() const noexcept {
     return position;
 }
 
-void Camera3D::SetPosition(const Vector3& newPosition) {
+void Camera3D::SetPosition(const Vector3& newPosition) noexcept {
     position = newPosition;
 }
 
-void Camera3D::SetPosition(float x, float y, float z) {
+void Camera3D::SetPosition(float x, float y, float z) noexcept {
     SetPosition(Vector3{ x, y, z });
 }
 
-void Camera3D::SetPosition(const Vector2& newPosition) {
+void Camera3D::SetPosition(const Vector2& newPosition) noexcept {
     SetPosition(newPosition.x, newPosition.y, 0.0f);
 }
 
-void Camera3D::SetPosition(float x, float y) {
+void Camera3D::SetPosition(float x, float y) noexcept {
     SetPosition(Vector2{ x, y });
 }
 
-void Camera3D::Translate(const Vector3& displacement) {
+void Camera3D::Translate(const Vector3& displacement) noexcept {
     position += displacement;
 }
 
-void Camera3D::Translate(float x, float y, float z) {
+void Camera3D::Translate(float x, float y, float z) noexcept {
     Translate(Vector3{ x, y, z });
 }
 
-void Camera3D::Translate(const Vector2& displacement) {
+void Camera3D::Translate(const Vector2& displacement) noexcept {
     Translate(displacement.x, displacement.y, 0.0f);
 }
 
-void Camera3D::Translate(float x, float y) {
+void Camera3D::Translate(float x, float y) noexcept {
     Translate(Vector2{ x, y });
 }
 
-float Camera3D::CalcFovYDegrees() const {
+float Camera3D::CalcFovYDegrees() const noexcept {
     return fov_vertical_degrees;
 }
 
-float Camera3D::CalcFovXDegrees() const {
+float Camera3D::CalcFovXDegrees() const noexcept {
     float half_width = 0.5f * CalcNearViewWidth();
     return 2.0f * std::atan(half_width / near_distance);
 }
 
-float Camera3D::CalcNearViewWidth() const {
+float Camera3D::CalcNearViewWidth() const noexcept {
     return aspect_ratio * near_view_height;
 }
 
-float Camera3D::CalcNearViewHeight() const {
+float Camera3D::CalcNearViewHeight() const noexcept {
     return near_view_height;
 }
 
-float Camera3D::CalcFarViewWidth() const {
+float Camera3D::CalcFarViewWidth() const noexcept {
     return aspect_ratio * far_view_height;
 }
 
-float Camera3D::CalcFarViewHeight() const {
+float Camera3D::CalcFarViewHeight() const noexcept {
     return far_view_height;
 }
 
-float Camera3D::GetAspectRatio() const {
+float Camera3D::GetAspectRatio() const noexcept {
     return aspect_ratio;
 }
 
-float Camera3D::GetInverseAspectRatio() const {
+float Camera3D::GetInverseAspectRatio() const noexcept {
     return 1.0f / aspect_ratio;
 }
 
-float Camera3D::GetNearDistance() const {
+float Camera3D::GetNearDistance() const noexcept {
     return near_distance;
 }
 
-float Camera3D::GetFarDistance() const {
+float Camera3D::GetFarDistance() const noexcept {
     return far_distance;
 }
 
-const Matrix4& Camera3D::GetRotationMatrix() const {
+const Matrix4& Camera3D::GetRotationMatrix() const noexcept {
     return rotation_matrix;
 }
 
-const Matrix4& Camera3D::GetViewMatrix() const {
+const Matrix4& Camera3D::GetViewMatrix() const noexcept {
     return view_matrix;
 }
 
-const Matrix4& Camera3D::GetProjectionMatrix() const {
+const Matrix4& Camera3D::GetProjectionMatrix() const noexcept {
     return projection_matrix;
 }
 
-const Matrix4& Camera3D::GetViewProjectionMatrix() const {
+const Matrix4& Camera3D::GetViewProjectionMatrix() const noexcept {
     return view_projection_matrix;
 }
 
-const Matrix4& Camera3D::GetInverseViewMatrix() const {
+const Matrix4& Camera3D::GetInverseViewMatrix() const noexcept {
     return inv_view_matrix;
 }
 
-const Matrix4& Camera3D::GetInverseProjectionMatrix() const {
+const Matrix4& Camera3D::GetInverseProjectionMatrix() const noexcept {
     return inv_projection_matrix;
 }
 
-const Matrix4& Camera3D::GetInverseViewProjectionMatrix() const {
+const Matrix4& Camera3D::GetInverseViewProjectionMatrix() const noexcept {
     return inv_view_projection_matrix;
 }
 
-void Camera3D::SetEulerAngles(const Vector3& eulerAngles) {
+void Camera3D::SetEulerAngles(const Vector3& eulerAngles) noexcept {
     rotationPitch = eulerAngles.x;
     rotationYaw = eulerAngles.y;
     rotationRoll = eulerAngles.z;
 }
 
-void Camera3D::SetEulerAnglesDegrees(const Vector3& eulerAnglesDegrees) {
+void Camera3D::SetEulerAnglesDegrees(const Vector3& eulerAnglesDegrees) noexcept {
     SetEulerAngles(Vector3{ MathUtils::ConvertDegreesToRadians(eulerAnglesDegrees.x)
                    , MathUtils::ConvertDegreesToRadians(eulerAnglesDegrees.y)
                    , MathUtils::ConvertDegreesToRadians(eulerAnglesDegrees.z) }
                    );
 }
 
-void Camera3D::SetForwardFromTarget(const Vector3& lookAtPosition) {
+void Camera3D::SetForwardFromTarget(const Vector3& lookAtPosition) noexcept {
     Vector3 forward = (lookAtPosition - position).GetNormalize();
     Vector3 right = MathUtils::CrossProduct(world_up.GetNormalize(), forward);
     Vector3 up = MathUtils::CrossProduct(forward, right);
@@ -250,18 +250,18 @@ void Camera3D::SetForwardFromTarget(const Vector3& lookAtPosition) {
     rotationRoll = eulerangles.z;
 }
 
-Vector3 Camera3D::GetRight() const {
+Vector3 Camera3D::GetRight() const noexcept {
     auto forward = GetForward();
     return MathUtils::CrossProduct(world_up, forward);
 }
 
-Vector3 Camera3D::GetUp() const {
+Vector3 Camera3D::GetUp() const noexcept {
     auto forward = GetForward();
     auto right = GetRight();
     return MathUtils::CrossProduct(forward, right);
 }
 
-Vector3 Camera3D::GetForward() const {
+Vector3 Camera3D::GetForward() const noexcept {
     float cos_yaw = MathUtils::CosDegrees(rotationYaw);
     float cos_pitch = MathUtils::CosDegrees(rotationPitch);
 
@@ -271,26 +271,26 @@ Vector3 Camera3D::GetForward() const {
     return Vector3(-sin_yaw * cos_pitch, sin_pitch, cos_yaw * cos_pitch);
 }
 
-float Camera3D::GetYawDegrees() const {
+float Camera3D::GetYawDegrees() const noexcept {
     return MathUtils::ConvertRadiansToDegrees(GetYaw());
 }
 
-float Camera3D::GetPitchDegrees() const {
+float Camera3D::GetPitchDegrees() const noexcept {
     return MathUtils::ConvertRadiansToDegrees(GetPitch());
 }
 
-float Camera3D::GetRollDegrees() const {
+float Camera3D::GetRollDegrees() const noexcept {
     return MathUtils::ConvertRadiansToDegrees(GetRoll());
 }
 
-float Camera3D::GetYaw() const {
+float Camera3D::GetYaw() const noexcept {
     return rotationYaw;
 }
 
-float Camera3D::GetPitch() const {
+float Camera3D::GetPitch() const noexcept {
     return rotationPitch;
 }
 
-float Camera3D::GetRoll() const {
+float Camera3D::GetRoll() const noexcept {
     return rotationRoll;
 }

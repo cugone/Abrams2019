@@ -15,10 +15,10 @@ public:
     Address& operator=(const Address& rhs) = default;
     Address& operator=(Address&& rhs) = default;
     ~Address() = default;
-    explicit Address(const std::string& value);
+    explicit Address(const std::string& value) noexcept;
     
-    bool operator==(const Address& rhs) const;
-    bool operator!=(const Address& rhs) const;
+    bool operator==(const Address& rhs) const noexcept;
+    bool operator!=(const Address& rhs) const noexcept;
 
 protected:
 private:

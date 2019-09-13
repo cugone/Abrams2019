@@ -24,27 +24,48 @@ public:
         std::string help_text_long{};
         std::function<void(const std::string& args)> command_function = [](const std::string& /*args*/) {};
     };
-    explicit Console(Renderer* renderer);
-    virtual ~Console();
+    class CommandList {
+    public:
+        explicit CommandList(Console* console = nullptr) noexcept;
+        CommandList(Console* console, const std::vector<Command>& commands) noexcept;
+        ~CommandList() noexcept;
+        void AddCommand(const Command& command);
+        void RemoveCommand(const std::string& name);
+        void RemoveAllCommands() noexcept;
+        const std::vector<Command>& GetCommands() const noexcept;
+    private:
+        Console* _console = nullptr;
+        std::vector<Command> _commands{};
+    };
+    Console() = delete;
+    explicit Console(Renderer* renderer) noexcept;
+    Console(const Console& other) = delete;
+    Console(Console&& other) = delete;
+    Console& operator=(const Console& other) = delete;
+    Console& operator=(Console&& other) = delete;
+    virtual ~Console() noexcept;
 
     virtual void Initialize() override;
     virtual void BeginFrame() override;
     virtual void Update([[maybe_unused]]TimeUtils::FPSeconds) override;
     virtual void Render() const override;
     virtual void EndFrame() override;
-    virtual bool ProcessSystemMessage(const EngineMessage& msg) override;
+    virtual bool ProcessSystemMessage(const EngineMessage& msg) noexcept override;
 
-    void RunCommand(std::string name_and_args);
-    void RegisterCommand(const Console::Command& command);
-    void UnregisterCommand(const std::string& command_name);
+    void RunCommand(std::string name_and_args) noexcept;
+    void RegisterCommand(const Console::Command& command) noexcept;
+    void UnregisterCommand(const std::string& command_name) noexcept;
 
-    void PrintMsg(const std::string& msg);
-    void WarnMsg(const std::string& msg);
-    void ErrorMsg(const std::string& msg);
+    void PushCommandList(const Console::CommandList& list) noexcept;
+    void PopCommandList(const Console::CommandList& list) noexcept;
 
-    void* GetAcceleratorTable() const;
-    bool IsOpen() const;
-    bool IsClosed() const;
+    void PrintMsg(const std::string& msg) noexcept;
+    void WarnMsg(const std::string& msg) noexcept;
+    void ErrorMsg(const std::string& msg) noexcept;
+
+    void* GetAcceleratorTable() const noexcept;
+    bool IsOpen() const noexcept;
+    bool IsClosed() const noexcept;
 
 protected:
 private:
@@ -52,67 +73,67 @@ private:
         std::string str{};
         Rgba color = Rgba::White;
     };
-    void PostEntryLine();
-    void PushEntrylineToOutputBuffer();
-    void PushEntrylineToBuffer();
-    void ClearEntryLine();
-    void MoveCursorLeft(std::string::difference_type distance = 1);
-    void MoveCursorRight(std::string::difference_type distance = 1);
-    void MoveCursorToEnd();
-    void MoveCursorToFront();
-    void UpdateSelectedRange(std::string::difference_type distance);
+    void PostEntryLine() noexcept;
+    void PushEntrylineToOutputBuffer() noexcept;
+    void PushEntrylineToBuffer() noexcept;
+    void ClearEntryLine() noexcept;
+    void MoveCursorLeft(std::string::difference_type distance = 1) noexcept;
+    void MoveCursorRight(std::string::difference_type distance = 1) noexcept;
+    void MoveCursorToEnd() noexcept;
+    void MoveCursorToFront() noexcept;
+    void UpdateSelectedRange(std::string::difference_type distance) noexcept;
 
-    bool HandleLeftKey();
-    bool HandleRightKey();
-    bool HandleDelKey();
-    bool HandleHomeKey();
-    bool HandleEndKey();
-    bool HandleTildeKey();
-    bool HandleReturnKey();
-    bool HandleUpKey();
-    bool HandleDownKey();
-    bool HandleBackspaceKey();
-    bool HandleEscapeKey();
-    bool HandleTabKey();
-    bool HandleClipboardCopy() const;
-    void HandleClipboardPaste();
-    void HandleClipboardCut();
-    void HandleSelectAll();
+    bool HandleLeftKey() noexcept;
+    bool HandleRightKey() noexcept;
+    bool HandleDelKey() noexcept;
+    bool HandleHomeKey() noexcept;
+    bool HandleEndKey() noexcept;
+    bool HandleTildeKey() noexcept;
+    bool HandleReturnKey() noexcept;
+    bool HandleUpKey() noexcept;
+    bool HandleDownKey() noexcept;
+    bool HandleBackspaceKey() noexcept;
+    bool HandleEscapeKey() noexcept;
+    bool HandleTabKey() noexcept;
+    bool HandleClipboardCopy() const noexcept;
+    void HandleClipboardPaste() noexcept;
+    void HandleClipboardCut() noexcept;
+    void HandleSelectAll() noexcept;
 
-    void HistoryUp();
-    void HistoryDown();
+    void HistoryUp() noexcept;
+    void HistoryDown() noexcept;
 
-    void InsertCharInEntryLine(unsigned char c);
-    void PopConsoleBuffer();
-    void RemoveTextInFrontOfCaret();
-    void RemoveTextBehindCaret();
-    void RemoveText(std::string::const_iterator start, std::string::const_iterator end);
-    std::string CopyText(std::string::const_iterator start, std::string::const_iterator end) const;
-    void PasteText(const std::string& text, std::string::const_iterator loc);
-    void DrawBackground(const Vector2& view_half_extents) const;
-    void DrawEntryLine(const Vector2& view_half_extents) const;
-    void DrawCursor(const Vector2& view_half_extents) const;
-    void DrawOutput(const Vector2& view_half_extents) const;
+    void InsertCharInEntryLine(unsigned char c) noexcept;
+    void PopConsoleBuffer() noexcept;
+    void RemoveTextInFrontOfCaret() noexcept;
+    void RemoveTextBehindCaret() noexcept;
+    void RemoveText(std::string::const_iterator start, std::string::const_iterator end) noexcept;
+    std::string CopyText(std::string::const_iterator start, std::string::const_iterator end) const noexcept;
+    void PasteText(const std::string& text, std::string::const_iterator loc) noexcept;
+    void DrawBackground(const Vector2& view_half_extents) const noexcept;
+    void DrawEntryLine(const Vector2& view_half_extents) const noexcept;
+    void DrawCursor(const Vector2& view_half_extents) const noexcept;
+    void DrawOutput(const Vector2& view_half_extents) const noexcept;
 
-    void OutputMsg(const std::string& msg, const Rgba& color);
+    void OutputMsg(const std::string& msg, const Rgba& color) noexcept;
 
-    void RegisterDefaultCommands();
-    void RegisterDefaultFont();
-    void UnregisterAllCommands();
+    void RegisterDefaultCommands() noexcept;
+    void RegisterDefaultFont() noexcept;
+    void UnregisterAllCommands() noexcept;
 
-    void ToggleConsole();
-    void Open();
-    void Close();
+    void ToggleConsole() noexcept;
+    void Open() noexcept;
+    void Close() noexcept;
 
-    void ToggleHighlightMode();
-    void SetHighlightMode(bool value);
-    bool IsHighlighting() const;
-    void SetOutputChanged(bool value);
-    void SetSkipNonWhitespaceMode(bool value);
+    void ToggleHighlightMode() noexcept;
+    void SetHighlightMode(bool value) noexcept;
+    bool IsHighlighting() const noexcept;
+    void SetOutputChanged(bool value) noexcept;
+    void SetSkipNonWhitespaceMode(bool value) noexcept;
 
-    void AutoCompleteEntryline();
+    void AutoCompleteEntryline() noexcept;
 
-    Vector2 SetupViewFromCamera() const;
+    Vector2 SetupViewFromCamera() const noexcept;
 
     Renderer* _renderer = nullptr;
     Camera2D* _camera = nullptr;

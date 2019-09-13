@@ -15,6 +15,9 @@ struct ViewportDesc {
     float maxDepth = 1.0f;
 };
 
+bool operator==(const ViewportDesc& a, const ViewportDesc& b) noexcept;
+bool operator!=(const ViewportDesc& a, const ViewportDesc& b) noexcept;
+
 struct DisplayDesc {
     unsigned int width = 0u;
     unsigned int height = 0u;
@@ -41,7 +44,7 @@ struct GraphicsCardDesc {
     bool is_software = false;
     bool is_remote = false;
     bool is_unspecified = false;
-    friend std::ostream& operator<<(std::ostream& out_stream, const GraphicsCardDesc& adapterInfo);
+    friend std::ostream& operator<<(std::ostream& out_stream, const GraphicsCardDesc& adapterInfo) noexcept;
 };
 
 enum class RHIOutputMode : uint8_t {
@@ -52,8 +55,8 @@ enum class RHIOutputMode : uint8_t {
     , Last_
 };
 
-RHIOutputMode& operator++(RHIOutputMode& mode);
-RHIOutputMode operator++(RHIOutputMode& mode, int);
+RHIOutputMode& operator++(RHIOutputMode& mode) noexcept;
+RHIOutputMode operator++(RHIOutputMode& mode, int) noexcept;
 
 enum class BufferType : uint8_t {
     None
@@ -82,12 +85,12 @@ enum class PipelineStage : uint8_t {
     , All = Vs | Hs | Ds | Gs | Ps | Cs
 };
 
-PipelineStage& operator|=(PipelineStage& a, const PipelineStage& b);
-PipelineStage operator|(PipelineStage a, const PipelineStage& b);
-PipelineStage& operator&=(PipelineStage& a, const PipelineStage& b);
-PipelineStage operator&(PipelineStage a, const PipelineStage& b);
-PipelineStage operator^(PipelineStage a, const PipelineStage& b);
-PipelineStage& operator^=(PipelineStage& a, const PipelineStage& b);
+PipelineStage& operator|=(PipelineStage& a, const PipelineStage& b) noexcept;
+PipelineStage operator|(PipelineStage a, const PipelineStage& b) noexcept;
+PipelineStage& operator&=(PipelineStage& a, const PipelineStage& b) noexcept;
+PipelineStage operator&(PipelineStage a, const PipelineStage& b) noexcept;
+PipelineStage operator^(PipelineStage a, const PipelineStage& b) noexcept;
+PipelineStage& operator^=(PipelineStage& a, const PipelineStage& b) noexcept;
 
 
 enum class ComparisonFunction {
@@ -284,10 +287,10 @@ enum class BufferUsage : uint8_t {
     , Staging = 0b00001000
 };
 
-BufferUsage& operator&=(BufferUsage& a, const BufferUsage& b);
-BufferUsage& operator|=(BufferUsage& a, const BufferUsage& b);
-BufferUsage operator&(BufferUsage a, const BufferUsage& b);
-BufferUsage operator|(BufferUsage a, const BufferUsage& b);
+BufferUsage& operator&=(BufferUsage& a, const BufferUsage& b) noexcept;
+BufferUsage& operator|=(BufferUsage& a, const BufferUsage& b) noexcept;
+BufferUsage operator&(BufferUsage a, const BufferUsage& b) noexcept;
+BufferUsage operator|(BufferUsage a, const BufferUsage& b) noexcept;
 
 enum class BufferBindUsage : uint32_t {
     Vertex_Buffer = 0x001
@@ -302,10 +305,10 @@ enum class BufferBindUsage : uint32_t {
     , Video_Encoder = 0x200
 };
 
-BufferBindUsage& operator&=(BufferBindUsage& a, const BufferBindUsage& b);
-BufferBindUsage& operator|=(BufferBindUsage& a, const BufferBindUsage& b);
-BufferBindUsage operator&(BufferBindUsage a, const BufferBindUsage& b);
-BufferBindUsage operator|(BufferBindUsage a, const BufferBindUsage& b);
+BufferBindUsage& operator&=(BufferBindUsage& a, const BufferBindUsage& b) noexcept;
+BufferBindUsage& operator|=(BufferBindUsage& a, const BufferBindUsage& b) noexcept;
+BufferBindUsage operator&(BufferBindUsage a, const BufferBindUsage& b) noexcept;
+BufferBindUsage operator|(BufferBindUsage a, const BufferBindUsage& b) noexcept;
 
 enum class FilterMode {
     Point
@@ -365,13 +368,13 @@ enum class BlendColorWriteEnable : unsigned char {
     , All = 0x0F
 };
 
-BlendColorWriteEnable operator~(BlendColorWriteEnable a);
-BlendColorWriteEnable operator|(BlendColorWriteEnable a, const BlendColorWriteEnable& b);
-BlendColorWriteEnable operator&(BlendColorWriteEnable a, const BlendColorWriteEnable& b);
-BlendColorWriteEnable operator^(BlendColorWriteEnable a, const BlendColorWriteEnable& b);
-BlendColorWriteEnable& operator&=(BlendColorWriteEnable& a, const BlendColorWriteEnable& b);
-BlendColorWriteEnable& operator|=(BlendColorWriteEnable& a, const BlendColorWriteEnable& b);
-BlendColorWriteEnable& operator^=(BlendColorWriteEnable& a, const BlendColorWriteEnable& b);
+BlendColorWriteEnable operator~(BlendColorWriteEnable a) noexcept;
+BlendColorWriteEnable operator|(BlendColorWriteEnable a, const BlendColorWriteEnable& b) noexcept;
+BlendColorWriteEnable operator&(BlendColorWriteEnable a, const BlendColorWriteEnable& b) noexcept;
+BlendColorWriteEnable operator^(BlendColorWriteEnable a, const BlendColorWriteEnable& b) noexcept;
+BlendColorWriteEnable& operator&=(BlendColorWriteEnable& a, const BlendColorWriteEnable& b) noexcept;
+BlendColorWriteEnable& operator|=(BlendColorWriteEnable& a, const BlendColorWriteEnable& b) noexcept;
+BlendColorWriteEnable& operator^=(BlendColorWriteEnable& a, const BlendColorWriteEnable& b) noexcept;
 
 enum class FillMode {
     Solid,
@@ -405,5 +408,5 @@ enum class ResourceMiscFlag : long {
     ,Hw_Protected                    = 0x80000L
 };
 
-ResourceMiscFlag operator|(const ResourceMiscFlag& a, const ResourceMiscFlag& b);
-ResourceMiscFlag operator&(const ResourceMiscFlag& a, const ResourceMiscFlag& b);
+ResourceMiscFlag operator|(const ResourceMiscFlag& a, const ResourceMiscFlag& b) noexcept;
+ResourceMiscFlag operator&(const ResourceMiscFlag& a, const ResourceMiscFlag& b) noexcept;

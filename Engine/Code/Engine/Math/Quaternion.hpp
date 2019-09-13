@@ -12,73 +12,73 @@ public:
     float w = 1.0f;
     Vector3 axis = Vector3::ZERO;
 
-    static Quaternion GetIdentity();
-    static Quaternion CreateRealQuaternion(float scalar);
-    static Quaternion CreatePureQuaternion(const Vector3& v);
-    static Quaternion CreateFromAxisAngle(const Vector3& axis, float degreesAngle);
-    static Quaternion CreateFromEulerAnglesDegrees(float pitch, float yaw, float roll);
-    static Quaternion CreateFromEulerAnglesRadians(float pitch, float yaw, float roll);
-    static Quaternion CreateFromEulerAngles(float pitch, float yaw, float roll, bool degrees);
+    static Quaternion GetIdentity() noexcept;
+    static Quaternion CreateRealQuaternion(float scalar) noexcept;
+    static Quaternion CreatePureQuaternion(const Vector3& v) noexcept;
+    static Quaternion CreateFromAxisAngle(const Vector3& axis, float degreesAngle) noexcept;
+    static Quaternion CreateFromEulerAnglesDegrees(float pitch, float yaw, float roll) noexcept;
+    static Quaternion CreateFromEulerAnglesRadians(float pitch, float yaw, float roll) noexcept;
+    static Quaternion CreateFromEulerAngles(float pitch, float yaw, float roll, bool degrees) noexcept;
 
     Quaternion() = default;
-    explicit Quaternion(const std::string& value);
-    explicit Quaternion(const Matrix4& mat);
-    explicit Quaternion(const Vector3& rotations);
+    explicit Quaternion(const std::string& value) noexcept;
+    explicit Quaternion(const Matrix4& mat) noexcept;
+    explicit Quaternion(const Vector3& rotations) noexcept;
     Quaternion(const Quaternion& other) = default;
     Quaternion& operator=(const Quaternion& rhs) = default;
-    ~Quaternion();
+    ~Quaternion() = default;
 
-    explicit Quaternion(float initialScalar, const Vector3& initialAxis);
-    explicit Quaternion(float initialW, float initialX, float initialY, float initialZ);
+    explicit Quaternion(float initialScalar, const Vector3& initialAxis) noexcept;
+    explicit Quaternion(float initialW, float initialX, float initialY, float initialZ) noexcept;
 
-    Quaternion operator+(const Quaternion& rhs) const;
-    Quaternion& operator+=(const Quaternion& rhs);
+    Quaternion operator+(const Quaternion& rhs) const noexcept;
+    Quaternion& operator+=(const Quaternion& rhs) noexcept;
 
-    Quaternion operator-(const Quaternion& rhs) const;
-    Quaternion& operator-=(const Quaternion& rhs);
+    Quaternion operator-(const Quaternion& rhs) const noexcept;
+    Quaternion& operator-=(const Quaternion& rhs) noexcept;
 
-    Quaternion operator*(const Quaternion& rhs) const;
-    Quaternion& operator*=(const Quaternion& rhs);
+    Quaternion operator*(const Quaternion& rhs) const noexcept;
+    Quaternion& operator*=(const Quaternion& rhs) noexcept;
 
-    Quaternion operator*(const Vector3& rhs) const;
-    Quaternion& operator*=(const Vector3& rhs);
+    Quaternion operator*(const Vector3& rhs) const noexcept;
+    Quaternion& operator*=(const Vector3& rhs) noexcept;
 
-    Quaternion operator*(float scalar) const;
-    Quaternion& operator*=(float scalar);
+    Quaternion operator*(float scalar) const noexcept;
+    Quaternion& operator*=(float scalar) noexcept;
 
-    Quaternion operator-();
+    Quaternion operator-() noexcept;
 
-    bool operator==(const Quaternion& rhs) const;
-    bool operator!=(const Quaternion& rhs) const;
+    bool operator==(const Quaternion& rhs) const noexcept;
+    bool operator!=(const Quaternion& rhs) const noexcept;
 
-    Vector4 CalcAxisAnglesDegrees() const;
-    Vector4 CalcAxisAnglesRadians() const;
-    Vector4 CalcAxisAngles(bool degrees) const;
-    Vector3 CalcEulerAnglesDegrees() const;
-    Vector3 CalcEulerAnglesRadians() const;
-    Vector3 CalcEulerAngles(bool degrees) const;
+    Vector4 CalcAxisAnglesDegrees() const noexcept;
+    Vector4 CalcAxisAnglesRadians() const noexcept;
+    Vector4 CalcAxisAngles(bool degrees) const noexcept;
+    Vector3 CalcEulerAnglesDegrees() const noexcept;
+    Vector3 CalcEulerAnglesRadians() const noexcept;
+    Vector3 CalcEulerAngles(bool degrees) const noexcept;
 
-    float CalcLength() const;
-    float CalcLengthSquared() const;
-    Quaternion CalcInverse() const;
+    float CalcLength() const noexcept;
+    float CalcLengthSquared() const noexcept;
+    Quaternion CalcInverse() const noexcept;
 
-    void Normalize();
-    Quaternion GetNormalize() const;
+    void Normalize() noexcept;
+    Quaternion GetNormalize() const noexcept;
 
-    void Conjugate();
-    Quaternion GetConjugate() const;
+    void Conjugate() noexcept;
+    Quaternion GetConjugate() const noexcept;
 
-    void Inverse();
+    void Inverse() noexcept;
 
 protected:
 private:
 };
 
-Quaternion operator*(float scalar, const Quaternion& rhs);
-Quaternion& operator*=(float scalar, Quaternion& rhs);
+Quaternion operator*(float scalar, const Quaternion& rhs) noexcept;
+Quaternion& operator*=(float scalar, Quaternion& rhs) noexcept;
 
-Quaternion operator*(const Vector3& lhs, const Quaternion& rhs);
-Quaternion& operator*=(const Vector3& lhs, Quaternion& rhs);
+Quaternion operator*(const Vector3& lhs, const Quaternion& rhs) noexcept;
+Quaternion& operator*=(const Vector3& lhs, Quaternion& rhs) noexcept;
 
-Quaternion Conjugate(const Quaternion& q);
-Quaternion Inverse(const Quaternion& q);
+Quaternion Conjugate(const Quaternion& q) noexcept;
+Quaternion Inverse(const Quaternion& q) noexcept;

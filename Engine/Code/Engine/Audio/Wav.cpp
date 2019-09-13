@@ -7,14 +7,14 @@
 namespace FileUtils {
 
 namespace WavChunkID {
-constexpr const bool IsValid(const char* id) {
+constexpr const bool IsValid(const char* id) noexcept {
     return (StringUtils::FourCC(id) == WavChunkID::FMT
             || StringUtils::FourCC(id) == WavChunkID::FACT
             || StringUtils::FourCC(id) == WavChunkID::DATA);
 }
 } //End WavChunkID
 
-unsigned int Wav::Load(const std::string& filepath) {
+unsigned int Wav::Load(std::filesystem::path filepath) noexcept {
     Riff riff_data{};
     if(riff_data.Load(filepath) != Riff::RIFF_SUCCESS) {
         return WAV_ERROR_NOT_A_WAV;
@@ -81,23 +81,23 @@ unsigned int Wav::Load(const std::string& filepath) {
     return WAV_SUCCESS;
 }
 
-unsigned char* Wav::GetFormatAsBuffer() {
+unsigned char* Wav::GetFormatAsBuffer() noexcept {
     return reinterpret_cast<unsigned char*>(&_fmt);
 }
 
-unsigned char* Wav::GetDataBuffer() const {
+unsigned char* Wav::GetDataBuffer() const noexcept {
     return _data.data.get();
 }
 
-uint32_t Wav::GetDataBufferSize() const {
+uint32_t Wav::GetDataBufferSize() const noexcept {
     return _data.length;
 }
 
-const Wav::WavFormatChunk& Wav::GetFormatChunk() const {
+const Wav::WavFormatChunk& Wav::GetFormatChunk() const noexcept {
     return _fmt;
 }
 
-const Wav::WavDataChunk& Wav::GetDataChunk() const {
+const Wav::WavDataChunk& Wav::GetDataChunk() const noexcept {
     return _data;
 }
 

@@ -27,55 +27,57 @@ public:
     Vector3& operator=(Vector3&& rhs) = default;
     ~Vector3() = default;
 
-    explicit Vector3(const std::string& value);
-    explicit Vector3(float initialX, float initialY, float initialZ);
-    explicit Vector3(const Vector2& vec2);
-    explicit Vector3(const IntVector3& intvec3);
-    explicit Vector3(const Vector2& xy, float initialZ);
-    explicit Vector3(const Vector4& vec4);
-    explicit Vector3(const Quaternion& q);
+    explicit Vector3(const std::string& value) noexcept;
+    explicit Vector3(float initialX, float initialY, float initialZ) noexcept;
+    explicit Vector3(const Vector2& vec2) noexcept;
+    explicit Vector3(const IntVector3& intvec3) noexcept;
+    explicit Vector3(const Vector2& xy, float initialZ) noexcept;
+    explicit Vector3(const Vector4& vec4) noexcept;
+    explicit Vector3(const Quaternion& q) noexcept;
 
-    Vector3 operator+(const Vector3& rhs) const;
-    Vector3& operator+=(const Vector3& rhs);
+    Vector3 operator+(const Vector3& rhs) const noexcept;
+    Vector3& operator+=(const Vector3& rhs) noexcept;
 
-    Vector3 operator-() const;
-    Vector3 operator-(const Vector3& rhs) const;
-    Vector3& operator-=(const Vector3& rhs);
+    Vector3 operator-() const noexcept;
+    Vector3 operator-(const Vector3& rhs) const noexcept;
+    Vector3& operator-=(const Vector3& rhs) noexcept;
 
-    friend Vector3 operator*(float lhs, const Vector3& rhs);
-    Vector3 operator*(float scalar) const;
-    Vector3& operator*=(float scalar);
-    Vector3 operator*(const Vector3& rhs) const;
-    Vector3& operator*=(const Vector3& rhs);
+    friend Vector3 operator*(float lhs, const Vector3& rhs) noexcept;
+    Vector3 operator*(float scalar) const noexcept;
+    Vector3& operator*=(float scalar) noexcept;
+    Vector3 operator*(const Vector3& rhs) const noexcept;
+    Vector3& operator*=(const Vector3& rhs) noexcept;
 
-    friend Vector3 operator/(float lhs, const Vector3& v);
-    Vector3 operator/(float scalar) const;
-    Vector3 operator/=(float scalar);
-    Vector3 operator/(const Vector3& rhs) const;
-    Vector3 operator/=(const Vector3& rhs);
+    friend Vector3 operator/(float lhs, const Vector3& v) noexcept;
+    Vector3 operator/(float scalar) const noexcept;
+    Vector3 operator/=(float scalar) noexcept;
+    Vector3 operator/(const Vector3& rhs) const noexcept;
+    Vector3 operator/=(const Vector3& rhs) noexcept;
 
-    bool operator==(const Vector3& rhs) const;
-    bool operator!=(const Vector3& rhs) const;
+    bool operator==(const Vector3& rhs) const noexcept;
+    bool operator!=(const Vector3& rhs) const noexcept;
 
-    friend std::ostream& operator<<(std::ostream& out_stream, const Vector3& v);
-    friend std::istream& operator>>(std::istream& in_stream, Vector3& v);
+    friend std::ostream& operator<<(std::ostream& out_stream, const Vector3& v) noexcept;
+    friend std::istream& operator>>(std::istream& in_stream, Vector3& v) noexcept;
 
-    void GetXYZ(float& outX, float& outY, float& outZ) const;
-    Vector2 GetXY() const;
-    Vector3 GetXYZ() const;
-    float* GetAsFloatArray();
+    void GetXYZ(float& outX, float& outY, float& outZ) const noexcept;
+    Vector2 GetXY() const noexcept;
+    Vector3 GetXYZ() const noexcept;
+    float* GetAsFloatArray() noexcept;
 
-    float CalcLength() const;
-    float CalcLengthSquared() const;
+    float CalcLength() const noexcept;
+    float CalcLengthSquared() const noexcept;
     
-    float Normalize();
-    Vector3 GetNormalize() const;
+    float Normalize() noexcept;
+    Vector3 GetNormalize() const noexcept;
 
-    void SetXYZ(float newX, float newY, float newZ);
+    void SetXYZ(float newX, float newY, float newZ) noexcept;
 
     float x = 0.0f;
     float y = 0.0f;
     float z = 0.0f;
+
+    friend void swap(Vector3& a, Vector3& b) noexcept;
 
 protected:
 private:

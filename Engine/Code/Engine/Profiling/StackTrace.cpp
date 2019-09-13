@@ -44,14 +44,14 @@ std::atomic_uint64_t StackTrace::_refs(0);
 std::shared_mutex StackTrace::_cs{};
 std::atomic_bool StackTrace::_did_init(false);
 
-StackTrace::StackTrace()
+StackTrace::StackTrace() noexcept
     : StackTrace(1ul, 30ul)
 {
     /* DO NOTHING */
 }
 
 StackTrace::StackTrace([[maybe_unused]]unsigned long framesToSkip,
-                       [[maybe_unused]]unsigned long framesToCapture) {
+                       [[maybe_unused]]unsigned long framesToCapture) noexcept {
 #ifdef PROFILE_BUILD
     if(!_refs) {
         Initialize();
@@ -70,7 +70,7 @@ StackTrace::StackTrace([[maybe_unused]]unsigned long framesToSkip,
 #endif
 }
 
-StackTrace::~StackTrace() {
+StackTrace::~StackTrace() noexcept {
 #ifdef PROFILE_BUILD
     --_refs;
     if(!_refs) {
@@ -79,9 +79,12 @@ StackTrace::~StackTrace() {
 #endif
 }
 
-void StackTrace::Initialize() {
+void StackTrace::Initialize() noexcept {
 #ifdef PROFILE_BUILD
     debugHelpModule = ::LoadLibraryA("DbgHelp.dll");
+    if(!debugHelpModule) {
+        return;
+    }
 
     LSymSetOptions = reinterpret_cast<SymSetOptions_t>(::GetProcAddress(debugHelpModule, "SymSetOptions"));
     LSymInitialize = reinterpret_cast<SymInitialize_t>(::GetProcAddress(debugHelpModule, "SymInitialize"));
@@ -106,13 +109,15 @@ void StackTrace::Initialize() {
         ERROR_AND_DIE("Could not initialize StackTrace!\n");
     }
     symbol = (SYMBOL_INFO*)std::malloc(SYMBOL_INFO_SIZE + MAX_FILENAME_LENGTH * sizeof(char));
+    GUARANTEE_OR_DIE(symbol, "Failed to allocate symbol memory.");
+
     symbol->MaxNameLen = MAX_FILENAME_LENGTH;
     symbol->SizeOfStruct = SYMBOL_INFO_SIZE;
 #endif
 }
 
 void StackTrace::GetLines([[maybe_unused]]StackTrace* st,
-                          [[maybe_unused]]unsigned long max_lines) {
+                          [[maybe_unused]]unsigned long max_lines) noexcept {
 #ifndef PROFILE_BUILD
     return;
 #else
@@ -142,26 +147,34 @@ void StackTrace::GetLines([[maybe_unused]]StackTrace* st,
             got_line = LSymGetLineFromAddr64(process, ptr, &line_offset, &line_info);
         }
         if(got_line) {
-            auto s = reinterpret_cast<char*>(std::malloc(symbol->NameLen + 1));
-            ::strcpy_s(s, symbol->NameLen + 1, symbol->Name);
-            s[symbol->NameLen] = '\0';
-            DebuggerPrintf("\t%s(%d): %s\n", line_info.FileName, line_info.LineNumber, s);
-            std::free(s);
+            const auto name_length_plus_one = static_cast<std::size_t>(symbol->NameLen) + 1u;
+            auto s = reinterpret_cast<char*>(std::malloc(name_length_plus_one));
+            if(s) {
+                ::strcpy_s(s, name_length_plus_one, symbol->Name);
+                s[symbol->NameLen] = '\0';
+                DebuggerPrintf("\t%s(%d): %s\n", line_info.FileName, line_info.LineNumber, s);
+                std::free(s);
+            }
         } else {
-            auto s = reinterpret_cast<char*>(std::malloc(symbol->NameLen + 1));
-            ::strcpy_s(s, symbol->NameLen + 1, symbol->Name);
-            s[symbol->NameLen] = '\0';
-            DebuggerPrintf("\tN/A(%d): %s\n", 0, s);
-            std::free(s);
+            const auto name_length_plus_one = static_cast<std::size_t>(symbol->NameLen) + 1u;
+            auto s = reinterpret_cast<char*>(std::malloc(name_length_plus_one));
+            if(s) {
+                ::strcpy_s(s, name_length_plus_one, symbol->Name);
+                s[symbol->NameLen] = '\0';
+                DebuggerPrintf("\tN/A(%d): %s\n", 0, s);
+                std::free(s);
+            }
         }
     }
 #endif
 }
 
-void StackTrace::Shutdown() {
+void StackTrace::Shutdown() noexcept {
 #ifdef PROFILE_BUILD
-    std::free(symbol);
-    symbol = nullptr;
+    if(symbol) {
+        std::free(symbol);
+        symbol = nullptr;
+    }
 
     {
         std::scoped_lock<std::shared_mutex> _lock(_cs);
@@ -174,10 +187,10 @@ void StackTrace::Shutdown() {
 #endif
 }
 
-bool StackTrace::operator!=(const StackTrace& rhs) {
+bool StackTrace::operator!=(const StackTrace& rhs) const noexcept {
     return !(*this == rhs);
 }
 
-bool StackTrace::operator==(const StackTrace& rhs) {
+bool StackTrace::operator==(const StackTrace& rhs) const noexcept {
     return hash == rhs.hash;
 }

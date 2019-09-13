@@ -8,7 +8,7 @@
 
 #include "Engine/RHI/RHIDevice.hpp"
 
-TextureArray2D::TextureArray2D(const RHIDevice* device, ID3D11Texture2D* dxTexture)
+TextureArray2D::TextureArray2D(const RHIDevice* device, ID3D11Texture2D* dxTexture) noexcept
     : Texture(device)
     , _dx_tex(dxTexture)
 {
@@ -21,7 +21,7 @@ void TextureArray2D::SetDebugName([[maybe_unused]] const std::string& name) cons
 #endif
 }
 
-TextureArray2D::~TextureArray2D() {
+TextureArray2D::~TextureArray2D() noexcept {
     _device = nullptr;
     if(_dx_tex) {
         _dx_tex->Release();
@@ -29,7 +29,7 @@ TextureArray2D::~TextureArray2D() {
     }
 }
 
-ID3D11Resource* TextureArray2D::GetDxResource() const {
+ID3D11Resource* TextureArray2D::GetDxResource() const noexcept {
     return _dx_tex;
 }
 

@@ -6,7 +6,7 @@
 #include "Engine/RHI/RHIDeviceContext.hpp"
 
 
-IndexBuffer::IndexBuffer(const RHIDevice* owner, const buffer_t& buffer, const BufferUsage& usage, const BufferBindUsage& bindUsage)
+IndexBuffer::IndexBuffer(const RHIDevice* owner, const buffer_t& buffer, const BufferUsage& usage, const BufferBindUsage& bindUsage) noexcept
     : ArrayBuffer<unsigned int>() {
     D3D11_BUFFER_DESC buffer_desc = {};
     buffer_desc.Usage = BufferUsageToD3DUsage(usage);
@@ -27,14 +27,14 @@ IndexBuffer::IndexBuffer(const RHIDevice* owner, const buffer_t& buffer, const B
     }
 }
 
-IndexBuffer::~IndexBuffer() {
+IndexBuffer::~IndexBuffer() noexcept {
     if(IsValid()) {
         _dx_buffer->Release();
         _dx_buffer = nullptr;
     }
 }
 
-void IndexBuffer::Update(RHIDeviceContext* context, const buffer_t& buffer) {
+void IndexBuffer::Update(RHIDeviceContext* context, const buffer_t& buffer) noexcept {
     D3D11_MAPPED_SUBRESOURCE resource = {};
     auto dx_context = context->GetDxContext();
     HRESULT hr = dx_context->Map(_dx_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0U, &resource);

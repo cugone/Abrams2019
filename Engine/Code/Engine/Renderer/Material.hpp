@@ -77,25 +77,25 @@ public:
         ,Custom58
     };
 
-    explicit Material(Renderer* renderer);
-    Material(Renderer* renderer, const XMLElement& element);
+    explicit Material(Renderer* renderer) noexcept;
+    Material(Renderer* renderer, const XMLElement& element) noexcept;
     ~Material() = default;
 
-    std::string GetName() const;
-    Shader * GetShader() const;
-    std::size_t GetTextureCount() const;
-    Texture* GetTexture(std::size_t i) const;
-    Texture* GetTexture(const TextureID& id) const;
-    float GetSpecularIntensity() const;
-    float GetGlossyFactor() const;
-    float GetEmissiveFactor() const;
-    Vector3 GetSpecGlossEmitFactors() const;
+    std::string GetName() const noexcept;
+    Shader * GetShader() const noexcept;
+    std::size_t GetTextureCount() const noexcept;
+    Texture* GetTexture(std::size_t i) const noexcept;
+    Texture* GetTexture(const TextureID& id) const noexcept;
+    float GetSpecularIntensity() const noexcept;
+    float GetGlossyFactor() const noexcept;
+    float GetEmissiveFactor() const noexcept;
+    Vector3 GetSpecGlossEmitFactors() const noexcept;
 
 protected:
 private:
-    bool LoadFromXml(const XMLElement& element);
-    void AddTextureSlots(std::size_t count);
-    void AddTextureSlot();
+    bool LoadFromXml(const XMLElement& element) noexcept;
+    void AddTextureSlots(std::size_t count) noexcept;
+    void AddTextureSlot() noexcept;
 
     constexpr static std::size_t CustomTextureIndexSlotOffset = 6u;
     constexpr static std::size_t MaxCustomTextureSlotCount = (D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT / 2) - CustomTextureIndexSlotOffset;

@@ -23,16 +23,15 @@ enum class ArgumentParserState : uint8_t {
 class ArgumentParser {
 public:
     explicit ArgumentParser(const std::string& args) noexcept;
-    ~ArgumentParser() = default;
     template<typename T>
-    friend ArgumentParser& operator>>(ArgumentParser& parser, T&& arg);
-    void clear();
-    bool fail() const;
-    bool good() const;
-    bool bad() const;
-    bool eof() const;
-    operator bool() const;
-    bool operator!() const;
+    friend ArgumentParser& operator>>(ArgumentParser& parser, T&& arg) noexcept;
+    void clear() noexcept;
+    bool fail() const noexcept;
+    bool good() const noexcept;
+    bool bad() const noexcept;
+    bool eof() const noexcept;
+    operator bool() const noexcept;
+    bool operator!() const noexcept;
     bool GetNext(Rgba& value) const noexcept;
     bool GetNext(Vector2& value) const noexcept;
     bool GetNext(Vector3& value) const noexcept;
@@ -60,19 +59,19 @@ public:
 protected:
 private:
 
-    void SetState(const ArgumentParserState& stateBits, bool newValue) const;
+    void SetState(const ArgumentParserState& stateBits, bool newValue) const noexcept;
     bool GetNextValueFromBuffer(std::string &value) const noexcept;
     mutable std::string _current{};
     mutable std::bitset<static_cast<std::size_t>(ArgumentParserState::Max)> _state_bits{};
 };
 
-ArgumentParserState operator|(ArgumentParserState a, const ArgumentParserState& b);
-ArgumentParserState operator&(ArgumentParserState a, const ArgumentParserState& b);
-ArgumentParserState& operator|=(const ArgumentParserState& a, const ArgumentParserState& b);
-ArgumentParserState& operator&=(const ArgumentParserState& a, const ArgumentParserState& b);
+ArgumentParserState operator|(ArgumentParserState a, const ArgumentParserState& b) noexcept;
+ArgumentParserState operator&(ArgumentParserState a, const ArgumentParserState& b) noexcept;
+ArgumentParserState& operator|=(const ArgumentParserState& a, const ArgumentParserState& b) noexcept;
+ArgumentParserState& operator&=(const ArgumentParserState& a, const ArgumentParserState& b) noexcept;
 
 template<typename T>
-ArgumentParser& operator>>(ArgumentParser& parser, T&& arg) {
+ArgumentParser& operator>>(ArgumentParser& parser, T&& arg) noexcept {
     parser.GetNext(std::forward<T>(arg));
     return parser;
 }

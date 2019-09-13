@@ -59,7 +59,7 @@ const std::string& Label::GetText() const {
 }
 
 std::string& Label::GetText() {
-    return const_cast<std::string&>(static_cast<const UI::Label&>(*this).GetText());
+    return _text;
 }
 
 void Label::SetColor(const Rgba& color) {
@@ -71,7 +71,7 @@ const Rgba& Label::GetColor() const {
 }
 
 Rgba& Label::GetColor() {
-    return const_cast<Rgba&>(static_cast<const UI::Label&>(*this).GetColor());
+    return _color;
 }
 
 void Label::SetScale(float value) {

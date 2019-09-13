@@ -7,7 +7,7 @@
 #include "Engine/Rhi/RHIDevice.hpp"
 
 
-RHIFactory::RHIFactory() {
+RHIFactory::RHIFactory() noexcept {
 #ifdef RENDER_DEBUG
     auto hr_factory = ::CreateDXGIFactory2(DXGI_CREATE_FACTORY_DEBUG, __uuidof(IDXGIFactory6), reinterpret_cast<void**>(&_dxgi_factory));
 #else
@@ -16,19 +16,19 @@ RHIFactory::RHIFactory() {
     GUARANTEE_OR_DIE(SUCCEEDED(hr_factory), "Failed to create DXGIFactory6 from CreateDXGIFactory2.");
 }
 
-RHIFactory::~RHIFactory() {
+RHIFactory::~RHIFactory() noexcept {
     if(_dxgi_factory) {
         _dxgi_factory->Release();
         _dxgi_factory = nullptr;
     }
 }
 
-void RHIFactory::RestrictAltEnterToggle(const Window& window) {
+void RHIFactory::RestrictAltEnterToggle(const Window& window) noexcept {
     auto hr_mwa = _dxgi_factory->MakeWindowAssociation(window.GetWindowHandle(), DXGI_MWA_NO_ALT_ENTER);
     GUARANTEE_OR_DIE(SUCCEEDED(hr_mwa), "Failed to restrict Alt+Enter usage.");
 }
 
-IDXGISwapChain4* RHIFactory::CreateSwapChainForHwnd(RHIDevice* device, const Window& window, const DXGI_SWAP_CHAIN_DESC1& swapchain_desc) {
+IDXGISwapChain4* RHIFactory::CreateSwapChainForHwnd(RHIDevice* device, const Window& window, const DXGI_SWAP_CHAIN_DESC1& swapchain_desc) noexcept {
     IDXGISwapChain4* dxgi_swap_chain{};
     auto hr_createsc4hwnd = _dxgi_factory->CreateSwapChainForHwnd(device->GetDxDevice()
         , window.GetWindowHandle()
@@ -40,11 +40,11 @@ IDXGISwapChain4* RHIFactory::CreateSwapChainForHwnd(RHIDevice* device, const Win
     return dxgi_swap_chain;
 }
 
-IDXGIFactory6* RHIFactory::GetDxFactory() const {
+IDXGIFactory6* RHIFactory::GetDxFactory() const noexcept {
     return _dxgi_factory;
 }
 
-bool RHIFactory::QueryForAllowTearingSupport() const {
+bool RHIFactory::QueryForAllowTearingSupport() const noexcept {
     BOOL allow_tearing = {};
     HRESULT hr_cfs = _dxgi_factory->CheckFeatureSupport(DXGI_FEATURE_PRESENT_ALLOW_TEARING, &allow_tearing, sizeof(allow_tearing));
     bool cfs_call_succeeded = SUCCEEDED(hr_cfs);
@@ -54,7 +54,21 @@ bool RHIFactory::QueryForAllowTearingSupport() const {
     return false;
 }
 
-std::vector<AdapterInfo> RHIFactory::GetAdaptersByHighPerformancePreference() const {
+
+std::vector<AdapterInfo> RHIFactory::GetAdaptersByPreference(const AdapterPreference& preference) const noexcept {
+    switch(preference) {
+    case AdapterPreference::HighPerformance:
+        return GetAdaptersByHighPerformancePreference();
+    case AdapterPreference::MinimumPower:
+        return GetAdaptersByMinimumPowerPreference();
+    case AdapterPreference::Unspecified: [[fallthrough]];
+    /*case AdapterPreference::None: [[fallthrough]]; Also Unspecified */
+    default:
+        return GetAdaptersByUnspecifiedPreference();
+    }
+}
+
+std::vector<AdapterInfo> RHIFactory::GetAdaptersByHighPerformancePreference() const noexcept {
     std::vector<AdapterInfo> adapters{};
     IDXGIAdapter4* cur_adapter = nullptr;
     for(unsigned int i = 0u;
@@ -74,7 +88,7 @@ std::vector<AdapterInfo> RHIFactory::GetAdaptersByHighPerformancePreference() co
     return adapters;
 }
 
-std::vector<AdapterInfo> RHIFactory::GetAdaptersByMinimumPowerPreference() const {
+std::vector<AdapterInfo> RHIFactory::GetAdaptersByMinimumPowerPreference() const noexcept {
     std::vector<AdapterInfo> adapters{};
     IDXGIAdapter4* cur_adapter = nullptr;
     for(unsigned int i = 0u;
@@ -94,7 +108,7 @@ std::vector<AdapterInfo> RHIFactory::GetAdaptersByMinimumPowerPreference() const
     return adapters;
 }
 
-std::vector<AdapterInfo> RHIFactory::GetAdaptersByUnspecifiedPreference() const {
+std::vector<AdapterInfo> RHIFactory::GetAdaptersByUnspecifiedPreference() const noexcept {
     std::vector<AdapterInfo> adapters{};
     IDXGIAdapter4* cur_adapter = nullptr;
     for(unsigned int i = 0u;

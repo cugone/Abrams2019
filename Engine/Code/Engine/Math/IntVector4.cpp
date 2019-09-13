@@ -38,79 +38,71 @@ const IntVector4 IntVector4::WXZ_AXIS(1, 0, 1, 1);
 const IntVector4 IntVector4::WYZ_AXIS(0, 1, 1, 1);
 const IntVector4 IntVector4::XYZW_AXIS(1, 1, 1, 1);
 
-IntVector4::IntVector4(int initialX, int initialY, int initialZ, int initialW)
+IntVector4::IntVector4(int initialX, int initialY, int initialZ, int initialW) noexcept
     : x(initialX)
     , y(initialY)
     , z(initialZ)
-    , w(initialW)
-{
+    , w(initialW) {
     /* DO NOTHING */
 }
 
-IntVector4::IntVector4(const IntVector2& iv2, int initialZ, int initialW)
+IntVector4::IntVector4(const IntVector2& iv2, int initialZ, int initialW) noexcept
     : x(iv2.x)
     , y(iv2.y)
     , z(initialZ)
-    , w(initialW)
-{
+    , w(initialW) {
     /* DO NOTHING */
 }
 
-IntVector4::IntVector4(const Vector2& v2, int initialZ, int initialW)
+IntVector4::IntVector4(const Vector2& v2, int initialZ, int initialW) noexcept
     : x(static_cast<int>(std::floor(v2.x)))
     , y(static_cast<int>(std::floor(v2.y)))
     , z(initialZ)
-    , w(initialW)
-{
+    , w(initialW) {
     /* DO NOTHING */
 }
 
-IntVector4::IntVector4(const Vector2& xy, const Vector2& zw)
+IntVector4::IntVector4(const Vector2& xy, const Vector2& zw) noexcept
     : x(static_cast<int>(std::floor(xy.x)))
     , y(static_cast<int>(std::floor(xy.y)))
     , z(static_cast<int>(std::floor(zw.x)))
-    , w(static_cast<int>(std::floor(zw.y)))
-{
+    , w(static_cast<int>(std::floor(zw.y))) {
     /* DO NOTHING */
 }
 
-IntVector4::IntVector4(const IntVector2& xy, const IntVector2& zw)
+IntVector4::IntVector4(const IntVector2& xy, const IntVector2& zw) noexcept
     : x(xy.x)
     , y(xy.y)
     , z(zw.x)
-    , w(zw.y)
-{
+    , w(zw.y) {
     /* DO NOTHING */
 }
 
-IntVector4::IntVector4(const IntVector3& iv3, int initialW)
+IntVector4::IntVector4(const IntVector3& iv3, int initialW) noexcept
     : x(iv3.x)
     , y(iv3.y)
     , z(iv3.z)
-    , w(initialW)
-{
+    , w(initialW) {
     /* DO NOTHING */
 }
 
-IntVector4::IntVector4(const Vector3& v3, int initialW)
+IntVector4::IntVector4(const Vector3& v3, int initialW) noexcept
     : x(static_cast<int>(std::floor(v3.x)))
     , y(static_cast<int>(std::floor(v3.y)))
     , z(static_cast<int>(std::floor(v3.z)))
-    , w(initialW)
-{
+    , w(initialW) {
     /* DO NOTHING */
 }
 
-IntVector4::IntVector4(const Vector4& rhs)
+IntVector4::IntVector4(const Vector4& rhs) noexcept
     : x(static_cast<int>(std::floor(rhs.x)))
     , y(static_cast<int>(std::floor(rhs.y)))
     , z(static_cast<int>(std::floor(rhs.z)))
-    , w(static_cast<int>(std::floor(rhs.w)))
-{
+    , w(static_cast<int>(std::floor(rhs.w))) {
     /* DO NOTHING */
 }
 
-IntVector4::IntVector4(const std::string& value)
+IntVector4::IntVector4(const std::string& value) noexcept
     : x(0)
     , y(0)
     , z(0)
@@ -122,33 +114,33 @@ IntVector4::IntVector4(const std::string& value)
             auto s = values.size();
             for(std::size_t i = 0; i < s; ++i) {
                 switch(i) {
-                    case 0: x = std::stoi(values[i]); break;
-                    case 1: y = std::stoi(values[i]); break;
-                    case 2: z = std::stoi(values[i]); break;
-                    case 3: w = std::stoi(values[i]); break;
-                    default: break;
+                case 0: x = std::stoi(values[i]); break;
+                case 1: y = std::stoi(values[i]); break;
+                case 2: z = std::stoi(values[i]); break;
+                case 3: w = std::stoi(values[i]); break;
+                default: break;
                 }
             }
         }
     }
 }
 
-void IntVector4::SetXYZW(int newX, int newY, int newZ, int newW) {
+void IntVector4::SetXYZW(int newX, int newY, int newZ, int newW) noexcept {
     x = newX;
     y = newY;
     z = newZ;
     w = newW;
 }
 
-std::tuple<int,int,int,int> IntVector4::GetXYZW() const {
+std::tuple<int, int, int, int> IntVector4::GetXYZW() const noexcept {
     return std::make_tuple(x, y, z, w);
 }
 
-bool IntVector4::operator!=(const IntVector4& rhs) {
+bool IntVector4::operator!=(const IntVector4& rhs) noexcept {
     return !(*this == rhs);
 }
 
-bool IntVector4::operator==(const IntVector4& rhs) {
+bool IntVector4::operator==(const IntVector4& rhs) noexcept {
     return x == rhs.x && y == rhs.y && z == rhs.z && w == rhs.w;
 }
 

@@ -18,13 +18,13 @@ void RasterState::SetDebugName([[maybe_unused]] const std::string& name) const n
 #endif
 }
 
-RasterState::RasterState(const RHIDevice* device, const XMLElement& element)
+RasterState::RasterState(const RHIDevice* device, const XMLElement& element) noexcept
     : RasterState(device, RasterDesc{element})
 {
     /* DO NOTHING */
 }
 
-RasterState::RasterState(const RHIDevice* device, const RasterDesc& desc)
+RasterState::RasterState(const RHIDevice* device, const RasterDesc& desc) noexcept
     : _desc(desc)
 {
     if(!CreateRasterState(device, _desc)) {
@@ -36,22 +36,22 @@ RasterState::RasterState(const RHIDevice* device, const RasterDesc& desc)
     }
 }
 
-RasterState::~RasterState() {
+RasterState::~RasterState() noexcept {
     if(_dx_state) {
         _dx_state->Release();
         _dx_state = nullptr;
     }
 }
 
-const RasterDesc& RasterState::GetDesc() const {
+const RasterDesc& RasterState::GetDesc() const noexcept {
     return _desc;
 }
 
-ID3D11RasterizerState* RasterState::GetDxRasterState() {
+ID3D11RasterizerState* RasterState::GetDxRasterState() noexcept {
     return _dx_state;
 }
 
-bool RasterState::CreateRasterState(const RHIDevice* device, const RasterDesc& raster_desc /*= RasterDesc()*/) {
+bool RasterState::CreateRasterState(const RHIDevice* device, const RasterDesc& raster_desc /*= RasterDesc()*/) noexcept {
 
     D3D11_RASTERIZER_DESC desc{};
 
@@ -69,64 +69,64 @@ bool RasterState::CreateRasterState(const RHIDevice* device, const RasterDesc& r
     return SUCCEEDED(hr);
 }
 
-RasterDesc::RasterDesc(const XMLElement& element) {
+RasterDesc::RasterDesc(const XMLElement& element) noexcept {
     if(auto xml_raster = element.FirstChildElement("raster")) {
         DataUtils::ValidateXmlElement(*xml_raster, "raster", "fill,cull", "", "windingorder,antialiasing,depthbias,depthclip,scissor,msaa");
         auto xml_fill = xml_raster->FirstChildElement("fill");
         std::string fill_str = "solid";
         fill_str = DataUtils::ParseXmlElementText(*xml_fill, fill_str);
-        this->fillmode = FillModeFromString(fill_str);
+        fillmode = FillModeFromString(fill_str);
 
         auto xml_cull = xml_raster->FirstChildElement("cull");
         std::string cull_str = "back";
         cull_str = DataUtils::ParseXmlElementText(*xml_cull, cull_str);
-        this->cullmode = CullModeFromString(cull_str);
+        cullmode = CullModeFromString(cull_str);
 
-        this->antialiasedLineEnable = false;
+        antialiasedLineEnable = false;
         if(auto xml_antialiasing = xml_raster->FirstChildElement("antialiasing")) {
             DataUtils::ValidateXmlElement(*xml_antialiasing, "antialiasing", "", "");
-            this->antialiasedLineEnable = DataUtils::ParseXmlElementText(*xml_antialiasing, this->antialiasedLineEnable);
+            antialiasedLineEnable = DataUtils::ParseXmlElementText(*xml_antialiasing, antialiasedLineEnable);
         }
 
-        this->depthBias = 0;
-        this->depthBiasClamp = 0.0f;
-        this->slopeScaledDepthBias = 0.0f;
+        depthBias = 0;
+        depthBiasClamp = 0.0f;
+        slopeScaledDepthBias = 0.0f;
         if(auto xml_depthbias = xml_raster->FirstChildElement("depthbias")) {
             DataUtils::ValidateXmlElement(*xml_depthbias, "depthbias", "", "value,clamp,slopescaled");
-            this->depthBias = DataUtils::ParseXmlAttribute(*xml_depthbias, "value", this->depthBias);
-            this->depthBiasClamp = DataUtils::ParseXmlAttribute(*xml_depthbias, "clamp", this->depthBiasClamp);
-            this->slopeScaledDepthBias = DataUtils::ParseXmlAttribute(*xml_depthbias, "slopescaled", this->slopeScaledDepthBias);
+            depthBias = DataUtils::ParseXmlAttribute(*xml_depthbias, "value", depthBias);
+            depthBiasClamp = DataUtils::ParseXmlAttribute(*xml_depthbias, "clamp", depthBiasClamp);
+            slopeScaledDepthBias = DataUtils::ParseXmlAttribute(*xml_depthbias, "slopescaled", slopeScaledDepthBias);
         }
 
-        this->depthClipEnable = true;
+        depthClipEnable = true;
         if(auto xml_depthclip = xml_raster->FirstChildElement("depthclip")) {
             DataUtils::ValidateXmlElement(*xml_depthclip, "depthclip", "", "");
-            this->depthClipEnable = DataUtils::ParseXmlElementText(*xml_depthclip, this->depthClipEnable);
+            depthClipEnable = DataUtils::ParseXmlElementText(*xml_depthclip, depthClipEnable);
         }
 
-        this->scissorEnable = false;
+        scissorEnable = false;
         if(auto xml_scissor = xml_raster->FirstChildElement("scissor")) {
             DataUtils::ValidateXmlElement(*xml_scissor, "scissor", "", "");
-            this->scissorEnable = DataUtils::ParseXmlElementText(*xml_scissor, this->scissorEnable);
+            scissorEnable = DataUtils::ParseXmlElementText(*xml_scissor, scissorEnable);
         }
 
-        this->multisampleEnable = false;
+        multisampleEnable = false;
         if(auto xml_msaa = xml_raster->FirstChildElement("msaa")) {
             DataUtils::ValidateXmlElement(*xml_msaa, "msaa", "", "");
-            this->multisampleEnable = DataUtils::ParseXmlElementText(*xml_msaa, this->multisampleEnable);
+            multisampleEnable = DataUtils::ParseXmlElementText(*xml_msaa, multisampleEnable);
         }
 
-        this->frontCounterClockwise = false;
+        frontCounterClockwise = false;
         if(auto xml_windingorder = xml_raster->FirstChildElement("windingorder")) {
             DataUtils::ValidateXmlElement(*xml_windingorder, "windingorder", "", "");
             std::string value{"cw"};
             value = DataUtils::ParseXmlElementText(*xml_raster, value);
             if(value == "cw") {
-                this->frontCounterClockwise = false;
+                frontCounterClockwise = false;
             } else if(value == "ccw") {
-                this->frontCounterClockwise = true;
+                frontCounterClockwise = true;
             } else {
-                this->frontCounterClockwise = false;
+                frontCounterClockwise = false;
             }
         }
     }

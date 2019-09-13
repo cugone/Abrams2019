@@ -34,7 +34,7 @@ public:
     static const Vector4 XZW_AXIS;
     static const Vector4 XYW_AXIS;
 
-    static Vector4 CalcHomogeneous(const Vector4& v);
+    static Vector4 CalcHomogeneous(const Vector4& v) noexcept;
 
     Vector4() = default;
     ~Vector4() = default;
@@ -43,56 +43,58 @@ public:
     Vector4& operator=(const Vector4& rhs) = default;
     Vector4& operator=(Vector4&& rhs) = default;
 
-    explicit Vector4(const std::string& value);
-    explicit Vector4(const IntVector4& intvec4);
-    explicit Vector4(const Vector3& xyz, float initialW);
-    explicit Vector4(const Vector2& xy, float initialZ, float initialW);
-    explicit Vector4(const Vector2& xy, const Vector2& zw);
-    explicit Vector4(float initialX, float initialY, float initialZ, float initialW);
+    explicit Vector4(const std::string& value) noexcept;
+    explicit Vector4(const IntVector4& intvec4) noexcept;
+    explicit Vector4(const Vector3& xyz, float initialW) noexcept;
+    explicit Vector4(const Vector2& xy, float initialZ, float initialW) noexcept;
+    explicit Vector4(const Vector2& xy, const Vector2& zw) noexcept;
+    explicit Vector4(float initialX, float initialY, float initialZ, float initialW) noexcept;
 
-    bool operator==(const Vector4& rhs) const;
-    bool operator!=(const Vector4& rhs) const;
-    
-    Vector4 operator+(const Vector4& rhs) const;
-    Vector4 operator-(const Vector4& rhs) const;
-    Vector4 operator*(const Vector4& rhs) const;
-    Vector4 operator*(float scale) const;
-    Vector4 operator/(const Vector4 rhs) const;
-    Vector4 operator/(float inv_scale) const;
+    bool operator==(const Vector4& rhs) const noexcept;
+    bool operator!=(const Vector4& rhs) const noexcept;
 
-    friend Vector4 operator*(float lhs, const Vector4& rhs);
-    Vector4& operator*=(float scale);
-    Vector4& operator*=(const Vector4& rhs);
-    Vector4& operator/=(const Vector4& rhs);
-    Vector4& operator+=(const Vector4& rhs);
-    Vector4& operator-=(const Vector4& rhs);
+    Vector4 operator+(const Vector4& rhs) const noexcept;
+    Vector4 operator-(const Vector4& rhs) const noexcept;
+    Vector4 operator*(const Vector4& rhs) const noexcept;
+    Vector4 operator*(float scale) const noexcept;
+    Vector4 operator/(const Vector4 rhs) const noexcept;
+    Vector4 operator/(float inv_scale) const noexcept;
 
-    Vector4 operator-() const;
+    friend Vector4 operator*(float lhs, const Vector4& rhs) noexcept;
+    Vector4& operator*=(float scale) noexcept;
+    Vector4& operator*=(const Vector4& rhs) noexcept;
+    Vector4& operator/=(const Vector4& rhs) noexcept;
+    Vector4& operator+=(const Vector4& rhs) noexcept;
+    Vector4& operator-=(const Vector4& rhs) noexcept;
 
-    friend std::ostream& operator<<(std::ostream& out_stream, const Vector4& v);
-    friend std::istream& operator>>(std::istream& in_stream, Vector4& v);
+    Vector4 operator-() const noexcept;
 
-    Vector2 GetXY() const;
-    Vector2 GetZW() const;
+    friend std::ostream& operator<<(std::ostream& out_stream, const Vector4& v) noexcept;
+    friend std::istream& operator>>(std::istream& in_stream, Vector4& v) noexcept;
 
-    void GetXYZ(float& out_x, float& out_y, float& out_z) const;
-    void GetXYZW(float& out_x, float& out_y, float& out_z, float& out_w) const;
-    void SetXYZ(float newX, float newY, float newZ);
-    void SetXYZW(float newX, float newY, float newZ, float newW);
+    Vector2 GetXY() const noexcept;
+    Vector2 GetZW() const noexcept;
 
-    float* GetAsFloatArray();
+    void GetXYZ(float& out_x, float& out_y, float& out_z) const noexcept;
+    void GetXYZW(float& out_x, float& out_y, float& out_z, float& out_w) const noexcept;
+    void SetXYZ(float newX, float newY, float newZ) noexcept;
+    void SetXYZW(float newX, float newY, float newZ, float newW) noexcept;
 
-    float CalcLength3D() const;
-    float CalcLength3DSquared() const;
-    float CalcLength4D() const;
-    float CalcLength4DSquared() const;
-    void CalcHomogeneous();
+    float* GetAsFloatArray() noexcept;
 
-    float Normalize4D();
-    float Normalize3D();
+    float CalcLength3D() const noexcept;
+    float CalcLength3DSquared() const noexcept;
+    float CalcLength4D() const noexcept;
+    float CalcLength4DSquared() const noexcept;
+    void CalcHomogeneous() noexcept;
 
-    Vector4 GetNormalize4D() const;
-    Vector4 GetNormalize3D() const;
+    float Normalize4D() noexcept;
+    float Normalize3D() noexcept;
+
+    Vector4 GetNormalize4D() const noexcept;
+    Vector4 GetNormalize3D() const noexcept;
+
+    friend void swap(Vector4& a, Vector4& b) noexcept;
 
     float x = 0.0f;
     float y = 0.0f;

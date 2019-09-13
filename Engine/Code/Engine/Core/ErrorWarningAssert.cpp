@@ -21,7 +21,7 @@
 
 
 //-----------------------------------------------------------------------------------------------
-bool IsDebuggerAvailable() {
+bool IsDebuggerAvailable() noexcept {
 #if defined( PLATFORM_WINDOWS )
     typedef BOOL(CALLBACK IsDebuggerPresentFunc)();
 
@@ -44,7 +44,7 @@ bool IsDebuggerAvailable() {
 }
 
 //-----------------------------------------------------------------------------------------------
-void DebuggerPrintf(const char* messageFormat, ...) {
+void DebuggerPrintf(const char* messageFormat, ...) noexcept {
     const int MESSAGE_MAX_LENGTH = 2048;
     char messageLiteral[MESSAGE_MAX_LENGTH];
     va_list variableArgumentList;
@@ -66,7 +66,7 @@ void DebuggerPrintf(const char* messageFormat, ...) {
 // Converts a SeverityLevel to a Windows MessageBox icon type (MB_etc)
 //
 #if defined( PLATFORM_WINDOWS )
-UINT GetWindowsMessageBoxIconFlagForSeverityLevel(SeverityLevel severity) {
+UINT GetWindowsMessageBoxIconFlagForSeverityLevel(SeverityLevel severity) noexcept {
     switch(severity) {
         case SEVERITY_INFORMATION:		return MB_ICONASTERISK;		// blue circle with 'i' in Windows 7
         case SEVERITY_QUESTION:			return MB_ICONQUESTION;		// blue circle with '?' in Windows 7
@@ -78,7 +78,7 @@ UINT GetWindowsMessageBoxIconFlagForSeverityLevel(SeverityLevel severity) {
 #endif
 
 //-----------------------------------------------------------------------------------------------
-void SystemDialogue_Okay(const std::string& messageTitle, const std::string& messageText, SeverityLevel severity) {
+void SystemDialogue_Okay(const std::string& messageTitle, const std::string& messageText, SeverityLevel severity) noexcept {
 #if defined( PLATFORM_WINDOWS )
     {
         ShowCursor(TRUE);
@@ -93,7 +93,7 @@ void SystemDialogue_Okay(const std::string& messageTitle, const std::string& mes
 //-----------------------------------------------------------------------------------------------
 // Returns true if OKAY was chosen, false if CANCEL was chosen.
 //
-bool SystemDialogue_OkayCancel(const std::string& messageTitle, const std::string& messageText, SeverityLevel severity) {
+bool SystemDialogue_OkayCancel(const std::string& messageTitle, const std::string& messageText, SeverityLevel severity) noexcept {
     bool isAnswerOkay = true;
 
 #if defined( PLATFORM_WINDOWS )
@@ -113,7 +113,7 @@ bool SystemDialogue_OkayCancel(const std::string& messageTitle, const std::strin
 //-----------------------------------------------------------------------------------------------
 // Returns true if YES was chosen, false if NO was chosen.
 //
-bool SystemDialogue_YesNo(const std::string& messageTitle, const std::string& messageText, SeverityLevel severity) {
+bool SystemDialogue_YesNo(const std::string& messageTitle, const std::string& messageText, SeverityLevel severity) noexcept {
     bool isAnswerYes = true;
 
 #if defined( PLATFORM_WINDOWS )
@@ -133,7 +133,7 @@ bool SystemDialogue_YesNo(const std::string& messageTitle, const std::string& me
 //-----------------------------------------------------------------------------------------------
 // Returns 1 if YES was chosen, 0 if NO was chosen, -1 if CANCEL was chosen.
 //
-int SystemDialogue_YesNoCancel(const std::string& messageTitle, const std::string& messageText, SeverityLevel severity) {
+int SystemDialogue_YesNoCancel(const std::string& messageTitle, const std::string& messageText, SeverityLevel severity) noexcept {
     int answerCode = 1;
 
 #if defined( PLATFORM_WINDOWS )
@@ -151,7 +151,7 @@ int SystemDialogue_YesNoCancel(const std::string& messageTitle, const std::strin
 
 
 //-----------------------------------------------------------------------------------------------
-__declspec(noreturn) void FatalError(const char* filePath, const char* functionName, int lineNum, const std::string& reasonForError, const char* conditionText) {
+[[noreturn]] void FatalError(const char* filePath, const char* functionName, int lineNum, const std::string& reasonForError, const char* conditionText) {
     std::string errorMessage = reasonForError;
     if(reasonForError.empty()) {
         if(conditionText)
@@ -201,7 +201,7 @@ __declspec(noreturn) void FatalError(const char* filePath, const char* functionN
 
 
 //-----------------------------------------------------------------------------------------------
-void RecoverableWarning(const char* filePath, const char* functionName, int lineNum, const std::string& reasonForWarning, const char* conditionText) {
+void RecoverableWarning(const char* filePath, const char* functionName, int lineNum, const std::string& reasonForWarning, const char* conditionText) noexcept {
     std::string errorMessage = reasonForWarning;
     if(reasonForWarning.empty()) {
         if(conditionText)

@@ -1,6 +1,7 @@
 #include "Engine/Core/JobSystem.hpp"
 
 #include "Engine/Core/TimeUtils.hpp"
+#include "Engine/Core/ThreadUtils.hpp"
 #include "Engine/Core/Win.hpp"
 
 #include <chrono>
@@ -10,10 +11,10 @@ std::vector<ThreadSafeQueue<Job*>*> JobSystem::_queues = std::vector<ThreadSafeQ
 std::vector<std::condition_variable*> JobSystem::_signals = std::vector<std::condition_variable*>{};
 std::vector<std::thread> JobSystem::_threads = std::vector<std::thread>{};
 
-void JobSystem::GenericJobWorker(std::condition_variable* signal) {
+void JobSystem::GenericJobWorker(std::condition_variable* signal) noexcept {
     JobConsumer jc;
     jc.AddCategory(JobType::Generic);
-    this->SetCategorySignal(JobType::Generic, signal);
+    SetCategorySignal(JobType::Generic, signal);
     while(IsRunning()) {
         if(signal) {
             std::unique_lock<std::mutex> lock(_cs);
@@ -26,7 +27,7 @@ void JobSystem::GenericJobWorker(std::condition_variable* signal) {
     }
 }
 
-void JobConsumer::AddCategory(const JobType& category) {
+void JobConsumer::AddCategory(const JobType& category) noexcept {
     auto categoryAsSizeT = static_cast<std::underlying_type_t<JobType>>(category);
     if(categoryAsSizeT >= JobSystem::_queues.size()) {
         return;
@@ -37,7 +38,7 @@ void JobConsumer::AddCategory(const JobType& category) {
     }
 }
 
-bool JobConsumer::ConsumeJob() {
+bool JobConsumer::ConsumeJob() noexcept {
     if(_consumables.empty()) {
         return false;
     }
@@ -59,7 +60,7 @@ bool JobConsumer::ConsumeJob() {
     return true;
 }
 
-unsigned int JobConsumer::ConsumeAll() {
+unsigned int JobConsumer::ConsumeAll() noexcept {
     unsigned int processed_jobs = 0;
     while(ConsumeJob()) {
         ++processed_jobs;
@@ -67,7 +68,7 @@ unsigned int JobConsumer::ConsumeAll() {
     return processed_jobs;
 }
 
-void JobConsumer::ConsumeFor(TimeUtils::FPMilliseconds consume_duration) {
+void JobConsumer::ConsumeFor(TimeUtils::FPMilliseconds consume_duration) noexcept {
     auto start_time = TimeUtils::Now();
     while(TimeUtils::FPMilliseconds{TimeUtils::Now() - start_time} < consume_duration) {
         ConsumeJob();
@@ -75,7 +76,7 @@ void JobConsumer::ConsumeFor(TimeUtils::FPMilliseconds consume_duration) {
 }
 
 
-bool JobConsumer::HasJobs() const {
+bool JobConsumer::HasJobs() const noexcept {
     if(_consumables.empty()) {
         return false;
     }
@@ -88,17 +89,17 @@ bool JobConsumer::HasJobs() const {
     return false;
 }
 
-JobSystem::JobSystem(int genericCount, std::size_t categoryCount, std::condition_variable* mainJobSignal)
+JobSystem::JobSystem(int genericCount, std::size_t categoryCount, std::condition_variable* mainJobSignal) noexcept
 : _main_job_signal(mainJobSignal)
 {
     Initialize(genericCount, categoryCount);
 }
 
-JobSystem::~JobSystem() {
+JobSystem::~JobSystem() noexcept {
     Shutdown();
 }
 
-void JobSystem::Initialize(int genericCount, std::size_t categoryCount) {
+void JobSystem::Initialize(int genericCount, std::size_t categoryCount) noexcept {
     auto core_count = static_cast<int>(std::thread::hardware_concurrency());
     if(genericCount <= 0) {
         core_count += genericCount;
@@ -122,17 +123,17 @@ void JobSystem::Initialize(int genericCount, std::size_t categoryCount) {
         auto t = std::thread(&JobSystem::GenericJobWorker, this, _signals[static_cast<std::underlying_type_t<JobType>>(JobType::Generic)]);
         std::wostringstream wss;
         wss << "Generic Job Thread " << i;
-        ::SetThreadDescription(t.native_handle(), wss.str().c_str());
+        ThreadUtils::SetThreadDescription(t, wss.str());
         _threads[i] = std::move(t);
     }
 
 }
 
-void JobSystem::BeginFrame() {
+void JobSystem::BeginFrame() noexcept {
     MainStep();
 }
 
-void JobSystem::Shutdown() {
+void JobSystem::Shutdown() noexcept {
     if(!IsRunning()) {
         return;
     }
@@ -170,18 +171,18 @@ void JobSystem::Shutdown() {
 
 }
 
-void JobSystem::MainStep() {
+void JobSystem::MainStep() noexcept {
     JobConsumer jc;
     jc.AddCategory(JobType::Main);
     SetCategorySignal(JobType::Main, _main_job_signal);
     jc.ConsumeAll();
 }
 
-void JobSystem::SetCategorySignal(const JobType& category_id, std::condition_variable* signal) {
+void JobSystem::SetCategorySignal(const JobType& category_id, std::condition_variable* signal) noexcept {
     _signals[static_cast<std::underlying_type_t<JobType>>(category_id)] = signal;
 }
 
-Job* JobSystem::Create(const JobType& category, const std::function<void(void*)>& cb, void* user_data) {
+Job* JobSystem::Create(const JobType& category, const std::function<void(void*)>& cb, void* user_data) noexcept {
     auto j = new Job(*this);
     j->type = category;
     j->state = JobState::Created;
@@ -191,13 +192,13 @@ Job* JobSystem::Create(const JobType& category, const std::function<void(void*)>
     return std::move(j);
 }
 
-void JobSystem::Run(const JobType& category, const std::function<void(void*)>& cb, void* user_data) {
+void JobSystem::Run(const JobType& category, const std::function<void(void*)>& cb, void* user_data) noexcept {
     Job* job = Create(category, cb, user_data);
     job->state = JobState::Running;
     DispatchAndRelease(job);
 }
 
-void JobSystem::Dispatch(Job* job) {
+void JobSystem::Dispatch(Job* job) noexcept {
     job->state = JobState::Dispatched;
     ++job->num_dependencies;
     auto jobtype = static_cast<std::underlying_type_t<JobType>>(job->type);
@@ -208,7 +209,7 @@ void JobSystem::Dispatch(Job* job) {
     }
 }
 
-bool JobSystem::Release(Job* job) {
+bool JobSystem::Release(Job* job) noexcept {
     auto dcount = --job->num_dependencies;
     if(dcount != 0) {
         return false;
@@ -217,65 +218,65 @@ bool JobSystem::Release(Job* job) {
     return true;
 }
 
-void JobSystem::Wait(Job* job) {
+void JobSystem::Wait(Job* job) noexcept {
     while(job->state != JobState::Finished) {
         std::this_thread::yield();
     }
 }
 
-void JobSystem::DispatchAndRelease(Job* job) {
+void JobSystem::DispatchAndRelease(Job* job) noexcept {
     Dispatch(job);
     Release(job);
 }
 
-void JobSystem::WaitAndRelease(Job* job) {
+void JobSystem::WaitAndRelease(Job* job) noexcept {
     Wait(job);
     Release(job);
 }
 
-bool JobSystem::IsRunning() {
+bool JobSystem::IsRunning() const noexcept {
     bool running = _is_running;
     return running;
 }
 
-void JobSystem::SetIsRunning(bool value /*= true*/) {
+void JobSystem::SetIsRunning(bool value /*= true*/) noexcept {
     _is_running = value;
 }
 
-std::condition_variable* JobSystem::GetMainJobSignal() const {
+std::condition_variable* JobSystem::GetMainJobSignal() const noexcept {
     return _main_job_signal;
 }
 
-Job::Job(JobSystem& jobSystem)
+Job::Job(JobSystem& jobSystem) noexcept
     : _job_system(&jobSystem)
 {
     /* DO NOTHING */
 }
 
-Job::~Job() {
+Job::~Job() noexcept {
     delete user_data;
 }
 
-void Job::DependencyOf(Job* dependency) {
-    this->DependentOn(dependency);
+void Job::DependencyOf(Job* dependency) noexcept {
+    DependentOn(dependency);
 }
 
-void Job::DependentOn(Job* parent) {
+void Job::DependentOn(Job* parent) noexcept {
     parent->AddDependent(this);
 }
 
-void Job::OnDependancyFinished() {
+void Job::OnDependancyFinished() noexcept {
     ++num_dependencies;
     _job_system->DispatchAndRelease(this);
 }
 
-void Job::OnFinish() {
+void Job::OnFinish() noexcept {
     for(auto& dependent : dependents) {
         dependent->OnDependancyFinished();
     }
 }
 
-void Job::AddDependent(Job* dependent) {
+void Job::AddDependent(Job* dependent) noexcept {
     dependent->state = JobState::Enqueued;
     dependents.push_back(dependent);
 }

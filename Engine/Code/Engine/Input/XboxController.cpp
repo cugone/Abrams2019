@@ -4,72 +4,68 @@
 
 #include "Engine/Math/MathUtils.hpp"
 
-#include <algorithm>
-
-bool XboxController::WasAnyButtonJustPressed() const {
+bool XboxController::WasAnyButtonJustPressed() const noexcept {
     return (_previousButtonState.to_ulong() < _currentButtonState.to_ulong());
 }
 
-bool XboxController::WasAnyButtonJustReleased() const {
+bool XboxController::WasAnyButtonJustReleased() const noexcept {
     return (_currentButtonState.to_ulong() < _previousButtonState.to_ulong());
 }
 
-bool XboxController::IsAnyButtonDown() const {
+bool XboxController::IsAnyButtonDown() const noexcept {
     return _currentButtonState.any();
 }
 
-const Vector2& XboxController::GetLeftThumbPosition() const {
+const Vector2& XboxController::GetLeftThumbPosition() const noexcept {
     return _leftThumbDistance;
 }
 
-const Vector2& XboxController::GetRightThumbPosition() const {
+const Vector2& XboxController::GetRightThumbPosition() const noexcept {
     return _rightThumbDistance;
 }
 
-float XboxController::GetLeftTriggerPosition() const {
+float XboxController::GetLeftTriggerPosition() const noexcept {
     return _triggerDistances.x;
 }
 
-float XboxController::GetRightTriggerPosition() const {
+float XboxController::GetRightTriggerPosition() const noexcept {
     return _triggerDistances.y;
 }
 
-bool XboxController::IsButtonUp(const Button& button) const {
+bool XboxController::IsButtonUp(const Button& button) const noexcept {
     return !_currentButtonState[(std::size_t)button];
 }
 
-bool XboxController::WasButtonJustPressed(const Button& button) const {
+bool XboxController::WasButtonJustPressed(const Button& button) const noexcept {
     return !_previousButtonState[(std::size_t)button] && _currentButtonState[(std::size_t)button];
 }
 
-bool XboxController::IsButtonDown(const Button& button) const {
+bool XboxController::IsButtonDown(const Button& button) const noexcept {
     return _currentButtonState[(std::size_t)button];
 }
 
-bool XboxController::WasButtonJustReleased(const Button& button) const {
+bool XboxController::WasButtonJustReleased(const Button& button) const noexcept {
     return _previousButtonState[(std::size_t)button] && !_currentButtonState[(std::size_t)button];
 }
 
-bool XboxController::WasJustConnected() const {
+bool XboxController::WasJustConnected() const noexcept {
     return !_previousActiveState[(std::size_t)ActiveState::Connected] && _currentActiveState[(std::size_t)ActiveState::Connected];
 }
 
-bool XboxController::IsConnected() const {
+bool XboxController::IsConnected() const noexcept {
     return _previousActiveState[(std::size_t)ActiveState::Connected] && _currentActiveState[(std::size_t)ActiveState::Connected];
 }
 
-bool XboxController::WasJustDisconnected() const {
+bool XboxController::WasJustDisconnected() const noexcept {
     return _previousActiveState[(std::size_t)ActiveState::Connected] && !_currentActiveState[(std::size_t)ActiveState::Connected];
 }
 
-bool XboxController::IsDisconnected() const {
+bool XboxController::IsDisconnected() const noexcept {
     return !_previousActiveState[(std::size_t)ActiveState::Connected] && !_currentActiveState[(std::size_t)ActiveState::Connected];
 }
 
-void XboxController::Update(int controller_number) {
-    XINPUT_STATE state;
-    std::memset(&state, 0, sizeof(state));
-
+void XboxController::Update(int controller_number) noexcept {
+    XINPUT_STATE state{};
     auto error_status = ::XInputGetState(controller_number, &state);
     _previousPacketNumber = _currentPacketNumber;
     _currentPacketNumber = state.dwPacketNumber;
@@ -98,14 +94,14 @@ void XboxController::Update(int controller_number) {
         float leftRadius = _leftThumbDistance.CalcLength();
 
         leftRadius = MathUtils::RangeMap<float>(leftRadius, XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE, 32000, 0.0f, 1.0f);
-        leftRadius = std::clamp<float>(leftRadius, 0.0f, 1.0f);
+        leftRadius = std::clamp(leftRadius, 0.0f, 1.0f);
 
         _leftThumbDistance.SetLength(leftRadius);
 
         float rightRadius = _rightThumbDistance.CalcLength();
 
         rightRadius = MathUtils::RangeMap<float>(rightRadius, XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE, 32000, 0.0f, 1.0f);
-        rightRadius = std::clamp<float>(rightRadius, 0.0f, 1.0f);
+        rightRadius = std::clamp(rightRadius, 0.0f, 1.0f);
 
         _rightThumbDistance.SetLength(rightRadius);
 
@@ -120,20 +116,20 @@ void XboxController::Update(int controller_number) {
     }
 }
 
-void XboxController::StopLeftMotor() {
+void XboxController::StopLeftMotor() noexcept {
     SetLeftMotorSpeed(0);
 }
 
-void XboxController::StopRightMotor() {
+void XboxController::StopRightMotor() noexcept {
     SetRightMotorSpeed(0);
 }
 
-void XboxController::StopMotors() {
+void XboxController::StopMotors() noexcept {
     StopLeftMotor();
     StopRightMotor();
 }
 
-void XboxController::SetLeftMotorSpeed(unsigned short speed) {
+void XboxController::SetLeftMotorSpeed(unsigned short speed) noexcept {
     if(speed == _leftMotorState) {
         return;
     }
@@ -141,7 +137,7 @@ void XboxController::SetLeftMotorSpeed(unsigned short speed) {
     _currentActiveState[(std::size_t)ActiveState::Motor] = true;
 }
 
-void XboxController::SetRightMotorSpeed(unsigned short speed) {
+void XboxController::SetRightMotorSpeed(unsigned short speed) noexcept {
     if(speed == _rightMotorState) {
         return;
     }
@@ -149,41 +145,41 @@ void XboxController::SetRightMotorSpeed(unsigned short speed) {
     _currentActiveState[(std::size_t)ActiveState::Motor] = true;
 }
 
-void XboxController::SetBothMotorSpeed(unsigned short speed) {
+void XboxController::SetBothMotorSpeed(unsigned short speed) noexcept {
     SetLeftMotorSpeed(speed);
     SetRightMotorSpeed(speed);
 }
 
-void XboxController::SetLeftMotorSpeedToMax() {
+void XboxController::SetLeftMotorSpeedToMax() noexcept {
     SetLeftMotorSpeedAsPercent(1.0f);
 }
 
-void XboxController::SetRightMotorSpeedToMax() {
+void XboxController::SetRightMotorSpeedToMax() noexcept {
     SetRightMotorSpeedAsPercent(1.0f);
 }
 
-void XboxController::SetBothMotorSpeedToMax() {
+void XboxController::SetBothMotorSpeedToMax() noexcept {
     SetLeftMotorSpeedToMax();
     SetRightMotorSpeedToMax();
 }
 
-void XboxController::SetLeftMotorSpeedAsPercent(float speed) {
+void XboxController::SetLeftMotorSpeedAsPercent(float speed) noexcept {
+    speed = std::clamp(speed, 0.0f, 1.0f);
     SetLeftMotorSpeed(static_cast<unsigned short>(static_cast<float>((std::numeric_limits<unsigned short>::max)()) * speed));
 }
 
-void XboxController::SetRightMotorSpeedAsPercent(float speed) {
+void XboxController::SetRightMotorSpeedAsPercent(float speed) noexcept {
+    speed = std::clamp(speed, 0.0f, 1.0f);
     SetRightMotorSpeed(static_cast<unsigned short>(static_cast<float>((std::numeric_limits<unsigned short>::max)()) * speed));
 }
 
-void XboxController::SetBothMotorSpeedAsPercent(float speed) {
+void XboxController::SetBothMotorSpeedAsPercent(float speed) noexcept {
     SetLeftMotorSpeedAsPercent(speed);
     SetRightMotorSpeedAsPercent(speed);
 }
 
-void XboxController::UpdateConnectedState(int controller_number) {
-    XINPUT_STATE state;
-    std::memset(&state, 0, sizeof(state));
-
+void XboxController::UpdateConnectedState(int controller_number) noexcept {
+    XINPUT_STATE state{};
     auto error_status = ::XInputGetState(controller_number, &state);
     _previousPacketNumber = _currentPacketNumber;
     _currentPacketNumber = state.dwPacketNumber;
@@ -205,7 +201,7 @@ void XboxController::UpdateConnectedState(int controller_number) {
     }
 }
 
-void XboxController::UpdateState() {
+void XboxController::UpdateState() noexcept {
 
     _previousButtonState = _currentButtonState;
 
@@ -229,9 +225,8 @@ void XboxController::UpdateState() {
 
 }
 
-void XboxController::SetMotorSpeed(int controller_number, const Motor& motor, unsigned short value) {
-    XINPUT_VIBRATION vibration;
-    std::memset(&vibration, 0, sizeof(vibration));
+void XboxController::SetMotorSpeed(int controller_number, const Motor& motor, unsigned short value) noexcept {
+    XINPUT_VIBRATION vibration{};
     switch(motor) {
         case Motor::Left:
             vibration.wLeftMotorSpeed = value;
@@ -257,6 +252,6 @@ void XboxController::SetMotorSpeed(int controller_number, const Motor& motor, un
     }
 }
 
-bool XboxController::DidMotorStateChange() const {
+bool XboxController::DidMotorStateChange() const noexcept {
     return _previousActiveState[(std::size_t)ActiveState::Motor] ^ _currentActiveState[(std::size_t)ActiveState::Motor];
 }

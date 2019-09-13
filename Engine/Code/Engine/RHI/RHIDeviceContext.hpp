@@ -26,53 +26,53 @@ enum class PrimitiveType : uint32_t;
 
 class RHIDeviceContext {
 public:
-    RHIDeviceContext(const RHIDevice* parentDevice, ID3D11DeviceContext* deviceContext);
-    ~RHIDeviceContext();
+    RHIDeviceContext(const RHIDevice* parentDevice, ID3D11DeviceContext* deviceContext) noexcept;
+    ~RHIDeviceContext() noexcept;
 
-    void ClearState();
-    void Flush();
+    void ClearState() noexcept;
+    void Flush() noexcept;
 
-    void ClearColorTarget(Texture* output, const Rgba& color);
-    void ClearDepthStencilTarget(Texture* output, bool depth = true, bool stencil = true, float depthValue = 1.0f, unsigned char stencilValue = 0);
+    void ClearColorTarget(Texture* output, const Rgba& color) noexcept;
+    void ClearDepthStencilTarget(Texture* output, bool depth = true, bool stencil = true, float depthValue = 1.0f, unsigned char stencilValue = 0) noexcept;
 
-    void SetMaterial(Material* material);
-    void SetTexture(unsigned int index, Texture* texture);
-    void SetUnorderedAccessView(unsigned int index, Texture* texture);
-    void SetVertexBuffer(unsigned int startIndex, VertexBuffer* buffer);
-    void SetIndexBuffer(IndexBuffer* buffer);
-    void SetConstantBuffer(unsigned int index, ConstantBuffer* buffer);
-    void SetStructuredBuffer(unsigned int index, StructuredBuffer* buffer);
+    void SetMaterial(Material* material) noexcept;
+    void SetTexture(unsigned int index, Texture* texture) noexcept;
+    void SetUnorderedAccessView(unsigned int index, Texture* texture) noexcept;
+    void SetVertexBuffer(unsigned int startIndex, VertexBuffer* buffer) noexcept;
+    void SetIndexBuffer(IndexBuffer* buffer) noexcept;
+    void SetConstantBuffer(unsigned int index, ConstantBuffer* buffer) noexcept;
+    void SetStructuredBuffer(unsigned int index, StructuredBuffer* buffer) noexcept;
 
-    void SetComputeTexture(unsigned int index, Texture* texture);
-    void SetComputeConstantBuffer(unsigned int index, ConstantBuffer* buffer);
-    void SetComputeStructuredBuffer(unsigned int index, StructuredBuffer* buffer);
+    void SetComputeTexture(unsigned int index, Texture* texture) noexcept;
+    void SetComputeConstantBuffer(unsigned int index, ConstantBuffer* buffer) noexcept;
+    void SetComputeStructuredBuffer(unsigned int index, StructuredBuffer* buffer) noexcept;
 
-    void Draw(std::size_t vertexCount, std::size_t startVertex = 0);
-    void DrawIndexed(std::size_t vertexCount, std::size_t startVertex = 0, std::size_t baseVertexLocation = 0);
+    void Draw(std::size_t vertexCount, std::size_t startVertex = 0) noexcept;
+    void DrawIndexed(std::size_t vertexCount, std::size_t startVertex = 0, std::size_t baseVertexLocation = 0) noexcept;
 
-    const RHIDevice* GetParentDevice() const;
-    ID3D11DeviceContext* GetDxContext();
+    const RHIDevice* GetParentDevice() const noexcept;
+    ID3D11DeviceContext* GetDxContext() noexcept;
 
-    void UnbindAllShaderResources();
-    void UnbindAllConstantBuffers();
+    void UnbindAllShaderResources() noexcept;
+    void UnbindAllConstantBuffers() noexcept;
 
-    void UnbindConstantBuffers();
-    void UnbindShaderResources();
-    void UnbindAllCustomConstantBuffers();
-    void UnbindComputeShaderResources();
-    void UnbindAllComputeUAVs();
-    void UnbindComputeCustomConstantBuffers();
-    void UnbindAllComputeConstantBuffers();
+    void UnbindConstantBuffers() noexcept;
+    void UnbindShaderResources() noexcept;
+    void UnbindAllCustomConstantBuffers() noexcept;
+    void UnbindComputeShaderResources() noexcept;
+    void UnbindAllComputeUAVs() noexcept;
+    void UnbindComputeCustomConstantBuffers() noexcept;
+    void UnbindAllComputeConstantBuffers() noexcept;
 
 private:
 
-    void SetShader(Shader* shader);
-    void SetShaderProgram(ShaderProgram* shaderProgram = nullptr);
-    void SetComputeShaderProgram(ShaderProgram* shaderProgram = nullptr);
-    void SetDepthStencilState(DepthStencilState* depthStencilState = nullptr);
-    void SetRasterState(RasterState* rasterState = nullptr);
-    void SetBlendState(BlendState* blendState = nullptr);
-    void SetSampler(Sampler* sampler = nullptr);
+    void SetShader(Shader* shader) noexcept;
+    void SetShaderProgram(ShaderProgram* shaderProgram = nullptr) noexcept;
+    void SetComputeShaderProgram(ShaderProgram* shaderProgram = nullptr) noexcept;
+    void SetDepthStencilState(DepthStencilState* depthStencilState = nullptr) noexcept;
+    void SetRasterState(RasterState* rasterState = nullptr) noexcept;
+    void SetBlendState(BlendState* blendState = nullptr) noexcept;
+    void SetSampler(Sampler* sampler = nullptr) noexcept;
 
     static constexpr unsigned int StructuredBufferSlotOffset = (D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT / 2);
 

@@ -16,13 +16,13 @@ void DepthStencilState::SetDebugName([[maybe_unused]] const std::string& name) c
 #endif
 }
 
-DepthStencilState::DepthStencilState(const RHIDevice* device, const XMLElement& element)
+DepthStencilState::DepthStencilState(const RHIDevice* device, const XMLElement& element) noexcept
 : DepthStencilState(device, DepthStencilDesc{ element })
 {
     /* DO NOTHING */
 }
 
-DepthStencilState::DepthStencilState(const RHIDevice* device, const DepthStencilDesc& desc)
+DepthStencilState::DepthStencilState(const RHIDevice* device, const DepthStencilDesc& desc) noexcept
     : _desc(desc)
 {
     if(!CreateDepthStencilState(device, desc)) {
@@ -34,22 +34,22 @@ DepthStencilState::DepthStencilState(const RHIDevice* device, const DepthStencil
     }
 }
 
-DepthStencilState::~DepthStencilState() {
+DepthStencilState::~DepthStencilState() noexcept {
     if(_dx_state) {
         _dx_state->Release();
         _dx_state = nullptr;
     }
 }
 
-ID3D11DepthStencilState* DepthStencilState::GetDxDepthStencilState() const {
+ID3D11DepthStencilState* DepthStencilState::GetDxDepthStencilState() const noexcept {
     return _dx_state;
 }
 
-DepthStencilDesc DepthStencilState::GetDesc() const {
+DepthStencilDesc DepthStencilState::GetDesc() const noexcept {
     return _desc;
 }
 
-bool DepthStencilState::CreateDepthStencilState(const RHIDevice* device, const DepthStencilDesc& desc /*= DepthStencilDesc{}*/) {
+bool DepthStencilState::CreateDepthStencilState(const RHIDevice* device, const DepthStencilDesc& desc /*= DepthStencilDesc{}*/) noexcept {
     D3D11_DEPTH_STENCIL_DESC dx_desc;
     dx_desc.DepthEnable = desc.depth_enabled ? TRUE : FALSE;
     dx_desc.DepthWriteMask = desc.depth_write ? D3D11_DEPTH_WRITE_MASK_ALL : D3D11_DEPTH_WRITE_MASK_ZERO;
@@ -72,41 +72,41 @@ bool DepthStencilState::CreateDepthStencilState(const RHIDevice* device, const D
     return SUCCEEDED(hr);
 }
 
-DepthStencilDesc::DepthStencilDesc(const XMLElement &element) {
+DepthStencilDesc::DepthStencilDesc(const XMLElement &element) noexcept {
     if(auto xml_depth = element.FirstChildElement("depth")) {
         DataUtils::ValidateXmlElement(*xml_depth, "depth", "", "", "", "enable,writable,test");
-        this->depth_enabled = DataUtils::ParseXmlAttribute(*xml_depth, "enable", this->depth_enabled);
-        this->depth_write = DataUtils::ParseXmlAttribute(*xml_depth, "writable", this->depth_write);
+        depth_enabled = DataUtils::ParseXmlAttribute(*xml_depth, "enable", depth_enabled);
+        depth_write = DataUtils::ParseXmlAttribute(*xml_depth, "writable", depth_write);
         std::string comp_func_str = "less";
         comp_func_str = DataUtils::ParseXmlAttribute(*xml_depth, "test", comp_func_str);
-        this->depth_comparison = ComparisonFunctionFromString(comp_func_str);
+        depth_comparison = ComparisonFunctionFromString(comp_func_str);
     }
 
     if(auto xml_stencil = element.FirstChildElement("stencil")) {
         DataUtils::ValidateXmlElement(*xml_stencil, "stencil", "", "", "front,back", "enable,writable,readable");
 
-        this->stencil_read = DataUtils::ParseXmlAttribute(*xml_stencil, "readable", this->stencil_read);
-        this->stencil_write = DataUtils::ParseXmlAttribute(*xml_stencil, "writable", this->stencil_write);
-        this->stencil_enabled = DataUtils::ParseXmlAttribute(*xml_stencil, "enable", this->stencil_enabled);
+        stencil_read = DataUtils::ParseXmlAttribute(*xml_stencil, "readable", stencil_read);
+        stencil_write = DataUtils::ParseXmlAttribute(*xml_stencil, "writable", stencil_write);
+        stencil_enabled = DataUtils::ParseXmlAttribute(*xml_stencil, "enable", stencil_enabled);
 
         if(auto xml_stencilfront = xml_stencil->FirstChildElement("front")) {
             DataUtils::ValidateXmlElement(*xml_stencilfront, "front", "", "fail,depthfail,pass,test");
 
             std::string failFront_str = "keep";
             failFront_str = DataUtils::ParseXmlAttribute(*xml_stencilfront, "fail", failFront_str);
-            this->stencil_failFrontOp = StencilOperationFromString(failFront_str);
+            stencil_failFrontOp = StencilOperationFromString(failFront_str);
 
             std::string depthfailFront_str = "keep";
             depthfailFront_str = DataUtils::ParseXmlAttribute(*xml_stencilfront, "depthfail", depthfailFront_str);
-            this->stencil_failDepthFrontOp = StencilOperationFromString(depthfailFront_str);
+            stencil_failDepthFrontOp = StencilOperationFromString(depthfailFront_str);
 
             std::string passFront_str = "keep";
             passFront_str = DataUtils::ParseXmlAttribute(*xml_stencilfront, "pass", passFront_str);
-            this->stencil_passFrontOp = StencilOperationFromString(passFront_str);
+            stencil_passFrontOp = StencilOperationFromString(passFront_str);
 
             std::string compareFront_str = "always";
             compareFront_str = DataUtils::ParseXmlAttribute(*xml_stencilfront, "test", compareFront_str);
-            this->stencil_testFront = ComparisonFunctionFromString(compareFront_str);
+            stencil_testFront = ComparisonFunctionFromString(compareFront_str);
         }
 
         if(auto xml_stencilback = xml_stencil->FirstChildElement("back")) {
@@ -114,19 +114,19 @@ DepthStencilDesc::DepthStencilDesc(const XMLElement &element) {
 
             std::string failBack_str = "keep";
             failBack_str = DataUtils::ParseXmlAttribute(*xml_stencilback, "fail", failBack_str);
-            this->stencil_failBackOp = StencilOperationFromString(failBack_str);
+            stencil_failBackOp = StencilOperationFromString(failBack_str);
 
             std::string depthfailBack_str = "keep";
             depthfailBack_str = DataUtils::ParseXmlAttribute(*xml_stencilback, "depthfail", depthfailBack_str);
-            this->stencil_failDepthBackOp = StencilOperationFromString(depthfailBack_str);
+            stencil_failDepthBackOp = StencilOperationFromString(depthfailBack_str);
 
             std::string passBack_str = "keep";
             passBack_str = DataUtils::ParseXmlAttribute(*xml_stencilback, "pass", passBack_str);
-            this->stencil_passBackOp = StencilOperationFromString(passBack_str);
+            stencil_passBackOp = StencilOperationFromString(passBack_str);
 
             std::string compareBack_str = "always";
             compareBack_str = DataUtils::ParseXmlAttribute(*xml_stencilback, "test", compareBack_str);
-            this->stencil_testBack = ComparisonFunctionFromString(compareBack_str);
+            stencil_testBack = ComparisonFunctionFromString(compareBack_str);
         }
     }
 }

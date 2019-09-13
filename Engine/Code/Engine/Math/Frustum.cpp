@@ -6,11 +6,11 @@
 
 #include <type_traits>
 
-Frustum Frustum::CreateFromViewProjectionMatrix(const Matrix4& viewProjection, float aspectRatio, float vfovDegrees, const Vector3& forward, float near, float far, bool normalize) {
+Frustum Frustum::CreateFromViewProjectionMatrix(const Matrix4& viewProjection, float aspectRatio, float vfovDegrees, const Vector3& forward, float near, float far, bool normalize) noexcept {
     return Frustum(viewProjection, aspectRatio, vfovDegrees, forward, near, far, normalize);
 }
 
-Frustum Frustum::CreateFromCamera(const Camera3D& camera, bool normalize) {
+Frustum Frustum::CreateFromCamera(const Camera3D& camera, bool normalize) noexcept {
     const auto& ar = camera.GetAspectRatio();
     const auto& vp = camera.GetViewProjectionMatrix();
     const auto& fov = camera.CalcFovYDegrees();
@@ -20,7 +20,7 @@ Frustum Frustum::CreateFromCamera(const Camera3D& camera, bool normalize) {
     return CreateFromViewProjectionMatrix(vp, ar, fov, forward, near, far, normalize);
 }
 
-Frustum::Frustum(const Matrix4& viewProjectionMatrix, float aspectRatio, float vfovDegrees, const Vector3& forward, float near, float far, bool normalize) {
+Frustum::Frustum(const Matrix4& viewProjectionMatrix, float aspectRatio, float vfovDegrees, const Vector3& forward, float near, float far, bool normalize) noexcept {
 
     CalcPoints(vfovDegrees, aspectRatio, forward, near, far);
 
@@ -92,31 +92,31 @@ Frustum::Frustum(const Matrix4& viewProjectionMatrix, float aspectRatio, float v
     }
 }
 
-void Frustum::SetLeft(const Plane3& left) {
+void Frustum::SetLeft(const Plane3& left) noexcept {
     _planes[static_cast<std::size_t>(PlaneDirection::Left)] = left;
 }
 
-void Frustum::SetRight(const Plane3& right) {
+void Frustum::SetRight(const Plane3& right) noexcept {
     _planes[static_cast<std::size_t>(PlaneDirection::Right)] = right;
 }
 
-void Frustum::SetTop(const Plane3& top) {
+void Frustum::SetTop(const Plane3& top) noexcept {
     _planes[static_cast<std::size_t>(PlaneDirection::Top)] = top;
 }
 
-void Frustum::SetBottom(const Plane3& bottom) {
+void Frustum::SetBottom(const Plane3& bottom) noexcept {
     _planes[static_cast<std::size_t>(PlaneDirection::Bottom)] = bottom;
 }
 
-void Frustum::SetNear(const Plane3& near) {
+void Frustum::SetNear(const Plane3& near) noexcept {
     _planes[static_cast<std::size_t>(PlaneDirection::Near)] = near;
 }
 
-void Frustum::SetFar(const Plane3& far) {
+void Frustum::SetFar(const Plane3& far) noexcept {
     _planes[static_cast<std::size_t>(PlaneDirection::Far)] = far;
 }
 
-void Frustum::CalcPoints(float aspectRatio, float vfovDegrees, const Vector3& forward, float near, float far) {
+void Frustum::CalcPoints(float aspectRatio, float vfovDegrees, const Vector3& forward, float near, float far) noexcept {
     float aspect_ratio = aspectRatio;
     float fov_vertical_degrees = vfovDegrees;
     float near_distance = near;
@@ -138,58 +138,58 @@ void Frustum::CalcPoints(float aspectRatio, float vfovDegrees, const Vector3& fo
 
 }
 
-const Plane3& Frustum::GetLeft() const {
+const Plane3& Frustum::GetLeft() const noexcept {
     return _planes[static_cast<std::size_t>(PlaneDirection::Left)];
 }
 
-const Plane3& Frustum::GetRight() const {
+const Plane3& Frustum::GetRight() const noexcept {
     return _planes[static_cast<std::size_t>(PlaneDirection::Right)];
 }
 
-const Plane3& Frustum::GetTop() const {
+const Plane3& Frustum::GetTop() const noexcept {
     return _planes[static_cast<std::size_t>(PlaneDirection::Top)];
 }
 
-const Plane3& Frustum::GetBottom() const {
+const Plane3& Frustum::GetBottom() const noexcept {
     return _planes[static_cast<std::size_t>(PlaneDirection::Bottom)];
 }
 
-const Plane3& Frustum::GetNear() const {
+const Plane3& Frustum::GetNear() const noexcept {
     return _planes[static_cast<std::size_t>(PlaneDirection::Near)];
 }
 
-const Plane3& Frustum::GetFar() const {
+const Plane3& Frustum::GetFar() const noexcept {
     return _planes[static_cast<std::size_t>(PlaneDirection::Far)];
 }
 
-const Vector3& Frustum::GetNearBottomLeft() const {
+const Vector3& Frustum::GetNearBottomLeft() const noexcept {
     return _points[0];
 }
 
-const Vector3& Frustum::GetNearTopLeft() const {
+const Vector3& Frustum::GetNearTopLeft() const noexcept {
     return _points[1];
 }
 
-const Vector3& Frustum::GetNearTopRight() const {
+const Vector3& Frustum::GetNearTopRight() const noexcept {
     return _points[2];
 }
 
-const Vector3& Frustum::GetNearBottomRight() const {
+const Vector3& Frustum::GetNearBottomRight() const noexcept {
     return _points[3];
 }
 
-const Vector3& Frustum::GetFarBottomLeft() const {
+const Vector3& Frustum::GetFarBottomLeft() const noexcept {
     return _points[4];
 }
 
-const Vector3& Frustum::GetFarTopLeft() const {
+const Vector3& Frustum::GetFarTopLeft() const noexcept {
     return _points[5];
 }
 
-const Vector3& Frustum::GetFarTopRight() const {
+const Vector3& Frustum::GetFarTopRight() const noexcept {
     return _points[6];
 }
 
-const Vector3& Frustum::GetFarBottomRight() const {
+const Vector3& Frustum::GetFarBottomRight() const noexcept {
     return _points[7];
 }

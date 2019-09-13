@@ -9,15 +9,15 @@
 #include <locale>
 #include <string>
 
-bool BlendState::CreateBlendState(const RHIDevice* device, BlendDesc render_target /*= BlendDesc()*/) {
+bool BlendState::CreateBlendState(const RHIDevice* device, BlendDesc render_target /*= BlendDesc()*/) noexcept {
     const std::vector<BlendDesc> targets{ 1, render_target };
     return CreateBlendState(device, targets);
 }
 
-bool BlendState::CreateBlendState(const RHIDevice* device, const std::vector<BlendDesc>& render_targets /*= {BlendDesc()}*/) {
+bool BlendState::CreateBlendState(const RHIDevice* device, const std::vector<BlendDesc>& render_targets /*= {BlendDesc()}*/) noexcept {
     D3D11_BLEND_DESC desc{};
-    desc.AlphaToCoverageEnable = this->_alpha_to_coverage_enable;
-    desc.IndependentBlendEnable = this->_independant_blend_enable;
+    desc.AlphaToCoverageEnable = _alpha_to_coverage_enable;
+    desc.IndependentBlendEnable = _independant_blend_enable;
 
     const auto targets_count = render_targets.size();
     for(auto i = 0u; i < 8u && i < targets_count; ++i) {
@@ -36,11 +36,11 @@ bool BlendState::CreateBlendState(const RHIDevice* device, const std::vector<Ble
     return SUCCEEDED(hr);
 }
 
-BlendState::BlendState(const RHIDevice* device, const XMLElement& element) {
+BlendState::BlendState(const RHIDevice* device, const XMLElement& element) noexcept {
     if(auto xml_blends = element.FirstChildElement("blends")) {
         DataUtils::ValidateXmlElement(*xml_blends, "blends", "blend", "", "", "alphacoverage,independantblend");
-        this->_alpha_to_coverage_enable = DataUtils::ParseXmlAttribute(element, "alphacoverage", this->_alpha_to_coverage_enable);
-        this->_independant_blend_enable = DataUtils::ParseXmlAttribute(element, "independantblend", this->_independant_blend_enable);
+        _alpha_to_coverage_enable = DataUtils::ParseXmlAttribute(element, "alphacoverage", _alpha_to_coverage_enable);
+        _independant_blend_enable = DataUtils::ParseXmlAttribute(element, "independantblend", _independant_blend_enable);
 
         DataUtils::ForEachChildElement(*xml_blends, "blend",
                                            [this](const XMLElement& element) {
@@ -57,13 +57,13 @@ BlendState::BlendState(const RHIDevice* device, const XMLElement& element) {
     }
 }
 
-BlendState::BlendState(const RHIDevice* device, const BlendDesc& desc /*= BlendDesc{}*/, bool alphaCoverage /*= false*/)
+BlendState::BlendState(const RHIDevice* device, const BlendDesc& desc /*= BlendDesc{}*/, bool alphaCoverage /*= false*/) noexcept
     : BlendState(device, std::vector<BlendDesc>{1, desc}, alphaCoverage, false)
 {
     /* DO NOTHING */
 }
 
-BlendState::BlendState(const RHIDevice* device, const std::vector<BlendDesc>& descs /*= std::vector<BlendDesc>{}*/, bool alphaCoverage /*= false*/, bool independantBlend /*= false*/)
+BlendState::BlendState(const RHIDevice* device, const std::vector<BlendDesc>& descs /*= std::vector<BlendDesc>{}*/, bool alphaCoverage /*= false*/, bool independantBlend /*= false*/) noexcept
     : _alpha_to_coverage_enable(alphaCoverage)
     , _independant_blend_enable(independantBlend)
     , _descs{ descs }
@@ -77,20 +77,20 @@ BlendState::BlendState(const RHIDevice* device, const std::vector<BlendDesc>& de
     }
 }
 
-BlendState::~BlendState() {
+BlendState::~BlendState() noexcept {
     if(_dx_state) {
         _dx_state->Release();
         _dx_state = nullptr;
     }
 }
 
-ID3D11BlendState* BlendState::GetDxBlendState() {
+ID3D11BlendState* BlendState::GetDxBlendState() noexcept {
     return _dx_state;
 }
 
-BlendDesc::BlendDesc(const XMLElement& element) {
+BlendDesc::BlendDesc(const XMLElement& element) noexcept {
     DataUtils::ValidateXmlElement(element, "blend", "", "", "color,alpha,enablemask", "enable");
-    this->enable = DataUtils::ParseXmlAttribute(element, "enable", this->enable);
+    enable = DataUtils::ParseXmlAttribute(element, "enable", enable);
 
     if(auto xml_color = element.FirstChildElement("color")) {
         DataUtils::ValidateXmlElement(*xml_color, "color", "", "src,dest,op");
@@ -101,9 +101,9 @@ BlendDesc::BlendDesc(const XMLElement& element) {
         std::string op_str = "add";
         op_str = DataUtils::ParseXmlAttribute(*xml_color, "op", op_str);
 
-        this->source_factor = BlendFactorFromString(source_factor_str);
-        this->dest_factor = BlendFactorFromString(dest_factor_str);
-        this->blend_op = BlendOperationFromString(op_str);
+        source_factor = BlendFactorFromString(source_factor_str);
+        dest_factor = BlendFactorFromString(dest_factor_str);
+        blend_op = BlendOperationFromString(op_str);
     }
 
     if(auto xml_alpha = element.FirstChildElement("alpha")) {
@@ -115,9 +115,9 @@ BlendDesc::BlendDesc(const XMLElement& element) {
         std::string op_str = "add";
         op_str = DataUtils::ParseXmlAttribute(*xml_alpha, "op", op_str);
 
-        this->source_factor_alpha = BlendFactorFromString(source_factor_str);
-        this->dest_factor_alpha = BlendFactorFromString(dest_factor_str);
-        this->blend_op_alpha = BlendOperationFromString(op_str);
+        source_factor_alpha = BlendFactorFromString(source_factor_str);
+        dest_factor_alpha = BlendFactorFromString(dest_factor_str);
+        blend_op_alpha = BlendOperationFromString(op_str);
     }
 
     if(auto xml_mask = element.FirstChildElement("enablemask")) {
@@ -125,6 +125,6 @@ BlendDesc::BlendDesc(const XMLElement& element) {
         std::string mask_str = "all";
         mask_str = DataUtils::ParseXmlAttribute(*xml_mask, "value", mask_str);
 
-        this->blend_color_write_enable = BlendColorWriteEnableFromString(mask_str);
+        blend_color_write_enable = BlendColorWriteEnableFromString(mask_str);
     }
 }

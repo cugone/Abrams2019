@@ -7,7 +7,7 @@
 #include <locale>
 #include <sstream>
 
-KeyValueParser::KeyValueParser(const std::filesystem::path& filepath) {
+KeyValueParser::KeyValueParser(const std::filesystem::path& filepath) noexcept {
     namespace FS = std::filesystem;
     if(FS::exists(filepath)) {
         std::string contents{};
@@ -17,23 +17,23 @@ KeyValueParser::KeyValueParser(const std::filesystem::path& filepath) {
     }
 }
 
-KeyValueParser::KeyValueParser(const std::string& str) {
+KeyValueParser::KeyValueParser(const std::string& str) noexcept {
     Parse(str);
 }
 
-KeyValueParser::KeyValueParser(std::ifstream& file_input) {
+KeyValueParser::KeyValueParser(std::ifstream& file_input) noexcept {
     Parse(file_input);
 }
 
-KeyValueParser::KeyValueParser(std::istream& input) {
+KeyValueParser::KeyValueParser(std::istream& input) noexcept {
     Parse(input);
 }
 
-bool KeyValueParser::HasKey(const std::string& key) const {
+bool KeyValueParser::HasKey(const std::string& key) const noexcept {
     return _kv_pairs.find(key) != _kv_pairs.end();
 }
 
-bool KeyValueParser::Parse(const std::string& input) {
+bool KeyValueParser::Parse(const std::string& input) noexcept {
     auto lines = StringUtils::SplitOnUnquoted(input, '\n', true);
 
     for(auto& cur_line : lines) {
@@ -105,7 +105,7 @@ bool KeyValueParser::Parse(const std::string& input) {
     return true;
 }
 
-bool KeyValueParser::Parse(std::ifstream& input) {
+bool KeyValueParser::Parse(std::ifstream& input) noexcept {
     if(input.is_open() == false) {
         return false;
     }
@@ -115,7 +115,7 @@ bool KeyValueParser::Parse(std::ifstream& input) {
     return Parse(static_cast<std::istream&>(input));
 }
 
-bool KeyValueParser::Parse(std::istream& input) {
+bool KeyValueParser::Parse(std::istream& input) noexcept {
     std::string cur_line;
     while(std::getline(input, cur_line)) {
         bool did_parse = Parse(cur_line);
@@ -126,14 +126,15 @@ bool KeyValueParser::Parse(std::istream& input) {
     return true;
 }
 
-std::map<std::string, std::string>&& KeyValueParser::Release() {
+std::map<std::string, std::string>&& KeyValueParser::Release() noexcept {
     return std::move(_kv_pairs);
 }
 
-bool KeyValueParser::ParseMultiParams(std::string input) {
-    CollapseMultiParamWhitespace(input);
-    ConvertFromMultiParam(input);
-    auto lines = StringUtils::SplitOnUnquoted(input, '\n');
+bool KeyValueParser::ParseMultiParams(const std::string& input) noexcept {
+    std::string whole_line = input;
+    CollapseMultiParamWhitespace(whole_line);
+    ConvertFromMultiParam(whole_line);
+    auto lines = StringUtils::SplitOnUnquoted(whole_line, '\n');
     for(const auto& line : lines) {
         bool did_parse = Parse(line);
         if(!did_parse) {
@@ -143,7 +144,7 @@ bool KeyValueParser::ParseMultiParams(std::string input) {
     return true;
 }
 
-void KeyValueParser::ConvertFromMultiParam(std::string& whole_line) {
+void KeyValueParser::ConvertFromMultiParam(std::string& whole_line) noexcept {
     //Replace space-delimited KVPs with newlines;
     bool inQuote = false;
     for(auto iter = whole_line.begin(); iter != whole_line.end(); ++iter) {
@@ -159,7 +160,7 @@ void KeyValueParser::ConvertFromMultiParam(std::string& whole_line) {
     }
 }
 
-void KeyValueParser::CollapseMultiParamWhitespace(std::string& whole_line) {
+void KeyValueParser::CollapseMultiParamWhitespace(std::string& whole_line) noexcept {
     //Remove spaces around equals
     auto eq_loc = std::find(whole_line.begin(), whole_line.end(), '=');
     while(eq_loc != std::end(whole_line)) {
@@ -183,15 +184,15 @@ void KeyValueParser::CollapseMultiParamWhitespace(std::string& whole_line) {
     whole_line.end());
 }
 
-void KeyValueParser::SetValue(const std::string& key, const std::string& value) {
+void KeyValueParser::SetValue(const std::string& key, const std::string& value) noexcept {
     _kv_pairs[key] = value;
 }
 
-void KeyValueParser::SetValue(const std::string& key, const bool& value) {
+void KeyValueParser::SetValue(const std::string& key, const bool& value) noexcept {
     _kv_pairs[key] = value ? std::string{ "true" } : std::string{ "false" };
 }
 
-std::size_t KeyValueParser::CountCharNotInQuotes(std::string& cur_line, char c) {
+std::size_t KeyValueParser::CountCharNotInQuotes(std::string& cur_line, char c) noexcept {
     bool inQuote = false;
     std::size_t count = 0u;
     for(auto iter = cur_line.begin(); iter != cur_line.end(); ++iter) {

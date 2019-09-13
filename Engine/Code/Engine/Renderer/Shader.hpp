@@ -2,12 +2,15 @@
 
 #include "Engine/Core/DataUtils.hpp"
 
+#include "Engine/Renderer/BlendState.hpp"
+#include "Engine/Renderer/DepthStencilState.hpp"
+
+#include <memory>
 #include <string>
+#include <vector>
 
 class ShaderProgram;
 class RasterState;
-class DepthStencilState;
-class BlendState;
 class Renderer;
 class Sampler;
 class ConstantBuffer;
@@ -16,45 +19,36 @@ enum class PipelineStage : uint8_t;
 
 class Shader {
 public:
-    Shader(Renderer* renderer, ShaderProgram* shaderProgram = nullptr, DepthStencilState* depthStencil = nullptr, RasterState* rasterState = nullptr, BlendState* blendState = nullptr, Sampler* sampler = nullptr);
-    Shader(Renderer* renderer, const XMLElement& element);
-    ~Shader();
+    Shader(Renderer* renderer, ShaderProgram* shaderProgram = nullptr, DepthStencilState* depthStencil = nullptr, RasterState* rasterState = nullptr, BlendState* blendState = nullptr, Sampler* sampler = nullptr) noexcept;
+    Shader(Renderer* renderer, const XMLElement& element) noexcept;
+    ~Shader() = default;
 
-    const std::string& GetName() const;
-    ShaderProgram* GetShaderProgram() const;
-    RasterState* GetRasterState() const;
-    DepthStencilState* GetDepthStencilState() const;
-    BlendState* GetBlendState() const;
-    Sampler* GetSampler() const;
-    const std::vector<ConstantBuffer*>& GetConstantBuffers() const;
+    const std::string& GetName() const noexcept;
+    ShaderProgram* GetShaderProgram() const noexcept;
+    RasterState* GetRasterState() const noexcept;
+    DepthStencilState* GetDepthStencilState() const noexcept;
+    BlendState* GetBlendState() const noexcept;
+    Sampler* GetSampler() const noexcept;
+    std::vector<std::reference_wrapper<ConstantBuffer>> GetConstantBuffers() const noexcept;
 
-    void SetName(const std::string& name);
-    void SetShaderProgram(ShaderProgram* sp);
-    void SetRasterState(RasterState* rs);
-    void SetDepthStencilState(DepthStencilState* ds);
-    void SetBlendState(BlendState* bs);
-    void SetSampler(Sampler* sampler);
-    void SetConstantBuffers(const std::vector<ConstantBuffer*>& cbuffers);
 protected:
 private:
-    bool LoadFromXml(Renderer* renderer, const XMLElement& element);
+    bool LoadFromXml(Renderer* renderer, const XMLElement& element) noexcept;
 
-    PipelineStage ParseTargets(const XMLElement& element);
-    std::string ParseEntrypointList(const XMLElement& element);
+    PipelineStage ParseTargets(const XMLElement& element) noexcept;
+    std::string ParseEntrypointList(const XMLElement& element) noexcept;
 
-    void ValidatePipelineStages(const PipelineStage& targets);
+    void ValidatePipelineStages(const PipelineStage& targets) noexcept;
 
-    void CreateAndRegisterNewSamplerFromXml(const XMLElement& element);
-    void CreateAndRegisterNewRasterFromXml(const XMLElement& element);
+    void CreateAndRegisterNewSamplerFromXml(const XMLElement& element) noexcept;
+    void CreateAndRegisterNewRasterFromXml(const XMLElement& element) noexcept;
 
     std::string _name = "SHADER";
     Renderer* _renderer = nullptr;
     ShaderProgram* _shader_program = nullptr;
-    DepthStencilState* _depth_stencil_state = nullptr;
+    std::unique_ptr<DepthStencilState> _depth_stencil_state;
     RasterState* _raster_state = nullptr;
-    BlendState* _blend_state = nullptr;
+    std::unique_ptr<BlendState> _blend_state;
     Sampler* _sampler = nullptr;
-    std::vector<ConstantBuffer*> _cbuffers{};
-    bool _raster_from_db = false;
-    bool _sampler_from_db = false;
+    std::vector<std::unique_ptr<ConstantBuffer>> _cbuffers;
 };

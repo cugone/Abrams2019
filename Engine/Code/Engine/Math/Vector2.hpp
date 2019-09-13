@@ -22,61 +22,63 @@ public:
     Vector2& operator=(Vector2&& rhs) = default;
     ~Vector2() = default;
 
-    explicit Vector2(const std::string& value);
-    explicit Vector2(float initialX, float initialY);
-    explicit Vector2(const Vector3& rhs);
-    explicit Vector2(const IntVector2& intvec2);
+    explicit Vector2(const std::string& value) noexcept;
+    explicit Vector2(float initialX, float initialY) noexcept;
+    explicit Vector2(const Vector3& rhs) noexcept;
+    explicit Vector2(const IntVector2& intvec2) noexcept;
 
-    Vector2 operator+(const Vector2& rhs) const;
-    Vector2& operator+=(const Vector2& rhs);
+    Vector2 operator+(const Vector2& rhs) const noexcept;
+    Vector2& operator+=(const Vector2& rhs) noexcept;
 
-    Vector2 operator-() const;
-    Vector2 operator-(const Vector2& rhs) const;
-    Vector2& operator-=(const Vector2& rhs);
+    Vector2 operator-() const noexcept;
+    Vector2 operator-(const Vector2& rhs) const noexcept;
+    Vector2& operator-=(const Vector2& rhs) noexcept;
 
-    friend Vector2 operator*(float lhs, const Vector2& rhs);
-    Vector2 operator*(float scalar) const;
-    Vector2& operator*=(float scalar);
-    Vector2 operator*(const Vector2& rhs) const;
-    Vector2& operator*=(const Vector2& rhs);
+    friend Vector2 operator*(float lhs, const Vector2& rhs) noexcept;
+    Vector2 operator*(float scalar) const noexcept;
+    Vector2& operator*=(float scalar) noexcept;
+    Vector2 operator*(const Vector2& rhs) const noexcept;
+    Vector2& operator*=(const Vector2& rhs) noexcept;
 
-    Vector2 operator/(float scalar) const;
-    Vector2 operator/=(float scalar);
-    Vector2 operator/(const Vector2& rhs) const;
-    Vector2 operator/=(const Vector2& rhs);
+    Vector2 operator/(float scalar) const noexcept;
+    Vector2 operator/=(float scalar) noexcept;
+    Vector2 operator/(const Vector2& rhs) const noexcept;
+    Vector2 operator/=(const Vector2& rhs) noexcept;
 
-    bool operator==(const Vector2& rhs) const;
-    bool operator!=(const Vector2& rhs) const;
+    bool operator==(const Vector2& rhs) const noexcept;
+    bool operator!=(const Vector2& rhs) const noexcept;
 
-    friend std::ostream& operator<<(std::ostream& out_stream, const Vector2& v);
-    friend std::istream& operator>>(std::istream& in_stream, Vector2& v);
+    friend std::ostream& operator<<(std::ostream& out_stream, const Vector2& v) noexcept;
+    friend std::istream& operator>>(std::istream& in_stream, Vector2& v) noexcept;
 
-    void GetXY(float& outX, float& outY) const;
-    float* GetAsFloatArray();
+    void GetXY(float& outX, float& outY) const noexcept;
+    float* GetAsFloatArray() noexcept;
 
-    float CalcHeadingRadians() const;
-    float CalcHeadingDegrees() const;
-    float CalcLength() const;
-    float CalcLengthSquared() const;
+    float CalcHeadingRadians() const noexcept;
+    float CalcHeadingDegrees() const noexcept;
+    float CalcLength() const noexcept;
+    float CalcLengthSquared() const noexcept;
 
 
-    void SetHeadingDegrees(float headingDegrees);
-    void SetHeadingRadians(float headingRadians);
+    void SetHeadingDegrees(float headingDegrees) noexcept;
+    void SetHeadingRadians(float headingRadians) noexcept;
 
-    void SetUnitLengthAndHeadingDegrees(float headingDegrees);
-    void SetUnitLengthAndHeadingRadians(float headingRadians);
-    float SetLength(float length);
-    void SetLengthAndHeadingDegrees(float headingDegrees, float length);
-    void SetLengthAndHeadingRadians(float headingRadians, float length);
+    void SetUnitLengthAndHeadingDegrees(float headingDegrees) noexcept;
+    void SetUnitLengthAndHeadingRadians(float headingRadians) noexcept;
+    float SetLength(float length) noexcept;
+    void SetLengthAndHeadingDegrees(float headingDegrees, float length) noexcept;
+    void SetLengthAndHeadingRadians(float headingRadians, float length) noexcept;
 
-    float Normalize();
-    Vector2 GetNormalize() const;
+    float Normalize() noexcept;
+    Vector2 GetNormalize() const noexcept;
 
-    void Rotate90Degrees();
-    void RotateNegative90Degrees();
-    void RotateRadians(float radians);
+    Vector2 GetLeftHandNormal() noexcept;
+    Vector2 GetRightHandNormal() noexcept;
+    void Rotate90Degrees() noexcept;
+    void RotateNegative90Degrees() noexcept;
+    void RotateRadians(float radians) noexcept;
 
-    void SetXY(float newX, float newY);
+    void SetXY(float newX, float newY) noexcept;
 
     float x = 0.0f;
     float y = 0.0f;

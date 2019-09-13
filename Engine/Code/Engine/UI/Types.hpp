@@ -11,9 +11,9 @@ class Ratio {
 public:
     explicit Ratio(const Vector2& newValue = Vector2::ZERO);
     Ratio(const Ratio& rhs);
-    Ratio(Ratio&& rhs);
+    Ratio(Ratio&& rhs) noexcept;
     Ratio& operator=(const Ratio& rhs);
-    Ratio& operator=(Ratio&& rhs);
+    Ratio& operator=(Ratio&& rhs) noexcept;
     ~Ratio() = default;
     const Vector2& GetValue() const;
     void SetValue(const Vector2& newValue);

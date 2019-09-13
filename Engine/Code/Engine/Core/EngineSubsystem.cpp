@@ -2,11 +2,11 @@
 
 #include "Engine/Core/Win.hpp"
 
-EngineSubsystem::~EngineSubsystem() {
+EngineSubsystem::~EngineSubsystem() noexcept {
     _next_subsystem = nullptr;
 }
 
-bool EngineSubsystem::ProcessSystemMessage(const EngineMessage& msg) {
+bool EngineSubsystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
     if(ProcessSystemMessage(msg)) {
         return true;
     }
@@ -16,7 +16,7 @@ bool EngineSubsystem::ProcessSystemMessage(const EngineMessage& msg) {
     return false;
 }
 
-WindowsSystemMessage EngineSubsystem::GetWindowsSystemMessageFromUintMessage(unsigned int wmMessage) {
+WindowsSystemMessage EngineSubsystem::GetWindowsSystemMessageFromUintMessage(unsigned int wmMessage) noexcept {
     switch(wmMessage) {
         case WM_CLEAR:                  return WindowsSystemMessage::Clipboard_Clear;
         case WM_COPY:                   return WindowsSystemMessage::Clipboard_Copy;
@@ -122,6 +122,6 @@ WindowsSystemMessage EngineSubsystem::GetWindowsSystemMessageFromUintMessage(uns
     }
 }
 
-void EngineSubsystem::SetNextHandler(EngineSubsystem* next_handler) {
+void EngineSubsystem::SetNextHandler(EngineSubsystem* next_handler) noexcept {
     _next_subsystem = next_handler;
 }

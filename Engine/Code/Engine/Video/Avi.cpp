@@ -7,7 +7,7 @@
 namespace FileUtils {
 
     namespace AviChunkID {
-        constexpr const bool IsValid(const char* id) {
+        constexpr const bool IsValid(const char* id) noexcept {
             return (StringUtils::FourCC(id) == AviChunkID::HDRL
                 || StringUtils::FourCC(id) == AviChunkID::MOVI
                 || StringUtils::FourCC(id) == AviChunkID::LIST
@@ -17,7 +17,7 @@ namespace FileUtils {
         }
     } //End AviChunkID
 
-    unsigned int Avi::Load(const std::string& filepath) {
+    unsigned int Avi::Load(std::filesystem::path filepath) noexcept {
         Riff riff_data{};
         if(riff_data.Load(filepath) != Riff::RIFF_SUCCESS) {
             return AVI_ERROR_NOT_A_AVI;
@@ -149,30 +149,30 @@ namespace FileUtils {
         return AVI_SUCCESS;
     }
 
-    const FileUtils::Avi::AviHdrlChunk& Avi::GetHdrlChunk() const {
+    const FileUtils::Avi::AviHdrlChunk& Avi::GetHdrlChunk() const noexcept {
         return _hdrl;
     }
 
-    const FileUtils::Avi::AviMoviChunk* Avi::GetFrame(std::size_t frame_idx) const {
+    const FileUtils::Avi::AviMoviChunk* Avi::GetFrame(std::size_t frame_idx) const noexcept {
         if(frame_idx >= _frames.size()) {
             return nullptr;
         }
         return &_frames[frame_idx];
     }
     
-    const std::size_t Avi::GetFrameCount() const {
+    const std::size_t Avi::GetFrameCount() const noexcept {
         return _hdrl.totalFrames;
     }
 
-    TimeUtils::FPSeconds Avi::GetLengthInSeconds() const {
+    TimeUtils::FPSeconds Avi::GetLengthInSeconds() const noexcept {
         return TimeUtils::FPSeconds{GetLengthInMicroSeconds()};
     }
 
-    TimeUtils::FPMicroseconds Avi::GetLengthInMicroSeconds() const {
+    TimeUtils::FPMicroseconds Avi::GetLengthInMicroSeconds() const noexcept {
         return TimeUtils::FPMicroseconds{_hdrl.usPerFrame * _hdrl.totalFrames};
     }
 
-    IntVector2 Avi::GetFrameDimensions() const {
+    IntVector2 Avi::GetFrameDimensions() const noexcept {
         return IntVector2{ static_cast<int>(_hdrl.width), static_cast<int>(_hdrl.height) };
     }
 

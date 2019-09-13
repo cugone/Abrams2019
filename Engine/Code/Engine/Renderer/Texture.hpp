@@ -26,15 +26,19 @@ public:
     void IsLoaded(bool is_loaded) noexcept;
     bool IsLoaded() const noexcept;
 
-    bool IsArray() const;
+    bool IsArray() const noexcept;
 
-    ID3D11DepthStencilView* GetDepthStencilView();
-    ID3D11RenderTargetView* GetRenderTargetView();
-    ID3D11ShaderResourceView* GetShaderResourceView();
-    ID3D11UnorderedAccessView* GetUnorderedAccessView();
+    ID3D11DepthStencilView* GetDepthStencilView() noexcept;
+    ID3D11RenderTargetView* GetRenderTargetView() noexcept;
+    ID3D11ShaderResourceView* GetShaderResourceView() noexcept;
+    ID3D11UnorderedAccessView* GetUnorderedAccessView() noexcept;
+    ID3D11DepthStencilView* GetDepthStencilView() const noexcept;
+    ID3D11RenderTargetView* GetRenderTargetView() const noexcept;
+    ID3D11ShaderResourceView* GetShaderResourceView() const noexcept;
+    ID3D11UnorderedAccessView* GetUnorderedAccessView() const noexcept;
 
     virtual void SetDebugName([[maybe_unused]] const std::string& name) const noexcept = 0;
-    virtual ID3D11Resource* GetDxResource() const = 0;
+    virtual ID3D11Resource* GetDxResource() const noexcept = 0;
 
 protected:
     const RHIDevice* _device = nullptr;

@@ -3,10 +3,10 @@
 #include "Engine/Networking/Address.hpp"
 
 namespace Net {
-
-bool Initialize();
-Address GetIpv4(Address& addy);
-Address GetIpv6(Address& addy);
-void Shutdown();
+//TODO: Implement Networking subsystem
+bool Initialize() noexcept;
+Address GetIpv4(Address& addy) noexcept;
+Address GetIpv6(Address& addy) noexcept;
+void Shutdown() noexcept;
 
 }

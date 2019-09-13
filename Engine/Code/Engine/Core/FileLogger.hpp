@@ -16,42 +16,42 @@ class JobSystem;
 
 class FileLogger {
 public:
-    FileLogger(JobSystem& jobSystem, const std::string& logName);
-    ~FileLogger();
+    FileLogger(JobSystem& jobSystem, const std::string& logName) noexcept;
+    ~FileLogger() noexcept;
 
-    void Shutdown();
-    void Log(const std::string& msg);
-    void LogLine(const std::string& msg);
-    void LogAndFlush(const std::string& msg);
-    void LogLineAndFlush(const std::string& msg);
-    void LogPrint(const std::string& msg);
-    void LogWarn(const std::string& msg);
-    void LogError(const std::string& msg);
-    void LogTag(const std::string& tag, const std::string& msg);
-    void LogPrintLine(const std::string& msg);
-    void LogWarnLine(const std::string& msg);
-    void LogErrorLine(const std::string& msg);
-    void LogTagLine(const std::string& tag, const std::string& msg);
-    void Flush();
-    void SetIsRunning(bool value = true);
+    void Shutdown() noexcept;
+    void Log(const std::string& msg) noexcept;
+    void LogLine(const std::string& msg) noexcept;
+    void LogAndFlush(const std::string& msg) noexcept;
+    void LogLineAndFlush(const std::string& msg) noexcept;
+    void LogPrint(const std::string& msg) noexcept;
+    void LogWarn(const std::string& msg) noexcept;
+    void LogError(const std::string& msg) noexcept;
+    void LogTag(const std::string& tag, const std::string& msg) noexcept;
+    void LogPrintLine(const std::string& msg) noexcept;
+    void LogWarnLine(const std::string& msg) noexcept;
+    void LogErrorLine(const std::string& msg) noexcept;
+    void LogTagLine(const std::string& tag, const std::string& msg) noexcept;
+    void Flush() noexcept;
+    void SetIsRunning(bool value = true) noexcept;
 
-    void SaveLog();
+    void SaveLog() noexcept;
 
 protected:
 private:
-    void Initialize(JobSystem& jobSystem, const std::string& log_name);
+    void Initialize(JobSystem& jobSystem, const std::string& log_name) noexcept;
 
-    void InsertTimeStamp(std::stringstream& msg);
-    void InsertTag(std::stringstream& msg, const std::string& tag);
-    void InsertMessage(std::stringstream& msg, const std::string& messageLiteral);
+    void InsertTimeStamp(std::stringstream& msg) noexcept;
+    void InsertTag(std::stringstream& msg, const std::string& tag) noexcept;
+    void InsertMessage(std::stringstream& msg, const std::string& messageLiteral) noexcept;
 
-    void Log_worker();
-    void RequestFlush();
-    bool IsRunning();
+    void Log_worker() noexcept;
+    void RequestFlush() noexcept;
+    bool IsRunning() const noexcept;
 
-    void DoCopyLog();
-    void CopyLog(void* user_data);
-    void FinalizeLog();
+    void DoCopyLog() noexcept;
+    void CopyLog(void* user_data) noexcept;
+    void FinalizeLog() noexcept;
     mutable std::mutex _cs{};
     std::ofstream _stream{};
     std::filesystem::path _current_log_path{};

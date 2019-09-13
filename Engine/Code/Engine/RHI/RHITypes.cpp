@@ -5,7 +5,23 @@
 #include <iomanip>
 #include <type_traits>
 
-std::ostream& operator<<(std::ostream& out_stream, const GraphicsCardDesc& graphicsCardDesc) {
+
+bool operator==(const ViewportDesc& a, const ViewportDesc& b) noexcept {
+    bool x = MathUtils::IsEquivalent(a.x, b.x);
+    bool y = MathUtils::IsEquivalent(a.y, b.y);
+    bool w = MathUtils::IsEquivalent(a.width, b.width);
+    bool h = MathUtils::IsEquivalent(a.height, b.height);
+    bool i = MathUtils::IsEquivalent(a.minDepth, b.minDepth);
+    bool m = MathUtils::IsEquivalent(a.maxDepth, b.maxDepth);
+    return x && y && w && h && i && m;
+}
+
+bool operator!=(const ViewportDesc& a, const ViewportDesc& b) noexcept {
+    return !(a == b);
+}
+
+
+std::ostream& operator<<(std::ostream& out_stream, const GraphicsCardDesc& graphicsCardDesc) noexcept {
     auto name = graphicsCardDesc.Description;
     out_stream << std::left << std::setw(22) << "Name:" << std::right << std::setw(30) << name << '\n';
     auto vid = graphicsCardDesc.VendorId;
@@ -57,7 +73,7 @@ bool DisplayDescGTComparator::operator()(const DisplayDesc& a, const DisplayDesc
     return DisplayDescLTComparator{}.operator()(b,a);
 }
 
-RHIOutputMode& operator++(RHIOutputMode& mode) {
+RHIOutputMode& operator++(RHIOutputMode& mode) noexcept {
     using underlying = std::underlying_type_t<RHIOutputMode>;
     mode = static_cast<RHIOutputMode>(static_cast<underlying>(mode) + 1);
     if(mode == RHIOutputMode::Last_) {
@@ -66,13 +82,13 @@ RHIOutputMode& operator++(RHIOutputMode& mode) {
     return mode;
 }
 
-RHIOutputMode operator++(RHIOutputMode& mode, int) {
+RHIOutputMode operator++(RHIOutputMode& mode, int) noexcept {
     RHIOutputMode result = mode;
     ++result;
     return result;
 }
 
-BufferUsage& operator&=(BufferUsage& a, const BufferUsage& b) {
+BufferUsage& operator&=(BufferUsage& a, const BufferUsage& b) noexcept {
     using underlying = std::underlying_type_t<BufferUsage>;
     auto underlying_a = static_cast<underlying>(a);
     auto underlying_b = static_cast<underlying>(b);
@@ -80,7 +96,7 @@ BufferUsage& operator&=(BufferUsage& a, const BufferUsage& b) {
     return a;
 }
 
-BufferUsage& operator|=(BufferUsage& a, const BufferUsage& b) {
+BufferUsage& operator|=(BufferUsage& a, const BufferUsage& b) noexcept {
     using underlying = std::underlying_type_t<BufferUsage>;
     auto underlying_a = static_cast<underlying>(a);
     auto underlying_b = static_cast<underlying>(b);
@@ -88,17 +104,17 @@ BufferUsage& operator|=(BufferUsage& a, const BufferUsage& b) {
     return a;
 }
 
-BufferUsage operator&(BufferUsage a, const BufferUsage& b) {
+BufferUsage operator&(BufferUsage a, const BufferUsage& b) noexcept {
     a &= b;
     return a;
 }
 
-BufferUsage operator|(BufferUsage a, const BufferUsage& b) {
+BufferUsage operator|(BufferUsage a, const BufferUsage& b) noexcept {
     a |= b;
     return a;
 }
 
-BufferBindUsage& operator|=(BufferBindUsage& a, const BufferBindUsage& b) {
+BufferBindUsage& operator|=(BufferBindUsage& a, const BufferBindUsage& b) noexcept {
     using underlying = std::underlying_type_t<BufferBindUsage>;
     auto underlying_a = static_cast<underlying>(a);
     auto underlying_b = static_cast<underlying>(b);
@@ -106,12 +122,12 @@ BufferBindUsage& operator|=(BufferBindUsage& a, const BufferBindUsage& b) {
     return a;
 }
 
-BufferBindUsage operator|(BufferBindUsage a, const BufferBindUsage& b) {
+BufferBindUsage operator|(BufferBindUsage a, const BufferBindUsage& b) noexcept {
     a |= b;
     return a;
 }
 
-BufferBindUsage& operator&=(BufferBindUsage& a, const BufferBindUsage& b) {
+BufferBindUsage& operator&=(BufferBindUsage& a, const BufferBindUsage& b) noexcept {
     using underlying = std::underlying_type_t<BufferBindUsage>;
     auto underlying_a = static_cast<underlying>(a);
     auto underlying_b = static_cast<underlying>(b);
@@ -119,12 +135,12 @@ BufferBindUsage& operator&=(BufferBindUsage& a, const BufferBindUsage& b) {
     return a;
 }
 
-BufferBindUsage operator&(BufferBindUsage a, const BufferBindUsage& b) {
+BufferBindUsage operator&(BufferBindUsage a, const BufferBindUsage& b) noexcept {
     a &= b;
     return a;
 }
 
-PipelineStage& operator|=(PipelineStage& a, const PipelineStage& b) {
+PipelineStage& operator|=(PipelineStage& a, const PipelineStage& b) noexcept {
     using underlying = std::underlying_type_t<PipelineStage>;
     auto underlying_a = static_cast<underlying>(a);
     auto underlying_b = static_cast<underlying>(b);
@@ -132,12 +148,12 @@ PipelineStage& operator|=(PipelineStage& a, const PipelineStage& b) {
     return a;
 }
 
-PipelineStage operator|(PipelineStage a, const PipelineStage& b) {
+PipelineStage operator|(PipelineStage a, const PipelineStage& b) noexcept {
     a |= b;
     return a;
 }
 
-PipelineStage& operator&=(PipelineStage& a, const PipelineStage& b) {
+PipelineStage& operator&=(PipelineStage& a, const PipelineStage& b) noexcept {
     using underlying = std::underlying_type_t<PipelineStage>;
     auto underlying_a = static_cast<underlying>(a);
     auto underlying_b = static_cast<underlying>(b);
@@ -145,12 +161,12 @@ PipelineStage& operator&=(PipelineStage& a, const PipelineStage& b) {
     return a;
 }
 
-PipelineStage operator&(PipelineStage a, const PipelineStage& b) {
+PipelineStage operator&(PipelineStage a, const PipelineStage& b) noexcept {
     a &= b;
     return a;
 }
 
-PipelineStage& operator^=(PipelineStage& a, const PipelineStage& b) {
+PipelineStage& operator^=(PipelineStage& a, const PipelineStage& b) noexcept {
     using underlying = std::underlying_type_t<PipelineStage>;
     auto underlying_a = static_cast<underlying>(a);
     auto underlying_b = static_cast<underlying>(b);
@@ -158,18 +174,18 @@ PipelineStage& operator^=(PipelineStage& a, const PipelineStage& b) {
     return a;
 }
 
-PipelineStage operator^(PipelineStage a, const PipelineStage& b) {
+PipelineStage operator^(PipelineStage a, const PipelineStage& b) noexcept {
     a ^= b;
     return a;
 }
 
-BlendColorWriteEnable operator~(BlendColorWriteEnable a) {
+BlendColorWriteEnable operator~(BlendColorWriteEnable a) noexcept {
     using underlying = std::underlying_type_t<BlendColorWriteEnable>;
     auto underlying_a = static_cast<underlying>(a);
     return static_cast<BlendColorWriteEnable>(~underlying_a);
 }
 
-BlendColorWriteEnable& operator&=(BlendColorWriteEnable& a, const BlendColorWriteEnable& b) {
+BlendColorWriteEnable& operator&=(BlendColorWriteEnable& a, const BlendColorWriteEnable& b) noexcept {
     using underlying = std::underlying_type_t<BlendColorWriteEnable>;
     auto underlying_a = static_cast<underlying>(a);
     auto underlying_b = static_cast<underlying>(b);
@@ -177,12 +193,12 @@ BlendColorWriteEnable& operator&=(BlendColorWriteEnable& a, const BlendColorWrit
     return a;
 }
 
-BlendColorWriteEnable operator&(BlendColorWriteEnable a, const BlendColorWriteEnable& b) {
+BlendColorWriteEnable operator&(BlendColorWriteEnable a, const BlendColorWriteEnable& b) noexcept {
     a &= b;
     return a;
 }
 
-BlendColorWriteEnable& operator|=(BlendColorWriteEnable& a, const BlendColorWriteEnable& b) {
+BlendColorWriteEnable& operator|=(BlendColorWriteEnable& a, const BlendColorWriteEnable& b) noexcept {
     using underlying = std::underlying_type_t<BlendColorWriteEnable>;
     auto underlying_a = static_cast<underlying>(a);
     auto underlying_b = static_cast<underlying>(b);
@@ -190,12 +206,12 @@ BlendColorWriteEnable& operator|=(BlendColorWriteEnable& a, const BlendColorWrit
     return a;
 }
 
-BlendColorWriteEnable operator|(BlendColorWriteEnable a, const BlendColorWriteEnable& b) {
+BlendColorWriteEnable operator|(BlendColorWriteEnable a, const BlendColorWriteEnable& b) noexcept {
     a |= b;
     return a;
 }
 
-BlendColorWriteEnable& operator^=(BlendColorWriteEnable& a, const BlendColorWriteEnable& b) {
+BlendColorWriteEnable& operator^=(BlendColorWriteEnable& a, const BlendColorWriteEnable& b) noexcept {
     using underlying = std::underlying_type_t<BlendColorWriteEnable>;
     auto underlying_a = static_cast<underlying>(a);
     auto underlying_b = static_cast<underlying>(b);
@@ -203,21 +219,21 @@ BlendColorWriteEnable& operator^=(BlendColorWriteEnable& a, const BlendColorWrit
     return a;
 }
 
-BlendColorWriteEnable operator^(BlendColorWriteEnable a, const BlendColorWriteEnable& b) {
+BlendColorWriteEnable operator^(BlendColorWriteEnable a, const BlendColorWriteEnable& b) noexcept {
     using underlying = std::underlying_type_t<BlendColorWriteEnable>;
     auto underlying_a = static_cast<underlying>(a);
     auto underlying_b = static_cast<underlying>(b);
     return static_cast<BlendColorWriteEnable>(underlying_a ^ underlying_b);
 }
 
-ResourceMiscFlag operator|(const ResourceMiscFlag& a, const ResourceMiscFlag& b) {
+ResourceMiscFlag operator|(const ResourceMiscFlag& a, const ResourceMiscFlag& b) noexcept {
     using underlying = std::underlying_type_t<ResourceMiscFlag>;
     auto underlying_a = static_cast<underlying>(a);
     auto underlying_b = static_cast<underlying>(b);
     return static_cast<ResourceMiscFlag>(underlying_a | underlying_b);
 }
 
-ResourceMiscFlag operator&(const ResourceMiscFlag& a, const ResourceMiscFlag& b) {
+ResourceMiscFlag operator&(const ResourceMiscFlag& a, const ResourceMiscFlag& b) noexcept {
     using underlying = std::underlying_type_t<ResourceMiscFlag>;
     auto underlying_a = static_cast<underlying>(a);
     auto underlying_b = static_cast<underlying>(b);

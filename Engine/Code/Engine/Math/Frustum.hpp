@@ -11,8 +11,8 @@ class Camera3D;
 
 class Frustum {
 public:
-    static Frustum CreateFromViewProjectionMatrix(const Matrix4& viewProjection, float aspectRatio, float vfovDegrees, const Vector3& forward, float near, float far, bool normalize);
-    static Frustum CreateFromCamera(const Camera3D& camera, bool normalize);
+    static Frustum CreateFromViewProjectionMatrix(const Matrix4& viewProjection, float aspectRatio, float vfovDegrees, const Vector3& forward, float near, float far, bool normalize) noexcept;
+    static Frustum CreateFromCamera(const Camera3D& camera, bool normalize) noexcept;
 
     Frustum(const Frustum& other) = default;
     Frustum(Frustum&& other) = default;
@@ -20,34 +20,34 @@ public:
     Frustum& operator=(Frustum&& rhs) = default;
     ~Frustum() = default;
 
-    const Plane3& GetLeft() const;
-    const Plane3& GetRight() const;
-    const Plane3& GetTop() const;
-    const Plane3& GetBottom() const;
-    const Plane3& GetNear() const;
-    const Plane3& GetFar() const;
+    const Plane3& GetLeft() const noexcept;
+    const Plane3& GetRight() const noexcept;
+    const Plane3& GetTop() const noexcept;
+    const Plane3& GetBottom() const noexcept;
+    const Plane3& GetNear() const noexcept;
+    const Plane3& GetFar() const noexcept;
 
-    const Vector3& GetNearBottomLeft() const;
-    const Vector3& GetNearTopLeft() const;
-    const Vector3& GetNearTopRight() const;
-    const Vector3& GetNearBottomRight() const;
-    const Vector3& GetFarBottomLeft() const;
-    const Vector3& GetFarTopLeft() const;
-    const Vector3& GetFarTopRight() const;
-    const Vector3& GetFarBottomRight() const;
+    const Vector3& GetNearBottomLeft() const noexcept;
+    const Vector3& GetNearTopLeft() const noexcept;
+    const Vector3& GetNearTopRight() const noexcept;
+    const Vector3& GetNearBottomRight() const noexcept;
+    const Vector3& GetFarBottomLeft() const noexcept;
+    const Vector3& GetFarTopLeft() const noexcept;
+    const Vector3& GetFarTopRight() const noexcept;
+    const Vector3& GetFarBottomRight() const noexcept;
 
 protected:
 private:
-    explicit Frustum(const Matrix4& viewProjection, float aspectRatio, float vfovDegrees, const Vector3& forward, float near, float far, bool normalize);
+    explicit Frustum(const Matrix4& viewProjection, float aspectRatio, float vfovDegrees, const Vector3& forward, float near, float far, bool normalize) noexcept;
 
-    void SetLeft(const Plane3& left);
-    void SetRight(const Plane3& right);
-    void SetTop(const Plane3& top);
-    void SetBottom(const Plane3& bottom);
-    void SetNear(const Plane3& near);
-    void SetFar(const Plane3& far);
+    void SetLeft(const Plane3& left) noexcept;
+    void SetRight(const Plane3& right) noexcept;
+    void SetTop(const Plane3& top) noexcept;
+    void SetBottom(const Plane3& bottom) noexcept;
+    void SetNear(const Plane3& near) noexcept;
+    void SetFar(const Plane3& far) noexcept;
 
-    void CalcPoints(float aspectRatio, float vfovDegrees, const Vector3& forward, float near, float far);
+    void CalcPoints(float aspectRatio, float vfovDegrees, const Vector3& forward, float near, float far) noexcept;
 
     enum class PlaneDirection {
         Left,

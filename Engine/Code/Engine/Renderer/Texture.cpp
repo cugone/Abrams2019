@@ -66,7 +66,7 @@ const IntVector3& Texture::GetDimensions() const noexcept {
     return _dimensions;
 }
 
-ID3D11Resource* Texture::GetDxResource() const {
+ID3D11Resource* Texture::GetDxResource() const noexcept {
     return nullptr;
 }
 
@@ -78,22 +78,38 @@ bool Texture::IsLoaded() const noexcept {
     return _isLoaded;
 }
 
-bool Texture::IsArray() const {
+bool Texture::IsArray() const noexcept {
     return _isArray;
 }
 
-ID3D11DepthStencilView* Texture::GetDepthStencilView() {
+ID3D11DepthStencilView* Texture::GetDepthStencilView() const noexcept {
     return _dsv;
 }
 
-ID3D11RenderTargetView* Texture::GetRenderTargetView() {
+ID3D11RenderTargetView* Texture::GetRenderTargetView() const noexcept {
     return _rtv;
 }
 
-ID3D11ShaderResourceView* Texture::GetShaderResourceView() {
+ID3D11ShaderResourceView* Texture::GetShaderResourceView() const noexcept {
     return _srv;
 }
 
-ID3D11UnorderedAccessView* Texture::GetUnorderedAccessView() {
+ID3D11UnorderedAccessView* Texture::GetUnorderedAccessView() const noexcept {
+    return _uav;
+}
+
+ID3D11DepthStencilView* Texture::GetDepthStencilView() noexcept {
+    return _dsv;
+}
+
+ID3D11RenderTargetView* Texture::GetRenderTargetView() noexcept {
+    return _rtv;
+}
+
+ID3D11ShaderResourceView* Texture::GetShaderResourceView() noexcept {
+    return _srv;
+}
+
+ID3D11UnorderedAccessView* Texture::GetUnorderedAccessView() noexcept {
     return _uav;
 }

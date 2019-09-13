@@ -5,35 +5,35 @@
 const AABB3 AABB3::ZERO_TO_ONE(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
 const AABB3 AABB3::NEG_ONE_TO_ONE(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f);
 
-AABB3::AABB3(float initialX, float initialY, float initialZ)
+AABB3::AABB3(float initialX, float initialY, float initialZ) noexcept
     : mins(initialX, initialY, initialZ)
     , maxs(initialX,initialY, initialZ)
 {
     /* DO NOTHING */
 }
 
-AABB3::AABB3(float minX, float minY, float maxX, float maxY, float minZ, float maxZ)
+AABB3::AABB3(float minX, float minY, float maxX, float maxY, float minZ, float maxZ) noexcept
     : mins(minX, minY, minZ)
     , maxs(maxX, maxY, maxZ)
 {
     /* DO NOTHING */
 }
 
-AABB3::AABB3(const Vector3& mins, const Vector3& maxs)
+AABB3::AABB3(const Vector3& mins, const Vector3& maxs) noexcept
     : mins(mins)
     , maxs(maxs)
 {
     /* DO NOTHING */
 }
 
-AABB3::AABB3(const Vector3& center, float radiusX, float radiusY, float radiusZ)
+AABB3::AABB3(const Vector3& center, float radiusX, float radiusY, float radiusZ) noexcept
     : mins(center.x - radiusX, center.y - radiusY, center.z - radiusZ)
     , maxs(center.x + radiusX, center.y + radiusY, center.z + radiusZ)
 {
     /* DO NOTHING */
 }
 
-void AABB3::StretchToIncludePoint(const Vector3& point) {
+void AABB3::StretchToIncludePoint(const Vector3& point) noexcept {
     if(point.x < mins.x) {
         mins.x = point.x;
     }
@@ -54,7 +54,7 @@ void AABB3::StretchToIncludePoint(const Vector3& point) {
     }
 }
 
-void AABB3::AddPaddingToSides(float paddingX, float paddingY, float paddingZ) {
+void AABB3::AddPaddingToSides(float paddingX, float paddingY, float paddingZ) noexcept {
     mins.x -= paddingX;
     mins.y -= paddingY;
     mins.z -= paddingZ;
@@ -64,7 +64,7 @@ void AABB3::AddPaddingToSides(float paddingX, float paddingY, float paddingZ) {
     maxs.z += paddingZ;
 }
 
-void AABB3::AddPaddingToSidesClamped(float paddingX, float paddingY, float paddingZ) {
+void AABB3::AddPaddingToSidesClamped(float paddingX, float paddingY, float paddingZ) noexcept {
     auto width = maxs.x - mins.x;
     auto height = maxs.y - mins.y;
     auto depth = maxs.z - mins.z;
@@ -86,20 +86,20 @@ void AABB3::AddPaddingToSidesClamped(float paddingX, float paddingY, float paddi
     maxs.z += paddingZ;
 }
 
-void AABB3::Translate(const Vector3& translation) {
+void AABB3::Translate(const Vector3& translation) noexcept {
     mins += translation;
     maxs += translation;
 }
 
-const Vector3 AABB3::CalcDimensions() const {
+const Vector3 AABB3::CalcDimensions() const noexcept {
     return Vector3(maxs.x - mins.x, maxs.y - mins.y, maxs.z - mins.z);
 }
 
-const Vector3 AABB3::CalcCenter() const {
+const Vector3 AABB3::CalcCenter() const noexcept {
     return Vector3(mins.x + (maxs.x - mins.x) * 0.5f, mins.y + (maxs.y - mins.y) * 0.5f, mins.z + (maxs.z - mins.z) * 0.5f);
 }
 
-AABB3 AABB3::operator+(const Vector3& translation) const {
+AABB3 AABB3::operator+(const Vector3& translation) const noexcept {
     return AABB3(mins.x + translation.x,
                  mins.y + translation.y,
                  mins.z + translation.z,
@@ -107,7 +107,7 @@ AABB3 AABB3::operator+(const Vector3& translation) const {
                  maxs.y + translation.y,
                  maxs.z + translation.z);
 }
-AABB3 AABB3::operator-(const Vector3& antiTranslation) const {
+AABB3 AABB3::operator-(const Vector3& antiTranslation) const noexcept {
     return AABB3(mins.x - antiTranslation.x,
                  mins.y - antiTranslation.y,
                  mins.z - antiTranslation.z,
@@ -116,13 +116,13 @@ AABB3 AABB3::operator-(const Vector3& antiTranslation) const {
                  maxs.z - antiTranslation.z);
 }
 
-AABB3& AABB3::operator-=(const Vector3& antiTranslation) {
+AABB3& AABB3::operator-=(const Vector3& antiTranslation) noexcept {
     mins -= antiTranslation;
     maxs -= antiTranslation;
     return *this;
 }
 
-AABB3& AABB3::operator+=(const Vector3& translation) {
+AABB3& AABB3::operator+=(const Vector3& translation) noexcept {
     mins += translation;
     maxs += translation;
     return *this;

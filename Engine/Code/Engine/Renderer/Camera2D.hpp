@@ -10,33 +10,35 @@
 class Camera2D {
 public:
 
-    void SetupView(const Vector2& leftBottom, const Vector2& rightTop, const Vector2& nearFar = Vector2(0.0f, 1.0f), float aspectRatio = MathUtils::M_16_BY_9_RATIO);
+    void SetupView(const Vector2& leftBottom, const Vector2& rightTop, const Vector2& nearFar = Vector2(0.0f, 1.0f), float aspectRatio = MathUtils::M_16_BY_9_RATIO) noexcept;
 
-    void Update(TimeUtils::FPSeconds deltaSeconds);
+    void Update(TimeUtils::FPSeconds deltaSeconds) noexcept;
 
-    const Vector2& GetPosition() const;
-    void SetPosition(const Vector3& newPosition);
-    void SetPosition(const Vector2& newPosition);
-    void Translate(const Vector3& displacement);
-    void Translate(const Vector2& displacement);
-    float GetOrientationDegrees() const;
-    void SetOrientationDegrees(float newAngleDegrees);
-    void ApplyOrientationDegrees(float addAngleDegrees);
-    float GetOrientation() const;
-    void SetOrientation(float newAngleRadians);
-    void ApplyOrientation(float addAngleRadians);
-    float GetAspectRatio() const;
-    float GetInverseAspectRatio() const;
-    float GetNearDistance() const;
-    float GetFarDistance() const;
+    const Vector2& GetPosition() const noexcept;
+    void SetPosition(const Vector3& newPosition) noexcept;
+    void SetPosition(const Vector2& newPosition) noexcept;
+    void Translate(const Vector3& displacement) noexcept;
+    void Translate(const Vector2& displacement) noexcept;
+    float GetOrientationDegrees() const noexcept;
+    void SetOrientationDegrees(float newAngleDegrees) noexcept;
+    void ApplyOrientationDegrees(float addAngleDegrees) noexcept;
+    float GetOrientation() const noexcept;
+    void SetOrientation(float newAngleRadians) noexcept;
+    void ApplyOrientation(float addAngleRadians) noexcept;
+    float GetAspectRatio() const noexcept;
+    float GetInverseAspectRatio() const noexcept;
+    float GetNearDistance() const noexcept;
+    float GetFarDistance() const noexcept;
 
-    const Matrix4& GetViewMatrix() const;
-    const Matrix4& GetProjectionMatrix() const;
-    const Matrix4& GetViewProjectionMatrix() const;
+    const Matrix4& GetViewMatrix() const noexcept;
+    const Matrix4& GetProjectionMatrix() const noexcept;
+    const Matrix4& GetViewProjectionMatrix() const noexcept;
 
-    const Matrix4& GetInverseViewMatrix() const;
-    const Matrix4& GetInverseProjectionMatrix() const;
-    const Matrix4& GetInverseViewProjectionMatrix() const;
+    const Matrix4& GetInverseViewMatrix() const noexcept;
+    const Matrix4& GetInverseProjectionMatrix() const noexcept;
+    const Matrix4& GetInverseViewProjectionMatrix() const noexcept;
+
+    float GetShake() const noexcept;
 
     float trauma = 0.0f;
     float trauma_recovery_rate = 1.0f;
@@ -44,17 +46,17 @@ public:
     float orientation_degrees = 0.0f;
 protected:
 private:
-    void CalcViewMatrix();
-    void CalcProjectionMatrix();
-    void CalcViewProjectionMatrix();
+    void CalcViewMatrix() noexcept;
+    void CalcProjectionMatrix() noexcept;
+    void CalcViewProjectionMatrix() noexcept;
 
-    Matrix4 view_matrix = Matrix4::GetIdentity();
-    Matrix4 projection_matrix = Matrix4::GetIdentity();
-    Matrix4 view_projection_matrix = Matrix4::GetIdentity();
+    Matrix4 view_matrix = Matrix4::I;
+    Matrix4 projection_matrix = Matrix4::I;
+    Matrix4 view_projection_matrix = Matrix4::I;
     
-    Matrix4 inv_view_matrix = Matrix4::GetIdentity();
-    Matrix4 inv_projection_matrix = Matrix4::GetIdentity();
-    Matrix4 inv_view_projection_matrix = Matrix4::GetIdentity();
+    Matrix4 inv_view_matrix = Matrix4::I;
+    Matrix4 inv_projection_matrix = Matrix4::I;
+    Matrix4 inv_view_projection_matrix = Matrix4::I;
 
     Vector2 leftBottom_view = Vector2{ -1.0f, 1.0f };
     Vector2 rightTop_view = Vector2{ 1.0f, -1.0f };

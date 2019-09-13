@@ -4,47 +4,52 @@
 
 #include "Engine/Math/IntVector2.hpp"
 
+#include <memory>
 #include <mutex>
 #include <string>
+#include <filesystem>
 
 class Image {
 public:
-    explicit Image(const std::string& filePath);
+    Image() = default;
+    explicit Image(std::filesystem::path filepath) noexcept;
     Image(const Image& img) = delete;
-    Image(Image&& img);
     Image& operator=(const Image& rhs) = delete;
-    Image& operator=(Image&& rhs);
+    Image(Image&& img) noexcept;
+    Image& operator=(Image&& rhs) noexcept;
+    ~Image() = default;
 
-    Image(unsigned char* data, unsigned int width, unsigned int height);
-    Image(Rgba* data, unsigned int width, unsigned int height);
-    Image(unsigned int width, unsigned int height);
-    Image(const std::vector<Rgba>& data, unsigned int width, unsigned int height);
-    Image(const std::vector<unsigned char>& data, unsigned int width, unsigned int height);
-    ~Image();
+    Image(unsigned char* data, unsigned int width, unsigned int height) noexcept;
+    Image(Rgba* data, unsigned int width, unsigned int height) noexcept;
+    Image(unsigned int width, unsigned int height) noexcept;
+    Image(const std::vector<Rgba>& data, unsigned int width, unsigned int height) noexcept;
+    Image(const std::vector<unsigned char>& data, unsigned int width, unsigned int height) noexcept;
 
-    Rgba GetTexel(const IntVector2& texelPos) const;
-    void SetTexel(const IntVector2& texelPos, const Rgba& color);
+    Rgba GetTexel(const IntVector2& texelPos) const noexcept;
+    void SetTexel(const IntVector2& texelPos, const Rgba& color) noexcept;
 
-    const std::string& GetFilepath() const;
-    const IntVector2& GetDimensions() const;
+    const std::filesystem::path& GetFilepath() const noexcept;
+    const IntVector2& GetDimensions() const noexcept;
 
-    unsigned char* GetData() const;
-    std::size_t GetDataLength() const;
-    int GetBytesPerTexel() const;
+    const unsigned char* GetData() const noexcept;
+    unsigned char* GetData() noexcept;
+    std::size_t GetDataLength() const noexcept;
+    int GetBytesPerTexel() const noexcept;
 
-    const std::vector<int>& GetDelaysIfGif() const;
-    bool Export(const std::string& filepath, int bytes_per_pixel = 4, int jpg_quality = 100);
-    static Image* CreateImageFromFileBuffer(const std::vector<unsigned char>& data);
-    static std::string GetSupportedExtensionsList();
+    const std::vector<int>& GetDelaysIfGif() const noexcept;
+    bool Export(std::filesystem::path filepath, int bytes_per_pixel = 4, int jpg_quality = 100) noexcept;
+    static Image CreateImageFromFileBuffer(const std::vector<unsigned char>& data) noexcept;
+    static std::string GetSupportedExtensionsList() noexcept;
+
+    friend void swap(Image& a, Image& b) noexcept;
+
 protected:
 private:
-    Image() = default;
-    unsigned char* m_texelBytes = nullptr;
     IntVector2 m_dimensions{};
-    int m_bytesPerTexel = 0;
+    unsigned int m_bytesPerTexel = 0;
+    std::vector<unsigned char> m_texelBytes{};
     std::vector<int> m_gifDelays{};
-    std::string m_filepath{};
-    bool m_memload = false;
+    std::filesystem::path m_filepath{};
     bool m_isGif = false;
     std::mutex _cs{};
 };

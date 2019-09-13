@@ -6,25 +6,25 @@
 
 namespace FileUtils::Base64 {
 
-std::string Encode(const std::string& input) {
+std::string Encode(const std::string& input) noexcept {
     std::istringstream ss(input);
     return Encode(ss);
 }
 
-std::string Encode(const std::vector<unsigned char>& input) {
+std::string Encode(const std::vector<unsigned char>& input) noexcept {
     std::stringstream ss;
     ss.setf(std::ios_base::binary | std::ios_base::in);
     ss.write(reinterpret_cast<const char*>(input.data()), input.size());
     return detail::Encode(ss, input.size());
 }
 
-std::string Encode(std::istream& input) {
+std::string Encode(std::istream& input) noexcept {
     return detail::Encode(input, 1024);
 }
 
-std::string detail::Encode(std::istream& input, std::size_t size) {
+std::string detail::Encode(std::istream& input, std::size_t size) noexcept {
     std::array<unsigned char, 3> bits{ 0,0,0 };
-    auto potential_size = static_cast<std::size_t>(4.0f * std::ceil(static_cast<float>(size) / 3.0f));
+    auto potential_size = static_cast<std::size_t>(std::floor(4.0f * std::ceil(static_cast<float>(size) / 3.0f)));
     std::string output( potential_size, 0);
     std::size_t i = 0u;
     while(input.read(reinterpret_cast<char*>(bits.data()), bits.size())) {
@@ -91,16 +91,16 @@ std::string detail::Encode(std::istream& input, std::size_t size) {
     return output.substr(0, i);
 }
 
-std::string Decode(const std::string& input) {
+std::string Decode(const std::string& input) noexcept {
     std::istringstream ss(input);
     return detail::Decode(ss, input.size());
 }
 
-std::string Decode(std::istream& input) {
+std::string Decode(std::istream& input) noexcept {
     return detail::Decode(input, 1024);
 }
 
-void Decode(const std::string& input, std::vector<unsigned char>& output) {
+void Decode(const std::string& input, std::vector<unsigned char>& output) noexcept {
     std::stringstream ss;
     ss.setf(std::ios_base::binary | std::ios_base::in);
     ss.write(reinterpret_cast<const char*>(input.data()), input.size());
@@ -108,9 +108,9 @@ void Decode(const std::string& input, std::vector<unsigned char>& output) {
     output.assign(std::begin(out), std::end(out));
 }
 
-std::string detail::Decode(std::istream& input, std::size_t size) {
+std::string detail::Decode(std::istream& input, std::size_t size) noexcept {
     std::array<char, 4> bits_array{ 0,0,0,0 };
-    auto potential_size = static_cast<std::size_t>(3.0f * std::ceil(static_cast<float>(size) / 4.0f));
+    auto potential_size = static_cast<std::size_t>(std::floor(3.0f * std::ceil(static_cast<float>(size) / 4.0f)));
     std::string output(potential_size, 0);
     std::size_t i = 0u;
     while(input.read(reinterpret_cast<char*>(bits_array.data()), bits_array.size())) {

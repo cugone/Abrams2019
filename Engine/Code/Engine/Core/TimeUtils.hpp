@@ -31,8 +31,8 @@ struct DateTimeStampOptions {
     bool is_filename = false;
 };
 
-std::string GetDateTimeStampFromNow(const DateTimeStampOptions& options = DateTimeStampOptions{});
-std::string GetTimeStampFromNow(const DateTimeStampOptions& options = DateTimeStampOptions{});
-std::string GetDateStampFromNow(const DateTimeStampOptions& options = DateTimeStampOptions{});
+std::string GetDateTimeStampFromNow(const DateTimeStampOptions& options = DateTimeStampOptions{}) noexcept;
+std::string GetTimeStampFromNow(const DateTimeStampOptions& options = DateTimeStampOptions{}) noexcept;
+std::string GetDateStampFromNow(const DateTimeStampOptions& options = DateTimeStampOptions{}) noexcept;
 
 } //End TimeUtils

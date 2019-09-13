@@ -47,13 +47,14 @@
 #include "Thirdparty/TinyXML2/tinyxml2.h"
 
 #include <algorithm>
-#include <numeric>
 #include <cstddef>
 #include <filesystem>
 #include <fstream>
-#include <sstream>
-#include <ostream>
 #include <iostream>
+#include <numeric>
+#include <ostream>
+#include <sstream>
+#include <tuple>
 
 ComputeJob::ComputeJob(Renderer* renderer,
                        std::size_t uavCount,
@@ -61,7 +62,7 @@ ComputeJob::ComputeJob(Renderer* renderer,
                        Shader* computeShader,
                        unsigned int threadGroupCountX,
                        unsigned int threadGroupCountY,
-                       unsigned int threadGroupCountZ)
+                       unsigned int threadGroupCountZ) noexcept
 :renderer(renderer)
 ,uavCount(uavCount)
 ,uavTextures{uavTextures}
@@ -73,7 +74,7 @@ ComputeJob::ComputeJob(Renderer* renderer,
     /* DO NOTHING */
 }
 
-ComputeJob::~ComputeJob() {
+ComputeJob::~ComputeJob() noexcept {
     if(renderer) {
         auto dc = renderer->GetDeviceContext();
         dc->UnbindAllComputeConstantBuffers();
@@ -83,77 +84,34 @@ ComputeJob::~ComputeJob() {
     }
 }
 
-Renderer::Renderer(unsigned int width, unsigned int height)
+Renderer::Renderer(unsigned int width, unsigned int height) noexcept
     : _window_dimensions(width, height)
 {
     /* DO NOTHING */
 }
 
-Renderer::~Renderer() {
+Renderer::~Renderer() noexcept {
 
     UnbindAllConstantBuffers();
     UnbindComputeConstantBuffers();
     UnbindAllShaderResources();
     UnbindComputeShaderResources();
 
-    delete _target_stack;
-    _target_stack = nullptr;
+    _temp_vbo.reset();
+    _temp_ibo.reset();
+    _matrix_cb.reset();
+    _time_cb.reset();
+    _lighting_cb.reset();
+    _target_stack.reset();
 
-    for(auto& texture : _textures) {
-        delete texture.second;
-        texture.second = nullptr;
-    }
     _textures.clear();
-
-    for(auto& sp : _shader_programs) {
-        delete sp.second;
-        sp.second = nullptr;
-    }
     _shader_programs.clear();
-
-    for(auto& material : _materials) {
-        delete material.second;
-        material.second = nullptr;
-    }
     _materials.clear();
-
-    for(auto& shader : _shaders) {
-        delete shader.second;
-        shader.second = nullptr;
-    }
     _shaders.clear();
-
-    for(auto& sampler : _samplers) {
-        delete sampler.second;
-        sampler.second = nullptr;
-    }
     _samplers.clear();
-
-    for(auto& raster : _rasters) {
-        delete raster.second;
-        raster.second = nullptr;
-    }
     _rasters.clear();
-
-    for(auto& font : _fonts) {
-        delete font.second;
-        font.second = nullptr;
-    }
     _fonts.clear();
-
-    for(auto& ds : _depthstencils) {
-        delete ds.second;
-        ds.second = nullptr;
-    }
     _depthstencils.clear();
-
-    delete _temp_vbo;
-    _temp_vbo = nullptr;
-    _current_vbo_size = 0;
-
-    delete _temp_ibo;
-    _temp_ibo = nullptr;
-    _current_ibo_size = 0;
 
     _default_depthstencil = nullptr;
     _current_target = nullptr;
@@ -163,18 +121,9 @@ Renderer::~Renderer() {
     _current_sampler = nullptr;
     _current_material = nullptr;
 
-    delete _lighting_cb;
-    _lighting_cb = nullptr;
-
-    delete _time_cb;
-    _time_cb = nullptr;
-
-    delete _matrix_cb;
-    _matrix_cb = nullptr;
-
+    _rhi_output.reset();
     _rhi_context.reset();
     _rhi_device.reset();
-    _rhi_output.reset();
     RHIInstance::DestroyInstance();
     _rhi_instance = nullptr;
 
@@ -186,12 +135,7 @@ void Renderer::Initialize(bool headless /*= false*/) {
     if(headless) {
         return;
     }
-    auto [rhi_output, rhi_context] = _rhi_device->CreateOutputAndContext(_window_dimensions);
-    if(!rhi_output || !rhi_context) {
-        return;
-    }
-    _rhi_output = std::move(rhi_output);
-    _rhi_context = std::move(rhi_context);
+    std::tie(_rhi_output, _rhi_context) = _rhi_device->CreateOutputAndContext(_window_dimensions);
 
     LogAvailableDisplays();
     CreateWorkingVboAndIbo();
@@ -207,7 +151,7 @@ void Renderer::Initialize(bool headless /*= false*/) {
     CreateAndRegisterDefaultDepthStencil();
     CreateAndRegisterDefaultFonts();
 
-    _target_stack = new RenderTargetStack(this);
+    _target_stack = std::make_unique<RenderTargetStack>(this);
 
     SetDepthStencilState(GetDepthStencilState("__default"));
     SetRasterState(GetRasterState("__solid"));
@@ -216,13 +160,13 @@ void Renderer::Initialize(bool headless /*= false*/) {
     _current_material = nullptr; //User must explicitly set to avoid defaulting to full lighting material.
 }
 
-void Renderer::CreateDefaultConstantBuffers() {
+void Renderer::CreateDefaultConstantBuffers() noexcept {
     _matrix_cb = CreateConstantBuffer(&_matrix_data, sizeof(_matrix_data));
     _time_cb = CreateConstantBuffer(&_time_data, sizeof(_time_data));
     _lighting_cb = CreateConstantBuffer(&_lighting_data, sizeof(_lighting_data));
 }
 
-void Renderer::CreateWorkingVboAndIbo() {
+void Renderer::CreateWorkingVboAndIbo() noexcept {
     VertexBuffer::buffer_t default_vbo(1024);
     IndexBuffer::buffer_t default_ibo(1024);
     _temp_vbo = CreateVertexBuffer(default_vbo);
@@ -231,7 +175,7 @@ void Renderer::CreateWorkingVboAndIbo() {
     _current_ibo_size = default_ibo.size();
 }
 
-void Renderer::LogAvailableDisplays() {
+void Renderer::LogAvailableDisplays() noexcept {
     std::ostringstream ss;
     ss << std::setw(60) << std::setfill('-') << '\n';
     ss << "Available Display Dimensions:\n";
@@ -242,11 +186,13 @@ void Renderer::LogAvailableDisplays() {
     DebuggerPrintf(ss.str().c_str());
 }
 
-void Renderer::CreateAndRegisterDefaultDepthStencil() {
-    _default_depthstencil = CreateDepthStencil(_rhi_device.get(), _window_dimensions);
-    if(_default_depthstencil) {
-        _default_depthstencil->SetDebugName("__default_depthstencil");
-        RegisterTexture("__default_depthstencil", _default_depthstencil);
+void Renderer::CreateAndRegisterDefaultDepthStencil() noexcept {
+    auto default_depthstencil = CreateDepthStencil(_rhi_device.get(), _window_dimensions);
+    if(default_depthstencil) {
+        default_depthstencil->SetDebugName("__default_depthstencil");
+        if(RegisterTexture("__default_depthstencil", std::move(default_depthstencil))) {
+            _default_depthstencil = GetTexture("__default_depthstencil");
+        }
     } else {
         ERROR_AND_DIE("Default depthstencil failed to create.");
     }
@@ -260,18 +206,18 @@ void Renderer::Update(TimeUtils::FPSeconds deltaSeconds) {
     UpdateSystemTime(deltaSeconds);
 }
 
-void Renderer::UpdateGameTime(TimeUtils::FPSeconds deltaSeconds) {
+void Renderer::UpdateGameTime(TimeUtils::FPSeconds deltaSeconds) noexcept {
     _time_data.game_time += deltaSeconds.count();
     _time_data.game_frame_time = deltaSeconds.count();
     _time_cb->Update(_rhi_context.get(), &_time_data);
-    SetConstantBuffer(TIME_BUFFER_INDEX, _time_cb);
+    SetConstantBuffer(TIME_BUFFER_INDEX, _time_cb.get());
 }
 
-void Renderer::UpdateSystemTime(TimeUtils::FPSeconds deltaSeconds) {
+void Renderer::UpdateSystemTime(TimeUtils::FPSeconds deltaSeconds) noexcept {
     _time_data.system_time += deltaSeconds.count();
     _time_data.system_frame_time = deltaSeconds.count();
     _time_cb->Update(_rhi_context.get(), &_time_data);
-    SetConstantBuffer(TIME_BUFFER_INDEX, _time_cb);
+    SetConstantBuffer(TIME_BUFFER_INDEX, _time_cb.get());
 }
 
 void Renderer::Render() const {
@@ -282,39 +228,39 @@ void Renderer::EndFrame() {
     Present();
 }
 
-TimeUtils::FPSeconds Renderer::GetGameFrameTime() const {
+TimeUtils::FPSeconds Renderer::GetGameFrameTime() const noexcept {
     return TimeUtils::FPSeconds{ _time_data.game_frame_time };
 }
 
-TimeUtils::FPSeconds Renderer::GetSystemFrameTime() const {
+TimeUtils::FPSeconds Renderer::GetSystemFrameTime() const noexcept {
     return TimeUtils::FPSeconds{_time_data.system_frame_time};
 }
 
-TimeUtils::FPSeconds Renderer::GetGameTime() const {
+TimeUtils::FPSeconds Renderer::GetGameTime() const noexcept {
     return TimeUtils::FPSeconds{_time_data.game_time};
 }
 
-TimeUtils::FPSeconds Renderer::GetSystemTime() const {
+TimeUtils::FPSeconds Renderer::GetSystemTime() const noexcept {
     return TimeUtils::FPSeconds{_time_data.system_time};
 }
 
-ConstantBuffer* Renderer::CreateConstantBuffer(void* const& buffer, const std::size_t& buffer_size) const {
+std::unique_ptr<ConstantBuffer> Renderer::CreateConstantBuffer(void* const& buffer, const std::size_t& buffer_size) const noexcept {
     return _rhi_device->CreateConstantBuffer(buffer, buffer_size, BufferUsage::Dynamic, BufferBindUsage::Constant_Buffer);
 }
 
-VertexBuffer* Renderer::CreateVertexBuffer(const VertexBuffer::buffer_t& vbo) const {
+std::unique_ptr<VertexBuffer> Renderer::CreateVertexBuffer(const VertexBuffer::buffer_t& vbo) const noexcept {
     return _rhi_device->CreateVertexBuffer(vbo, BufferUsage::Dynamic, BufferBindUsage::Vertex_Buffer);
 }
 
-IndexBuffer* Renderer::CreateIndexBuffer(const IndexBuffer::buffer_t& ibo) const {
+std::unique_ptr<IndexBuffer> Renderer::CreateIndexBuffer(const IndexBuffer::buffer_t& ibo) const noexcept {
     return _rhi_device->CreateIndexBuffer(ibo, BufferUsage::Dynamic, BufferBindUsage::Index_Buffer);
 }
 
-StructuredBuffer* Renderer::CreateStructuredBuffer(const StructuredBuffer::buffer_t& sbo, std::size_t element_size, std::size_t element_count) const {
+std::unique_ptr<StructuredBuffer> Renderer::CreateStructuredBuffer(const StructuredBuffer::buffer_t& sbo, std::size_t element_size, std::size_t element_count) const noexcept {
     return _rhi_device->CreateStructuredBuffer(sbo, element_size, element_count, BufferUsage::Static, BufferBindUsage::Shader_Resource);
 }
 
-bool Renderer::RegisterTexture(const std::string& name, Texture* texture) {
+bool Renderer::RegisterTexture(const std::string& name, std::unique_ptr<Texture> texture) noexcept {
     namespace FS = std::filesystem;
     FS::path p(name);
     if(!StringUtils::StartsWith(p.string(), "__")) {
@@ -328,14 +274,14 @@ bool Renderer::RegisterTexture(const std::string& name, Texture* texture) {
     p.make_preferred();
     auto found_texture = _textures.find(p.string());
     if(found_texture == _textures.end()) {
-        _textures.insert_or_assign(name, texture);
+        _textures.try_emplace(name, std::move(texture));
         return true;
     } else {
         return false;
     }
 }
 
-Texture* Renderer::GetTexture(const std::string& nameOrFile) {
+Texture* Renderer::GetTexture(const std::string& nameOrFile) noexcept {
     namespace FS = std::filesystem;
     FS::path p(nameOrFile);
     if(!StringUtils::StartsWith(p.string(), "__")) {
@@ -346,20 +292,20 @@ Texture* Renderer::GetTexture(const std::string& nameOrFile) {
     if(found_iter == _textures.end()) {
         return nullptr;
     }
-    return _textures[p.string()];
+    return (*found_iter).second.get();
 }
 
-void Renderer::DrawPoint(const Vertex3D& point) {
+void Renderer::DrawPoint(const Vertex3D& point) noexcept {
     std::vector<Vertex3D> vbo = { point };
     std::vector<unsigned int> ibo = { 0 };
     DrawIndexed(PrimitiveType::Points, vbo, ibo);
 }
 
-void Renderer::DrawPoint(const Vector3& point, const Rgba& color /*= Rgba::WHITE*/, const Vector2& tex_coords /*= Vector2::ZERO*/) {
+void Renderer::DrawPoint(const Vector3& point, const Rgba& color /*= Rgba::WHITE*/, const Vector2& tex_coords /*= Vector2::ZERO*/) noexcept {
     DrawPoint(Vertex3D(point, color, tex_coords));
 }
 
-void Renderer::DrawFrustum(const Frustum& frustum, const Rgba& color /*= Rgba::YELLOW*/, const Vector2& tex_coords /*= Vector2::ZERO*/) {
+void Renderer::DrawFrustum(const Frustum& frustum, const Rgba& color /*= Rgba::YELLOW*/, const Vector2& tex_coords /*= Vector2::ZERO*/) noexcept {
 
     const Vector3& point1{frustum.GetNearBottomLeft()};
     const Vector3& point2{frustum.GetNearTopLeft()};
@@ -387,7 +333,7 @@ void Renderer::DrawFrustum(const Frustum& frustum, const Rgba& color /*= Rgba::Y
     DrawIndexed(PrimitiveType::Lines, vbo, ibo);
 }
 
-void Renderer::DrawWorldGridXZ(float radius /*= 500.0f*/, float major_gridsize /*= 20.0f*/, float minor_gridsize /*= 5.0f*/, const Rgba& major_color /*= Rgba::WHITE*/, const Rgba& minor_color /*= Rgba::DARK_GRAY*/) {
+void Renderer::DrawWorldGridXZ(float radius /*= 500.0f*/, float major_gridsize /*= 20.0f*/, float minor_gridsize /*= 5.0f*/, const Rgba& major_color /*= Rgba::WHITE*/, const Rgba& minor_color /*= Rgba::DARK_GRAY*/) noexcept {
     static std::vector<Vertex3D> vbo{};
     float half_length = radius;
     float length = radius * 2.0f;
@@ -435,7 +381,7 @@ void Renderer::DrawWorldGridXZ(float radius /*= 500.0f*/, float major_gridsize /
 
 }
 
-void Renderer::DrawWorldGridXY(float radius /*= 500.0f*/, float major_gridsize /*= 20.0f*/, float minor_gridsize /*= 5.0f*/, const Rgba& major_color /*= Rgba::WHITE*/, const Rgba& minor_color /*= Rgba::DARK_GRAY*/) {
+void Renderer::DrawWorldGridXY(float radius /*= 500.0f*/, float major_gridsize /*= 20.0f*/, float minor_gridsize /*= 5.0f*/, const Rgba& major_color /*= Rgba::WHITE*/, const Rgba& minor_color /*= Rgba::DARK_GRAY*/) noexcept {
 
     float half_length = radius;
     float length = radius * 2.0f;
@@ -493,7 +439,7 @@ void Renderer::DrawWorldGridXY(float radius /*= 500.0f*/, float major_gridsize /
     DrawIndexed(PrimitiveType::Lines, vbo, ibo, minor_count, minor_start);
 }
 
-void Renderer::DrawWorldGrid2D(int width, int height, const Rgba& color /*= Rgba::White*/) {
+void Renderer::DrawWorldGrid2D(int width, int height, const Rgba& color /*= Rgba::White*/) noexcept {
     static std::vector<Vertex3D> vbo{};
     vbo.clear();
     static std::vector<unsigned int> ibo{};
@@ -506,7 +452,8 @@ void Renderer::DrawWorldGrid2D(int width, int height, const Rgba& color /*= Rgba
     const auto y_last = height + 1;
     const auto x_first = 0;
     const auto x_last = width + 1;
-    vbo.reserve(2 + width + height);
+    const auto size = static_cast<std::size_t>(2) + width + height;
+    vbo.reserve(size);
     for(int x = x_first; x < x_last; ++x) {
         vbo.push_back(Vertex3D{ Vector3{static_cast<float>(x), static_cast<float>(y_start), 0.0f}, color });
         vbo.push_back(Vertex3D{ Vector3{static_cast<float>(x), static_cast<float>(y_end), 0.0f}, color });
@@ -522,11 +469,11 @@ void Renderer::DrawWorldGrid2D(int width, int height, const Rgba& color /*= Rgba
 }
 
 
-void Renderer::DrawWorldGrid2D(const IntVector2& dimensions, const Rgba& color /*= Rgba::White*/) {
+void Renderer::DrawWorldGrid2D(const IntVector2& dimensions, const Rgba& color /*= Rgba::White*/) noexcept {
     DrawWorldGrid2D(dimensions.x, dimensions.y, color);
 }
 
-void Renderer::DrawAxes(float maxlength /*= 1000.0f*/, bool disable_unit_depth /*= true*/) {
+void Renderer::DrawAxes(float maxlength /*= 1000.0f*/, bool disable_unit_depth /*= true*/) noexcept {
     static std::vector<Vertex3D> vbo{
         Vertex3D{Vector3::ZERO, Rgba::Red},
         Vertex3D{Vector3::ZERO, Rgba::Green},
@@ -554,7 +501,7 @@ void Renderer::DrawAxes(float maxlength /*= 1000.0f*/, bool disable_unit_depth /
     }
 }
 
-void Renderer::DrawDebugSphere(const Rgba& color) {
+void Renderer::DrawDebugSphere(const Rgba& color) noexcept {
     SetMaterial(GetMaterial("__unlit"));
 
     float centerX = 0.0f;
@@ -623,69 +570,69 @@ void Renderer::DrawDebugSphere(const Rgba& color) {
 
 }
 
-void Renderer::Draw(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo) {
+void Renderer::Draw(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo) noexcept {
     UpdateVbo(vbo);
-    Draw(topology, _temp_vbo, vbo.size());
+    Draw(topology, _temp_vbo.get(), vbo.size());
 }
 
-void Renderer::Draw(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo, std::size_t vertex_count) {
+void Renderer::Draw(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo, std::size_t vertex_count) noexcept {
     UpdateVbo(vbo);
-    Draw(topology, _temp_vbo, vertex_count);
+    Draw(topology, _temp_vbo.get(), vertex_count);
 }
 
-void Renderer::DrawIndexed(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo, const std::vector<unsigned int>& ibo) {
-    UpdateVbo(vbo);
-    UpdateIbo(ibo);
-    DrawIndexed(topology, _temp_vbo, _temp_ibo, ibo.size());
-}
-
-void Renderer::DrawIndexed(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo, const std::vector<unsigned int>& ibo, std::size_t vertex_count, std::size_t startVertex /*= 0*/, std::size_t baseVertexLocation /*= 0*/) {
+void Renderer::DrawIndexed(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo, const std::vector<unsigned int>& ibo) noexcept {
     UpdateVbo(vbo);
     UpdateIbo(ibo);
-    DrawIndexed(topology, _temp_vbo, _temp_ibo, vertex_count, startVertex, baseVertexLocation);
+    DrawIndexed(topology, _temp_vbo.get(), _temp_ibo.get(), ibo.size());
 }
 
-void Renderer::SetLightingEyePosition(const Vector3& position) {
+void Renderer::DrawIndexed(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo, const std::vector<unsigned int>& ibo, std::size_t vertex_count, std::size_t startVertex /*= 0*/, std::size_t baseVertexLocation /*= 0*/) noexcept {
+    UpdateVbo(vbo);
+    UpdateIbo(ibo);
+    DrawIndexed(topology, _temp_vbo.get(), _temp_ibo.get(), vertex_count, startVertex, baseVertexLocation);
+}
+
+void Renderer::SetLightingEyePosition(const Vector3& position) noexcept {
     _lighting_data.eye_position = Vector4(position, 1.0f);
     _lighting_cb->Update(_rhi_context.get(), &_lighting_data);
-    SetConstantBuffer(Renderer::LIGHTING_BUFFER_INDEX, _lighting_cb);
+    SetConstantBuffer(Renderer::LIGHTING_BUFFER_INDEX, _lighting_cb.get());
 }
 
-void Renderer::SetAmbientLight(const Rgba& ambient) {
+void Renderer::SetAmbientLight(const Rgba& ambient) noexcept {
     float intensity = ambient.a / 255.0f;
     SetAmbientLight(ambient, intensity);
 }
 
-void Renderer::SetAmbientLight(const Rgba& color, float intensity) {
+void Renderer::SetAmbientLight(const Rgba& color, float intensity) noexcept {
     _lighting_data.ambient = Vector4(color.GetRgbAsFloats(), intensity);
     _lighting_cb->Update(_rhi_context.get(), &_lighting_data);
-    SetConstantBuffer(LIGHTING_BUFFER_INDEX, _lighting_cb);
+    SetConstantBuffer(LIGHTING_BUFFER_INDEX, _lighting_cb.get());
 }
 
-void Renderer::SetSpecGlossEmitFactors(Material* mat) {
+void Renderer::SetSpecGlossEmitFactors(Material* mat) noexcept {
     float spec = mat ? mat->GetSpecularIntensity() : 1.0f;
     float gloss = mat ? mat->GetGlossyFactor() : 8.0f;
     float emit = mat ? mat->GetEmissiveFactor() : 0.0f;
     _lighting_data.specular_glossy_emissive_factors = Vector4(spec, gloss, emit, 1.0f);
     _lighting_cb->Update(_rhi_context.get(), &_lighting_data);
-    SetConstantBuffer(LIGHTING_BUFFER_INDEX, _lighting_cb);
+    SetConstantBuffer(LIGHTING_BUFFER_INDEX, _lighting_cb.get());
 }
 
-void Renderer::SetUseVertexNormalsForLighting(bool value) {
+void Renderer::SetUseVertexNormalsForLighting(bool value) noexcept {
     if(value) {
         _lighting_data.useVertexNormals = 1;
     } else {
         _lighting_data.useVertexNormals = 0;
     }
     _lighting_cb->Update(_rhi_context.get(), &_lighting_data);
-    SetConstantBuffer(LIGHTING_BUFFER_INDEX, _lighting_cb);
+    SetConstantBuffer(LIGHTING_BUFFER_INDEX, _lighting_cb.get());
 }
 
-const light_t& Renderer::GetLight(unsigned int index) const {
+const light_t& Renderer::GetLight(unsigned int index) const noexcept {
     return _lighting_data.lights[index];
 }
 
-void Renderer::SetPointLight(unsigned int index, const PointLightDesc& desc) {
+void Renderer::SetPointLight(unsigned int index, const PointLightDesc& desc) noexcept {
     auto l = light_t{};
     l.attenuation = Vector4(desc.attenuation, 0.0f);
     l.specAttenuation = l.attenuation;
@@ -694,7 +641,7 @@ void Renderer::SetPointLight(unsigned int index, const PointLightDesc& desc) {
     SetPointLight(index, l);
 }
 
-void Renderer::SetDirectionalLight(unsigned int index, const DirectionalLightDesc& desc) {
+void Renderer::SetDirectionalLight(unsigned int index, const DirectionalLightDesc& desc) noexcept {
     auto l = light_t{};
     l.direction = Vector4(desc.direction, 0.0f);
     l.attenuation = Vector4(desc.attenuation, 1.0f);
@@ -703,7 +650,7 @@ void Renderer::SetDirectionalLight(unsigned int index, const DirectionalLightDes
     SetDirectionalLight(index, l);
 }
 
-void Renderer::SetSpotlight(unsigned int index, const SpotLightDesc& desc) {
+void Renderer::SetSpotlight(unsigned int index, const SpotLightDesc& desc) noexcept {
     auto l = light_t{};
     l.attenuation = Vector4(desc.attenuation, 0.0f);
     l.specAttenuation = l.attenuation;
@@ -726,66 +673,75 @@ void Renderer::SetSpotlight(unsigned int index, const SpotLightDesc& desc) {
     SetSpotlight(index, l);
 }
 
-void Renderer::SetLightAtIndex(unsigned int index, const light_t& light) {
+void Renderer::SetLightAtIndex(unsigned int index, const light_t& light) noexcept {
     _lighting_data.lights[index] = light;
     _lighting_cb->Update(_rhi_context.get(), &_lighting_data);
-    SetConstantBuffer(LIGHTING_BUFFER_INDEX, _lighting_cb);
+    SetConstantBuffer(LIGHTING_BUFFER_INDEX, _lighting_cb.get());
 }
 
-void Renderer::SetPointLight(unsigned int index, const light_t& light) {
+void Renderer::SetPointLight(unsigned int index, const light_t& light) noexcept {
     SetLightAtIndex(index, light);
 }
 
-void Renderer::SetDirectionalLight(unsigned int index, const light_t& light) {
+void Renderer::SetDirectionalLight(unsigned int index, const light_t& light) noexcept {
     SetLightAtIndex(index, light);
 }
 
-void Renderer::SetSpotlight(unsigned int index, const light_t& light) {
+void Renderer::SetSpotlight(unsigned int index, const light_t& light) noexcept {
     SetLightAtIndex(index, light);
 }
 
-AnimatedSprite* Renderer::CreateAnimatedSprite(const std::string& filepath) {
+std::unique_ptr<AnimatedSprite> Renderer::CreateAnimatedSprite(std::filesystem::path filepath) noexcept {
     namespace FS = std::filesystem;
-    FS::path p(filepath);
-    p = FS::canonical(p);
-    p.make_preferred();
+    filepath = FS::canonical(filepath);
+    filepath.make_preferred();
     tinyxml2::XMLDocument doc;
-    auto xml_result = doc.LoadFile(p.string().c_str());
+    auto xml_result = doc.LoadFile(filepath.string().c_str());
     if(xml_result == tinyxml2::XML_SUCCESS) {
         auto xml_root = doc.RootElement();
-        return new AnimatedSprite(*this, *xml_root);
+        return std::move(std::make_unique<AnimatedSprite>(*this, *xml_root));
     }
-    if(p.has_extension() && StringUtils::ToLowerCase(p.extension().string()) == ".gif") {
+    if(filepath.has_extension() && StringUtils::ToLowerCase(filepath.extension().string()) == ".gif") {
         return CreateAnimatedSpriteFromGif(filepath);
     }
     return nullptr;
 }
 
-AnimatedSprite* Renderer::CreateAnimatedSprite(const XMLElement& elem) {
-    return new AnimatedSprite(*this, elem);
+std::unique_ptr<AnimatedSprite> Renderer::CreateAnimatedSprite(std::weak_ptr<SpriteSheet> sheet, const XMLElement& elem) noexcept {
+    return std::move(std::make_unique<AnimatedSprite>(*this, sheet, elem));
 }
 
-AnimatedSprite* Renderer::CreateAnimatedSprite(SpriteSheet* sheet) {
-    return new AnimatedSprite(*this, sheet);
+std::unique_ptr<AnimatedSprite> Renderer::CreateAnimatedSprite(const XMLElement& elem) noexcept {
+    return std::move(std::make_unique<AnimatedSprite>(*this, elem));
 }
 
-const RenderTargetStack& Renderer::GetRenderTargetStack() const {
+std::unique_ptr<AnimatedSprite> Renderer::CreateAnimatedSprite(std::weak_ptr<SpriteSheet> sheet, const IntVector2& startSpriteCoords /* = IntVector2::ZERO*/) noexcept {
+    return std::move(std::make_unique<AnimatedSprite>(*this, sheet, startSpriteCoords));
+}
+
+const RenderTargetStack& Renderer::GetRenderTargetStack() const noexcept {
     return *_target_stack;
 }
 
-void Renderer::PushRenderTarget(const RenderTargetStack::Node& newRenderTarget /*= RenderTargetStack::Node{}*/) {
-    _target_stack->Push(newRenderTarget);
+void Renderer::PushRenderTarget(const RenderTargetStack::Node& newRenderTarget /*= RenderTargetStack::Node{}*/) noexcept {
+    _target_stack->push(newRenderTarget);
 }
 
-void Renderer::PopRenderTarget() {
-    _target_stack->Pop();
+void Renderer::PopRenderTarget() noexcept {
+    _target_stack->pop();
 }
 
-SpriteSheet* Renderer::CreateSpriteSheet(const XMLElement& elem) {
-    return new SpriteSheet(*this, elem);
+std::shared_ptr<SpriteSheet> Renderer::CreateSpriteSheet(const XMLElement& elem) noexcept {
+    return std::move(std::make_shared<SpriteSheet>(*this, elem));
 }
 
-SpriteSheet* Renderer::CreateSpriteSheet(const std::string& filepath, unsigned int width /*= 1*/, unsigned int height /*= 1*/) {
+std::shared_ptr<SpriteSheet> Renderer::CreateSpriteSheet(Texture* texture, int tilesWide, int tilesHigh) noexcept {
+    std::shared_ptr<SpriteSheet> spr{};
+    spr.reset(new SpriteSheet(texture, tilesWide, tilesHigh));
+    return std::move(spr);
+}
+
+std::shared_ptr<SpriteSheet> Renderer::CreateSpriteSheet(const std::filesystem::path& filepath, unsigned int width /*= 1*/, unsigned int height /*= 1*/) noexcept {
     namespace FS = std::filesystem;
     FS::path p(filepath);
     p = FS::canonical(p);
@@ -795,59 +751,58 @@ SpriteSheet* Renderer::CreateSpriteSheet(const std::string& filepath, unsigned i
         return nullptr;
     }
     if(StringUtils::ToLowerCase(p.extension().string()) == ".gif") {
-        return CreateSpriteSheetFromGif(p.string());
+        return std::move(CreateSpriteSheetFromGif(p));
     }
     tinyxml2::XMLDocument doc;
     auto xml_load = doc.LoadFile(p.string().c_str());
     if(xml_load == tinyxml2::XML_SUCCESS) {
         auto xml_root = doc.RootElement();
-        return CreateSpriteSheet(*xml_root);
+        return std::move(CreateSpriteSheet(*xml_root));
     }
-    return new SpriteSheet(*this, filepath, width, height);
+    std::shared_ptr<SpriteSheet> spr{};
+    spr.reset(new SpriteSheet(*this, p, width, height));
+    return std::move(spr);
 }
 
-SpriteSheet* Renderer::CreateSpriteSheetFromGif(const std::string& filepath) {
+std::shared_ptr<SpriteSheet> Renderer::CreateSpriteSheetFromGif(std::filesystem::path filepath) noexcept {
     namespace FS = std::filesystem;
-    FS::path p(filepath);
-    p = FS::canonical(p);
-    p.make_preferred();
-    if(StringUtils::ToLowerCase(p.extension().string()) != ".gif") {
+    filepath = FS::canonical(filepath);
+    filepath.make_preferred();
+    if(StringUtils::ToLowerCase(filepath.extension().string()) != ".gif") {
         return nullptr;
     }
-    Image img(p.string());
+    Image img(filepath.string());
     const auto& delays = img.GetDelaysIfGif();
-    auto tex = GetTexture(p.string());
-    auto spr = new SpriteSheet(tex, 1, static_cast<int>(delays.size()));
-    tex = nullptr;
-    return spr;
+    auto tex = GetTexture(filepath.string());
+    return CreateSpriteSheet(tex, 1, static_cast<int>(delays.size()));
 }
 
-AnimatedSprite* Renderer::CreateAnimatedSpriteFromGif(const std::string& filepath) {
+std::unique_ptr<AnimatedSprite> Renderer::CreateAnimatedSpriteFromGif(std::filesystem::path filepath) noexcept {
     namespace FS = std::filesystem;
-    FS::path p(filepath);
-    p = FS::canonical(p);
-    p.make_preferred();
-    if(StringUtils::ToLowerCase(p.extension().string()) != ".gif") {
+    filepath = FS::canonical(filepath);
+    filepath.make_preferred();
+    if(StringUtils::ToLowerCase(filepath.extension().string()) != ".gif") {
         return nullptr;
     }
-    Image img(p.string());
+    Image img(filepath);
     auto delays = img.GetDelaysIfGif();
-    auto tex = GetTexture(p.string());
-    auto spr = new SpriteSheet(tex, 1, static_cast<int>(delays.size()));
+    auto tex = GetTexture(filepath.string());
+    std::weak_ptr<SpriteSheet> spr = CreateSpriteSheet(tex, 1, static_cast<int>(delays.size()));
     int duration_sum = std::accumulate(std::begin(delays), std::end(delays), 0);
-    auto anim = new AnimatedSprite(*this, spr, TimeUtils::FPMilliseconds{duration_sum}, 0, static_cast<int>(delays.size()));
+    std::unique_ptr<AnimatedSprite> anim{};
+    anim.reset(new AnimatedSprite(*this, spr, TimeUtils::FPMilliseconds{ duration_sum }, 0, static_cast<int>(delays.size())));
     tinyxml2::XMLDocument doc;
     std::ostringstream ss;
-    ss << R"("<material name="__Gif_)" << p.stem().string() << R"("><shader src="__2D" /><textures><diffuse src=")" << p.string() << R"(" /></textures></material>)";
+    ss << R"("<material name="__Gif_)" << filepath.stem().string() << R"("><shader src="__2D" /><textures><diffuse src=")" << filepath.string() << R"(" /></textures></material>)";
     doc.Parse(ss.str().c_str());
-    auto anim_mat = new Material(this, *doc.RootElement());
-    anim->SetMaterial(anim_mat);
-    RegisterMaterial(anim_mat);
+    auto anim_mat = std::make_unique<Material>(this, *doc.RootElement());
+    anim->SetMaterial(anim_mat.get());
+    RegisterMaterial(std::move(anim_mat));
     tex = nullptr;
-    return anim;
+    return std::move(anim);
 }
 
-void Renderer::Draw(const PrimitiveType& topology, VertexBuffer* vbo, std::size_t vertex_count) {
+void Renderer::Draw(const PrimitiveType& topology, VertexBuffer* vbo, std::size_t vertex_count) noexcept {
     GUARANTEE_OR_DIE(_current_material, "Attempting to call Draw function without a material set!\n");
     D3D11_PRIMITIVE_TOPOLOGY d3d_prim = PrimitiveTypeToD3dTopology(topology);
     _rhi_context->GetDxContext()->IASetPrimitiveTopology(d3d_prim);
@@ -858,7 +813,7 @@ void Renderer::Draw(const PrimitiveType& topology, VertexBuffer* vbo, std::size_
     _rhi_context->Draw(vertex_count);
 }
 
-void Renderer::DrawIndexed(const PrimitiveType& topology, VertexBuffer* vbo, IndexBuffer* ibo, std::size_t index_count, std::size_t startVertex /*= 0*/, std::size_t baseVertexLocation /*= 0*/) {
+void Renderer::DrawIndexed(const PrimitiveType& topology, VertexBuffer* vbo, IndexBuffer* ibo, std::size_t index_count, std::size_t startVertex /*= 0*/, std::size_t baseVertexLocation /*= 0*/) noexcept {
     GUARANTEE_OR_DIE(_current_material, "Attempting to call Draw function without a material set!\n");
     D3D11_PRIMITIVE_TOPOLOGY d3d_prim = PrimitiveTypeToD3dTopology(topology);
     _rhi_context->GetDxContext()->IASetPrimitiveTopology(d3d_prim);
@@ -871,7 +826,7 @@ void Renderer::DrawIndexed(const PrimitiveType& topology, VertexBuffer* vbo, Ind
     _rhi_context->DrawIndexed(index_count, startVertex, baseVertexLocation);
 }
 
-void Renderer::DrawPoint2D(float pointX, float pointY, const Rgba& color /*= Rgba::WHITE*/) {
+void Renderer::DrawPoint2D(float pointX, float pointY, const Rgba& color /*= Rgba::WHITE*/) noexcept {
     std::vector<Vertex3D> vbo{};
     vbo.reserve(1);
     vbo.emplace_back(Vector3(pointX, pointY, 0.0f), color);
@@ -880,11 +835,11 @@ void Renderer::DrawPoint2D(float pointX, float pointY, const Rgba& color /*= Rgb
     ibo.push_back(0);
     DrawIndexed(PrimitiveType::Points, vbo, ibo);
 }
-void Renderer::DrawPoint2D(const Vector2& point, const Rgba& color /*= Rgba::WHITE*/) {
+void Renderer::DrawPoint2D(const Vector2& point, const Rgba& color /*= Rgba::WHITE*/) noexcept {
     DrawPoint2D(point.x, point.y, color);
 }
 
-void Renderer::DrawLine2D(float startX, float startY, float endX, float endY, const Rgba& color /*= Rgba::WHITE*/, float thickness /*= 0.0f*/) {
+void Renderer::DrawLine2D(float startX, float startY, float endX, float endY, const Rgba& color /*= Rgba::WHITE*/, float thickness /*= 0.0f*/) noexcept {
     bool use_thickness = thickness > 0.0f;
     if(!use_thickness) {
         Vertex3D start = Vertex3D(Vector3(Vector2(startX, startY), 0.0f), color, Vector2::ZERO);
@@ -915,11 +870,11 @@ void Renderer::DrawLine2D(float startX, float startY, float endX, float endY, co
     }
 }
 
-void Renderer::DrawLine2D(const Vector2& start, const Vector2& end, const Rgba& color /*= Rgba::WHITE*/, float thickness /*= 0.0f*/) {
+void Renderer::DrawLine2D(const Vector2& start, const Vector2& end, const Rgba& color /*= Rgba::WHITE*/, float thickness /*= 0.0f*/) noexcept {
     DrawLine2D(start.x, start.y, end.x, end.y, color, thickness);
 }
 
-void Renderer::DrawQuad2D(float left, float bottom, float right, float top, const Rgba& color /*= Rgba::WHITE*/, const Vector4& texCoords /*= Vector4::ZW_AXIS*/) {
+void Renderer::DrawQuad2D(float left, float bottom, float right, float top, const Rgba& color /*= Rgba::WHITE*/, const Vector4& texCoords /*= Vector4::ZW_AXIS*/) noexcept {
     Vector3 v_lb = Vector3(left, bottom, 0.0f);
     Vector3 v_rt = Vector3(right, top, 0.0f);
     Vector3 v_lt = Vector3(left, top, 0.0f);
@@ -942,11 +897,11 @@ void Renderer::DrawQuad2D(float left, float bottom, float right, float top, cons
 
 }
 
-void Renderer::DrawQuad2D(const Rgba& color) {
+void Renderer::DrawQuad2D(const Rgba& color) noexcept {
     DrawQuad2D(Vector2::ZERO, Vector2(0.5f, 0.5f), color);
 }
 
-void Renderer::DrawQuad2D(const Vector2& position /*= Vector2::ZERO*/, const Vector2& halfExtents /*= Vector2(0.5f, 0.5f)*/, const Rgba& color /*= Rgba::WHITE*/, const Vector4& texCoords /*= Vector4::ZW_AXIS*/) {
+void Renderer::DrawQuad2D(const Vector2& position /*= Vector2::ZERO*/, const Vector2& halfExtents /*= Vector2(0.5f, 0.5f)*/, const Rgba& color /*= Rgba::WHITE*/, const Vector4& texCoords /*= Vector4::ZW_AXIS*/) noexcept {
     float left = position.x - halfExtents.x;
     float bottom = position.y + halfExtents.y;
     float right = position.x + halfExtents.x;
@@ -954,27 +909,28 @@ void Renderer::DrawQuad2D(const Vector2& position /*= Vector2::ZERO*/, const Vec
     DrawQuad2D(left, bottom, right, top, color, texCoords);
 }
 
-void Renderer::DrawQuad2D(const Vector4& texCoords) {
+void Renderer::DrawQuad2D(const Vector4& texCoords) noexcept {
     DrawQuad2D(Vector2::ZERO, Vector2(0.5f, 0.5f), Rgba::White, texCoords);
 }
 
-void Renderer::DrawQuad2D(const Rgba& color, const Vector4& texCoords) {
+void Renderer::DrawQuad2D(const Rgba& color, const Vector4& texCoords) noexcept {
     DrawQuad2D(Vector2::ZERO, Vector2(0.5f, 0.5f), color, texCoords);
 }
 
-void Renderer::DrawCircle2D(float centerX, float centerY, float radius, const Rgba& color /*= Rgba::WHITE*/) {
+void Renderer::DrawCircle2D(float centerX, float centerY, float radius, const Rgba& color /*= Rgba::WHITE*/) noexcept {
     DrawPolygon2D(centerX, centerY, radius, 65, color);
 }
 
-void Renderer::DrawCircle2D(const Vector2& center, float radius, const Rgba& color /*= Rgba::WHITE*/) {
+void Renderer::DrawCircle2D(const Vector2& center, float radius, const Rgba& color /*= Rgba::WHITE*/) noexcept {
     DrawCircle2D(center.x, center.y, radius, color);
 }
 
-void Renderer::DrawFilledCircle2D(const Vector2& center, float radius, const Rgba& color /*= Rgba::WHITE*/) {
+void Renderer::DrawFilledCircle2D(const Vector2& center, float radius, const Rgba& color /*= Rgba::WHITE*/) noexcept {
 
-    int num_sides = 65;
+    auto num_sides = std::size_t{ 65 };
+    auto size = num_sides + 1u;
     std::vector<Vector3> verts{};
-    verts.reserve(num_sides + 1);
+    verts.reserve(size);
     float anglePerVertex = 360.0f / static_cast<float>(num_sides);
     for(float degrees = 0.0f; degrees < 360.0f; degrees += anglePerVertex) {
         float radians = MathUtils::ConvertDegreesToRadians(degrees);
@@ -998,7 +954,7 @@ void Renderer::DrawFilledCircle2D(const Vector2& center, float radius, const Rgb
     DrawIndexed(PrimitiveType::TriangleStrip, vbo, ibo);
 }
 
-void Renderer::DrawAABB2(const AABB2& bounds, const Rgba& edgeColor, const Rgba& fillColor, const Vector2& edgeHalfExtents /*= Vector2::ZERO*/) {
+void Renderer::DrawAABB2(const AABB2& bounds, const Rgba& edgeColor, const Rgba& fillColor, const Vector2& edgeHalfExtents /*= Vector2::ZERO*/) noexcept {
     Vector2 lt_inner(bounds.mins.x, bounds.mins.y);
     Vector2 lb_inner(bounds.mins.x, bounds.maxs.y);
     Vector2 rt_inner(bounds.maxs.x, bounds.mins.y);
@@ -1041,7 +997,7 @@ void Renderer::DrawAABB2(const AABB2& bounds, const Rgba& edgeColor, const Rgba&
     }
 }
 
-void Renderer::DrawAABB2(const Rgba& edgeColor, const Rgba& fillColor) {
+void Renderer::DrawAABB2(const Rgba& edgeColor, const Rgba& fillColor) noexcept {
     AABB2 bounds;
     bounds.mins = Vector2(-0.5f, -0.5f);
     bounds.maxs = Vector2(0.5f, 0.5f);
@@ -1049,16 +1005,11 @@ void Renderer::DrawAABB2(const Rgba& edgeColor, const Rgba& fillColor) {
     DrawAABB2(bounds, edgeColor, fillColor, edge_half_extents);
 }
 
-void Renderer::DrawOBB2(const OBB2& obb, const Rgba& edgeColor, const Rgba& fillColor, const Vector2& edgeHalfExtents /*= Vector2::ZERO*/) {
-    const auto left = obb.position + obb.half_extents.x * obb.GetLeft();
-    const auto right = obb.position + obb.half_extents.x * obb.GetRight();
-    const auto up = obb.position + obb.half_extents.y * obb.GetUp();
-    const auto down = obb.position + obb.half_extents.y * obb.GetDown();
-
-    Vector2 lt(left + obb.half_extents.y * obb.GetUp());
-    Vector2 lb(left + obb.half_extents.y * obb.GetDown());
-    Vector2 rt(right + obb.half_extents.y * obb.GetUp());
-    Vector2 rb(right + obb.half_extents.y * obb.GetDown());
+void Renderer::DrawOBB2(const OBB2& obb, const Rgba& edgeColor, const Rgba& fillColor, const Vector2& edgeHalfExtents /*= Vector2::ZERO*/) noexcept {
+    Vector2 lt = obb.GetTopLeft();
+    Vector2 lb = obb.GetBottomLeft();
+    Vector2 rt = obb.GetTopRight();
+    Vector2 rb = obb.GetBottomRight();
     Vector2 lt_inner(lt);
     Vector2 lb_inner(lb);
     Vector2 rt_inner(rt);
@@ -1101,15 +1052,15 @@ void Renderer::DrawOBB2(const OBB2& obb, const Rgba& edgeColor, const Rgba& fill
     }
 }
 
-void Renderer::DrawOBB2(float orientationDegrees, const Rgba& edgeColor, const Rgba& fillColor) {
+void Renderer::DrawOBB2(float orientationDegrees, const Rgba& edgeColor, const Rgba& fillColor) noexcept {
     OBB2 obb;
     obb.half_extents = Vector2(0.5f, 0.5f);
-    obb.SetOrientationDegrees(orientationDegrees);
+    obb.orientationDegrees = orientationDegrees;
     auto edge_half_extents = Vector2::ZERO;
     DrawOBB2(obb, edgeColor, fillColor, edge_half_extents);
 }
 
-void Renderer::DrawX2D(const Vector2& position /*= Vector2::ZERO*/, const Vector2& half_extents /*= Vector2(0.5f, 0.5f)*/, const Rgba& color /*= Rgba::WHITE*/) {
+void Renderer::DrawX2D(const Vector2& position /*= Vector2::ZERO*/, const Vector2& half_extents /*= Vector2(0.5f, 0.5f)*/, const Rgba& color /*= Rgba::WHITE*/) noexcept {
     float left = position.x - half_extents.x;
     float top = position.y - half_extents.y;
     float right = position.x + half_extents.x;
@@ -1132,11 +1083,11 @@ void Renderer::DrawX2D(const Vector2& position /*= Vector2::ZERO*/, const Vector
     DrawIndexed(PrimitiveType::Lines, vbo, ibo);
 }
 
-void Renderer::DrawX2D(const Rgba& color) {
+void Renderer::DrawX2D(const Rgba& color) noexcept {
     DrawX2D(Vector2::ZERO, Vector2(0.5f, 0.5f), color);
 }
 
-void Renderer::DrawPolygon2D(float centerX, float centerY, float radius, std::size_t numSides /*= 3*/, const Rgba& color /*= Rgba::WHITE*/) {
+void Renderer::DrawPolygon2D(float centerX, float centerY, float radius, std::size_t numSides /*= 3*/, const Rgba& color /*= Rgba::WHITE*/) noexcept {
     auto num_sides_as_float = static_cast<float>(numSides);
     std::vector<Vector3> verts;
     verts.reserve(numSides);
@@ -1162,18 +1113,17 @@ void Renderer::DrawPolygon2D(float centerX, float centerY, float radius, std::si
     DrawIndexed(PrimitiveType::LinesStrip, vbo, ibo);
 }
 
-void Renderer::DrawPolygon2D(const Vector2& center, float radius, std::size_t numSides /*= 3*/, const Rgba& color /*= Rgba::WHITE*/) {
+void Renderer::DrawPolygon2D(const Vector2& center, float radius, std::size_t numSides /*= 3*/, const Rgba& color /*= Rgba::WHITE*/) noexcept {
     DrawPolygon2D(center.x, center.y, radius, numSides, color);
 }
 
-void Renderer::DrawTextLine(const KerningFont* font, const std::string& text, const Rgba& color /*= Rgba::WHITE*/) {
-    if(font == nullptr) {
+void Renderer::DrawTextLine(const KerningFont* font, const std::string& text, const Rgba& color /*= Rgba::WHITE*/) noexcept {
+    if (font == nullptr) {
         return;
     }
-    if(text.empty()) {
+    if (text.empty()) {
         return;
     }
-    SetMaterial(font->GetMaterial());
     float cursor_x = 0.0f;
     float cursor_y = 0.0f;
     float line_top = cursor_y - font->GetCommonDef().base;
@@ -1185,7 +1135,7 @@ void Renderer::DrawTextLine(const KerningFont* font, const std::string& text, co
     std::vector<unsigned int> ibo;
     ibo.reserve(text_size * 6);
 
-    for(auto text_iter = text.begin(); text_iter != text.end(); /* DO NOTHING */) {
+    for (auto text_iter = text.begin(); text_iter != text.end(); /* DO NOTHING */) {
         KerningFont::CharDef current_def = font->GetCharDef(*text_iter);
         float char_uvl = current_def.position.x / texture_w;
         float char_uvt = current_def.position.y / texture_h;
@@ -1212,16 +1162,23 @@ void Renderer::DrawTextLine(const KerningFont* font, const std::string& text, co
 
         auto previous_char = text_iter;
         ++text_iter;
-        if(text_iter != text.end()) {
+        if (text_iter != text.end()) {
             int kern_value = font->GetKerningValue(*previous_char, *text_iter);
             cursor_x += (current_def.xadvance + kern_value);
         }
     }
+    const auto& cbs = font->GetMaterial()->GetShader()->GetConstantBuffers();
+    auto has_constant_buffers = !cbs.empty();
+    if(has_constant_buffers) {
+        auto& font_cb = cbs[0].get();
+        Vector4 channel{ 1.0f, 1.0f, 1.0f, 1.0f };
+        font_cb.Update(this->GetDeviceContext(), &channel);
+    }
+    SetMaterial(font->GetMaterial());
     DrawIndexed(PrimitiveType::Triangles, vbo, ibo);
 }
 
-void Renderer::DrawMultilineText(KerningFont* font, const std::string& text, const Rgba& color /*= Rgba::WHITE*/) {
-    SetMaterial(font->GetMaterial());
+void Renderer::DrawMultilineText(KerningFont* font, const std::string& text, const Rgba& color /*= Rgba::WHITE*/) noexcept {
     float y = font->GetLineHeight();
     float draw_loc_y = 0.0f;
     float draw_loc_x = 0.0f;
@@ -1234,10 +1191,18 @@ void Renderer::DrawMultilineText(KerningFont* font, const std::string& text, con
         draw_loc.y += y;
         AppendMultiLineTextBuffer(font, line, draw_loc, color, vbo, ibo);
     }
+    const auto& cbs = font->GetMaterial()->GetShader()->GetConstantBuffers();
+    auto has_constant_buffers = !cbs.empty();
+    if (has_constant_buffers) {
+        auto& font_cb = cbs[0].get();
+        Vector4 channel{ 1.0f, 1.0f, 1.0f, 1.0f };
+        font_cb.Update(this->GetDeviceContext(), &channel);
+    }
+    SetMaterial(font->GetMaterial());
     DrawIndexed(PrimitiveType::Triangles, vbo, ibo);
 }
 
-void Renderer::AppendMultiLineTextBuffer(KerningFont* font, const std::string& text, const Vector2& start_position, const Rgba& color, std::vector<Vertex3D>& vbo, std::vector<unsigned int>& ibo) {
+void Renderer::AppendMultiLineTextBuffer(KerningFont* font, const std::string& text, const Vector2& start_position, const Rgba& color, std::vector<Vertex3D>& vbo, std::vector<unsigned int>& ibo) noexcept {
 
     if(font == nullptr) {
         return;
@@ -1289,13 +1254,13 @@ void Renderer::AppendMultiLineTextBuffer(KerningFont* font, const std::string& t
     }
 }
 
-std::vector<ConstantBuffer*> Renderer::CreateConstantBuffersFromShaderProgram(const ShaderProgram* _shader_program) const {
-    const auto vs_cbuffers = _rhi_device->CreateConstantBuffersFromByteCode(_shader_program->GetVSByteCode());
-    const auto hs_cbuffers = _rhi_device->CreateConstantBuffersFromByteCode(_shader_program->GetHSByteCode());
-    const auto ds_cbuffers = _rhi_device->CreateConstantBuffersFromByteCode(_shader_program->GetDSByteCode());
-    const auto gs_cbuffers = _rhi_device->CreateConstantBuffersFromByteCode(_shader_program->GetGSByteCode());
-    const auto ps_cbuffers = _rhi_device->CreateConstantBuffersFromByteCode(_shader_program->GetPSByteCode());
-    const auto cs_cbuffers = _rhi_device->CreateConstantBuffersFromByteCode(_shader_program->GetCSByteCode());
+std::vector<std::unique_ptr<ConstantBuffer>> Renderer::CreateConstantBuffersFromShaderProgram(const ShaderProgram* _shader_program) const noexcept {
+    auto vs_cbuffers = std::move(_rhi_device->CreateConstantBuffersFromByteCode(_shader_program->GetVSByteCode()));
+    auto hs_cbuffers = std::move(_rhi_device->CreateConstantBuffersFromByteCode(_shader_program->GetHSByteCode()));
+    auto ds_cbuffers = std::move(_rhi_device->CreateConstantBuffersFromByteCode(_shader_program->GetDSByteCode()));
+    auto gs_cbuffers = std::move(_rhi_device->CreateConstantBuffersFromByteCode(_shader_program->GetGSByteCode()));
+    auto ps_cbuffers = std::move(_rhi_device->CreateConstantBuffersFromByteCode(_shader_program->GetPSByteCode()));
+    auto cs_cbuffers = std::move(_rhi_device->CreateConstantBuffersFromByteCode(_shader_program->GetCSByteCode()));
     const auto sizes = std::vector<std::size_t>{
         vs_cbuffers.size(),
         hs_cbuffers.size(),
@@ -1308,19 +1273,17 @@ std::vector<ConstantBuffer*> Renderer::CreateConstantBuffersFromShaderProgram(co
     if(!cbuffer_count) {
         return {};
     }
-    auto cbuffers = std::vector<ConstantBuffer*>{};
-    cbuffers.reserve(cbuffer_count);
-    std::copy(std::begin(vs_cbuffers), std::end(vs_cbuffers), std::back_inserter(cbuffers));
-    std::copy(std::begin(hs_cbuffers), std::end(hs_cbuffers), std::back_inserter(cbuffers));
-    std::copy(std::begin(ds_cbuffers), std::end(ds_cbuffers), std::back_inserter(cbuffers));
-    std::copy(std::begin(gs_cbuffers), std::end(gs_cbuffers), std::back_inserter(cbuffers));
-    std::copy(std::begin(ps_cbuffers), std::end(ps_cbuffers), std::back_inserter(cbuffers));
-    std::copy(std::begin(cs_cbuffers), std::end(cs_cbuffers), std::back_inserter(cbuffers));
+    auto cbuffers = std::move(vs_cbuffers);
+    std::move(std::begin(hs_cbuffers), std::end(hs_cbuffers), std::back_inserter(cbuffers));
+    std::move(std::begin(ds_cbuffers), std::end(ds_cbuffers), std::back_inserter(cbuffers));
+    std::move(std::begin(gs_cbuffers), std::end(gs_cbuffers), std::back_inserter(cbuffers));
+    std::move(std::begin(ps_cbuffers), std::end(ps_cbuffers), std::back_inserter(cbuffers));
+    std::move(std::begin(cs_cbuffers), std::end(cs_cbuffers), std::back_inserter(cbuffers));
     cbuffers.shrink_to_fit();
-    return cbuffers;
+    return std::move(cbuffers);
 }
 
-void Renderer::SetWinProc(const std::function<bool(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)>& windowProcedure) {
+void Renderer::SetWinProc(const std::function<bool(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)>& windowProcedure) noexcept {
     if(auto output = GetOutput()) {
         if(auto window = output->GetWindow()) {
             window->custom_message_handler = windowProcedure;
@@ -1328,7 +1291,7 @@ void Renderer::SetWinProc(const std::function<bool(HWND hwnd, UINT msg, WPARAM w
     }
 }
 
-void Renderer::CopyTexture(Texture* src, Texture* dst) {
+void Renderer::CopyTexture(Texture* src, Texture* dst) noexcept {
     if((src && dst) && src != dst) {
         auto dc = GetDeviceContext();
         auto dx_dc = dc->GetDxContext();
@@ -1336,7 +1299,7 @@ void Renderer::CopyTexture(Texture* src, Texture* dst) {
     }
 }
 
-void Renderer::DispatchComputeJob(const ComputeJob& job) {
+void Renderer::DispatchComputeJob(const ComputeJob& job) noexcept {
     SetComputeShader(job.computeShader);
     auto dc = GetDeviceContext();
     auto dx_dc = dc->GetDxContext();
@@ -1346,11 +1309,11 @@ void Renderer::DispatchComputeJob(const ComputeJob& job) {
     dx_dc->Dispatch(job.threadGroupCountX, job.threadGroupCountY, job.threadGroupCountZ);
 }
 
-Texture* Renderer::GetDefaultDepthStencil() const {
+Texture* Renderer::GetDefaultDepthStencil() const noexcept {
     return _default_depthstencil;
 }
 
-void Renderer::SetFullscreen(bool isFullscreen) {
+void Renderer::SetFullscreen(bool isFullscreen) noexcept {
     if(isFullscreen) {
         SetFullscreenMode();
     } else {
@@ -1358,7 +1321,7 @@ void Renderer::SetFullscreen(bool isFullscreen) {
     }
 }
 
-void Renderer::SetBorderless(bool isBorderless) {
+void Renderer::SetBorderless(bool isBorderless) noexcept {
     if(_current_outputMode == RHIOutputMode::Fullscreen_Window) {
         return;
     }
@@ -1369,7 +1332,7 @@ void Renderer::SetBorderless(bool isBorderless) {
     }
 }
 
-void Renderer::SetFullscreenMode() {
+void Renderer::SetFullscreenMode() noexcept {
     if(auto output = GetOutput()) {
         if(auto window = output->GetWindow()) {
             window->SetDisplayMode(RHIOutputMode::Fullscreen_Window);
@@ -1377,7 +1340,7 @@ void Renderer::SetFullscreenMode() {
     }
 }
 
-void Renderer::SetWindowedMode() {
+void Renderer::SetWindowedMode() noexcept {
     if(auto output = GetOutput()) {
         if(auto window = output->GetWindow()) {
             window->SetDisplayMode(RHIOutputMode::Windowed);
@@ -1385,7 +1348,7 @@ void Renderer::SetWindowedMode() {
     }
 }
 
-void Renderer::SetBorderlessWindowedMode() {
+void Renderer::SetBorderlessWindowedMode() noexcept {
     if(auto output = GetOutput()) {
         if(auto window = output->GetWindow()) {
             window->SetDisplayMode(RHIOutputMode::Borderless);
@@ -1393,31 +1356,36 @@ void Renderer::SetBorderlessWindowedMode() {
     }
 }
 
-void Renderer::CreateAndRegisterDefaultFonts() {
+void Renderer::CreateAndRegisterDefaultFonts() noexcept {
     std::filesystem::path p = FileUtils::GetKnownFolderPath(FileUtils::KnownPathID::EngineData) / std::filesystem::path{ "Fonts" };
     FileUtils::CreateFolders(p);
     RegisterFontsFromFolder(p);
 }
 
-void Renderer::CreateAndRegisterDefaultShaderPrograms() {
-    auto sp = CreateDefaultShaderProgram();
-    RegisterShaderProgram(sp->GetName(), sp);
+void Renderer::CreateAndRegisterDefaultShaderPrograms() noexcept {
+    auto default_sp = CreateDefaultShaderProgram();
+    auto name = default_sp->GetName();
+    RegisterShaderProgram(name, std::move(default_sp));
 
     auto unlit_sp = CreateDefaultUnlitShaderProgram();
-    RegisterShaderProgram(unlit_sp->GetName(), unlit_sp);
+    name = unlit_sp->GetName();
+    RegisterShaderProgram(name, std::move(unlit_sp));
 
     auto normal_sp = CreateDefaultNormalShaderProgram();
-    RegisterShaderProgram(normal_sp->GetName(), normal_sp);
+    name = normal_sp->GetName();
+    RegisterShaderProgram(name, std::move(normal_sp));
 
     auto normalmap_sp = CreateDefaultNormalMapShaderProgram();
-    RegisterShaderProgram(normalmap_sp->GetName(), normalmap_sp);
+    name = normalmap_sp->GetName();
+    RegisterShaderProgram(name, std::move(normalmap_sp));
 
     auto font_sp = CreateDefaultFontShaderProgram();
-    RegisterShaderProgram(font_sp->GetName(), font_sp);
+    name = font_sp->GetName();
+    RegisterShaderProgram(name, std::move(font_sp));
 
 }
 
-ShaderProgram* Renderer::CreateDefaultShaderProgram() {
+std::unique_ptr<ShaderProgram> Renderer::CreateDefaultShaderProgram() noexcept {
     std::string program =
 R"(
 
@@ -1590,7 +1558,7 @@ float4 PixelFunction(ps_in_t input_pixel) : SV_Target0 {
 }
 
 )";
-    InputLayout* il = _rhi_device->CreateInputLayout();
+    auto il = _rhi_device->CreateInputLayout();
     auto pos_offset = offsetof(Vertex3D, position);
     auto color_offset = offsetof(Vertex3D, color);
     auto uv_offset = offsetof(Vertex3D, texcoords);
@@ -1613,12 +1581,11 @@ float4 PixelFunction(ps_in_t input_pixel) : SV_Target0 {
     desc.vs_bytecode = vs_bytecode;
     desc.ps = ps;
     desc.ps_bytecode = ps_bytecode;
-    desc.input_layout = il;
-    ShaderProgram* shader = new ShaderProgram(std::move(desc));
-    return shader;
+    desc.input_layout = std::move(il);
+    return std::make_unique<ShaderProgram>(std::move(desc));
 }
 
-ShaderProgram* Renderer::CreateDefaultUnlitShaderProgram() {
+std::unique_ptr<ShaderProgram> Renderer::CreateDefaultUnlitShaderProgram() noexcept {
     std::string program =
         R"(
 
@@ -1679,7 +1646,7 @@ float4 PixelFunction(ps_in_t input_pixel) : SV_Target0 {
 
 )";
 
-    InputLayout* il = _rhi_device->CreateInputLayout();
+    auto il = _rhi_device->CreateInputLayout();
     auto pos_offset = offsetof(Vertex3D, position);
     auto color_offset = offsetof(Vertex3D, color);
     auto uv_offset = offsetof(Vertex3D, texcoords);
@@ -1700,13 +1667,12 @@ float4 PixelFunction(ps_in_t input_pixel) : SV_Target0 {
     desc.vs_bytecode = vs_bytecode;
     desc.ps = ps;
     desc.ps_bytecode = ps_bytecode;
-    desc.input_layout = il;
-    ShaderProgram* shader = new ShaderProgram(std::move(desc));
-    return shader;
+    desc.input_layout = std::move(il);
+    return std::make_unique<ShaderProgram>(std::move(desc));
 
 }
 
-ShaderProgram* Renderer::CreateDefaultNormalShaderProgram() {
+std::unique_ptr<ShaderProgram> Renderer::CreateDefaultNormalShaderProgram() noexcept {
     std::string program =
         R"(
 
@@ -1809,7 +1775,7 @@ float4 PixelFunction(ps_in_t input_pixel) : SV_Target0 {
 }
 
 )";
-    InputLayout* il = _rhi_device->CreateInputLayout();
+    auto il = _rhi_device->CreateInputLayout();
     auto pos_offset = offsetof(Vertex3D, position);
     auto color_offset = offsetof(Vertex3D, color);
     auto uv_offset = offsetof(Vertex3D, texcoords);
@@ -1832,12 +1798,11 @@ float4 PixelFunction(ps_in_t input_pixel) : SV_Target0 {
     desc.vs_bytecode = vs_bytecode;
     desc.ps = ps;
     desc.ps_bytecode = ps_bytecode;
-    desc.input_layout = il;
-    ShaderProgram* shader = new ShaderProgram(std::move(desc));
-    return shader;
+    desc.input_layout = std::move(il);
+    return std::make_unique<ShaderProgram>(std::move(desc));
 }
 
-ShaderProgram* Renderer::CreateDefaultNormalMapShaderProgram() {
+std::unique_ptr<ShaderProgram> Renderer::CreateDefaultNormalMapShaderProgram() noexcept {
     std::string program =
         R"(
 
@@ -1940,7 +1905,7 @@ float4 PixelFunction(ps_in_t input_pixel) : SV_Target0 {
 }
 
 )";
-    InputLayout* il = _rhi_device->CreateInputLayout();
+    auto il = _rhi_device->CreateInputLayout();
     auto pos_offset = offsetof(Vertex3D, position);
     auto color_offset = offsetof(Vertex3D, color);
     auto uv_offset = offsetof(Vertex3D, texcoords);
@@ -1963,13 +1928,12 @@ float4 PixelFunction(ps_in_t input_pixel) : SV_Target0 {
     desc.vs_bytecode = vs_bytecode;
     desc.ps = ps;
     desc.ps_bytecode = ps_bytecode;
-    desc.input_layout = il;
-    ShaderProgram* shader = new ShaderProgram(std::move(desc));
-    return shader;
+    desc.input_layout = std::move(il);
+    return std::make_unique<ShaderProgram>(std::move(desc));
 }
 
 
-ShaderProgram* Renderer::CreateDefaultFontShaderProgram() {
+std::unique_ptr<ShaderProgram> Renderer::CreateDefaultFontShaderProgram() noexcept {
     std::string program =
         R"(
 
@@ -2042,7 +2006,7 @@ float4 PixelFunction(ps_in_t input_pixel) : SV_Target0 {
 }
 
 )";
-    InputLayout* il = _rhi_device->CreateInputLayout();
+    auto il = _rhi_device->CreateInputLayout();
     auto pos_offset = offsetof(Vertex3D, position);
     auto color_offset = offsetof(Vertex3D, color);
     auto uv_offset = offsetof(Vertex3D, texcoords);
@@ -2063,30 +2027,38 @@ float4 PixelFunction(ps_in_t input_pixel) : SV_Target0 {
     desc.vs_bytecode = vs_bytecode;
     desc.ps = ps;
     desc.ps_bytecode = ps_bytecode;
-    desc.input_layout = il;
-    ShaderProgram* shader = new ShaderProgram(std::move(desc));
-    return shader;
+    desc.input_layout = std::move(il);
+    return std::make_unique<ShaderProgram>(std::move(desc));
 }
 
-void Renderer::CreateAndRegisterDefaultMaterials() {
+void Renderer::CreateAndRegisterDefaultMaterials() noexcept {
     auto default_mat = CreateDefaultMaterial();
-    RegisterMaterial(default_mat->GetName(), default_mat);
+    auto name = default_mat->GetName();
+    RegisterMaterial(name, std::move(default_mat));
 
     auto unlit_mat = CreateDefaultUnlitMaterial();
-    RegisterMaterial(unlit_mat->GetName(), unlit_mat);
+    name = unlit_mat->GetName();
+    RegisterMaterial(name, std::move(unlit_mat));
 
     auto mat_2d = CreateDefault2DMaterial();
-    RegisterMaterial(mat_2d->GetName(), mat_2d);
+    name = mat_2d->GetName();
+    RegisterMaterial(name, std::move(mat_2d));
 
     auto mat_norm = CreateDefaultNormalMaterial();
-    RegisterMaterial(mat_norm->GetName(), mat_norm);
+    name = mat_norm->GetName();
+    RegisterMaterial(name, std::move(mat_norm));
 
     auto mat_normmap = CreateDefaultNormalMapMaterial();
-    RegisterMaterial(mat_normmap->GetName(), mat_normmap);
+    name = mat_normmap->GetName();
+    RegisterMaterial(name, std::move(mat_normmap));
+
+    auto mat_invalid = CreateDefaultInvalidMaterial();
+    name = mat_invalid->GetName();
+    RegisterMaterial(name, std::move(mat_invalid));
 
 }
 
-Material* Renderer::CreateDefaultMaterial() {
+std::unique_ptr<Material> Renderer::CreateDefaultMaterial() noexcept {
     std::string material =
 R"(
 <material name="__default">
@@ -2099,11 +2071,11 @@ R"(
     if(parse_result != tinyxml2::XML_SUCCESS) {
         return nullptr;
     }
-    return new Material(this, *doc.RootElement());
+    return std::make_unique<Material>(this, *doc.RootElement());
 
 }
 
-Material* Renderer::CreateDefaultUnlitMaterial() {
+std::unique_ptr<Material> Renderer::CreateDefaultUnlitMaterial() noexcept {
     std::string material =
         R"(
 <material name="__unlit">
@@ -2116,11 +2088,11 @@ Material* Renderer::CreateDefaultUnlitMaterial() {
     if(parse_result != tinyxml2::XML_SUCCESS) {
         return nullptr;
     }
-    return new Material(this, *doc.RootElement());
+    return std::make_unique<Material>(this, *doc.RootElement());
 
 }
 
-Material* Renderer::CreateDefault2DMaterial() {
+std::unique_ptr<Material> Renderer::CreateDefault2DMaterial() noexcept {
     std::string material =
         R"(
 <material name="__2D">
@@ -2133,11 +2105,11 @@ Material* Renderer::CreateDefault2DMaterial() {
     if(parse_result != tinyxml2::XML_SUCCESS) {
         return nullptr;
     }
-    return new Material(this, *doc.RootElement());
+    return std::make_unique<Material>(this, *doc.RootElement());
 
 }
 
-Material* Renderer::CreateDefaultNormalMaterial() {
+std::unique_ptr<Material> Renderer::CreateDefaultNormalMaterial() noexcept {
     std::string material =
         R"(
 <material name="__normal">
@@ -2150,11 +2122,11 @@ Material* Renderer::CreateDefaultNormalMaterial() {
     if(parse_result != tinyxml2::XML_SUCCESS) {
         return nullptr;
     }
-    return new Material(this, *doc.RootElement());
+    return std::make_unique<Material>(this, *doc.RootElement());
 
 }
 
-Material* Renderer::CreateDefaultNormalMapMaterial() {
+std::unique_ptr<Material> Renderer::CreateDefaultNormalMapMaterial() noexcept {
     std::string material =
         R"(
 <material name="__normalmap">
@@ -2167,11 +2139,30 @@ Material* Renderer::CreateDefaultNormalMapMaterial() {
     if(parse_result != tinyxml2::XML_SUCCESS) {
         return nullptr;
     }
-    return new Material(this, *doc.RootElement());
+    return std::make_unique<Material>(this, *doc.RootElement());
 
 }
 
-Material* Renderer::CreateMaterialFromFont(KerningFont* font) {
+std::unique_ptr<Material> Renderer::CreateDefaultInvalidMaterial() noexcept {
+    std::string material =
+        R"(
+<material name="__invalid">
+    <shader src="__invalid" />
+    <textures>
+        <diffuse src="__invalid" />
+    </textures>
+</material>
+)";
+
+    tinyxml2::XMLDocument doc;
+    auto parse_result = doc.Parse(material.c_str(), material.size());
+    if(parse_result != tinyxml2::XML_SUCCESS) {
+        return nullptr;
+    }
+    return std::make_unique<Material>(this, *doc.RootElement());
+}
+
+std::unique_ptr<Material> Renderer::CreateMaterialFromFont(KerningFont* font) noexcept {
     if(font == nullptr) {
         return nullptr;
     }
@@ -2181,12 +2172,12 @@ Material* Renderer::CreateMaterialFromFont(KerningFont* font) {
     std::string name = font->GetName();
     std::string shader = "__font";
     std::ostringstream material_stream;
-    material_stream << "<material name=\"Font_" << name << "\">";
-    material_stream << "<shader src=\"" << shader << "\" />";
+    material_stream << "<material name=\"Font_" << name << "\">\n";
+    material_stream << "\t<shader src=\"" << shader << "\" />\n";
     std::size_t image_count = font->GetImagePaths().size();
     bool has_textures = image_count > 0;
     if(has_textures) {
-        material_stream << "<textures>";
+        material_stream << "\t<textures>\n";
     }
     bool has_lots_of_textures = has_textures && image_count > 6;
     for(std::size_t i = 0; i < image_count; ++i) {
@@ -2195,245 +2186,264 @@ Material* Renderer::CreateMaterialFromFont(KerningFont* font) {
         fullpath = FS::canonical(fullpath);
         fullpath.make_preferred();
         switch(i) {
-            case 0: material_stream << "<diffuse src=\""   << fullpath << "\" />"; break;
-            case 1: material_stream << "<normal src=\""    << fullpath << "\" />"; break;
-            case 2: material_stream << "<lighting src=\""  << fullpath << "\" />"; break;
-            case 3: material_stream << "<specular src=\""  << fullpath << "\" />"; break;
-            case 4: material_stream << "<occlusion src=\"" << fullpath << "\" />"; break;
-            case 5: material_stream << "<emissive src=\""  << fullpath << "\" />"; break;
+        case 0: material_stream << "\t\t<diffuse src=" << fullpath << " />\n"; break;
+        case 1: material_stream << "\t\t<normal src=" << fullpath << " />\n"; break;
+        case 2: material_stream << "\t\t<lighting src=" << fullpath << " />\n"; break;
+        case 3: material_stream << "\t\t<specular src=" << fullpath << " />\n"; break;
+        case 4: material_stream << "\t\t<occlusion src=" << fullpath << " />\n"; break;
+        case 5: material_stream << "\t\t<emissive src=" << fullpath << " />\n"; break;
             default: /* DO NOTHING */;
         }
         if(i >= 6 && has_lots_of_textures) {
-            material_stream << "<texture index=\"" << (i-6) << "\" src=\"" << fullpath << "\" />";
+            material_stream << "\t\t<texture index=\"" << (i-6) << "\" src=" << fullpath << " />\n";
         }
     }
     if(has_textures) {
-        material_stream << "</textures>";
+        material_stream << "\t</textures>\n";
     }
-    material_stream << "</material>";
+    material_stream << "</material>\n";
     tinyxml2::XMLDocument doc;
     std::string material_string = material_stream.str();
     auto result = doc.Parse(material_string.c_str(), material_string.size());
     if(result != tinyxml2::XML_SUCCESS) {
         return nullptr;
     }
-    return new Material(this, *doc.RootElement());
+    return std::make_unique<Material>(this, *doc.RootElement());
 }
 
-void Renderer::CreateAndRegisterDefaultSamplers() {
+void Renderer::CreateAndRegisterDefaultSamplers() noexcept {
     auto default_sampler = CreateDefaultSampler();
+    auto name = "__default";
     default_sampler->SetDebugName("__default_sampler");
-    RegisterSampler("__default", default_sampler);
+    RegisterSampler(name, std::move(default_sampler));
 
     auto linear_sampler = CreateLinearSampler();
+    name = "__linear";
     linear_sampler->SetDebugName("__linear_sampler");
-    RegisterSampler("__linear", linear_sampler);
+    RegisterSampler(name, std::move(linear_sampler));
 
     auto point_sampler = CreatePointSampler();
+    name = "__point";
     point_sampler->SetDebugName("__point_sampler");
-    RegisterSampler("__point", point_sampler);
+    RegisterSampler(name, std::move(point_sampler));
+
+    auto invalid_sampler = CreateInvalidSampler();
+    name = "__invalid";
+    invalid_sampler->SetDebugName("__invalid_sampler");
+    RegisterSampler(name, std::move(invalid_sampler));
 
 }
 
-Sampler* Renderer::CreateDefaultSampler() {
-    return new Sampler(_rhi_device.get(), SamplerDesc{});
+std::unique_ptr<Sampler> Renderer::CreateDefaultSampler() noexcept {
+    return std::make_unique<Sampler>(_rhi_device.get(), SamplerDesc{});
 }
 
-Sampler* Renderer::CreateLinearSampler() {
+std::unique_ptr<Sampler> Renderer::CreateLinearSampler() noexcept {
     SamplerDesc desc{};
     desc.mag_filter = FilterMode::Linear;
     desc.min_filter = FilterMode::Linear;
     desc.mip_filter = FilterMode::Linear;
-    return new Sampler(_rhi_device.get(), desc);
+    return std::make_unique<Sampler>(_rhi_device.get(), desc);
 }
 
-Sampler* Renderer::CreatePointSampler() {
+std::unique_ptr<Sampler> Renderer::CreatePointSampler() noexcept {
     SamplerDesc desc{};
     desc.mag_filter = FilterMode::Point;
     desc.min_filter = FilterMode::Point;
     desc.mip_filter = FilterMode::Point;
-    return new Sampler(_rhi_device.get(), desc);
+    return std::make_unique<Sampler>(_rhi_device.get(), desc);
 }
 
-void Renderer::CreateAndRegisterDefaultRasterStates() {
-    RasterState* default_raster = CreateDefaultRaster();
+std::unique_ptr<Sampler> Renderer::CreateInvalidSampler() noexcept {
+    SamplerDesc desc{};
+    desc.mag_filter = FilterMode::Point;
+    desc.min_filter = FilterMode::Point;
+    desc.mip_filter = FilterMode::Point;
+    desc.UaddressMode = TextureAddressMode::Wrap;
+    desc.VaddressMode = TextureAddressMode::Wrap;
+    desc.WaddressMode = TextureAddressMode::Wrap;
+    return std::make_unique<Sampler>(_rhi_device.get(), desc);
+}
+
+void Renderer::CreateAndRegisterDefaultRasterStates() noexcept {
+    auto default_raster = CreateDefaultRaster();
+    auto name = "__default";
     default_raster->SetDebugName("__default_raster");
-    RegisterRasterState("__default", default_raster);
+    RegisterRasterState(name, std::move(default_raster));
 
-    RasterState* wireframe_raster = CreateWireframeRaster();
+    auto wireframe_raster = CreateWireframeRaster();
+    name = "__wireframe";
     wireframe_raster->SetDebugName("__wireframe");
-    RegisterRasterState("__wireframe", wireframe_raster);
+    RegisterRasterState(name, std::move(wireframe_raster));
 
-    RasterState* solid_raster = CreateSolidRaster();
+    auto solid_raster = CreateSolidRaster();
+    name = "__solid";
     solid_raster->SetDebugName("__solid");
-    RegisterRasterState("__solid", solid_raster);
+    RegisterRasterState(name, std::move(solid_raster));
 
-    RasterState* wireframenc_raster = CreateWireframeNoCullingRaster();
+    auto wireframenc_raster = CreateWireframeNoCullingRaster();
+    name = "__wireframenc";
     wireframenc_raster->SetDebugName("__wireframenc");
-    RegisterRasterState("__wireframenc", wireframenc_raster);
+    RegisterRasterState(name, std::move(wireframenc_raster));
 
-    RasterState* solidnc_raster = CreateSolidNoCullingRaster();
+    auto solidnc_raster = CreateSolidNoCullingRaster();
+    name = "__solidnc";
     solidnc_raster->SetDebugName("__solidnc");
-    RegisterRasterState("__solidnc", solidnc_raster);
+    RegisterRasterState(name, std::move(solidnc_raster));
 
-    RasterState* wireframefc_raster = CreateWireframeFrontCullingRaster();
+    auto wireframefc_raster = CreateWireframeFrontCullingRaster();
+    name = "__wireframefc";
     wireframefc_raster->SetDebugName("__wireframefc");
-    RegisterRasterState("__wireframefc", wireframefc_raster);
+    RegisterRasterState(name, std::move(wireframefc_raster));
 
-    RasterState* solidfc_raster = CreateSolidFrontCullingRaster();
+    auto solidfc_raster = CreateSolidFrontCullingRaster();
+    name = "__solidfc";
     solidfc_raster->SetDebugName("__solidfc");
-    RegisterRasterState("__solidfc", solidfc_raster);
+    RegisterRasterState(name, std::move(solidfc_raster));
 
 }
 
-RasterState* Renderer::CreateDefaultRaster() {
+std::unique_ptr<RasterState> Renderer::CreateDefaultRaster() noexcept {
     RasterDesc default_raster{};
-    RasterState* state = new RasterState(_rhi_device.get(), default_raster);
-    return state;
+    return std::make_unique<RasterState>(_rhi_device.get(), default_raster);
 }
 
-RasterState* Renderer::CreateWireframeRaster() {
+std::unique_ptr<RasterState> Renderer::CreateWireframeRaster() noexcept {
     RasterDesc wireframe{};
     wireframe.fillmode = FillMode::Wireframe;
     wireframe.cullmode = CullMode::Back;
     wireframe.antialiasedLineEnable = false;
-    RasterState* state = new RasterState(_rhi_device.get(), wireframe);
-    return state;
+    return std::make_unique<RasterState>(_rhi_device.get(), wireframe);
 }
 
-RasterState* Renderer::CreateSolidRaster() {
+std::unique_ptr<RasterState> Renderer::CreateSolidRaster() noexcept {
     RasterDesc solid{};
     solid.fillmode = FillMode::Solid;
     solid.cullmode = CullMode::Back;
     solid.antialiasedLineEnable = false;
-    RasterState* state = new RasterState(_rhi_device.get(), solid);
-    return state;
+    return std::make_unique<RasterState>(_rhi_device.get(), solid);
 }
 
-RasterState* Renderer::CreateWireframeNoCullingRaster() {
+std::unique_ptr<RasterState> Renderer::CreateWireframeNoCullingRaster() noexcept {
     RasterDesc wireframe{};
     wireframe.fillmode = FillMode::Wireframe;
     wireframe.cullmode = CullMode::None;
     wireframe.antialiasedLineEnable = false;
-    RasterState* state = new RasterState(_rhi_device.get(), wireframe);
-    return state;
+    return std::make_unique<RasterState>(_rhi_device.get(), wireframe);
 }
 
-RasterState* Renderer::CreateSolidNoCullingRaster() {
+std::unique_ptr<RasterState> Renderer::CreateSolidNoCullingRaster() noexcept {
     RasterDesc solid{};
     solid.fillmode = FillMode::Solid;
     solid.cullmode = CullMode::None;
     solid.antialiasedLineEnable = false;
-    RasterState* state = new RasterState(_rhi_device.get(), solid);
-    return state;
+    return std::make_unique<RasterState>(_rhi_device.get(), solid);
 }
 
-RasterState* Renderer::CreateWireframeFrontCullingRaster() {
+std::unique_ptr<RasterState> Renderer::CreateWireframeFrontCullingRaster() noexcept {
     RasterDesc wireframe{};
     wireframe.fillmode = FillMode::Wireframe;
     wireframe.cullmode = CullMode::Front;
     wireframe.antialiasedLineEnable = false;
-    RasterState* state = new RasterState(_rhi_device.get(), wireframe);
-    return state;
+    return std::make_unique<RasterState>(_rhi_device.get(), wireframe);
 }
 
-RasterState* Renderer::CreateSolidFrontCullingRaster() {
+std::unique_ptr<RasterState> Renderer::CreateSolidFrontCullingRaster() noexcept {
     RasterDesc solid{};
     solid.fillmode = FillMode::Solid;
     solid.cullmode = CullMode::Front;
     solid.antialiasedLineEnable = false;
-    RasterState* state = new RasterState(_rhi_device.get(), solid);
-    return state;
+    return std::make_unique<RasterState>(_rhi_device.get(), solid);
 }
 
-void Renderer::CreateAndRegisterDefaultDepthStencilStates() {
-    DepthStencilState* default_state = CreateDefaultDepthStencilState();
+void Renderer::CreateAndRegisterDefaultDepthStencilStates() noexcept {
+    auto default_state = CreateDefaultDepthStencilState();
+    auto name = "__default";
     default_state->SetDebugName("__default_depthstencilstate");
-    RegisterDepthStencilState("__default", default_state);
+    RegisterDepthStencilState(name, std::move(default_state));
 
-    DepthStencilState* depth_disabled = CreateDisabledDepth();
-    depth_disabled->SetDebugName("__depthdisabled");
-    RegisterDepthStencilState("__depthdisabled", depth_disabled);
+    auto depth_disabled = CreateDisabledDepth();
+    name = "__depthdisabled";
+    depth_disabled->SetDebugName(name);
+    RegisterDepthStencilState(name, std::move(depth_disabled));
 
-    DepthStencilState* depth_enabled = CreateEnabledDepth();
-    depth_enabled->SetDebugName("__depthenabled");
-    RegisterDepthStencilState("__depthenabled", depth_enabled);
+    auto depth_enabled = CreateEnabledDepth();
+    name = "__depthenabled";
+    depth_enabled->SetDebugName(name);
+    RegisterDepthStencilState(name, std::move(depth_enabled));
 
-    DepthStencilState* stencil_disabled = CreateDisabledStencil();
-    stencil_disabled->SetDebugName("__stencildisabled");
-    RegisterDepthStencilState("__stencildisabled", stencil_disabled);
+    auto stencil_disabled = CreateDisabledStencil();
+    name = "__stencildisabled";
+    stencil_disabled->SetDebugName(name);
+    RegisterDepthStencilState(name, std::move(stencil_disabled));
 
-    DepthStencilState* stencil_enabled = CreateEnabledStencil();
-    stencil_enabled->SetDebugName("__stencilenabled");
-    RegisterDepthStencilState("__stencilenabled", stencil_enabled);
+    auto stencil_enabled = CreateEnabledStencil();
+    name = "__stencilenabled";
+    stencil_enabled->SetDebugName(name);
+    RegisterDepthStencilState(name, std::move(stencil_enabled));
 
 }
 
-DepthStencilState* Renderer::CreateDefaultDepthStencilState() {
+std::unique_ptr<DepthStencilState> Renderer::CreateDefaultDepthStencilState() noexcept {
     DepthStencilDesc desc{};
-    DepthStencilState* state = new DepthStencilState(_rhi_device.get(), desc);
-    return state;
+    return std::make_unique<DepthStencilState>(_rhi_device.get(), desc);
 }
 
-DepthStencilState* Renderer::CreateDisabledDepth() {
+std::unique_ptr<DepthStencilState> Renderer::CreateDisabledDepth() noexcept {
     DepthStencilDesc desc{};
     desc.depth_enabled = false;
     desc.depth_comparison = ComparisonFunction::Always;
-    DepthStencilState* state = new DepthStencilState(_rhi_device.get(), desc);
-    return state;
+    return std::make_unique<DepthStencilState>(_rhi_device.get(), desc);
 }
 
-DepthStencilState* Renderer::CreateEnabledDepth() {
+std::unique_ptr<DepthStencilState> Renderer::CreateEnabledDepth() noexcept {
     DepthStencilDesc desc{};
     desc.depth_enabled = true;
     desc.depth_comparison = ComparisonFunction::Less;
-    DepthStencilState* state = new DepthStencilState(_rhi_device.get(), desc);
-    return state;
+    return std::make_unique<DepthStencilState>(_rhi_device.get(), desc);
 }
 
-DepthStencilState* Renderer::CreateDisabledStencil() {
+std::unique_ptr<DepthStencilState> Renderer::CreateDisabledStencil() noexcept {
     DepthStencilDesc desc{};
     desc.stencil_enabled = false;
     desc.stencil_read = false;
     desc.stencil_write = false;
-    DepthStencilState* state = new DepthStencilState(_rhi_device.get(), desc);
-    return state;
+    return std::make_unique<DepthStencilState>(_rhi_device.get(), desc);
 }
 
-DepthStencilState* Renderer::CreateEnabledStencil() {
+std::unique_ptr<DepthStencilState> Renderer::CreateEnabledStencil() noexcept {
     DepthStencilDesc desc{};
     desc.stencil_enabled = true;
     desc.stencil_read = true;
     desc.stencil_write = true;
-    DepthStencilState* state = new DepthStencilState(_rhi_device.get(), desc);
-    return state;
+    return std::make_unique<DepthStencilState>(_rhi_device.get(), desc);
 }
 
-void Renderer::UnbindAllShaderResources() {
+void Renderer::UnbindAllShaderResources() noexcept {
     if(_rhi_context) {
         _rhi_context->UnbindAllShaderResources();
     }
 }
 
-void Renderer::UnbindAllConstantBuffers() {
+void Renderer::UnbindAllConstantBuffers() noexcept {
     if(_rhi_context) {
         _rhi_context->UnbindAllConstantBuffers();
     }
 }
 
-void Renderer::UnbindComputeShaderResources() {
+void Renderer::UnbindComputeShaderResources() noexcept {
     if(_rhi_context) {
         _rhi_context->UnbindAllShaderResources();
     }
 }
 
-void Renderer::UnbindComputeConstantBuffers() {
+void Renderer::UnbindComputeConstantBuffers() noexcept {
     if(_rhi_context) {
         _rhi_context->UnbindAllConstantBuffers();
     }
 }
 
-void Renderer::SetWindowTitle(const std::string& newTitle) {
+void Renderer::SetWindowTitle(const std::string& newTitle) noexcept {
     if(auto output = GetOutput()) {
         if(auto window = output->GetWindow()) {
             window->SetTitle(newTitle);
@@ -2441,41 +2451,40 @@ void Renderer::SetWindowTitle(const std::string& newTitle) {
     }
 }
 
-void Renderer::RegisterDepthStencilState(const std::string& name, DepthStencilState* depthstencil) {
+void Renderer::RegisterDepthStencilState(const std::string& name, std::unique_ptr<DepthStencilState> depthstencil) noexcept {
     if(depthstencil == nullptr) {
         return;
     }
     auto found_iter = _depthstencils.find(name);
     if(found_iter != _depthstencils.end()) {
-        delete found_iter->second;
-        found_iter->second = nullptr;
+        found_iter->second.reset();
+        _depthstencils.erase(found_iter);
     }
-    _depthstencils.insert_or_assign(name, depthstencil);
+    _depthstencils.try_emplace(name, std::move(depthstencil));
 
 }
 
-RasterState* Renderer::GetRasterState(const std::string& name) {
+RasterState* Renderer::GetRasterState(const std::string& name) noexcept {
     auto found_iter = _rasters.find(name);
     if(found_iter == _rasters.end()) {
         return nullptr;
     }
-    return found_iter->second;
+    return found_iter->second.get();
 }
 
-void Renderer::CreateAndRegisterSamplerFromSamplerDescription(const std::string& name, const SamplerDesc& desc) {
-    Sampler* sampler = new Sampler(_rhi_device.get(), desc);
-    RegisterSampler(name, sampler);
+void Renderer::CreateAndRegisterSamplerFromSamplerDescription(const std::string& name, const SamplerDesc& desc) noexcept {
+    RegisterSampler(name, std::make_unique<Sampler>(_rhi_device.get(), desc));
 }
 
-Sampler* Renderer::GetSampler(const std::string& name) {
+Sampler* Renderer::GetSampler(const std::string& name) noexcept {
     auto found_iter = _samplers.find(name);
     if(found_iter == _samplers.end()) {
         return nullptr;
     }
-    return found_iter->second;
+    return found_iter->second.get();
 }
 
-void Renderer::SetSampler(Sampler* sampler) {
+void Renderer::SetSampler(Sampler* sampler) noexcept {
     if(sampler == _current_sampler) {
         return;
     }
@@ -2483,43 +2492,43 @@ void Renderer::SetSampler(Sampler* sampler) {
     _current_sampler = sampler;
 }
 
-void Renderer::RegisterRasterState(const std::string& name, RasterState* raster) {
+void Renderer::RegisterRasterState(const std::string& name, std::unique_ptr<RasterState> raster) noexcept {
     if(raster == nullptr) {
         return;
     }
     auto found_iter = _rasters.find(name);
     if(found_iter != _rasters.end()) {
-        delete found_iter->second;
-        found_iter->second = nullptr;
+        found_iter->second.reset();
+        _rasters.erase(found_iter);
     }
-    _rasters.insert_or_assign(name, raster);
+    _rasters.try_emplace(name, std::move(raster));
 }
 
-void Renderer::RegisterSampler(const std::string& name, Sampler* sampler) {
+void Renderer::RegisterSampler(const std::string& name, std::unique_ptr<Sampler> sampler) noexcept {
     if(sampler == nullptr) {
         return;
     }
     auto found_iter = _samplers.find(name);
     if(found_iter != _samplers.end()) {
-        delete found_iter->second;
-        found_iter->second = nullptr;
+        found_iter->second.reset();
+        _samplers.erase(found_iter);
     }
-    _samplers.insert_or_assign(name, sampler);
+    _samplers.try_emplace(name, std::move(sampler));
 }
 
-void Renderer::RegisterShader(const std::string& name, Shader* shader) {
-    if(shader == nullptr) {
+void Renderer::RegisterShader(const std::string& name, std::unique_ptr<Shader> shader) noexcept {
+    if(!shader) {
         return;
     }
-    auto found_iter = _materials.find(name);
-    if(found_iter != _materials.end()) {
-        delete found_iter->second;
-        found_iter->second = nullptr;
+    auto found_iter = _shaders.find(name);
+    if(found_iter != _shaders.end()) {
+        found_iter->second.reset();
+        _shaders.erase(found_iter);
     }
-    _shaders.insert_or_assign(name, shader);
+    _shaders.try_emplace(name, std::move(shader));
 }
 
-bool Renderer::RegisterShader(std::filesystem::path filepath) {
+bool Renderer::RegisterShader(std::filesystem::path filepath) noexcept {
     namespace FS = std::filesystem;
     tinyxml2::XMLDocument doc;
     bool path_exists = FS::exists(filepath);
@@ -2544,22 +2553,14 @@ bool Renderer::RegisterShader(std::filesystem::path filepath) {
     }
     filepath.make_preferred();
     if(doc.LoadFile(filepath.string().c_str()) == tinyxml2::XML_SUCCESS) {
-        Shader* shader = new Shader(this, *doc.RootElement());
-        RegisterShader(filepath.string(), shader);
+        RegisterShader(filepath.string(), std::make_unique<Shader>(this, *doc.RootElement()));
         return true;
     }
     return false;
 }
 
-
-bool Renderer::RegisterShader(const std::string& filepath) {
-    namespace FS = std::filesystem;
-    return RegisterShader(FS::path{ filepath });
-}
-
-
-void Renderer::RegisterShader(Shader* shader) {
-    if(shader == nullptr) {
+void Renderer::RegisterShader(std::unique_ptr<Shader> shader) noexcept {
+    if(!shader) {
         return;
     }
     std::string name = shader->GetName();
@@ -2568,49 +2569,43 @@ void Renderer::RegisterShader(Shader* shader) {
         std::ostringstream ss;
         ss << __FUNCTION__ << ": Shader \"" << name << "\" already exists. Overwriting.\n";
         DebuggerPrintf(ss.str().c_str());
-        delete found_iter->second;
-        found_iter->second = nullptr;
+        found_iter->second.reset();
+        _shaders.erase(found_iter);
     }
-    _shaders.insert_or_assign(name, shader);
+    _shaders.try_emplace(name, std::move(shader));
 }
 
-void Renderer::RegisterFont(const std::string& name, KerningFont* font) {
+void Renderer::RegisterFont(const std::string& name, std::unique_ptr<KerningFont> font) noexcept {
     if(font == nullptr) {
         return;
     }
     auto found_iter = _fonts.find(name);
     if(found_iter != _fonts.end()) {
-        delete found_iter->second;
-        found_iter->second = nullptr;
+        found_iter->second.reset();
+        _fonts.erase(found_iter);
     }
-    _fonts.insert_or_assign(name, font);
+    _fonts.try_emplace(name, std::move(font));
 }
 
-void Renderer::RegisterFont(KerningFont* font) {
+void Renderer::RegisterFont(std::unique_ptr<KerningFont> font) noexcept {
     if(font == nullptr) {
         return;
     }
     std::string name = font->GetName();
     auto found_iter = _fonts.find(name);
     if(found_iter != _fonts.end()) {
-        delete found_iter->second;
-        found_iter->second = nullptr;
+        found_iter->second.reset();
+        _fonts.erase(found_iter);
     }
-    _fonts.insert_or_assign(name, font);
+    _fonts.try_emplace(name, std::move(font));
 }
 
-bool Renderer::RegisterFont(const std::string& filepath) {
+bool Renderer::RegisterFont(std::filesystem::path filepath) noexcept {
     namespace FS = std::filesystem;
-    return RegisterFont(FS::path{ filepath });
-}
-
-bool Renderer::RegisterFont(const std::filesystem::path& filepath) {
-    namespace FS = std::filesystem;
-    auto font = new KerningFont(this);
-    std::filesystem::path filepath_copy = filepath;
-    filepath_copy = FS::canonical(filepath_copy);
-    filepath_copy.make_preferred();
-    if(font->LoadFromFile(filepath_copy.string())) {
+    auto font = std::make_unique<KerningFont>(this);
+    filepath = FS::canonical(filepath);
+    filepath.make_preferred();
+    if(font->LoadFromFile(filepath.string())) {
         for(auto& texture_filename : font->GetImagePaths()) {
             namespace FS = std::filesystem;
             FS::path folderpath = font->GetFilePath();
@@ -2622,156 +2617,252 @@ bool Renderer::RegisterFont(const std::filesystem::path& filepath) {
             texture_path.make_preferred();
             CreateTexture(texture_path.string(), IntVector3::XY_AXIS);
         }
-        Material* mat = CreateMaterialFromFont(font);
-        if(mat) {
-            font->SetMaterial(mat);
-            RegisterMaterial(mat->GetName(), mat);
-            RegisterFont(font->GetName(), font);
+        if(auto mat = CreateMaterialFromFont(font.get())) {
+            font->SetMaterial(mat.get());
+            auto mat_name = mat->GetName();
+            auto font_name = font->GetName();
+            RegisterMaterial(mat_name, std::move(mat));
+            RegisterFont(font_name, std::move(font));
             return true;
         }
     }
-    delete font;
-    font = nullptr;
     return false;
 }
 
-void Renderer::RegisterFontsFromFolder(const std::string& folderpath, bool recursive /*= false*/) {
+void Renderer::RegisterFontsFromFolder(std::filesystem::path folderpath, bool recursive /*= false*/) noexcept {
     namespace FS = std::filesystem;
-    FS::path path{ folderpath };
-    if(FS::exists(path)) {
-        path = FS::canonical(path);
-        path.make_preferred();
-        return RegisterFontsFromFolder(path, recursive);
-    } else {
+    if(!FS::exists(folderpath)) {
         std::ostringstream ss{};
-        ss << "Attempting to Register Fonts from unknown path: " << path << std::endl;
+        ss << "Attempting to Register Fonts from unknown path: " << FS::absolute(folderpath) << std::endl;
         DebuggerPrintf(ss.str().c_str());
+        return;
     }
-}
-
-void Renderer::RegisterFontsFromFolder(const std::filesystem::path& folderpath, bool recursive /*= false*/) {
-    namespace FS = std::filesystem;
+    folderpath = FS::canonical(folderpath);
+    folderpath.make_preferred();
     auto cb =
-    [this](const FS::path& p) {
-        this->RegisterFont(p);
+        [this](const FS::path& p) {
+        RegisterFont(p);
     };
     FileUtils::ForEachFileInFolder(folderpath, ".fnt", cb, recursive);
 }
 
-void Renderer::CreateAndRegisterDefaultTextures() {
+void Renderer::CreateAndRegisterDefaultTextures() noexcept {
     auto default_texture = CreateDefaultTexture();
-    default_texture->SetDebugName("__default_texture");
-    RegisterTexture("__default", default_texture);
+    auto name = "__default";
+    default_texture->SetDebugName(name);
+    RegisterTexture(name, std::move(default_texture));
 
     auto invalid_texture = CreateInvalidTexture();
-    invalid_texture->SetDebugName("__invalid");
-    RegisterTexture("__invalid", invalid_texture);
+    name = "__invalid";
+    invalid_texture->SetDebugName(name);
+    RegisterTexture(name, std::move(invalid_texture));
 
     auto diffuse_texture = CreateDefaultDiffuseTexture();
-    diffuse_texture->SetDebugName("__diffuse");
-    RegisterTexture("__diffuse", diffuse_texture);
+    name = "__diffuse";
+    diffuse_texture->SetDebugName(name);
+    RegisterTexture(name, std::move(diffuse_texture));
 
     auto normal_texture = CreateDefaultNormalTexture();
-    normal_texture->SetDebugName("__normal");
-    RegisterTexture("__normal", normal_texture);
+    name = "__normal";
+    normal_texture->SetDebugName(name);
+    RegisterTexture(name, std::move(normal_texture));
 
     auto displacement_texture = CreateDefaultDisplacementTexture();
-    displacement_texture->SetDebugName("__displacement");
-    RegisterTexture("__displacement", displacement_texture);
+    name = "__displacement";
+    displacement_texture->SetDebugName(name);
+    RegisterTexture(name, std::move(displacement_texture));
 
     auto specular_texture = CreateDefaultSpecularTexture();
-    specular_texture->SetDebugName("__specular");
-    RegisterTexture("__specular", specular_texture);
+    name = "__specular";
+    specular_texture->SetDebugName(name);
+    RegisterTexture(name, std::move(specular_texture));
 
     auto occlusion_texture = CreateDefaultOcclusionTexture();
-    occlusion_texture->SetDebugName("__occlusion");
-    RegisterTexture("__occlusion", occlusion_texture);
+    name = "__occlusion";
+    occlusion_texture->SetDebugName(name);
+    RegisterTexture(name, std::move(occlusion_texture));
 
     auto emissive_texture = CreateDefaultEmissiveTexture();
-    emissive_texture->SetDebugName("__emissive");
-    RegisterTexture("__emissive", emissive_texture);
+    name = "__emissive";
+    emissive_texture->SetDebugName(name);
+    RegisterTexture(name, std::move(emissive_texture));
 
+    auto fullscreen_texture = CreateDefaultFullscreenTexture();
+    name = "__fullscreen";
+    fullscreen_texture->SetDebugName(name);
+    RegisterTexture(name, std::move(fullscreen_texture));
+
+    CreateDefaultColorTextures();
 }
 
-Texture* Renderer::CreateDefaultTexture() {
-    std::vector<Rgba> data = {
+std::unique_ptr<Texture> Renderer::CreateDefaultTexture() noexcept {
+    static const std::vector<Rgba> data = {
         Rgba::White
     };
     return Create2DTextureFromMemory(data, 1, 1);
 }
 
-Texture* Renderer::CreateInvalidTexture() {
-    std::vector<Rgba> data = {
+std::unique_ptr<Texture> Renderer::CreateInvalidTexture() noexcept {
+    static const std::vector<Rgba> data = {
         Rgba::Magenta, Rgba::Black,
         Rgba::Black,   Rgba::Magenta,
     };
     return Create2DTextureFromMemory(data, 2, 2);
 }
 
-Texture* Renderer::CreateDefaultDiffuseTexture() {
-    std::vector<Rgba> data = {
+std::unique_ptr<Texture> Renderer::CreateDefaultDiffuseTexture() noexcept {
+    static const std::vector<Rgba> data = {
         Rgba::White
     };
     return Create2DTextureFromMemory(data, 1, 1);
 }
 
-Texture* Renderer::CreateDefaultNormalTexture() {
-    std::vector<Rgba> data = {
+std::unique_ptr<Texture> Renderer::CreateDefaultNormalTexture() noexcept {
+    static const std::vector<Rgba> data = {
         Rgba::NormalZ
     };
     return Create2DTextureFromMemory(data, 1, 1);
 }
 
-Texture* Renderer::CreateDefaultDisplacementTexture() {
-    std::vector<Rgba> data = {
+std::unique_ptr<Texture> Renderer::CreateDefaultDisplacementTexture() noexcept {
+    static const std::vector<Rgba> data = {
         Rgba::Gray
     };
     return Create2DTextureFromMemory(data, 1, 1);
 }
 
-Texture* Renderer::CreateDefaultSpecularTexture() {
-    std::vector<Rgba> data = {
+std::unique_ptr<Texture> Renderer::CreateDefaultSpecularTexture() noexcept {
+    static const std::vector<Rgba> data = {
         Rgba::Black
     };
     return Create2DTextureFromMemory(data, 1, 1);
 }
 
-Texture* Renderer::CreateDefaultOcclusionTexture() {
-    std::vector<Rgba> data = {
+std::unique_ptr<Texture> Renderer::CreateDefaultOcclusionTexture() noexcept {
+    static const std::vector<Rgba> data = {
         Rgba::White
     };
     return Create2DTextureFromMemory(data, 1, 1);
 }
 
-Texture* Renderer::CreateDefaultEmissiveTexture() {
-    std::vector<Rgba> data = {
+std::unique_ptr<Texture> Renderer::CreateDefaultEmissiveTexture() noexcept {
+    static const std::vector<Rgba> data = {
         Rgba::Black
     };
     return Create2DTextureFromMemory(data, 1, 1);
 }
 
-void Renderer::CreateAndRegisterDefaultShaders() {
+std::unique_ptr<Texture> Renderer::CreateDefaultFullscreenTexture() noexcept {
+    auto dims = GetOutput()->GetDimensions();
+    auto data = std::vector<Rgba>(dims.x * dims.y, Rgba::Magenta);
+    return Create2DTextureFromMemory(data, dims.x, dims.y, BufferUsage::Gpu, BufferBindUsage::Render_Target | BufferBindUsage::Shader_Resource);
+}
+void Renderer::CreateDefaultColorTextures() noexcept {
+    static const std::vector<Rgba> colors = {
+        Rgba::White
+        ,Rgba::Black
+        ,Rgba::Red
+        ,Rgba::Pink
+        ,Rgba::Green
+        ,Rgba::ForestGreen
+        ,Rgba::Blue
+        ,Rgba::NavyBlue
+        ,Rgba::Cyan
+        ,Rgba::Yellow
+        ,Rgba::Magenta
+        ,Rgba::Orange
+        ,Rgba::Violet
+        ,Rgba::LightGrey
+        ,Rgba::LightGray
+        ,Rgba::Grey
+        ,Rgba::Gray
+        ,Rgba::DarkGrey
+        ,Rgba::DarkGray
+        ,Rgba::Olive
+        ,Rgba::SkyBlue
+        ,Rgba::Lime
+        ,Rgba::Teal
+        ,Rgba::Turquoise
+        ,Rgba::Periwinkle
+        ,Rgba::NormalZ
+    };
+    static const std::vector<std::string> names = {
+     "__white"
+    ,"__black"
+    ,"__red"
+    ,"__pink"
+    ,"__green"
+    ,"__forestGreen"
+    ,"__blue"
+    ,"__navyBlue"
+    ,"__cyan"
+    ,"__yellow"
+    ,"__magenta"
+    ,"__orange"
+    ,"__violet"
+    ,"__lightGrey"
+    ,"__lightGray"
+    ,"__grey"
+    ,"__gray"
+    ,"__darkGrey"
+    ,"__darkGray"
+    ,"__olive"
+    ,"__skyBlue"
+    ,"__lime"
+    ,"__teal"
+    ,"__turquoise"
+    ,"__periwinkle"
+    ,"__normalZ"
+    };
+    const std::size_t n_s = names.size();
+    const std::size_t c_s = colors.size();
+    GUARANTEE_OR_DIE(n_s == c_s, "Renderer::CreateDefaultColorTextures: names and color vector sizes do not match!!");
+    for(std::size_t i = 0; i < n_s; ++i) {
+        auto tex = CreateDefaultColorTexture(colors[i]);
+        tex->SetDebugName(names[i]);
+        RegisterTexture(names[i], std::move(tex));
+    }
+}
+
+std::unique_ptr<Texture> Renderer::CreateDefaultColorTexture(const Rgba& color) noexcept {
+    std::vector<Rgba> data = {
+        color
+    };
+    return Create2DTextureFromMemory(data, 1, 1);
+}
+
+void Renderer::CreateAndRegisterDefaultShaders() noexcept {
     auto default_shader = CreateDefaultShader();
-    RegisterShader(default_shader->GetName(), default_shader);
+    auto name = default_shader->GetName();
+    RegisterShader(name, std::move(default_shader));
 
     auto default_unlit = CreateDefaultUnlitShader();
-    RegisterShader(default_unlit->GetName(), default_unlit);
+    name = default_unlit->GetName();
+    RegisterShader(name, std::move(default_unlit));
 
     auto default_2D = CreateDefault2DShader();
-    RegisterShader(default_2D->GetName(), default_2D);
+    name = default_2D->GetName();
+    RegisterShader(name, std::move(default_2D));
 
     auto default_normal = CreateDefaultNormalShader();
-    RegisterShader(default_normal->GetName(), default_normal);
+    name = default_normal->GetName();
+    RegisterShader(name, std::move(default_normal));
 
     auto default_normal_map = CreateDefaultNormalMapShader();
-    RegisterShader(default_normal_map->GetName(), default_normal_map);
+    name = default_normal_map->GetName();
+    RegisterShader(name, std::move(default_normal_map));
 
     auto default_font = CreateDefaultFontShader();
-    RegisterShader(default_font->GetName(), default_font);
+    name = default_font->GetName();
+    RegisterShader(name, std::move(default_font));
+
+    auto default_invalid = CreateDefaultInvalidShader();
+    name = default_invalid->GetName();
+    RegisterShader(name, std::move(default_invalid));
 
 }
 
-Shader* Renderer::CreateDefaultShader() {
+std::unique_ptr<Shader> Renderer::CreateDefaultShader() noexcept {
     std::string shader =
 R"(
 <shader name="__default">
@@ -2791,10 +2882,10 @@ R"(
         return nullptr;
     }
 
-    return new Shader(this, *doc.RootElement());
+    return std::make_unique<Shader>(this, *doc.RootElement());
 }
 
-Shader* Renderer::CreateDefaultUnlitShader() {
+std::unique_ptr<Shader> Renderer::CreateDefaultUnlitShader() noexcept {
     std::string shader =
         R"(
 <shader name="__unlit">
@@ -2814,10 +2905,10 @@ Shader* Renderer::CreateDefaultUnlitShader() {
         return nullptr;
     }
 
-    return new Shader(this, *doc.RootElement());
+    return std::make_unique<Shader>(this, *doc.RootElement());
 }
 
-Shader* Renderer::CreateDefault2DShader() {
+std::unique_ptr<Shader> Renderer::CreateDefault2DShader() noexcept {
 std::string shader =
 R"(
 <shader name = "__2D">
@@ -2842,10 +2933,10 @@ R"(
         return nullptr;
     }
 
-    return new Shader(this, *doc.RootElement());
+    return std::make_unique<Shader>(this, *doc.RootElement());
 }
 
-Shader* Renderer::CreateDefaultNormalShader() {
+std::unique_ptr<Shader> Renderer::CreateDefaultNormalShader() noexcept {
     std::string shader =
         R"(
 <shader name="__normal">
@@ -2865,10 +2956,10 @@ Shader* Renderer::CreateDefaultNormalShader() {
         return nullptr;
     }
 
-    return new Shader(this, *doc.RootElement());
+    return std::make_unique<Shader>(this, *doc.RootElement());
 }
 
-Shader* Renderer::CreateDefaultNormalMapShader() {
+std::unique_ptr<Shader> Renderer::CreateDefaultNormalMapShader() noexcept {
     std::string shader =
         R"(
 <shader name="__normalmap">
@@ -2887,11 +2978,33 @@ Shader* Renderer::CreateDefaultNormalMapShader() {
     if(parse_result != tinyxml2::XML_SUCCESS) {
         return nullptr;
     }
-    return new Shader(this, *doc.RootElement());
+    return std::make_unique<Shader>(this, *doc.RootElement());
 }
 
+std::unique_ptr<Shader> Renderer::CreateDefaultInvalidShader() noexcept {
+    std::string shader =
+        R"(
+<shader name="__invalid">
+    <shaderprogram src="__unlit" />
+    <raster src="__solid" />
+    <sampler src="__invalid" />
+    <blends>
+        <blend enable="true">
+            <color src="src_alpha" dest="inv_src_alpha" op="add" />
+        </blend>
+    </blends>
+</shader>
+)";
+    tinyxml2::XMLDocument doc;
+    auto parse_result = doc.Parse(shader.c_str(), shader.size());
+    if (parse_result != tinyxml2::XML_SUCCESS) {
+        return nullptr;
+    }
 
-Shader* Renderer::CreateDefaultFontShader() {
+    return std::make_unique<Shader>(this, *doc.RootElement());
+}
+
+std::unique_ptr<Shader> Renderer::CreateDefaultFontShader() noexcept {
     std::string shader =
         R"(
 <shader name="__font">
@@ -2916,12 +3029,12 @@ Shader* Renderer::CreateDefaultFontShader() {
         return nullptr;
     }
 
-    return new Shader(this, *doc.RootElement());
+    return std::make_unique<Shader>(this, *doc.RootElement());
 }
 
-Shader* Renderer::CreateShaderFromFile(const std::string& filePath) {
+std::unique_ptr<Shader> Renderer::CreateShaderFromFile(std::filesystem::path filepath) noexcept {
     std::string buffer{};
-    if(!FileUtils::ReadBufferFromFile(buffer, filePath)) {
+    if(!FileUtils::ReadBufferFromFile(buffer, filepath)) {
         return nullptr;
     }
     tinyxml2::XMLDocument doc;
@@ -2929,14 +3042,14 @@ Shader* Renderer::CreateShaderFromFile(const std::string& filePath) {
     if(parse_result != tinyxml2::XML_SUCCESS) {
         return nullptr;
     }
-    return new Shader(this, *doc.RootElement());
+    return std::make_unique<Shader>(this, *doc.RootElement());
 }
 
-std::size_t Renderer::GetMaterialCount() {
+std::size_t Renderer::GetMaterialCount() noexcept {
     return _materials.size();
 }
 
-void Renderer::RegisterMaterial(const std::string& name, Material* mat) {
+void Renderer::RegisterMaterial(const std::string& name, std::unique_ptr<Material> mat) noexcept {
     if(mat == nullptr) {
         return;
     }
@@ -2945,13 +3058,13 @@ void Renderer::RegisterMaterial(const std::string& name, Material* mat) {
         std::ostringstream ss;
         ss << __FUNCTION__ << ": Material \"" << name << "\" already exists. Overwriting.\n";
         DebuggerPrintf(ss.str().c_str());
-        delete found_iter->second;
-        found_iter->second = nullptr;
+        found_iter->second.reset();
+        _materials.erase(found_iter);
     }
-    _materials.insert_or_assign(name, mat);
+    _materials.try_emplace(name, std::move(mat));
 }
 
-void Renderer::RegisterMaterial(Material* mat) {
+void Renderer::RegisterMaterial(std::unique_ptr<Material> mat) noexcept {
     if(mat == nullptr) {
         return;
     }
@@ -2961,101 +3074,92 @@ void Renderer::RegisterMaterial(Material* mat) {
         std::ostringstream ss;
         ss << __FUNCTION__ << ": Material \"" << name << "\" already exists. Overwriting.\n";
         DebuggerPrintf(ss.str().c_str());
-        delete found_iter->second;
-        found_iter->second = nullptr;
+        found_iter->second.reset();
+        _materials.erase(found_iter);
     }
-    _materials.insert_or_assign(name, mat);
+    _materials.try_emplace(name, std::move(mat));
 }
 
-bool Renderer::RegisterMaterial(const std::string& filepath) {
+bool Renderer::RegisterMaterial(std::filesystem::path filepath) noexcept {
     namespace FS = std::filesystem;
-    return RegisterMaterial(FS::path{filepath});
-}
-
-bool Renderer::RegisterMaterial(const std::filesystem::path& filepath) {
-    namespace FS = std::filesystem;
-    std::filesystem::path filepath_copy = filepath;
     tinyxml2::XMLDocument doc;
-    if(filepath_copy.has_extension() && StringUtils::ToLowerCase(filepath.extension().string()) == ".material") {
-        filepath_copy = FS::canonical(filepath_copy);
-        filepath_copy.make_preferred();
-        const auto p_str = filepath_copy.string();
+    if(filepath.has_extension() && StringUtils::ToLowerCase(filepath.extension().string()) == ".material") {
+        filepath = FS::canonical(filepath);
+        filepath.make_preferred();
+        const auto p_str = filepath.string();
         if(doc.LoadFile(p_str.c_str()) == tinyxml2::XML_SUCCESS) {
-            Material* mat = new Material(this, *doc.RootElement());
-            RegisterMaterial(mat->GetName(), mat);
+            auto mat = std::make_unique<Material>(this, *doc.RootElement());
+            auto name = mat->GetName();
+            RegisterMaterial(name, std::move(mat));
             return true;
         }
     }
     return false;
 }
 
-void Renderer::RegisterMaterialsFromFolder(const std::string& folderpath, bool recursive /*= false*/) {
+void Renderer::RegisterMaterialsFromFolder(std::filesystem::path folderpath, bool recursive /*= false*/) noexcept {
     namespace FS = std::filesystem;
-    FS::path path{ folderpath };
-    if(FS::exists(path)) {
-        path = FS::canonical(path);
-        path.make_preferred();
-        RegisterMaterialsFromFolder(path, recursive);
-    } else {
+    if(!FS::exists(folderpath)) {
         std::ostringstream ss{};
-        ss << "Attempting to Register Materials from unknown path: " << path << std::endl;
+        ss << "Attempting to Register Materials from unknown path: " << FS::absolute(folderpath) << std::endl;
         DebuggerPrintf(ss.str().c_str());
+        return;
     }
-}
-
-void Renderer::RegisterMaterialsFromFolder(const std::filesystem::path& folderpath, bool recursive /*= false*/) {
-    namespace FS = std::filesystem;
+    folderpath = FS::canonical(folderpath);
+    folderpath.make_preferred();
     auto cb =
-    [this](const FS::path& p) {
-        this->RegisterMaterial(p);
+        [this](const FS::path& p) {
+        RegisterMaterial(p);
     };
     FileUtils::ForEachFileInFolder(folderpath, ".material", cb, recursive);
 }
 
-void Renderer::RegisterShaderProgram(const std::string& name, ShaderProgram * sp) {
-    if(sp == nullptr) {
+void Renderer::RegisterShaderProgram(const std::string& name, std::unique_ptr<ShaderProgram> sp) noexcept {
+    if(!sp) {
         return;
     }
     auto found_iter = _shader_programs.find(name);
     if(found_iter != _shader_programs.end()) {
         sp->SetDescription(std::move(found_iter->second->GetDescription()));
-        delete found_iter->second;
-        found_iter->second = nullptr;
+        found_iter->second.reset(nullptr);
+        _shader_programs.erase(found_iter);
     }
-    _shader_programs.insert_or_assign(name, sp);
+    _shader_programs.try_emplace(name, std::move(sp));
 }
 
-void Renderer::UpdateVbo(const VertexBuffer::buffer_t& vbo) {
+void Renderer::UpdateVbo(const VertexBuffer::buffer_t& vbo) noexcept {
     if(_current_vbo_size < vbo.size()) {
-        delete _temp_vbo;
-        _temp_vbo = _rhi_device->CreateVertexBuffer(vbo, BufferUsage::Dynamic, BufferBindUsage::Vertex_Buffer);
+        _temp_vbo = std::move(_rhi_device->CreateVertexBuffer(vbo, BufferUsage::Dynamic, BufferBindUsage::Vertex_Buffer));
         _current_vbo_size = vbo.size();
     }
     _temp_vbo->Update(_rhi_context.get(), vbo);
 }
 
-void Renderer::UpdateIbo(const IndexBuffer::buffer_t& ibo) {
+void Renderer::UpdateIbo(const IndexBuffer::buffer_t& ibo) noexcept {
     if(_current_ibo_size < ibo.size()) {
-        delete _temp_ibo;
-        _temp_ibo = _rhi_device->CreateIndexBuffer(ibo, BufferUsage::Dynamic, BufferBindUsage::Index_Buffer);
+        _temp_ibo = std::move(_rhi_device->CreateIndexBuffer(ibo, BufferUsage::Dynamic, BufferBindUsage::Index_Buffer));
         _current_ibo_size = ibo.size();
     }
     _temp_ibo->Update(_rhi_context.get(), ibo);
 }
 
-RHIDeviceContext* Renderer::GetDeviceContext() const {
+RHIDeviceContext* Renderer::GetDeviceContext() const noexcept {
     return _rhi_context.get();
 }
 
-const RHIDevice* Renderer::GetDevice() const {
+const RHIDevice* Renderer::GetDevice() const noexcept {
     return _rhi_device.get();
 }
 
-RHIOutput* Renderer::GetOutput() const {
+RHIOutput* Renderer::GetOutput() const noexcept {
     return _rhi_output.get();
 }
 
-ShaderProgram* Renderer::GetShaderProgram(const std::string& nameOrFile) {
+RHIInstance* Renderer::GetInstance() const noexcept {
+    return _rhi_instance;
+}
+
+ShaderProgram* Renderer::GetShaderProgram(const std::string& nameOrFile) noexcept {
     namespace FS = std::filesystem;
     FS::path p{ nameOrFile };
     if(!StringUtils::StartsWith(p.string(), "__")) {
@@ -3066,16 +3170,16 @@ ShaderProgram* Renderer::GetShaderProgram(const std::string& nameOrFile) {
     if(found_iter == _shader_programs.end()) {
         return nullptr;
     }
-    return found_iter->second;
+    return found_iter->second.get();
 }
 
-ShaderProgram* Renderer::CreateShaderProgramFromHlslFile(const std::string& filepath, const std::string& entryPointList, const PipelineStage& target) const {
+std::unique_ptr<ShaderProgram> Renderer::CreateShaderProgramFromHlslFile(std::filesystem::path filepath, const std::string& entryPointList, const PipelineStage& target) const noexcept {
     bool requested_retry = false;
-    ShaderProgram* sp = nullptr;
+    std::unique_ptr<ShaderProgram> sp = nullptr;
     do {
         std::string contents{};
         if(FileUtils::ReadBufferFromFile(contents, filepath)) {
-                sp = _rhi_device->CreateShaderProgramFromHlslString(filepath, contents, entryPointList, nullptr, target);
+            sp = std::move(_rhi_device->CreateShaderProgramFromHlslString(filepath.string(), contents, entryPointList, nullptr, target));
                 requested_retry = false;
 #ifdef RENDER_DEBUG
                 if(sp == nullptr) {
@@ -3089,41 +3193,41 @@ ShaderProgram* Renderer::CreateShaderProgramFromHlslFile(const std::string& file
 #endif
         }
     } while(requested_retry);
-    return sp;
+    return std::move(sp);
 }
 
-void Renderer::CreateAndRegisterShaderProgramFromHlslFile(const std::string& filepath, const std::string& entryPointList, const PipelineStage& target) {
+void Renderer::CreateAndRegisterShaderProgramFromHlslFile(std::filesystem::path filepath, const std::string& entryPointList, const PipelineStage& target) noexcept {
     auto sp = CreateShaderProgramFromHlslFile(filepath, entryPointList, target);
     if(!sp) {
         std::ostringstream oss;
         oss << filepath << " failed to compile.\n";
         ERROR_AND_DIE(oss.str().c_str());
     }
-    RegisterShaderProgram(filepath, sp);
+    RegisterShaderProgram(filepath.string(), std::move(sp));
 }
 
-void Renderer::RegisterShaderProgramsFromFolder(const std::string& folderpath, const std::string& entrypoint, const PipelineStage& target, bool recursive /*= false*/) {
+void Renderer::RegisterShaderProgramsFromFolder(std::filesystem::path folderpath, const std::string& entrypoint, const PipelineStage& target, bool recursive /*= false*/) noexcept {
     namespace FS = std::filesystem;
-    FS::path path{ folderpath };
-    path = FS::canonical(path);
-    path.make_preferred();
-    RegisterShaderProgramsFromFolder(path, entrypoint, target, recursive);
-}
+    if(!FS::exists(folderpath)) {
+        std::ostringstream ss{};
+        ss << "Attempting to Register Shader Programs from unknown path: " << FS::absolute(folderpath) << std::endl;
+        DebuggerPrintf(ss.str().c_str());
+        return;
+    }
+    folderpath = FS::canonical(folderpath);
+    folderpath.make_preferred();
 
-void Renderer::RegisterShaderProgramsFromFolder(const std::filesystem::path& folderpath, const std::string& entrypoint, const PipelineStage& target, bool recursive /*= false*/) {
-    namespace FS = std::filesystem;
     auto cb = [this, &entrypoint, target](const FS::path& p) {
-        this->CreateAndRegisterShaderProgramFromHlslFile(p.string(), entrypoint, target);
+        CreateAndRegisterShaderProgramFromHlslFile(p.string(), entrypoint, target);
     };
     FileUtils::ForEachFileInFolder(folderpath, ".hlsl", cb, recursive);
 }
 
-void Renderer::CreateAndRegisterRasterStateFromRasterDescription(const std::string& name, const RasterDesc& desc) {
-    auto raster = new RasterState(_rhi_device.get(), desc);
-    RegisterRasterState(name, raster);
+void Renderer::CreateAndRegisterRasterStateFromRasterDescription(const std::string& name, const RasterDesc& desc) noexcept {
+    RegisterRasterState(name, std::make_unique<RasterState>(_rhi_device.get(), desc));
 }
 
-void Renderer::SetRasterState(RasterState* raster) {
+void Renderer::SetRasterState(RasterState* raster) noexcept {
     if(raster == _current_raster_state) {
         return;
     }
@@ -3131,21 +3235,21 @@ void Renderer::SetRasterState(RasterState* raster) {
     _current_raster_state = raster;
 }
 
-void Renderer::SetVSync(bool value) {
+void Renderer::SetVSync(bool value) noexcept {
     _vsync = value;
 }
 
-Material* Renderer::GetMaterial(const std::string& nameOrFile) {
+Material* Renderer::GetMaterial(const std::string& nameOrFile) noexcept {
     auto found_iter = _materials.find(nameOrFile);
     if(found_iter == _materials.end()) {
-        return nullptr;
+        return GetMaterial("__invalid");
     }
-    return found_iter->second;
+    return found_iter->second.get();
 }
 
-void Renderer::SetMaterial(Material* material) {
+void Renderer::SetMaterial(Material* material) noexcept {
     if(material == nullptr) {
-        material = GetMaterial("__default");
+        material = GetMaterial("__invalid");
     }
     if(_current_material == material) {
         return;
@@ -3157,42 +3261,49 @@ void Renderer::SetMaterial(Material* material) {
     _current_sampler = material->GetShader()->GetSampler();
 }
 
-const std::map<std::string, Texture*>& Renderer::GetLoadedTextures() const {
-    return _textures;
+bool Renderer::IsTextureLoaded(const std::string& nameOrFile) const noexcept {
+    namespace FS = std::filesystem;
+    FS::path p{nameOrFile};
+    if(!StringUtils::StartsWith(p.string(), "__")) {
+        std::error_code ec{};
+        p = FS::canonical(p, ec);
+        if(ec) {
+            return false;
+        }
+    }
+    return _textures.find(nameOrFile) != _textures.end();
 }
 
-Shader* Renderer::GetShader(const std::string& nameOrFile) {
+bool Renderer::IsTextureNotLoaded(const std::string& nameOrFile) const noexcept {
+    return !IsTextureLoaded(nameOrFile);
+}
+
+Shader* Renderer::GetShader(const std::string& nameOrFile) noexcept {
     auto found_iter = _shaders.find(nameOrFile);
     if(found_iter == _shaders.end()) {
         return nullptr;
     }
-    return found_iter->second;
+    return found_iter->second.get();
 }
 
-void Renderer::RegisterShadersFromFolder(const std::string& filepath, bool recursive /*= false*/) {
+void Renderer::RegisterShadersFromFolder(std::filesystem::path folderpath, bool recursive /*= false*/) noexcept {
     namespace FS = std::filesystem;
-    FS::path p(filepath);
-    if(FS::exists(p)) {
-        p = FS::canonical(p);
-        p.make_preferred();
-        RegisterShadersFromFolder(p, recursive);
-    } else {
+    if(!FS::exists(folderpath)) {
         std::ostringstream ss{};
-        ss << "Attempting to Register Shaders from unknown path: " << p << std::endl;
+        ss << "Attempting to Register Shaders from unknown path: " << FS::absolute(folderpath) << std::endl;
         DebuggerPrintf(ss.str().c_str());
+        return;
     }
-}
-
-void Renderer::RegisterShadersFromFolder(const std::filesystem::path& folderpath, bool recursive /*= false*/) {
-    namespace FS = std::filesystem;
+    folderpath = FS::canonical(folderpath);
+    folderpath.make_preferred();
     auto cb =
         [this](const FS::path& p) {
-        this->RegisterShader(p);
+        RegisterShader(p);
     };
     FileUtils::ForEachFileInFolder(folderpath, ".shader", cb, recursive);
 }
 
-void Renderer::SetComputeShader(Shader* shader) {
+void Renderer::SetComputeShader(Shader* shader) noexcept {
     if(shader == nullptr) {
         _rhi_context->SetComputeShaderProgram(nullptr);
     } else {
@@ -3200,62 +3311,62 @@ void Renderer::SetComputeShader(Shader* shader) {
     }
 }
 
-std::size_t Renderer::GetFontCount() const {
+std::size_t Renderer::GetFontCount() const noexcept {
     return _fonts.size();
 }
 
-KerningFont* Renderer::GetFont(const std::string& nameOrFile) {
+KerningFont* Renderer::GetFont(const std::string& nameOrFile) noexcept {
     auto found_iter = _fonts.find(nameOrFile);
     if(found_iter == _fonts.end()) {
         return nullptr;
     }
-    return found_iter->second;
+    return found_iter->second.get();
 }
 
-void Renderer::SetModelMatrix(const Matrix4& mat /*= Matrix4::I*/) {
+void Renderer::SetModelMatrix(const Matrix4& mat /*= Matrix4::I*/) noexcept {
     _matrix_data.model = mat;
     _matrix_cb->Update(_rhi_context.get(), &_matrix_data);
-    SetConstantBuffer(MATRIX_BUFFER_INDEX, _matrix_cb);
+    SetConstantBuffer(MATRIX_BUFFER_INDEX, _matrix_cb.get());
 }
 
-void Renderer::SetViewMatrix(const Matrix4& mat /*= Matrix4::I*/) {
+void Renderer::SetViewMatrix(const Matrix4& mat /*= Matrix4::I*/) noexcept {
     _matrix_data.view = mat;
     _matrix_cb->Update(_rhi_context.get(), &_matrix_data);
-    SetConstantBuffer(MATRIX_BUFFER_INDEX, _matrix_cb);
+    SetConstantBuffer(MATRIX_BUFFER_INDEX, _matrix_cb.get());
 }
 
-void Renderer::SetProjectionMatrix(const Matrix4& mat /*= Matrix4::I*/) {
+void Renderer::SetProjectionMatrix(const Matrix4& mat /*= Matrix4::I*/) noexcept {
     _matrix_data.projection = mat;
     _matrix_cb->Update(_rhi_context.get(), &_matrix_data);
-    SetConstantBuffer(MATRIX_BUFFER_INDEX, _matrix_cb);
+    SetConstantBuffer(MATRIX_BUFFER_INDEX, _matrix_cb.get());
 }
 
-void Renderer::ResetModelViewProjection() {
+void Renderer::ResetModelViewProjection() noexcept {
     SetModelMatrix(Matrix4::I);
     SetViewMatrix(Matrix4::I);
     SetProjectionMatrix(Matrix4::I);
 }
 
 
-void Renderer::AppendModelMatrix(const Matrix4& modelMatrix) {
+void Renderer::AppendModelMatrix(const Matrix4& modelMatrix) noexcept {
     _matrix_data.model = _matrix_data.model * modelMatrix;
     _matrix_cb->Update(_rhi_context.get(), &_matrix_data);
-    SetConstantBuffer(MATRIX_BUFFER_INDEX, _matrix_cb);
+    SetConstantBuffer(MATRIX_BUFFER_INDEX, _matrix_cb.get());
 }
 
-void Renderer::SetOrthoProjection(const Vector2& leftBottom, const Vector2& rightTop, const Vector2& near_far) {
+void Renderer::SetOrthoProjection(const Vector2& leftBottom, const Vector2& rightTop, const Vector2& near_far) noexcept {
     Matrix4 proj = Matrix4::CreateDXOrthographicProjection(leftBottom.x, rightTop.x, leftBottom.y, rightTop.y, near_far.x, near_far.y);
     SetProjectionMatrix(proj);
 }
 
-void Renderer::SetOrthoProjection(const Vector2& dimensions, const Vector2& origin, float nearz, float farz) {
+void Renderer::SetOrthoProjection(const Vector2& dimensions, const Vector2& origin, float nearz, float farz) noexcept {
     Vector2 half_extents = dimensions * 0.5f;
     Vector2 leftBottom = Vector2(origin.x - half_extents.x, origin.y - half_extents.y);
     Vector2 rightTop = Vector2(origin.x + half_extents.x, origin.y + half_extents.y);
     SetOrthoProjection(leftBottom, rightTop, Vector2(nearz, farz));
 }
 
-void Renderer::SetOrthoProjectionFromViewHeight(float viewHeight, float aspectRatio, float nearz, float farz) {
+void Renderer::SetOrthoProjectionFromViewHeight(float viewHeight, float aspectRatio, float nearz, float farz) noexcept {
     float view_height = viewHeight;
     float view_width = view_height * aspectRatio;
     Vector2 view_half_extents = Vector2(view_width, view_height) * 0.50f;
@@ -3264,7 +3375,7 @@ void Renderer::SetOrthoProjectionFromViewHeight(float viewHeight, float aspectRa
     SetOrthoProjection(leftBottom, rightTop, Vector2(nearz, farz));
 }
 
-void Renderer::SetOrthoProjectionFromViewWidth(float viewWidth, float aspectRatio, float nearz, float farz) {
+void Renderer::SetOrthoProjectionFromViewWidth(float viewWidth, float aspectRatio, float nearz, float farz) noexcept {
     float inv_aspect_ratio = 1.0f / aspectRatio;
     float view_width = viewWidth;
     float view_height = view_width * inv_aspect_ratio;
@@ -3274,7 +3385,7 @@ void Renderer::SetOrthoProjectionFromViewWidth(float viewWidth, float aspectRati
     SetOrthoProjection(leftBottom, rightTop, Vector2(nearz, farz));
 }
 
-void Renderer::SetOrthoProjectionFromCamera(const Camera3D& camera) {
+void Renderer::SetOrthoProjectionFromCamera(const Camera3D& camera) noexcept {
     float view_height = camera.CalcNearViewHeight();
     float view_width = view_height * camera.GetAspectRatio();
     Vector2 view_half_extents = Vector2(view_width, view_height) * 0.50f;
@@ -3283,48 +3394,86 @@ void Renderer::SetOrthoProjectionFromCamera(const Camera3D& camera) {
     SetOrthoProjection(leftBottom, rightTop, Vector2(camera.GetNearDistance(), camera.GetFarDistance()));
 }
 
-void Renderer::SetPerspectiveProjection(const Vector2& vfovDegrees_aspect, const Vector2& nz_fz) {
+void Renderer::SetPerspectiveProjection(const Vector2& vfovDegrees_aspect, const Vector2& nz_fz) noexcept {
     Matrix4 proj = Matrix4::CreateDXPerspectiveProjection(vfovDegrees_aspect.x, vfovDegrees_aspect.y, nz_fz.x, nz_fz.y);
     SetProjectionMatrix(proj);
 }
 
-void Renderer::SetPerspectiveProjectionFromCamera(const Camera3D& camera) {
+void Renderer::SetPerspectiveProjectionFromCamera(const Camera3D& camera) noexcept {
     SetPerspectiveProjection(Vector2{ camera.CalcFovYDegrees(), camera.GetAspectRatio()}, Vector2{ camera.GetNearDistance(), camera.GetFarDistance()});
 }
 
-void Renderer::SetCamera(const Camera3D& camera) {
+void Renderer::SetCamera(const Camera3D& camera) noexcept {
     _camera = camera;
     SetViewMatrix(camera.GetViewMatrix());
     SetProjectionMatrix(camera.GetProjectionMatrix());
 }
 
-void Renderer::SetCamera(const Camera2D& camera) {
+void Renderer::SetCamera(const Camera2D& camera) noexcept {
     _camera = camera;
     SetViewMatrix(camera.GetViewMatrix());
     SetProjectionMatrix(camera.GetProjectionMatrix());
 }
 
-Camera3D Renderer::GetCamera() const {
+Camera3D Renderer::GetCamera() const noexcept {
     return _camera;
 }
 
-void Renderer::SetConstantBuffer(unsigned int index, ConstantBuffer* buffer) {
+Vector2 Renderer::ConvertWorldToScreenCoords(const Vector3& worldCoords) const noexcept {
+    return ConvertWorldToScreenCoords(_camera, worldCoords);
+}
+
+Vector2 Renderer::ConvertWorldToScreenCoords(const Vector2& worldCoords) const noexcept {
+    return ConvertWorldToScreenCoords(_camera, Vector3{ worldCoords, 0.0f });
+}
+
+Vector2 Renderer::ConvertWorldToScreenCoords(const Camera2D& camera, const Vector2& worldCoords) const noexcept {
+    return ConvertWorldToScreenCoords(Camera3D{ camera }, Vector3{ worldCoords, 0.0f });
+}
+
+Vector2 Renderer::ConvertWorldToScreenCoords(const Camera3D& camera, const Vector3& worldCoords) const noexcept {
+    auto WtoS = camera.GetViewProjectionMatrix();
+    auto screenCoords4 = WtoS * worldCoords;
+    auto ndc = Vector2{screenCoords4.x, -screenCoords4.y};
+    auto screenDims = Vector2{GetOutput()->GetDimensions()};
+    auto mouseCoords = (ndc + Vector2::ONE) * screenDims * 0.5f;
+    return mouseCoords;
+}
+
+Vector3 Renderer::ConvertScreenToWorldCoords(const Vector2& mouseCoords) const noexcept {
+    return ConvertScreenToWorldCoords(_camera, mouseCoords);
+}
+
+Vector3 Renderer::ConvertScreenToWorldCoords(const Camera3D& camera, const Vector2& mouseCoords) const noexcept {
+    auto ndc = 2.0f * mouseCoords / Vector2(GetOutput()->GetDimensions()) - Vector2::ONE;
+    auto screenCoords4 = Vector4(ndc.x, -ndc.y, 1.0f, 1.0f);
+    auto sToW = camera.GetInverseViewProjectionMatrix();
+    auto worldPos4 = sToW * screenCoords4;
+    auto worldPos3 = Vector3(worldPos4);
+    return worldPos3;
+}
+
+Vector2 Renderer::ConvertScreenToWorldCoords(const Camera2D& camera, const Vector2& mouseCoords) const noexcept {
+    return Vector2{ ConvertScreenToWorldCoords(Camera3D{ camera }, mouseCoords) };
+}
+
+void Renderer::SetConstantBuffer(unsigned int index, ConstantBuffer* buffer) noexcept {
     _rhi_context->SetConstantBuffer(index, buffer);
 }
 
-void Renderer::SetComputeConstantBuffer(unsigned int index, ConstantBuffer* buffer) {
+void Renderer::SetComputeConstantBuffer(unsigned int index, ConstantBuffer* buffer) noexcept {
     _rhi_context->SetComputeConstantBuffer(index, buffer);
 }
 
-void Renderer::SetStructuredBuffer(unsigned int index, StructuredBuffer* buffer) {
+void Renderer::SetStructuredBuffer(unsigned int index, StructuredBuffer* buffer) noexcept {
     _rhi_context->SetStructuredBuffer(index, buffer);
 }
 
-void Renderer::SetComputeStructuredBuffer(unsigned int index, StructuredBuffer* buffer) {
+void Renderer::SetComputeStructuredBuffer(unsigned int index, StructuredBuffer* buffer) noexcept {
     _rhi_context->SetComputeStructuredBuffer(index, buffer);
 }
 
-void Renderer::DrawQuad(const Vector3& position /*= Vector3::ZERO*/, const Vector3& halfExtents /*= Vector3::XY_AXIS * 0.5f*/, const Rgba& color /*= Rgba::WHITE*/, const Vector4& texCoords /*= Vector4::ZW_AXIS*/, const Vector3& normalFront /*= Vector3::Z_AXIS*/, const Vector3& worldUp /*= Vector3::Y_AXIS*/) {
+void Renderer::DrawQuad(const Vector3& position /*= Vector3::ZERO*/, const Vector3& halfExtents /*= Vector3::XY_AXIS * 0.5f*/, const Rgba& color /*= Rgba::WHITE*/, const Vector4& texCoords /*= Vector4::ZW_AXIS*/, const Vector3& normalFront /*= Vector3::Z_AXIS*/, const Vector3& worldUp /*= Vector3::Y_AXIS*/) noexcept {
     Vector3 right = MathUtils::CrossProduct(worldUp, normalFront).GetNormalize();
     Vector3 up = MathUtils::CrossProduct(normalFront, right).GetNormalize();
     Vector3 left = -right;
@@ -3357,7 +3506,7 @@ void Renderer::DrawQuad(const Vector3& position /*= Vector3::ZERO*/, const Vecto
     DrawIndexed(PrimitiveType::Triangles, vbo, ibo);
 }
 
-void Renderer::DrawQuad(const Rgba& frontColor, const Rgba& backColor, const Vector3& position /*= Vector3::ZERO*/, const Vector3& halfExtents /*= Vector3::XY_AXIS * 0.5f*/, const Vector4& texCoords /*= Vector4::ZW_AXIS*/, const Vector3& normalFront /*= Vector3::Z_AXIS*/, const Vector3& worldUp /*= Vector3::Y_AXIS*/) {
+void Renderer::DrawQuad(const Rgba& frontColor, const Rgba& backColor, const Vector3& position /*= Vector3::ZERO*/, const Vector3& halfExtents /*= Vector3::XY_AXIS * 0.5f*/, const Vector4& texCoords /*= Vector4::ZW_AXIS*/, const Vector3& normalFront /*= Vector3::Z_AXIS*/, const Vector3& worldUp /*= Vector3::Y_AXIS*/) noexcept {
     Vector3 right = MathUtils::CrossProduct(worldUp, normalFront).GetNormalize();
     Vector3 up = MathUtils::CrossProduct(normalFront, right).GetNormalize();
     Vector3 left = -right;
@@ -3390,11 +3539,11 @@ void Renderer::DrawQuad(const Rgba& frontColor, const Rgba& backColor, const Vec
     DrawIndexed(PrimitiveType::Triangles, vbo, ibo);
 }
 
-std::size_t Renderer::GetShaderCount() const {
+std::size_t Renderer::GetShaderCount() const noexcept {
     return _shaders.size();
 }
 
-void Renderer::ClearRenderTargets(const RenderTargetType& rtt) {
+void Renderer::ClearRenderTargets(const RenderTargetType& rtt) noexcept {
     ID3D11DepthStencilView* dsv = _current_depthstencil->GetDepthStencilView();
     ID3D11RenderTargetView* rtv = _current_target->GetRenderTargetView();
     switch(rtt) {
@@ -3417,7 +3566,7 @@ void Renderer::ClearRenderTargets(const RenderTargetType& rtt) {
     _rhi_context->GetDxContext()->OMSetRenderTargets(1, &rtv, dsv);
 }
 
-void Renderer::SetRenderTarget(Texture* color_target /*= nullptr*/, Texture* depthstencil_target /*= nullptr*/) {
+void Renderer::SetRenderTarget(Texture* color_target /*= nullptr*/, Texture* depthstencil_target /*= nullptr*/) noexcept {
     if(color_target != nullptr) {
         _current_target = color_target;
     } else {
@@ -3434,18 +3583,18 @@ void Renderer::SetRenderTarget(Texture* color_target /*= nullptr*/, Texture* dep
     _rhi_context->GetDxContext()->OMSetRenderTargets(1, &rtv, dsv);
 }
 
-void Renderer::SetRenderTargetsToBackBuffer() {
+void Renderer::SetRenderTargetsToBackBuffer() noexcept {
     SetRenderTarget();
 }
 
-void Renderer::SetViewport(const ViewportDesc& desc) {
+void Renderer::SetViewport(const ViewportDesc& desc) noexcept {
     SetViewport(static_cast<unsigned int>(desc.x),
                 static_cast<unsigned int>(desc.y),
                 static_cast<unsigned int>(desc.width),
                 static_cast<unsigned int>(desc.height));
 }
 
-void Renderer::SetViewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height) {
+void Renderer::SetViewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height) noexcept {
     D3D11_VIEWPORT viewport;
     memset(&viewport, 0, sizeof(viewport));
 
@@ -3459,11 +3608,11 @@ void Renderer::SetViewport(unsigned int x, unsigned int y, unsigned int width, u
     _rhi_context->GetDxContext()->RSSetViewports(1, &viewport);
 }
 
-void Renderer::SetViewportAndScissor(unsigned int x, unsigned int y, unsigned int width, unsigned int height) {
+void Renderer::SetViewportAndScissor(unsigned int x, unsigned int y, unsigned int width, unsigned int height) noexcept {
     SetScissorAndViewport(x, y, width, height);
 }
 
-void Renderer::SetViewports(const std::vector<AABB3>& viewports) {
+void Renderer::SetViewports(const std::vector<AABB3>& viewports) noexcept {
     std::vector<D3D11_VIEWPORT> dxViewports{};
     dxViewports.resize(viewports.size());
 
@@ -3478,7 +3627,7 @@ void Renderer::SetViewports(const std::vector<AABB3>& viewports) {
     _rhi_context->GetDxContext()->RSSetViewports(static_cast<unsigned int>(dxViewports.size()), dxViewports.data());
 }
 
-void Renderer::SetScissor(unsigned int x, unsigned int y, unsigned int width, unsigned int height) {
+void Renderer::SetScissor(unsigned int x, unsigned int y, unsigned int width, unsigned int height) noexcept {
     D3D11_RECT scissor;
     scissor.left = x;
     scissor.right = x + width;
@@ -3487,12 +3636,12 @@ void Renderer::SetScissor(unsigned int x, unsigned int y, unsigned int width, un
     _rhi_context->GetDxContext()->RSSetScissorRects(1, &scissor);
 }
 
-void Renderer::SetScissorAndViewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height) {
+void Renderer::SetScissorAndViewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height) noexcept {
     SetViewport(x, y, width, height);
     SetScissor(x, y, width, height);
 }
 
-void Renderer::SetScissors(const std::vector<AABB2>& scissors) {
+void Renderer::SetScissors(const std::vector<AABB2>& scissors) noexcept {
     std::vector<D3D11_RECT> dxScissors{};
     dxScissors.resize(scissors.size());
 
@@ -3505,7 +3654,7 @@ void Renderer::SetScissors(const std::vector<AABB2>& scissors) {
     _rhi_context->GetDxContext()->RSSetScissorRects(static_cast<unsigned int>(dxScissors.size()), dxScissors.data());
 }
 
-void Renderer::SetViewportAsPercent(float x /*= 0.0f*/, float y /*= 0.0f*/, float w /*= 0.0f*/, float h /*= 0.0f*/) {
+void Renderer::SetViewportAsPercent(float x /*= 0.0f*/, float y /*= 0.0f*/, float w /*= 0.0f*/, float h /*= 0.0f*/) noexcept {
     auto window_dimensions = GetOutput()->GetDimensions();
     auto window_width = window_dimensions.x;
     auto window_height = window_dimensions.y;
@@ -3521,27 +3670,27 @@ void Renderer::SetViewportAsPercent(float x /*= 0.0f*/, float y /*= 0.0f*/, floa
                 static_cast<unsigned int>(height));
 }
 
-void Renderer::ClearColor(const Rgba& color) {
+void Renderer::ClearColor(const Rgba& color) noexcept {
     _rhi_context->ClearColorTarget(_current_target, color);
 }
 
-void Renderer::ClearTargetColor(Texture* target, const Rgba& color) {
+void Renderer::ClearTargetColor(Texture* target, const Rgba& color) noexcept {
     _rhi_context->ClearColorTarget(target, color);
 }
 
-void Renderer::ClearDepthStencilBuffer() {
+void Renderer::ClearDepthStencilBuffer() noexcept {
     _rhi_context->ClearDepthStencilTarget(_current_depthstencil);
 }
 
-void Renderer::ClearTargetDepthStencilBuffer(Texture* target, bool depth /*= true*/, bool stencil /*= true*/, float depthValue /*= 1.0f*/, unsigned char stencilValue /*= 0*/) {
+void Renderer::ClearTargetDepthStencilBuffer(Texture* target, bool depth /*= true*/, bool stencil /*= true*/, float depthValue /*= 1.0f*/, unsigned char stencilValue /*= 0*/) noexcept {
     _rhi_context->ClearDepthStencilTarget(target, depth, stencil, depthValue, stencilValue);
 }
 
-void Renderer::Present() {
+void Renderer::Present() noexcept {
     _rhi_output->Present(_vsync);
 }
 
-Texture* Renderer::CreateOrGetTexture(const std::string& filepath, const IntVector3& dimensions) {
+Texture* Renderer::CreateOrGetTexture(const std::filesystem::path& filepath, const IntVector3& dimensions) noexcept {
     namespace FS = std::filesystem;
     FS::path p(filepath);
     p = FS::canonical(p);
@@ -3554,44 +3703,36 @@ Texture* Renderer::CreateOrGetTexture(const std::string& filepath, const IntVect
     }
 }
 
-void Renderer::RegisterTexturesFromFolder(const std::string& folderpath, bool recursive /*= false*/) {
+void Renderer::RegisterTexturesFromFolder(std::filesystem::path folderpath, bool recursive /*= false*/) noexcept {
     namespace FS = std::filesystem;
-    FS::path path{ folderpath };
-    if(FS::exists(path)) {
-        path = FS::canonical(path);
-        path.make_preferred();
-        RegisterTexturesFromFolder(path, recursive);
-    } else {
+    if(!FS::exists(folderpath)) {
         std::ostringstream ss{};
-        ss << "Attempting to Register Textures from unknown path: " << path << std::endl;
+        ss << "Attempting to Register Textures from unknown path: " << FS::absolute(folderpath) << std::endl;
         DebuggerPrintf(ss.str().c_str());
+        return;
     }
-}
-
-void Renderer::RegisterTexturesFromFolder(const std::filesystem::path& folderpath, bool recursive /*= false*/) {
-    namespace FS = std::filesystem;
+    folderpath = FS::canonical(folderpath);
+    folderpath.make_preferred();
     auto cb =
         [this](const FS::path& p) {
-        this->RegisterTexture(p);
+        RegisterTexture(p);
     };
     FileUtils::ForEachFileInFolder(folderpath, std::string{}, cb, recursive);
 }
 
-bool Renderer::RegisterTexture(const std::filesystem::path& filepath) {
-    namespace FS = std::filesystem;
-    const auto p_str = filepath.string();
-    Texture* tex = CreateTexture(p_str, IntVector3::XY_AXIS);
+bool Renderer::RegisterTexture(const std::filesystem::path& filepath) noexcept {
+    Texture* tex = CreateTexture(filepath, IntVector3::XY_AXIS);
     if(tex) {
         return true;
     }
     return false;
 }
 
-Texture* Renderer::CreateTexture(const std::string& filepath,
+Texture* Renderer::CreateTexture(std::filesystem::path filepath,
                                  const IntVector3& dimensions /*= IntVector3::XY_AXIS*/,
                                  const BufferUsage& bufferUsage /*= BufferUsage::STATIC*/,
                                  const BufferBindUsage& bindUsage /*= BufferBindUsage::SHADER_RESOURCE*/,
-                                 const ImageFormat& imageFormat /*= ImageFormat::R8G8B8A8_UNORM*/) {
+                                 const ImageFormat& imageFormat /*= ImageFormat::R8G8B8A8_UNORM*/) noexcept {
     if(dimensions.y == 0 && dimensions.z == 0) {
         return Create1DTexture(filepath, bufferUsage, bindUsage, imageFormat);
     } else if(dimensions.z == 0) {
@@ -3601,9 +3742,9 @@ Texture* Renderer::CreateTexture(const std::string& filepath,
     }
 }
 
-void Renderer::SetTexture(Texture* texture, unsigned int registerIndex /*= 0*/) {
+void Renderer::SetTexture(Texture* texture, unsigned int registerIndex /*= 0*/) noexcept {
     if(texture == nullptr) {
-        texture = GetTexture("__default");
+        texture = GetTexture("__invalid");
     }
     if(_current_target == texture) {
         return;
@@ -3612,7 +3753,7 @@ void Renderer::SetTexture(Texture* texture, unsigned int registerIndex /*= 0*/) 
     _rhi_context->SetTexture(registerIndex, _current_target);
 }
 
-Texture* Renderer::CreateDepthStencil(const RHIDevice* owner, const IntVector2& dimensions) {
+std::unique_ptr<Texture> Renderer::CreateDepthStencil(const RHIDevice* owner, const IntVector2& dimensions) noexcept {
 
     ID3D11Texture2D* dx_resource = nullptr;
 
@@ -3630,12 +3771,12 @@ Texture* Renderer::CreateDepthStencil(const RHIDevice* owner, const IntVector2& 
     descDepth.MiscFlags = 0;
     auto hr_texture = owner->GetDxDevice()->CreateTexture2D(&descDepth, nullptr, &dx_resource);
     if(SUCCEEDED(hr_texture)) {
-        return new Texture2D(owner, dx_resource);
+        return std::make_unique<Texture2D>(owner, dx_resource);
     }
     return nullptr;
 }
 
-Texture* Renderer::CreateRenderableDepthStencil(const RHIDevice* owner, const IntVector2& dimensions) {
+std::unique_ptr<Texture> Renderer::CreateRenderableDepthStencil(const RHIDevice* owner, const IntVector2& dimensions) noexcept {
 
     ID3D11Texture2D* dx_resource = nullptr;
 
@@ -3654,12 +3795,12 @@ Texture* Renderer::CreateRenderableDepthStencil(const RHIDevice* owner, const In
     HRESULT texture_hr = owner->GetDxDevice()->CreateTexture2D(&descDepth, nullptr, &dx_resource);
     bool texture_creation_succeeded = SUCCEEDED(texture_hr);
     if(texture_creation_succeeded) {
-        return new Texture2D(owner, dx_resource);
+        return std::make_unique<Texture2D>(owner, dx_resource);
     }
     return nullptr;
 }
 
-void Renderer::SetDepthStencilState(DepthStencilState* depthstencil) {
+void Renderer::SetDepthStencilState(DepthStencilState* depthstencil) noexcept {
     if(depthstencil == _current_depthstencil_state) {
         return;
     }
@@ -3667,37 +3808,34 @@ void Renderer::SetDepthStencilState(DepthStencilState* depthstencil) {
     _current_depthstencil_state = depthstencil;
 }
 
-DepthStencilState* Renderer::GetDepthStencilState(const std::string& name) {
+DepthStencilState* Renderer::GetDepthStencilState(const std::string& name) noexcept {
     auto found_iter = _depthstencils.find(name);
     if(found_iter == _depthstencils.end()) {
         return nullptr;
     }
-    return found_iter->second;
+    return found_iter->second.get();
 }
 
-void Renderer::CreateAndRegisterDepthStencilStateFromDepthStencilDescription(const std::string& name, const DepthStencilDesc& desc) {
-    auto ds = new DepthStencilState(_rhi_device.get(), desc);
-    RegisterDepthStencilState(name, ds);
+void Renderer::CreateAndRegisterDepthStencilStateFromDepthStencilDescription(const std::string& name, const DepthStencilDesc& desc) noexcept {
+    RegisterDepthStencilState(name, std::make_unique<DepthStencilState>(_rhi_device.get(), desc));
 }
 
-void Renderer::EnableDepth() {
+void Renderer::EnableDepth() noexcept {
     SetDepthStencilState(GetDepthStencilState("__depthenabled"));
 }
 
-void Renderer::DisableDepth() {
+void Renderer::DisableDepth() noexcept {
     SetDepthStencilState(GetDepthStencilState("__depthdisabled"));
 }
 
-Texture* Renderer::Create1DTexture(const std::string& filepath, const BufferUsage& bufferUsage, const BufferBindUsage& bindUsage, const ImageFormat& imageFormat) {
+Texture* Renderer::Create1DTexture(std::filesystem::path filepath, const BufferUsage& bufferUsage, const BufferBindUsage& bindUsage, const ImageFormat& imageFormat) noexcept {
     namespace FS = std::filesystem;
-    FS::path p(filepath);
-    //TODO: canonical test
-    p = FS::canonical(p);
-    p.make_preferred();
-    if(!FS::exists(p)) {
+    if(!FS::exists(filepath)) {
         return GetTexture("__invalid");
-    }
-    Image img = Image(p.string());
+    }    
+    filepath = FS::canonical(filepath);
+    filepath.make_preferred();
+    Image img = Image(filepath);
 
     D3D11_TEXTURE1D_DESC tex_desc;
     memset(&tex_desc, 0, sizeof(tex_desc));
@@ -3733,13 +3871,13 @@ Texture* Renderer::Create1DTexture(const std::string& filepath, const BufferUsag
     HRESULT hr = _rhi_device->GetDxDevice()->CreateTexture1D(&tex_desc, (mustUseInitialData ? &subresource_data : nullptr), &dx_tex);
     bool succeeded = SUCCEEDED(hr);
     if(succeeded) {
-        auto* tex = new Texture1D(_rhi_device.get(), dx_tex);
-        tex->SetDebugName(p.string().c_str());
+        auto tex = std::make_unique<Texture1D>(_rhi_device.get(), dx_tex);
+        tex->SetDebugName(filepath.string().c_str());
         tex->IsLoaded(true);
-        if(RegisterTexture(p.string(), tex)) {
-            return tex;
+        auto tex_ptr = tex.get();
+        if(RegisterTexture(filepath.string(), std::move(tex))) {
+            return tex_ptr;
         } else {
-            delete tex;
             return nullptr;
         }
     } else {
@@ -3747,7 +3885,7 @@ Texture* Renderer::Create1DTexture(const std::string& filepath, const BufferUsag
     }
 }
 
-Texture* Renderer::Create1DTextureFromMemory(const unsigned char* data, unsigned int width /*= 1*/, const BufferUsage& bufferUsage /*= BufferUsage::STATIC*/, const BufferBindUsage& bindUsage /*= BufferBindUsage::SHADER_RESOURCE*/, const ImageFormat& imageFormat /*= ImageFormat::R8G8B8A8_UNORM*/) {
+std::unique_ptr<Texture> Renderer::Create1DTextureFromMemory(const unsigned char* data, unsigned int width /*= 1*/, const BufferUsage& bufferUsage /*= BufferUsage::STATIC*/, const BufferBindUsage& bindUsage /*= BufferBindUsage::SHADER_RESOURCE*/, const ImageFormat& imageFormat /*= ImageFormat::R8G8B8A8_UNORM*/) noexcept {
     D3D11_TEXTURE1D_DESC tex_desc = {};
 
     tex_desc.Width = width;
@@ -3783,13 +3921,13 @@ Texture* Renderer::Create1DTextureFromMemory(const unsigned char* data, unsigned
     HRESULT hr = _rhi_device->GetDxDevice()->CreateTexture1D(&tex_desc, (mustUseInitialData ? &subresource_data : nullptr), &dx_tex);
     bool succeeded = SUCCEEDED(hr);
     if(succeeded) {
-        return new Texture1D(_rhi_device.get(), dx_tex);
+        return std::make_unique<Texture1D>(_rhi_device.get(), dx_tex);
     } else {
         return nullptr;
     }
 }
 
-Texture* Renderer::Create1DTextureFromMemory(const std::vector<Rgba>& data, unsigned int width /*= 1*/, const BufferUsage& bufferUsage /*= BufferUsage::STATIC*/, const BufferBindUsage& bindUsage /*= BufferBindUsage::SHADER_RESOURCE*/, const ImageFormat& imageFormat /*= ImageFormat::R8G8B8A8_UNORM*/) {
+std::unique_ptr<Texture> Renderer::Create1DTextureFromMemory(const std::vector<Rgba>& data, unsigned int width /*= 1*/, const BufferUsage& bufferUsage /*= BufferUsage::STATIC*/, const BufferBindUsage& bindUsage /*= BufferBindUsage::SHADER_RESOURCE*/, const ImageFormat& imageFormat /*= ImageFormat::R8G8B8A8_UNORM*/) noexcept {
     D3D11_TEXTURE1D_DESC tex_desc = {};
 
     tex_desc.Width = width;
@@ -3825,22 +3963,20 @@ Texture* Renderer::Create1DTextureFromMemory(const std::vector<Rgba>& data, unsi
     HRESULT hr = _rhi_device->GetDxDevice()->CreateTexture1D(&tex_desc, (mustUseInitialData ? &subresource_data : nullptr), &dx_tex);
     bool succeeded = SUCCEEDED(hr);
     if(succeeded) {
-        return new Texture1D(_rhi_device.get(), dx_tex);
+        return std::make_unique<Texture1D>(_rhi_device.get(), dx_tex);
     } else {
         return nullptr;
     }
 }
 
-Texture* Renderer::Create2DTexture(const std::string& filepath, const BufferUsage& bufferUsage, const BufferBindUsage& bindUsage, const ImageFormat& imageFormat) {
+Texture* Renderer::Create2DTexture(std::filesystem::path filepath, const BufferUsage& bufferUsage, const BufferBindUsage& bindUsage, const ImageFormat& imageFormat) noexcept {
     namespace FS = std::filesystem;
-    FS::path p(filepath);
-    //TODO: canonical test
-    p = FS::canonical(p);
-    p.make_preferred();
-    if(!FS::exists(p)) {
+    if(!FS::exists(filepath)) {
         return GetTexture("__invalid");
     }
-    Image img = Image(p.string());
+    filepath = FS::canonical(filepath);
+    filepath.make_preferred();
+    Image img = Image(filepath.string());
 
     D3D11_TEXTURE2D_DESC tex_desc;
     memset(&tex_desc, 0, sizeof(tex_desc));
@@ -3887,13 +4023,13 @@ Texture* Renderer::Create2DTexture(const std::string& filepath, const BufferUsag
     HRESULT hr = _rhi_device->GetDxDevice()->CreateTexture2D(&tex_desc, (mustUseInitialData ? &subresource_data : nullptr), &dx_tex);
     bool succeeded = SUCCEEDED(hr);
     if(succeeded) {
-        auto tex = new Texture2D(_rhi_device.get(), dx_tex);
-        tex->SetDebugName(p.string().c_str());
+        auto tex = std::make_unique<Texture2D>(_rhi_device.get(), dx_tex);
+        tex->SetDebugName(filepath.string().c_str());
         tex->IsLoaded(true);
-        if(RegisterTexture(p.string(), tex)) {
-            return tex;
+        auto tex_ptr = tex.get();
+        if(RegisterTexture(filepath.string(), std::move(tex))) {
+            return tex_ptr;
         } else {
-            delete tex;
             return nullptr;
         }
     } else {
@@ -3901,7 +4037,7 @@ Texture* Renderer::Create2DTexture(const std::string& filepath, const BufferUsag
     }
 }
 
-Texture* Renderer::Create2DTextureFromMemory(const unsigned char* data, unsigned int width /*= 1*/, unsigned int height /*= 1*/, const BufferUsage& bufferUsage /*= BufferUsage::STATIC*/, const BufferBindUsage& bindUsage /*= BufferBindUsage::SHADER_RESOURCE*/, const ImageFormat& imageFormat /*= ImageFormat::R8G8B8A8_UNORM*/) {
+std::unique_ptr<Texture> Renderer::Create2DTextureFromMemory(const unsigned char* data, unsigned int width /*= 1*/, unsigned int height /*= 1*/, const BufferUsage& bufferUsage /*= BufferUsage::STATIC*/, const BufferBindUsage& bindUsage /*= BufferBindUsage::SHADER_RESOURCE*/, const ImageFormat& imageFormat /*= ImageFormat::R8G8B8A8_UNORM*/) noexcept {
     D3D11_TEXTURE2D_DESC tex_desc = {};
 
     tex_desc.Width = width;
@@ -3940,13 +4076,13 @@ Texture* Renderer::Create2DTextureFromMemory(const unsigned char* data, unsigned
     HRESULT hr = _rhi_device->GetDxDevice()->CreateTexture2D(&tex_desc, (mustUseInitialData ? &subresource_data : nullptr), &dx_tex);
     bool succeeded = SUCCEEDED(hr);
     if(succeeded) {
-        return new Texture2D(_rhi_device.get(), dx_tex);
+        return std::make_unique<Texture2D>(_rhi_device.get(), dx_tex);
     } else {
         return nullptr;
     }
 }
 
-Texture* Renderer::Create2DTextureFromMemory(const std::vector<Rgba>& data, unsigned int width /*= 1*/, unsigned int height /*= 1*/, const BufferUsage& bufferUsage /*= BufferUsage::STATIC*/, const BufferBindUsage& bindUsage /*= BufferBindUsage::SHADER_RESOURCE*/, const ImageFormat& imageFormat /*= ImageFormat::R8G8B8A8_UNORM*/) {
+std::unique_ptr<Texture> Renderer::Create2DTextureFromMemory(const std::vector<Rgba>& data, unsigned int width /*= 1*/, unsigned int height /*= 1*/, const BufferUsage& bufferUsage /*= BufferUsage::STATIC*/, const BufferBindUsage& bindUsage /*= BufferBindUsage::SHADER_RESOURCE*/, const ImageFormat& imageFormat /*= ImageFormat::R8G8B8A8_UNORM*/) noexcept {
     D3D11_TEXTURE2D_DESC tex_desc = {};
 
     tex_desc.Width = width;
@@ -3988,13 +4124,13 @@ Texture* Renderer::Create2DTextureFromMemory(const std::vector<Rgba>& data, unsi
     HRESULT hr = _rhi_device->GetDxDevice()->CreateTexture2D(&tex_desc, (mustUseInitialData ? &subresource_data : nullptr), &dx_tex);
     bool succeeded = SUCCEEDED(hr);
     if(succeeded) {
-        return new Texture2D(_rhi_device.get(), dx_tex);
+        return std::make_unique<Texture2D>(_rhi_device.get(), dx_tex);
     } else {
         return nullptr;
     }
 }
 
-Texture* Renderer::Create2DTextureArrayFromMemory(const unsigned char* data, unsigned int width /*= 1*/, unsigned int height /*= 1*/, unsigned int depth /*= 1*/, const BufferUsage& bufferUsage /*= BufferUsage::STATIC*/, const BufferBindUsage& bindUsage /*= BufferBindUsage::SHADER_RESOURCE*/, const ImageFormat& imageFormat /*= ImageFormat::R8G8B8A8_UNORM*/) {
+std::unique_ptr<Texture> Renderer::Create2DTextureArrayFromMemory(const unsigned char* data, unsigned int width /*= 1*/, unsigned int height /*= 1*/, unsigned int depth /*= 1*/, const BufferUsage& bufferUsage /*= BufferUsage::STATIC*/, const BufferBindUsage& bindUsage /*= BufferBindUsage::SHADER_RESOURCE*/, const ImageFormat& imageFormat /*= ImageFormat::R8G8B8A8_UNORM*/) noexcept {
     D3D11_TEXTURE2D_DESC tex_desc = {};
 
     tex_desc.Width = width;
@@ -4035,13 +4171,13 @@ Texture* Renderer::Create2DTextureArrayFromMemory(const unsigned char* data, uns
     subresource_data = nullptr;
     bool succeeded = SUCCEEDED(hr);
     if(succeeded) {
-        return new TextureArray2D(_rhi_device.get(), dx_tex);
+        return std::make_unique<TextureArray2D>(_rhi_device.get(), dx_tex);
     } else {
         return nullptr;
     }
 }
 
-Texture* Renderer::Create2DTextureFromGifBuffer(const unsigned char* data, unsigned int width /*= 1*/, unsigned int height /*= 1*/, unsigned int depth /*= 1*/, const BufferUsage& bufferUsage /*= BufferUsage::STATIC*/, const BufferBindUsage& bindUsage /*= BufferBindUsage::SHADER_RESOURCE*/, const ImageFormat& imageFormat /*= ImageFormat::R8G8B8A8_UNORM*/) {
+std::unique_ptr<Texture> Renderer::Create2DTextureFromGifBuffer(const unsigned char* data, unsigned int width /*= 1*/, unsigned int height /*= 1*/, unsigned int depth /*= 1*/, const BufferUsage& bufferUsage /*= BufferUsage::STATIC*/, const BufferBindUsage& bindUsage /*= BufferBindUsage::SHADER_RESOURCE*/, const ImageFormat& imageFormat /*= ImageFormat::R8G8B8A8_UNORM*/) noexcept {
     D3D11_TEXTURE2D_DESC tex_desc = {};
 
     tex_desc.Width = width;
@@ -4082,13 +4218,13 @@ Texture* Renderer::Create2DTextureFromGifBuffer(const unsigned char* data, unsig
     subresource_data = nullptr;
     bool succeeded = SUCCEEDED(hr);
     if(succeeded) {
-        return new Texture2D(_rhi_device.get(), dx_tex);
+        return std::make_unique<Texture2D>(_rhi_device.get(), dx_tex);
     } else {
         return nullptr;
     }
 }
 
-Texture* Renderer::Create2DTextureArrayFromGifBuffer(const unsigned char* data, unsigned int width /*= 1*/, unsigned int height /*= 1*/, unsigned int depth /*= 1*/, const BufferUsage& bufferUsage /*= BufferUsage::STATIC*/, const BufferBindUsage& bindUsage /*= BufferBindUsage::SHADER_RESOURCE*/, const ImageFormat& imageFormat /*= ImageFormat::R8G8B8A8_UNORM*/) {
+std::unique_ptr<Texture> Renderer::Create2DTextureArrayFromGifBuffer(const unsigned char* data, unsigned int width /*= 1*/, unsigned int height /*= 1*/, unsigned int depth /*= 1*/, const BufferUsage& bufferUsage /*= BufferUsage::STATIC*/, const BufferBindUsage& bindUsage /*= BufferBindUsage::SHADER_RESOURCE*/, const ImageFormat& imageFormat /*= ImageFormat::R8G8B8A8_UNORM*/) noexcept {
     D3D11_TEXTURE2D_DESC tex_desc = {};
 
     tex_desc.Width = width;
@@ -4129,21 +4265,19 @@ Texture* Renderer::Create2DTextureArrayFromGifBuffer(const unsigned char* data, 
     subresource_data = nullptr;
     bool succeeded = SUCCEEDED(hr);
     if(succeeded) {
-        return new TextureArray2D(_rhi_device.get(), dx_tex);
+        return std::make_unique<TextureArray2D>(_rhi_device.get(), dx_tex);
     } else {
         return nullptr;
     }
 }
 
-Texture* Renderer::Create3DTexture(const std::string& filepath, const IntVector3& dimensions, const BufferUsage& bufferUsage, const BufferBindUsage& bindUsage, const ImageFormat& imageFormat) {
+Texture* Renderer::Create3DTexture(std::filesystem::path filepath, const IntVector3& dimensions, const BufferUsage& bufferUsage, const BufferBindUsage& bindUsage, const ImageFormat& imageFormat) noexcept {
     namespace FS = std::filesystem;
-    FS::path p(filepath);
-    //TODO: canonical test
-    p = FS::canonical(p);
-    p.make_preferred();
-    if(!FS::exists(p)) {
+    if(!FS::exists(filepath)) {
         return GetTexture("__invalid");
     }
+    filepath = FS::canonical(filepath);
+    filepath.make_preferred();
 
     D3D11_TEXTURE3D_DESC tex_desc;
     memset(&tex_desc, 0, sizeof(tex_desc));
@@ -4190,13 +4324,13 @@ Texture* Renderer::Create3DTexture(const std::string& filepath, const IntVector3
     HRESULT hr = _rhi_device->GetDxDevice()->CreateTexture3D(&tex_desc, (mustUseInitialData ? &subresource_data : nullptr), &dx_tex);
     bool succeeded = SUCCEEDED(hr);
     if(succeeded) {
-        auto* tex = new Texture3D(_rhi_device.get(), dx_tex);
-        tex->SetDebugName(p.string().c_str());
+        auto tex = std::make_unique<Texture3D>(_rhi_device.get(), dx_tex);
+        tex->SetDebugName(filepath.string().c_str());
         tex->IsLoaded(true);
-        if(RegisterTexture(p.string(), tex)) {
-            return tex;
+        auto tex_ptr = tex.get();
+        if(RegisterTexture(filepath.string(), std::move(tex))) {
+            return tex_ptr;
         } else {
-            delete tex;
             return nullptr;
         }
     } else {
@@ -4204,7 +4338,7 @@ Texture* Renderer::Create3DTexture(const std::string& filepath, const IntVector3
     }
 }
 
-Texture* Renderer::Create3DTextureFromMemory(const unsigned char* data, unsigned int width /*= 1*/, unsigned int height /*= 1*/, unsigned int depth /*= 1*/, const BufferUsage& bufferUsage /*= BufferUsage::STATIC*/, const BufferBindUsage& bindUsage /*= BufferBindUsage::SHADER_RESOURCE*/, const ImageFormat& imageFormat /*= ImageFormat::R8G8B8A8_UNORM*/) {
+std::unique_ptr<Texture> Renderer::Create3DTextureFromMemory(const unsigned char* data, unsigned int width /*= 1*/, unsigned int height /*= 1*/, unsigned int depth /*= 1*/, const BufferUsage& bufferUsage /*= BufferUsage::STATIC*/, const BufferBindUsage& bindUsage /*= BufferBindUsage::SHADER_RESOURCE*/, const ImageFormat& imageFormat /*= ImageFormat::R8G8B8A8_UNORM*/) noexcept {
     D3D11_TEXTURE3D_DESC tex_desc = {};
 
     tex_desc.Width = width;
@@ -4241,13 +4375,13 @@ Texture* Renderer::Create3DTextureFromMemory(const unsigned char* data, unsigned
     HRESULT hr = _rhi_device->GetDxDevice()->CreateTexture3D(&tex_desc, (mustUseInitialData ? &subresource_data : nullptr), &dx_tex);
     bool succeeded = SUCCEEDED(hr);
     if(succeeded) {
-        return new Texture3D(_rhi_device.get(), dx_tex);
+        return std::make_unique<Texture3D>(_rhi_device.get(), dx_tex);
     } else {
         return nullptr;
     }
 }
 
-Texture* Renderer::Create3DTextureFromMemory(const std::vector<Rgba>& data, unsigned int width /*= 1*/, unsigned int height /*= 1*/, unsigned int depth /*= 1*/, const BufferUsage& bufferUsage /*= BufferUsage::STATIC*/, const BufferBindUsage& bindUsage /*= BufferBindUsage::SHADER_RESOURCE*/, const ImageFormat& imageFormat /*= ImageFormat::R8G8B8A8_UNORM*/) {
+std::unique_ptr<Texture> Renderer::Create3DTextureFromMemory(const std::vector<Rgba>& data, unsigned int width /*= 1*/, unsigned int height /*= 1*/, unsigned int depth /*= 1*/, const BufferUsage& bufferUsage /*= BufferUsage::STATIC*/, const BufferBindUsage& bindUsage /*= BufferBindUsage::SHADER_RESOURCE*/, const ImageFormat& imageFormat /*= ImageFormat::R8G8B8A8_UNORM*/) noexcept {
     D3D11_TEXTURE3D_DESC tex_desc = {};
 
     tex_desc.Width = width;
@@ -4284,7 +4418,7 @@ Texture* Renderer::Create3DTextureFromMemory(const std::vector<Rgba>& data, unsi
     HRESULT hr = _rhi_device->GetDxDevice()->CreateTexture3D(&tex_desc, (mustUseInitialData ? &subresource_data : nullptr), &dx_tex);
     bool succeeded = SUCCEEDED(hr);
     if(succeeded) {
-        return new Texture3D(_rhi_device.get(), dx_tex);
+        return std::make_unique<Texture3D>(_rhi_device.get(), dx_tex);
     } else {
         return nullptr;
     }

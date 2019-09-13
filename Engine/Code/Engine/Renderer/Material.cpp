@@ -11,7 +11,7 @@
 #include <iostream>
 #include <sstream>
 
-Material::Material(Renderer* renderer)
+Material::Material(Renderer* renderer) noexcept
     : _renderer(renderer)
     , _textures(CustomTextureIndexSlotOffset, nullptr)
 {
@@ -28,7 +28,7 @@ Material::Material(Renderer* renderer)
     _name += ss.str();
 }
 
-Material::Material(Renderer* renderer, const XMLElement& element)
+Material::Material(Renderer* renderer, const XMLElement& element) noexcept
     : _renderer(renderer)
     , _textures(CustomTextureIndexSlotOffset, nullptr)
 {
@@ -47,7 +47,7 @@ Material::Material(Renderer* renderer, const XMLElement& element)
     LoadFromXml(element);
 }
 
-bool Material::LoadFromXml(const XMLElement& element) {
+bool Material::LoadFromXml(const XMLElement& element) noexcept {
     namespace FS = std::filesystem;
 
     DataUtils::ValidateXmlElement(element, "material", "shader", "name", "lighting,textures");
@@ -113,7 +113,6 @@ bool Material::LoadFromXml(const XMLElement& element) {
     }
 
     if(auto xml_textures = element.FirstChildElement("textures")) {
-        const auto& loaded_textures = _renderer->GetLoadedTextures();
         auto invalid_tex = _renderer->GetTexture("__invalid");
 
         if(auto xml_diffuse = xml_textures->FirstChildElement("diffuse")) {
@@ -136,10 +135,10 @@ bool Material::LoadFromXml(const XMLElement& element) {
                 p.make_preferred();
                 const auto& p_str = p.string();
                 bool empty_path = p.empty();
-                bool texture_not_loaded = loaded_textures.find(p_str) == loaded_textures.end();
+                bool texture_not_loaded = _renderer->IsTextureNotLoaded(p_str);
                 if(texture_not_loaded) {
                     _renderer->CreateTexture(p.string(), IntVector3::XY_AXIS);
-                    texture_not_loaded = loaded_textures.find(p_str) == loaded_textures.end();
+                    texture_not_loaded = _renderer->IsTextureNotLoaded(p_str);
                 }
                 bool texture_not_exist = !empty_path && texture_not_loaded;
                 bool invalid_src = empty_path || texture_not_exist;
@@ -168,7 +167,7 @@ bool Material::LoadFromXml(const XMLElement& element) {
                 p.make_preferred();
                 const auto& p_str = p.string();
                 bool empty_path = p.empty();
-                bool texture_not_exist = !empty_path && loaded_textures.find(p_str) == loaded_textures.end();
+                bool texture_not_exist = !empty_path && _renderer->IsTextureNotLoaded(p_str);
                 bool invalid_src = empty_path || texture_not_exist;
                 auto tex = invalid_src ? invalid_tex : (_renderer->GetTexture(p_str));
                 _textures[1] = tex;
@@ -195,7 +194,7 @@ bool Material::LoadFromXml(const XMLElement& element) {
                 p.make_preferred();
                 const auto& p_str = p.string();
                 bool empty_path = p.empty();
-                bool texture_not_exist = !empty_path && loaded_textures.find(p_str) == loaded_textures.end();
+                bool texture_not_exist = !empty_path && _renderer->IsTextureNotLoaded(p_str);
                 bool invalid_src = empty_path || texture_not_exist;
                 auto tex = invalid_src ? invalid_tex : (_renderer->GetTexture(p_str));
                 _textures[2] = tex;
@@ -222,7 +221,7 @@ bool Material::LoadFromXml(const XMLElement& element) {
                 p.make_preferred();
                 const auto& p_str = p.string();
                 bool empty_path = p.empty();
-                bool texture_not_exist = !empty_path && loaded_textures.find(p_str) == loaded_textures.end();
+                bool texture_not_exist = !empty_path && _renderer->IsTextureNotLoaded(p_str);
                 bool invalid_src = empty_path || texture_not_exist;
                 auto tex = invalid_src ? invalid_tex : (_renderer->GetTexture(p_str));
                 _textures[3] = tex;
@@ -249,7 +248,7 @@ bool Material::LoadFromXml(const XMLElement& element) {
                 p.make_preferred();
                 const auto& p_str = p.string();
                 bool empty_path = p.empty();
-                bool texture_not_exist = !empty_path && loaded_textures.find(p_str) == loaded_textures.end();
+                bool texture_not_exist = !empty_path && _renderer->IsTextureNotLoaded(p_str);
                 bool invalid_src = empty_path || texture_not_exist;
                 auto tex = invalid_src ? invalid_tex : (_renderer->GetTexture(p_str));
                 _textures[4] = tex;
@@ -276,7 +275,7 @@ bool Material::LoadFromXml(const XMLElement& element) {
                 p.make_preferred();
                 const auto& p_str = p.string();
                 bool empty_path = p.empty();
-                bool texture_not_exist = !empty_path && loaded_textures.find(p_str) == loaded_textures.end();
+                bool texture_not_exist = !empty_path && _renderer->IsTextureNotLoaded(p_str);
                 bool invalid_src = empty_path || texture_not_exist;
                 auto tex = invalid_src ? invalid_tex : (_renderer->GetTexture(p_str));
                 _textures[5] = tex;
@@ -291,7 +290,7 @@ bool Material::LoadFromXml(const XMLElement& element) {
         }
 
         DataUtils::ForEachChildElement(*xml_textures, "texture",
-        [this, &loaded_textures, &invalid_tex](const XMLElement& elem) {
+        [this, &invalid_tex](const XMLElement& elem) {
             DataUtils::ValidateXmlElement(elem, "texture", "", "index,src");
             std::size_t index = CustomTextureIndexSlotOffset + DataUtils::ParseXmlAttribute(elem, std::string("index"), 0u);
             if(index >= CustomTextureIndexSlotOffset + MaxCustomTextureSlotCount) {
@@ -316,7 +315,7 @@ bool Material::LoadFromXml(const XMLElement& element) {
                 p.make_preferred();
                 const auto& p_str = p.string();
                 bool empty_path = p.empty();
-                bool texture_not_exist = !empty_path && loaded_textures.find(p_str) == loaded_textures.end();
+                bool texture_not_exist = !empty_path && _renderer->IsTextureNotLoaded(p_str);
                 bool invalid_src = empty_path || texture_not_exist;
                 auto tex = invalid_src ? invalid_tex : (_renderer->GetTexture(p_str));
                 _textures[index] = tex;
@@ -326,7 +325,7 @@ bool Material::LoadFromXml(const XMLElement& element) {
     return true;
 }
 
-void Material::AddTextureSlots(std::size_t count) {
+void Material::AddTextureSlots(std::size_t count) noexcept {
     std::size_t old_size = _textures.size();
     std::size_t new_size = (std::min)(old_size + MaxCustomTextureSlotCount, old_size + (std::min)(MaxCustomTextureSlotCount, count));
     _textures.resize(new_size);
@@ -335,42 +334,42 @@ void Material::AddTextureSlots(std::size_t count) {
     }
 }
 
-void Material::AddTextureSlot() {
+void Material::AddTextureSlot() noexcept {
     AddTextureSlots(1);
 }
 
-std::string Material::GetName() const {
+std::string Material::GetName() const noexcept {
     return _name;
 }
 
-Shader * Material::GetShader() const {
+Shader * Material::GetShader() const noexcept {
     return _shader;
 }
 
-std::size_t Material::GetTextureCount() const {
+std::size_t Material::GetTextureCount() const noexcept {
     return _textures.size();
 }
 
-Texture* Material::GetTexture(std::size_t i) const {
+Texture* Material::GetTexture(std::size_t i) const noexcept {
     return _textures[i];
 }
 
-Texture* Material::GetTexture(const TextureID& id) const {
+Texture* Material::GetTexture(const TextureID& id) const noexcept {
     return GetTexture(std::underlying_type_t<TextureID>(id));
 }
 
-float Material::GetSpecularIntensity() const {
+float Material::GetSpecularIntensity() const noexcept {
     return _specularIntensity;
 }
 
-float Material::GetGlossyFactor() const {
+float Material::GetGlossyFactor() const noexcept {
     return _specularPower;
 }
 
-float Material::GetEmissiveFactor() const {
+float Material::GetEmissiveFactor() const noexcept {
     return _emissiveFactor;
 }
 
-Vector3 Material::GetSpecGlossEmitFactors() const {
+Vector3 Material::GetSpecGlossEmitFactors() const noexcept {
     return Vector3(GetSpecularIntensity(), GetGlossyFactor(), GetEmissiveFactor());
 }

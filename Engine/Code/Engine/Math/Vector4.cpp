@@ -35,7 +35,7 @@ const Vector4 Vector4::XZW_AXIS(1.0f, 0.0f, 1.0f, 1.0f);
 const Vector4 Vector4::XYW_AXIS(1.0f, 1.0f, 0.0f, 1.0f);
 
 
-Vector4::Vector4(const Vector3& xyz, float initialW)
+Vector4::Vector4(const Vector3& xyz, float initialW) noexcept
     : x(xyz.x)
     , y(xyz.y)
     , z(xyz.z)
@@ -43,7 +43,7 @@ Vector4::Vector4(const Vector3& xyz, float initialW)
     /* DO NOTHING */
 }
 
-Vector4::Vector4(const Vector2& xy, float initialZ, float initialW)
+Vector4::Vector4(const Vector2& xy, float initialZ, float initialW) noexcept
     : x(xy.x)
     , y(xy.y)
     , z(initialZ)
@@ -51,7 +51,7 @@ Vector4::Vector4(const Vector2& xy, float initialZ, float initialW)
     /* DO NOTHING */
 }
 
-Vector4::Vector4(const Vector2& xy, const Vector2& zw)
+Vector4::Vector4(const Vector2& xy, const Vector2& zw) noexcept
     : x(xy.x)
     , y(xy.y)
     , z(zw.x)
@@ -59,7 +59,7 @@ Vector4::Vector4(const Vector2& xy, const Vector2& zw)
     /* DO NOTHING */
 }
 
-Vector4::Vector4(float initialX, float initialY, float initialZ, float initialW)
+Vector4::Vector4(float initialX, float initialY, float initialZ, float initialW) noexcept
     : x(initialX)
     , y(initialY)
     , z(initialZ)
@@ -67,12 +67,11 @@ Vector4::Vector4(float initialX, float initialY, float initialZ, float initialW)
     /* DO NOTHING */
 }
 
-Vector4::Vector4(const std::string& value)
+Vector4::Vector4(const std::string& value) noexcept
     : x(0.0f)
     , y(0.0f)
     , z(0.0f)
-    , w(0.0f)
-{
+    , w(0.0f) {
     if(value[0] == '[') {
         if(value.back() == ']') {
             std::string contents_str = std::string{ std::begin(value) + 1, std::end(value) - 1 };
@@ -80,11 +79,11 @@ Vector4::Vector4(const std::string& value)
             auto s = values.size();
             for(std::size_t i = 0; i < s; ++i) {
                 switch(i) {
-                    case 0: x = std::stof(values[i]); break;
-                    case 1: y = std::stof(values[i]); break;
-                    case 2: z = std::stof(values[i]); break;
-                    case 3: w = std::stof(values[i]); break;
-                    default: break;
+                case 0: x = std::stof(values[i]); break;
+                case 1: y = std::stof(values[i]); break;
+                case 2: z = std::stof(values[i]); break;
+                case 3: w = std::stof(values[i]); break;
+                default: break;
                 }
             }
         }
@@ -92,16 +91,15 @@ Vector4::Vector4(const std::string& value)
 }
 
 
-Vector4::Vector4(const IntVector4& intvec4)
+Vector4::Vector4(const IntVector4& intvec4) noexcept
     : x(static_cast<float>(intvec4.x))
     , y(static_cast<float>(intvec4.y))
     , z(static_cast<float>(intvec4.z))
-    , w(static_cast<float>(intvec4.w))
-{
+    , w(static_cast<float>(intvec4.w)) {
     /* DO NOTHING */
 }
 
-Vector4& Vector4::operator+=(const Vector4& rhs) {
+Vector4& Vector4::operator+=(const Vector4& rhs) noexcept {
     x += rhs.x;
     y += rhs.y;
     z += rhs.z;
@@ -109,7 +107,7 @@ Vector4& Vector4::operator+=(const Vector4& rhs) {
     return *this;
 }
 
-Vector4& Vector4::operator-=(const Vector4& rhs) {
+Vector4& Vector4::operator-=(const Vector4& rhs) noexcept {
     x -= rhs.x;
     y -= rhs.y;
     z -= rhs.z;
@@ -117,20 +115,20 @@ Vector4& Vector4::operator-=(const Vector4& rhs) {
     return *this;
 }
 
-Vector4 Vector4::operator-(const Vector4& rhs) const {
+Vector4 Vector4::operator-(const Vector4& rhs) const noexcept {
     return Vector4(x - rhs.x, y - rhs.y, z - rhs.z, w - rhs.w);
 }
 
-Vector4 Vector4::operator-() const {
+Vector4 Vector4::operator-() const noexcept {
     return Vector4(-x, -y, -z, -w);
 }
 
-std::ostream& operator<<(std::ostream& out_stream, const Vector4& v) {
+std::ostream& operator<<(std::ostream& out_stream, const Vector4& v) noexcept {
     out_stream << '[' << v.x << ',' << v.y << ',' << v.z << ',' << v.w << ']';
     return out_stream;
 }
 
-std::istream& operator>>(std::istream& in_stream, Vector4& v) {
+std::istream& operator>>(std::istream& in_stream, Vector4& v) noexcept {
     float x = 0.0f;
     float y = 0.0f;
     float z = 0.0f;
@@ -154,72 +152,72 @@ std::istream& operator>>(std::istream& in_stream, Vector4& v) {
     return in_stream;
 }
 
-Vector2 Vector4::GetXY() const {
+Vector2 Vector4::GetXY() const noexcept {
     return Vector2(x, y);
 }
 
-Vector2 Vector4::GetZW() const {
+Vector2 Vector4::GetZW() const noexcept {
     return Vector2(z, w);
 }
 
-void Vector4::GetXYZ(float& out_x, float& out_y, float& out_z) const {
+void Vector4::GetXYZ(float& out_x, float& out_y, float& out_z) const noexcept {
     out_x = x;
     out_y = y;
     out_z = z;
 }
 
-void Vector4::GetXYZW(float& out_x, float& out_y, float& out_z, float& out_w) const {
+void Vector4::GetXYZW(float& out_x, float& out_y, float& out_z, float& out_w) const noexcept {
     out_x = x;
     out_y = y;
     out_z = z;
     out_w = w;
 }
 
-void Vector4::SetXYZ(float newX, float newY, float newZ) {
+void Vector4::SetXYZ(float newX, float newY, float newZ) noexcept {
     x = newX;
     y = newY;
     z = newZ;
 }
 
-void Vector4::SetXYZW(float newX, float newY, float newZ, float newW) {
+void Vector4::SetXYZW(float newX, float newY, float newZ, float newW) noexcept {
     x = newX;
     y = newY;
     z = newZ;
     w = newW;
 }
 
-float* Vector4::GetAsFloatArray() {
+float* Vector4::GetAsFloatArray() noexcept {
     return &x;
 }
 
-float Vector4::CalcLength3D() const {
+float Vector4::CalcLength3D() const noexcept {
     return std::sqrt(CalcLength3DSquared());
 }
 
-float Vector4::CalcLength3DSquared() const {
+float Vector4::CalcLength3DSquared() const noexcept {
     return x * x + y * y + z * z;
 }
 
-float Vector4::CalcLength4D() const {
+float Vector4::CalcLength4D() const noexcept {
     return std::sqrt(CalcLength4DSquared());
 }
 
-float Vector4::CalcLength4DSquared() const {
+float Vector4::CalcLength4DSquared() const noexcept {
     return x * x + y * y + z * z + w * w;
 }
 
-Vector4 Vector4::operator*(const Vector4& rhs) const {
+Vector4 Vector4::operator*(const Vector4& rhs) const noexcept {
     return Vector4(x * rhs.x, y * rhs.y, z * rhs.z, w * rhs.w);
 }
 
-Vector4 operator*(float lhs, const Vector4& rhs) {
+Vector4 operator*(float lhs, const Vector4& rhs) noexcept {
     return Vector4(lhs * rhs.x, lhs * rhs.y, lhs * rhs.z, lhs * rhs.w);
 }
-Vector4 Vector4::operator*(float scale) const {
+Vector4 Vector4::operator*(float scale) const noexcept {
     return Vector4(x * scale, y * scale, z * scale, w * scale);
 }
 
-Vector4& Vector4::operator*=(float scale) {
+Vector4& Vector4::operator*=(float scale) noexcept {
     x *= scale;
     y *= scale;
     z *= scale;
@@ -227,7 +225,7 @@ Vector4& Vector4::operator*=(float scale) {
     return *this;
 }
 
-Vector4& Vector4::operator*=(const Vector4& rhs) {
+Vector4& Vector4::operator*=(const Vector4& rhs) noexcept {
     x *= rhs.x;
     y *= rhs.y;
     z *= rhs.z;
@@ -235,7 +233,7 @@ Vector4& Vector4::operator*=(const Vector4& rhs) {
     return *this;
 }
 
-Vector4& Vector4::operator/=(const Vector4& rhs) {
+Vector4& Vector4::operator/=(const Vector4& rhs) noexcept {
     x /= rhs.x;
     y /= rhs.y;
     z /= rhs.z;
@@ -243,19 +241,19 @@ Vector4& Vector4::operator/=(const Vector4& rhs) {
     return *this;
 }
 
-Vector4 Vector4::operator/(const Vector4 rhs) const {
+Vector4 Vector4::operator/(const Vector4 rhs) const noexcept {
     return Vector4(x / rhs.x, y / rhs.y, z / rhs.z, w / rhs.w);
 }
 
-Vector4 Vector4::operator/(float inv_scale) const {
+Vector4 Vector4::operator/(float inv_scale) const noexcept {
     return Vector4(x / inv_scale, y / inv_scale, z / inv_scale, w / inv_scale);
 }
 
-Vector4 Vector4::CalcHomogeneous(const Vector4& v) {
+Vector4 Vector4::CalcHomogeneous(const Vector4& v) noexcept {
     return std::fabs(v.w - 0.0f) < 0.0001f == false ? v / v.w : v;
 }
 
-void Vector4::CalcHomogeneous() {
+void Vector4::CalcHomogeneous() noexcept {
     if(std::fabs(w - 0.0f) < 0.0001f == false) {
         x /= w;
         y /= w;
@@ -264,7 +262,7 @@ void Vector4::CalcHomogeneous() {
     }
 }
 
-float Vector4::Normalize4D() {
+float Vector4::Normalize4D() noexcept {
     float length = CalcLength4D();
     if(length > 0.0f) {
         float inv_length = 1.0f / length;
@@ -277,7 +275,7 @@ float Vector4::Normalize4D() {
     return 0.0f;
 }
 
-float Vector4::Normalize3D() {
+float Vector4::Normalize3D() noexcept {
     float length = CalcLength3D();
     if(length > 0.0f) {
         float inv_length = 1.0f / length;
@@ -289,7 +287,7 @@ float Vector4::Normalize3D() {
     return 0.0f;
 }
 
-Vector4 Vector4::GetNormalize4D() const {
+Vector4 Vector4::GetNormalize4D() const noexcept {
     float length = CalcLength4D();
     if(length > 0.0f) {
         float inv_length = 1.0f / length;
@@ -298,7 +296,7 @@ Vector4 Vector4::GetNormalize4D() const {
     return Vector4::ZERO;
 }
 
-Vector4 Vector4::GetNormalize3D() const {
+Vector4 Vector4::GetNormalize3D() const noexcept {
     float length = CalcLength3D();
     if(length > 0.0f) {
         float inv_length = 1.0f / length;
@@ -307,14 +305,21 @@ Vector4 Vector4::GetNormalize3D() const {
     return Vector4::ZERO_XYZ_ONE_W;
 }
 
-Vector4 Vector4::operator+(const Vector4& rhs) const {
+Vector4 Vector4::operator+(const Vector4& rhs) const noexcept {
     return Vector4(x + rhs.x, y + rhs.y, z + rhs.z, w + rhs.w);
 }
 
-bool Vector4::operator!=(const Vector4& rhs) const {
+bool Vector4::operator!=(const Vector4& rhs) const noexcept {
     return !(*this == rhs);
 }
 
-bool Vector4::operator==(const Vector4& rhs) const {
+bool Vector4::operator==(const Vector4& rhs) const noexcept {
     return x == rhs.x && y == rhs.y && z == rhs.z && w == rhs.w;
+}
+
+void swap(Vector4& a, Vector4& b) noexcept {
+    std::swap(a.x, b.x);
+    std::swap(a.y, b.y);
+    std::swap(a.z, b.z);
+    std::swap(a.w, b.w);
 }

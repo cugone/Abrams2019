@@ -31,23 +31,23 @@ namespace System::OS {
         , x64
     };
 
-    OperatingSystem& operator&=(OperatingSystem& a, const OperatingSystem& b);
-    OperatingSystem& operator|=(OperatingSystem& a, const OperatingSystem& b);
-    OperatingSystem  operator&(OperatingSystem a, const OperatingSystem& b);
-    OperatingSystem  operator|(OperatingSystem a, const OperatingSystem& b);
-    OperatingSystem  operator~(const OperatingSystem& a);
+    OperatingSystem& operator&=(OperatingSystem& a, const OperatingSystem& b) noexcept;
+    OperatingSystem& operator|=(OperatingSystem& a, const OperatingSystem& b) noexcept;
+    OperatingSystem  operator&(OperatingSystem a, const OperatingSystem& b) noexcept;
+    OperatingSystem  operator|(OperatingSystem a, const OperatingSystem& b) noexcept;
+    OperatingSystem  operator~(const OperatingSystem& a) noexcept;
 
     struct OsDesc {
         OperatingSystem type{};
         OperatingSystemArchitecture architecture{};
         std::string VersionFriendly{};
-        friend std::ostream& operator<<(std::ostream& out, const OsDesc& cpu);
+        friend std::ostream& operator<<(std::ostream& out, const OsDesc& cpu) noexcept;
     };
 
-    OsDesc GetOsDesc();
+    OsDesc GetOsDesc() noexcept;
 
-    OperatingSystem GetOperatingSystemType();
-    OperatingSystemArchitecture GetOperatingSystemArchitecture();
-    std::string GetFriendlyStringFromOperatingSystemType(System::OS::OperatingSystem type);
+    OperatingSystem GetOperatingSystemType() noexcept;
+    OperatingSystemArchitecture GetOperatingSystemArchitecture() noexcept;
+    std::string GetFriendlyStringFromOperatingSystemType(System::OS::OperatingSystem type) noexcept;
 
 }

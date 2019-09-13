@@ -11,12 +11,12 @@
 #include <sstream>
 #include <string>
 
-System::Cpu::ProcessorArchitecture GetProcessorArchitecture();
-unsigned long GetLogicalProcessorCount();
-unsigned long GetSocketCount();
-SYSTEM_INFO GetSystemInfo();
+System::Cpu::ProcessorArchitecture GetProcessorArchitecture() noexcept;
+unsigned long GetLogicalProcessorCount() noexcept;
+unsigned long GetSocketCount() noexcept;
+SYSTEM_INFO GetSystemInfo() noexcept;
 
-System::Cpu::CpuDesc System::Cpu::GetCpuDesc() {
+System::Cpu::CpuDesc System::Cpu::GetCpuDesc() noexcept {
     CpuDesc desc{};
     desc.type = GetProcessorArchitecture();
     desc.logicalCount = GetLogicalProcessorCount();
@@ -24,7 +24,7 @@ System::Cpu::CpuDesc System::Cpu::GetCpuDesc() {
     return desc;
 }
 
-std::ostream& System::Cpu::operator<<(std::ostream& out, const System::Cpu::CpuDesc& cpu) {
+std::ostream& System::Cpu::operator<<(std::ostream& out, const System::Cpu::CpuDesc& cpu) noexcept {
     auto old_fmt = out.flags();
     auto old_w = out.width();
     out << std::left << std::setw(25) << "Processor Type:"           << std::right << std::setw(25) << StringUtils::to_string(cpu.type) << '\n';
@@ -35,7 +35,7 @@ std::ostream& System::Cpu::operator<<(std::ostream& out, const System::Cpu::CpuD
     return out;
 }
 
-SYSTEM_INFO GetSystemInfo() {
+SYSTEM_INFO GetSystemInfo() noexcept {
     SYSTEM_INFO info{};
     switch(System::OS::GetOperatingSystemArchitecture()) {
     case System::OS::OperatingSystemArchitecture::x86:
@@ -56,7 +56,7 @@ SYSTEM_INFO GetSystemInfo() {
     }
 }
 
-System::Cpu::ProcessorArchitecture GetProcessorArchitecture() {
+System::Cpu::ProcessorArchitecture GetProcessorArchitecture() noexcept {
     using namespace System::Cpu;
     auto info = GetSystemInfo();
     switch(info.wProcessorArchitecture) {
@@ -80,12 +80,12 @@ System::Cpu::ProcessorArchitecture GetProcessorArchitecture() {
     }
 }
 
-unsigned long GetLogicalProcessorCount() {
+unsigned long GetLogicalProcessorCount() noexcept {
     SYSTEM_INFO info = GetSystemInfo();
     return info.dwNumberOfProcessors;
 }
 
-unsigned long GetSocketCount() {
+unsigned long GetSocketCount() noexcept {
     DWORD length{};
     unsigned long socketCount{};
     //This will intentionally fail in order to fill the length parameter with the correct value.

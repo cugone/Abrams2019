@@ -9,17 +9,17 @@
 
 class StackTrace final {
 public:
-    StackTrace();
+    StackTrace() noexcept;
 	StackTrace([[maybe_unused]]unsigned long framesToSkip,
-               [[maybe_unused]]unsigned long framesToCapture);
-    ~StackTrace();
-    bool operator==(const StackTrace& rhs);
-    bool operator!=(const StackTrace& rhs);
+               [[maybe_unused]]unsigned long framesToCapture) noexcept;
+    ~StackTrace() noexcept;
+    bool operator==(const StackTrace& rhs) const noexcept;
+    bool operator!=(const StackTrace& rhs) const noexcept;
 protected:
 private:
-    static void Initialize();
-    static void Shutdown();
-    static void GetLines([[maybe_unused]]StackTrace* st, [[maybe_unused]]unsigned long max_lines);
+    static void Initialize() noexcept;
+    static void Shutdown() noexcept;
+    static void GetLines([[maybe_unused]]StackTrace* st, [[maybe_unused]]unsigned long max_lines) noexcept;
     unsigned long hash = 0;
     unsigned long _frame_count = 0;
     static constexpr auto MAX_FRAMES_PER_CALLSTACK = 128ul;

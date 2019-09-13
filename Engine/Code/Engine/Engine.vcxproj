@@ -33,6 +33,7 @@
     <ClCompile Include="Core\ArgumentParser.cpp" />
     <ClCompile Include="Core\Base64.cpp" />
     <ClCompile Include="Core\BuildConfig.hpp" />
+    <ClCompile Include="Core\Clipboard.cpp" />
     <ClCompile Include="Core\Config.cpp" />
     <ClCompile Include="Core\Console.cpp" />
     <ClCompile Include="Core\DataUtils.cpp" />
@@ -50,6 +51,7 @@
     <ClCompile Include="Core\Riff.cpp" />
     <ClCompile Include="Core\Stopwatch.cpp" />
     <ClCompile Include="Core\StringUtils.cpp" />
+    <ClCompile Include="Core\ThreadUtils.cpp" />
     <ClCompile Include="Core\TimeUtils.cpp" />
     <ClCompile Include="Input\InputSystem.cpp" />
     <ClCompile Include="Input\XboxController.cpp" />
@@ -92,6 +94,7 @@
     <ClCompile Include="Renderer\IndexBuffer.cpp" />
     <ClCompile Include="Renderer\InputLayout.cpp" />
     <ClCompile Include="Renderer\Material.cpp" />
+    <ClCompile Include="Renderer\Mesh.cpp" />
     <ClCompile Include="Renderer\Model.cpp" />
     <ClCompile Include="Renderer\RasterState.cpp" />
     <ClCompile Include="Renderer\Renderer.cpp" />
@@ -145,6 +148,7 @@
     <ClInclude Include="Audio\Wav.hpp" />
     <ClInclude Include="Core\ArgumentParser.hpp" />
     <ClInclude Include="Core\Base64.hpp" />
+    <ClInclude Include="Core\Clipboard.hpp" />
     <ClInclude Include="Core\Config.hpp" />
     <ClInclude Include="Core\Console.hpp" />
     <ClInclude Include="Core\DataUtils.hpp" />
@@ -163,6 +167,7 @@
     <ClInclude Include="Core\Riff.hpp" />
     <ClInclude Include="Core\Stopwatch.hpp" />
     <ClInclude Include="Core\StringUtils.hpp" />
+    <ClInclude Include="Core\ThreadUtils.hpp" />
     <ClInclude Include="Core\ThreadSafeQueue.hpp" />
     <ClInclude Include="Core\TimeUtils.hpp" />
     <ClInclude Include="Core\Vertex3D.hpp" />
@@ -209,6 +214,7 @@
     <ClInclude Include="Renderer\IndexBuffer.hpp" />
     <ClInclude Include="Renderer\InputLayout.hpp" />
     <ClInclude Include="Renderer\Material.hpp" />
+    <ClInclude Include="Renderer\Mesh.hpp" />
     <ClInclude Include="Renderer\Model.hpp" />
     <ClInclude Include="Renderer\RasterState.hpp" />
     <ClInclude Include="Renderer\Renderer.hpp" />
@@ -250,33 +256,33 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{ACBDA225-83DE-4FBA-A746-0135429FB391}</ProjectGuid>
     <RootNamespace>Engine</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='FinalBuild|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugProfile|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -301,18 +307,27 @@
     <Import Project="Abrams2018.Default.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)Temporary\$(ProjectName)_$(Platform)_$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)Temporary\$(ProjectName)_$(Platform)_$(Configuration)\</IntDir>
+    <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='FinalBuild|x64'">
     <OutDir>$(SolutionDir)Temporary\$(ProjectName)_$(Platform)_$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)Temporary\$(ProjectName)_$(Platform)_$(Configuration)\</IntDir>
+    <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugProfile|x64'">
     <OutDir>$(SolutionDir)Temporary\$(ProjectName)_$(Platform)_$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)Temporary\$(ProjectName)_$(Platform)_$(Configuration)\</IntDir>
+    <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -325,6 +340,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <EnablePREfast>false</EnablePREfast>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -341,6 +357,7 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <StructMemberAlignment>Default</StructMemberAlignment>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <EnablePREfast>false</EnablePREfast>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -362,6 +379,7 @@
       <StructMemberAlignment>Default</StructMemberAlignment>
       <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <EnablePREfast>false</EnablePREfast>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -383,6 +401,7 @@
       <StructMemberAlignment>Default</StructMemberAlignment>
       <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <EnablePREfast>false</EnablePREfast>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>

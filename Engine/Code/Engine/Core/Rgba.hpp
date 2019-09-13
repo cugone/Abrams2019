@@ -38,11 +38,11 @@ public:
     static const Rgba NormalZ;
     static const Rgba NoAlpha;
 
-    static Rgba Random();
-    static Rgba RandomGreyscale();
-    static Rgba RandomGrayscale();
-    static Rgba RandomWithAlpha();
-    static Rgba RandomLessThan(const Rgba& color);
+    static Rgba Random() noexcept;
+    static Rgba RandomGreyscale() noexcept;
+    static Rgba RandomGrayscale() noexcept;
+    static Rgba RandomWithAlpha() noexcept;
+    static Rgba RandomLessThan(const Rgba& color) noexcept;
 
     Rgba() = default;
     Rgba(const Rgba& rhs) = default;
@@ -51,48 +51,48 @@ public:
     Rgba& operator=(Rgba&& rhs) = default;
     ~Rgba() = default;
 
-    explicit Rgba(std::string name);
-    explicit Rgba(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha = 0xFF);
+    explicit Rgba(std::string name) noexcept;
+    explicit Rgba(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha = 0xFF) noexcept;
 
-    void SetAsBytes(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha);
-    void SetAsFloats(float normalized_red, float normalized_green, float normalized_blue, float normalized_alpha);
-    void GetAsFloats(float& out_normalized_red, float& out_normalized_green, float& out_normalized_blue, float& out_normalized_alpha) const;
-    Vector4 GetRgbaAsFloats() const;
-    Vector3 GetRgbAsFloats() const;
-    void ScaleRGB(float scale);
-    void ScaleAlpha(float scale);
+    void SetAsBytes(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha) noexcept;
+    void SetAsFloats(float normalized_red, float normalized_green, float normalized_blue, float normalized_alpha) noexcept;
+    void GetAsFloats(float& out_normalized_red, float& out_normalized_green, float& out_normalized_blue, float& out_normalized_alpha) const noexcept;
+    Vector4 GetRgbaAsFloats() const noexcept;
+    Vector3 GetRgbAsFloats() const noexcept;
+    void ScaleRGB(float scale) noexcept;
+    void ScaleAlpha(float scale) noexcept;
 
-    uint32_t GetAsRawValue() const;
-    void SetFromRawValue(uint32_t value);
-    void SetRGBAFromRawValue(uint32_t value);
-    void SetRGBFromRawValue(uint32_t value);
-    void SetRgbFromFloats(const Vector3& value);
-    void SetRgbaFromFloats(const Vector4& value);
-    bool IsRgbEqual(const Rgba& rhs) const;
-    bool operator==(const Rgba& rhs) const;
-    bool operator!=(const Rgba& rhs) const;
-    bool operator<(const Rgba& rhs) const;
+    uint32_t GetAsRawValue() const noexcept;
+    void SetFromRawValue(uint32_t value) noexcept;
+    void SetRGBAFromRawValue(uint32_t value) noexcept;
+    void SetRGBFromRawValue(uint32_t value) noexcept;
+    void SetRgbFromFloats(const Vector3& value) noexcept;
+    void SetRgbaFromFloats(const Vector4& value) noexcept;
+    bool IsRgbEqual(const Rgba& rhs) const noexcept;
+    bool operator==(const Rgba& rhs) const noexcept;
+    bool operator!=(const Rgba& rhs) const noexcept;
+    bool operator<(const Rgba& rhs) const noexcept;
 
-    Rgba& operator+=(const Rgba& rhs);
-    friend Rgba operator+(Rgba lhs, const Rgba& rhs);
+    Rgba& operator+=(const Rgba& rhs) noexcept;
+    friend Rgba operator+(Rgba lhs, const Rgba& rhs) noexcept;
 
-    Rgba& operator-=(const Rgba& rhs);
-    friend Rgba operator-(Rgba lhs, const Rgba& rhs);
+    Rgba& operator-=(const Rgba& rhs) noexcept;
+    friend Rgba operator-(Rgba lhs, const Rgba& rhs) noexcept;
 
-    Rgba& operator++();
-    Rgba operator++(int);
+    Rgba& operator++() noexcept;
+    Rgba operator++(int) noexcept;
 
-    Rgba& operator--();
-    Rgba operator--(int);
+    Rgba& operator--() noexcept;
+    Rgba operator--(int) noexcept;
 
     unsigned char r = 255;
     unsigned char g = 255;
     unsigned char b = 255;
     unsigned char a = 255;
 
-    friend std::ostream& operator<<(std::ostream& os, const Rgba& rhs);
+    friend std::ostream& operator<<(std::ostream& os, const Rgba& rhs) noexcept;
 
 protected:
 private:
-    void SetValueFromName(std::string name);
+    void SetValueFromName(std::string name) noexcept;
 };

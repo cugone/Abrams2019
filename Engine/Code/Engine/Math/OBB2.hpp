@@ -2,6 +2,8 @@
 
 #include "Engine/Math/Vector2.hpp"
 
+class AABB2;
+
 class OBB2 {
 public:
 
@@ -14,35 +16,47 @@ public:
     OBB2(OBB2&& other) = default;
     OBB2& operator=(const OBB2& other) = default;
     OBB2& operator=(OBB2&& other) = default;
-    OBB2(const Vector2& initialPosition, float initialOrientationDegrees);
-    OBB2(float initialX, float initialY, float initialOrientationDegrees);
-    OBB2(const Vector2& center, const Vector2& halfExtents, float orientationDegrees);
-    OBB2(const Vector2& center, float halfExtentX, float halfExtentY, float orientationDegrees);
+    OBB2(const Vector2& initialPosition, float initialOrientationDegrees) noexcept;
+    OBB2(float initialX, float initialY, float initialOrientationDegrees) noexcept;
+    OBB2(const Vector2& center, const Vector2& halfExtents, float orientationDegrees) noexcept;
+    OBB2(const Vector2& center, float halfExtentX, float halfExtentY, float orientationDegrees) noexcept;
+    OBB2(const AABB2& aabb) noexcept;
     ~OBB2() = default;
 
-    void SetOrientationDegrees(float newOrientationDegrees);
-    void SetOrientation(float newOrientationRadians);
-    void RotateDegrees(float rotationDegrees);
-    void Rotate(float rotationRadians);
-    void StretchToIncludePoint(const Vector2& point);
-    void AddPaddingToSides(float paddingX, float paddingY);
-    void AddPaddingToSides(const Vector2& padding);
-    void AddPaddingToSidesClamped(float paddingX, float paddingY);
-    void AddPaddingToSidesClamped(const Vector2& padding);
-    void Translate(const Vector2& translation);
+    void SetOrientationDegrees(float newOrientationDegrees) noexcept;
+    void SetOrientation(float newOrientationRadians) noexcept;
+    void RotateDegrees(float rotationDegrees) noexcept;
+    void Rotate(float rotationRadians) noexcept;
+    void StretchToIncludePoint(const Vector2& point) noexcept;
+    void AddPaddingToSides(float paddingX, float paddingY) noexcept;
+    void AddPaddingToSides(const Vector2& padding) noexcept;
 
-    Vector2 GetRight() const;
-    Vector2 GetUp() const;
-    Vector2 GetLeft() const;
-    Vector2 GetDown() const;
+    void AddPaddingToSidesClamped(float paddingX, float paddingY) noexcept;
+    void AddPaddingToSidesClamped(const Vector2& padding) noexcept;
+    void Translate(const Vector2& translation) noexcept;
 
-    Vector2 CalcDimensions() const;
-    Vector2 CalcCenter() const;
+    Vector2 GetRight() const noexcept;
+    Vector2 GetUp() const noexcept;
+    Vector2 GetLeft() const noexcept;
+    Vector2 GetDown() const noexcept;
 
-    OBB2 operator+(const Vector2& translation) const;
-    OBB2 operator-(const Vector2& antiTranslation) const;
-    OBB2& operator+=(const Vector2& translation);
-    OBB2& operator-=(const Vector2& antiTranslation);
+    Vector2 GetRightEdge() const noexcept;
+    Vector2 GetTopEdge() const noexcept;
+    Vector2 GetLeftEdge() const noexcept;
+    Vector2 GetBottomEdge() const noexcept;
+
+    Vector2 GetBottomLeft() const noexcept;
+    Vector2 GetTopLeft() const noexcept;
+    Vector2 GetTopRight() const noexcept;
+    Vector2 GetBottomRight() const noexcept;
+
+    Vector2 CalcDimensions() const noexcept;
+    Vector2 CalcCenter() const noexcept;
+
+    OBB2 operator+(const Vector2& translation) const noexcept;
+    OBB2 operator-(const Vector2& antiTranslation) const noexcept;
+    OBB2& operator+=(const Vector2& translation) noexcept;
+    OBB2& operator-=(const Vector2& antiTranslation) noexcept;
 
 protected:
 private:

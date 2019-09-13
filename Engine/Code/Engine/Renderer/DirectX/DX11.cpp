@@ -12,7 +12,7 @@ constexpr const bitfield8_t MAXIMUM_MASK_BITS = 0b0010'0000;
 constexpr const bitfield8_t ANISOTROPIC_MASK_BITS = 0b0100'0000;
 
 //Dragons be here!! Look at your own risk!
-D3D11_FILTER FilterModeToD3DFilter(const FilterMode& minFilterMode, const FilterMode& magFilterMode, const FilterMode& mipFilterMode, const FilterComparisonMode& minMaxComparison) {
+D3D11_FILTER FilterModeToD3DFilter(const FilterMode& minFilterMode, const FilterMode& magFilterMode, const FilterMode& mipFilterMode, const FilterComparisonMode& minMaxComparison) noexcept {
 
     bitfield8_t filter_mask = GetFilterMaskFromModes(minFilterMode, magFilterMode, mipFilterMode, minMaxComparison);
 
@@ -116,7 +116,7 @@ D3D11_FILTER FilterModeToD3DFilter(const FilterMode& minFilterMode, const Filter
     return D3D11_FILTER_MIN_MAG_MIP_POINT;
 }
 
-GraphicsCardDesc AdapterInfoToGraphicsCardDesc(const AdapterInfo& adapterInfo) {
+GraphicsCardDesc AdapterInfoToGraphicsCardDesc(const AdapterInfo& adapterInfo) noexcept {
     GraphicsCardDesc desc{};
     desc.Description = StringUtils::ConvertUnicodeToMultiByte(std::wstring(adapterInfo.desc.Description));
     desc.DeviceId = adapterInfo.desc.DeviceId;
@@ -133,7 +133,7 @@ GraphicsCardDesc AdapterInfoToGraphicsCardDesc(const AdapterInfo& adapterInfo) {
 }
 
 //Dragons be here!! Look at your own risk!
-bitfield8_t GetFilterMaskFromModes(const FilterMode& minFilterMode, const FilterMode& magFilterMode, const FilterMode& mipFilterMode, const FilterComparisonMode& minMaxComparison) {
+bitfield8_t GetFilterMaskFromModes(const FilterMode& minFilterMode, const FilterMode& magFilterMode, const FilterMode& mipFilterMode, const FilterComparisonMode& minMaxComparison) noexcept {
     bitfield8_t result = 0;
 
     switch(minMaxComparison) {
@@ -189,11 +189,11 @@ bitfield8_t GetFilterMaskFromModes(const FilterMode& minFilterMode, const Filter
     return result;
 }
 
-FilterMode FilterModeFromString(const char* str) {
+FilterMode FilterModeFromString(const char* str) noexcept {
     return FilterModeFromString(std::string(str ? str : ""));
 }
 
-FilterMode FilterModeFromString(std::string str) {
+FilterMode FilterModeFromString(std::string str) noexcept {
     str = StringUtils::ToLowerCase(str);
     if(str == "point" || str == "pt") {
         return FilterMode::Point;
@@ -206,11 +206,11 @@ FilterMode FilterModeFromString(std::string str) {
     }
 }
 
-FilterComparisonMode FilterComparisonModeFromString(const char* str) {
+FilterComparisonMode FilterComparisonModeFromString(const char* str) noexcept {
     return FilterComparisonModeFromString(std::string(str ? str : ""));
 }
 
-FilterComparisonMode FilterComparisonModeFromString(std::string str) {
+FilterComparisonMode FilterComparisonModeFromString(std::string str) noexcept {
     str = StringUtils::ToLowerCase(str);
     if(str == "none") {
         return FilterComparisonMode::None;
@@ -225,7 +225,7 @@ FilterComparisonMode FilterComparisonModeFromString(std::string str) {
     }
 }
 
-D3D11_TEXTURE_ADDRESS_MODE AddressModeToD3DAddressMode(const TextureAddressMode& address_mode) {
+D3D11_TEXTURE_ADDRESS_MODE AddressModeToD3DAddressMode(const TextureAddressMode& address_mode) noexcept {
     switch(address_mode) {
         case TextureAddressMode::Wrap: return D3D11_TEXTURE_ADDRESS_WRAP;
         case TextureAddressMode::Mirror: return D3D11_TEXTURE_ADDRESS_MIRROR;
@@ -236,11 +236,11 @@ D3D11_TEXTURE_ADDRESS_MODE AddressModeToD3DAddressMode(const TextureAddressMode&
     }
 }
 
-TextureAddressMode TextureAddressModeFromString(const char* str) {
+TextureAddressMode TextureAddressModeFromString(const char* str) noexcept {
     return TextureAddressModeFromString(std::string(str ? str : ""));
 }
 
-TextureAddressMode TextureAddressModeFromString(std::string str) {
+TextureAddressMode TextureAddressModeFromString(std::string str) noexcept {
     str = StringUtils::ToLowerCase(str);
     if(str == "wrap") {
         return TextureAddressMode::Wrap;
@@ -258,7 +258,7 @@ TextureAddressMode TextureAddressModeFromString(std::string str) {
 
 }
 
-D3D11_COMPARISON_FUNC ComparisonFunctionToD3DComparisonFunction(const ComparisonFunction& compareFunc) {
+D3D11_COMPARISON_FUNC ComparisonFunctionToD3DComparisonFunction(const ComparisonFunction& compareFunc) noexcept {
     switch(compareFunc) {
         case ComparisonFunction::Never: return D3D11_COMPARISON_NEVER;
         case ComparisonFunction::Less: return D3D11_COMPARISON_LESS;
@@ -272,11 +272,11 @@ D3D11_COMPARISON_FUNC ComparisonFunctionToD3DComparisonFunction(const Comparison
     }
 }
 
-ComparisonFunction ComparisonFunctionFromString(const char* str) {
+ComparisonFunction ComparisonFunctionFromString(const char* str) noexcept {
     return ComparisonFunctionFromString(std::string(str ? str : ""));
 }
 
-ComparisonFunction ComparisonFunctionFromString(std::string str) {
+ComparisonFunction ComparisonFunctionFromString(std::string str) noexcept {
     str = StringUtils::ToLowerCase(str);
     if(str == "never" || str == "0") {
         return ComparisonFunction::Never;
@@ -299,7 +299,7 @@ ComparisonFunction ComparisonFunctionFromString(std::string str) {
     }
 }
 
-D3D11_STENCIL_OP StencilOperationToD3DStencilOperation(const StencilOperation& stencil_operation) {
+D3D11_STENCIL_OP StencilOperationToD3DStencilOperation(const StencilOperation& stencil_operation) noexcept {
     switch(stencil_operation) {
         case StencilOperation::Keep: return D3D11_STENCIL_OP_KEEP;
         case StencilOperation::Zero: return D3D11_STENCIL_OP_ZERO;
@@ -313,11 +313,11 @@ D3D11_STENCIL_OP StencilOperationToD3DStencilOperation(const StencilOperation& s
     }
 }
 
-StencilOperation StencilOperationFromString(const char* str) {
+StencilOperation StencilOperationFromString(const char* str) noexcept {
     return StencilOperationFromString(std::string(str ? str : ""));
 }
 
-StencilOperation StencilOperationFromString(std::string str) {
+StencilOperation StencilOperationFromString(std::string str) noexcept {
     str = StringUtils::ToLowerCase(str);
     if(str == "keep") {
         return StencilOperation::Keep;
@@ -340,7 +340,7 @@ StencilOperation StencilOperationFromString(std::string str) {
     }
 }
 
-D3D11_USAGE BufferUsageToD3DUsage(const BufferUsage& usage) {
+D3D11_USAGE BufferUsageToD3DUsage(const BufferUsage& usage) noexcept {
     switch(usage) {
         case BufferUsage::Default: return D3D11_USAGE_DEFAULT;
         case BufferUsage::Gpu: return D3D11_USAGE_DEFAULT;
@@ -351,11 +351,11 @@ D3D11_USAGE BufferUsageToD3DUsage(const BufferUsage& usage) {
     }
 }
 
-D3D11_BIND_FLAG BufferBindUsageToD3DBindFlags(const BufferBindUsage& bindFlags) {
+D3D11_BIND_FLAG BufferBindUsageToD3DBindFlags(const BufferBindUsage& bindFlags) noexcept {
     return static_cast<D3D11_BIND_FLAG>(bindFlags);
 }
 
-D3D11_CPU_ACCESS_FLAG CPUAccessFlagFromUsage(const BufferUsage& usage) {
+D3D11_CPU_ACCESS_FLAG CPUAccessFlagFromUsage(const BufferUsage& usage) noexcept {
     switch(usage) {
         case BufferUsage::Gpu: return D3D11_CPU_ACCESS_READ;
         case BufferUsage::Dynamic: return D3D11_CPU_ACCESS_WRITE;
@@ -366,7 +366,7 @@ D3D11_CPU_ACCESS_FLAG CPUAccessFlagFromUsage(const BufferUsage& usage) {
 }
 
 
-D3D11_PRIMITIVE_TOPOLOGY PrimitiveTypeToD3dTopology(const PrimitiveType& topology) {
+D3D11_PRIMITIVE_TOPOLOGY PrimitiveTypeToD3dTopology(const PrimitiveType& topology) noexcept {
     switch(topology) {
         case PrimitiveType::None:                      return D3D11_PRIMITIVE_TOPOLOGY_UNDEFINED;
         case PrimitiveType::Points:                    return D3D11_PRIMITIVE_TOPOLOGY_POINTLIST;
@@ -413,7 +413,7 @@ D3D11_PRIMITIVE_TOPOLOGY PrimitiveTypeToD3dTopology(const PrimitiveType& topolog
         default: return D3D11_PRIMITIVE_TOPOLOGY_UNDEFINED;
     }
 }
-DXGI_FORMAT ImageFormatToDxgiFormat(const ImageFormat& format) {
+DXGI_FORMAT ImageFormatToDxgiFormat(const ImageFormat& format) noexcept {
     switch(format) {
         case ImageFormat::Unknown: return DXGI_FORMAT_UNKNOWN;
         case ImageFormat::R32G32B32A32_Typeless: return DXGI_FORMAT_R32G32B32A32_TYPELESS;
@@ -535,7 +535,7 @@ DXGI_FORMAT ImageFormatToDxgiFormat(const ImageFormat& format) {
     }
 }
 
-ImageFormat DxgiFormatToImageFormat(DXGI_FORMAT format) {
+ImageFormat DxgiFormatToImageFormat(DXGI_FORMAT format) noexcept {
     switch(format) {
         case DXGI_FORMAT_UNKNOWN: return ImageFormat::Unknown;
         case DXGI_FORMAT_R32G32B32A32_TYPELESS: return ImageFormat::R32G32B32A32_Typeless;
@@ -658,7 +658,7 @@ ImageFormat DxgiFormatToImageFormat(DXGI_FORMAT format) {
 }
 
 
-D3D11_BLEND BlendFactorToD3DBlendFactor(const BlendFactor& factor) {
+D3D11_BLEND BlendFactorToD3DBlendFactor(const BlendFactor& factor) noexcept {
     switch(factor) {
         case BlendFactor::Zero: return D3D11_BLEND_ZERO;
         case BlendFactor::One:  return D3D11_BLEND_ONE;
@@ -681,7 +681,7 @@ D3D11_BLEND BlendFactorToD3DBlendFactor(const BlendFactor& factor) {
     }
 }
 
-D3D11_BLEND_OP BlendOpToD3DBlendOp(const BlendOperation& op) {
+D3D11_BLEND_OP BlendOpToD3DBlendOp(const BlendOperation& op) noexcept {
     switch(op) {
         case BlendOperation::Add: return D3D11_BLEND_OP_ADD;
         case BlendOperation::Subtract: return D3D11_BLEND_OP_SUBTRACT;
@@ -692,11 +692,11 @@ D3D11_BLEND_OP BlendOpToD3DBlendOp(const BlendOperation& op) {
     }
 }
 
-UINT8 BlendColorWriteEnableToD3DBlendColorWriteEnable(const BlendColorWriteEnable& rt_mask) {
+UINT8 BlendColorWriteEnableToD3DBlendColorWriteEnable(const BlendColorWriteEnable& rt_mask) noexcept {
     return static_cast<UINT8>(rt_mask);
 }
 
-BlendFactor BlendFactorFromString(std::string str) {
+BlendFactor BlendFactorFromString(std::string str) noexcept {
     str = StringUtils::ToLowerCase(str);
     if(str == "zero") {
         return BlendFactor::Zero;
@@ -737,7 +737,7 @@ BlendFactor BlendFactorFromString(std::string str) {
     }
 }
 
-BlendOperation BlendOperationFromString(std::string str) {
+BlendOperation BlendOperationFromString(std::string str) noexcept {
 
     str = StringUtils::ToLowerCase(str);
     if(str == "add") {
@@ -756,7 +756,7 @@ BlendOperation BlendOperationFromString(std::string str) {
 
 }
 
-BlendColorWriteEnable BlendColorWriteEnableFromString(std::string str) {
+BlendColorWriteEnable BlendColorWriteEnableFromString(std::string str) noexcept {
     str = StringUtils::ToLowerCase(str);
 
     if(str.empty()) {
@@ -779,7 +779,7 @@ BlendColorWriteEnable BlendColorWriteEnableFromString(std::string str) {
     return result;
 }
 
-D3D11_FILL_MODE FillModeToD3DFillMode(const FillMode& fillmode) {
+D3D11_FILL_MODE FillModeToD3DFillMode(const FillMode& fillmode) noexcept {
     switch(fillmode) {
         case FillMode::Solid: return D3D11_FILL_SOLID;
         case FillMode::Wireframe:  return D3D11_FILL_WIREFRAME;
@@ -787,7 +787,7 @@ D3D11_FILL_MODE FillModeToD3DFillMode(const FillMode& fillmode) {
     }
 }
 
-D3D11_CULL_MODE CullModeToD3DCullMode(const CullMode& cullmode) {
+D3D11_CULL_MODE CullModeToD3DCullMode(const CullMode& cullmode) noexcept {
     switch(cullmode) {
         case CullMode::None: return D3D11_CULL_NONE;
         case CullMode::Front: return D3D11_CULL_FRONT;
@@ -796,7 +796,7 @@ D3D11_CULL_MODE CullModeToD3DCullMode(const CullMode& cullmode) {
     }
 }
 
-FillMode FillModeFromString(std::string str) {
+FillMode FillModeFromString(std::string str) noexcept {
     str = StringUtils::ToLowerCase(str);
     if(str == "solid") {
         return FillMode::Solid;
@@ -807,7 +807,7 @@ FillMode FillModeFromString(std::string str) {
     }
 }
 
-CullMode CullModeFromString(std::string str) {
+CullMode CullModeFromString(std::string str) noexcept {
     str = StringUtils::ToLowerCase(str);
     if(str == "none") {
         return CullMode::None;
@@ -820,11 +820,11 @@ CullMode CullModeFromString(std::string str) {
     }
 }
 
-D3D11_RESOURCE_MISC_FLAG ResourceMiscFlagToD3DMiscFlag(const ResourceMiscFlag& flags) {
+D3D11_RESOURCE_MISC_FLAG ResourceMiscFlagToD3DMiscFlag(const ResourceMiscFlag& flags) noexcept {
     return static_cast<D3D11_RESOURCE_MISC_FLAG>(flags);
 }
 
-std::string PipelineStageToString(const PipelineStage& stage) {
+std::string PipelineStageToString(const PipelineStage& stage) noexcept {
     switch(stage) {
         case PipelineStage::None: return std::string{};
         case PipelineStage::Vs: return std::string{"vs"};
@@ -837,7 +837,7 @@ std::string PipelineStageToString(const PipelineStage& stage) {
     }
 }
 
-PipelineStage PipelineStageFromString(std::string stage) {
+PipelineStage PipelineStageFromString(std::string stage) noexcept {
     stage = StringUtils::ToLowerCase(stage);
     if(stage.empty())                   return PipelineStage::None;
     else if(stage == std::string{"vs"}) return PipelineStage::Vs;

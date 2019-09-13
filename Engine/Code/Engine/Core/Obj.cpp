@@ -13,36 +13,22 @@
 namespace FileUtils {
 
 //Run only as an asynchronous operation highly recommended.
-Obj::Obj(const std::string& filepath)
-    : Obj(std::filesystem::path(filepath))
-{
-    /* DO NOTHING */
-}
-
-//Run only as an asynchronous operation highly recommended.
-Obj::Obj(const std::filesystem::path& filepath) {
+Obj::Obj(std::filesystem::path filepath) noexcept {
     namespace FS = std::filesystem;
-    auto path_copy = filepath;
-    path_copy = FS::canonical(path_copy);
-    path_copy.make_preferred();
+    if(!FS::exists(filepath)) {
+        filepath = FS::canonical(filepath);
+    }
+    filepath.make_preferred();
     if(!Load(filepath)) {
         std::ostringstream ss;
-        ss << "Obj: " << path_copy << " failed to load.";
+        ss << "Obj: " << filepath << " failed to load.";
         ERROR_AND_DIE(ss.str().c_str());
     }
 }
 
-//Run only as an asynchronous operation highly recommended.
-bool Obj::Load(const std::string& filepath) {
-    namespace FS = std::filesystem;
-    FS::path p(filepath);
-    p = FS::canonical(p);
-    p.make_preferred();
-    return Load(p);
-}
-
-bool Obj::Load(const std::filesystem::path& filepath) {
+bool Obj::Load(std::filesystem::path filepath) noexcept {
     PROFILE_LOG_SCOPE_FUNCTION();
+
     namespace FS = std::filesystem;
     bool not_exist = !FS::exists(filepath);
     std::string valid_extension = ".obj";
@@ -54,20 +40,17 @@ bool Obj::Load(const std::filesystem::path& filepath) {
         DebuggerPrintf(ss.str().c_str());
         return false;
     }
+    filepath = FS::canonical(filepath);
+    filepath.make_preferred();
     return Parse(filepath);
 }
 
-//Run only as an asynchronous operation highly recommended.
-bool Obj::Save(const std::string& filepath) {
-    namespace FS = std::filesystem;
-    FS::path p(filepath);
-    p = FS::canonical(p);
-    p.make_preferred();
-    return Save(p);
-}
-
-bool Obj::Save(const std::filesystem::path& filepath) {
+bool Obj::Save(std::filesystem::path filepath) noexcept {
     PROFILE_LOG_SCOPE_FUNCTION();
+
+    namespace FS = std::filesystem;
+    filepath.make_preferred();
+
     _is_saving = true;
     std::ostringstream buffer;
     buffer << std::fixed << std::setprecision(6);
@@ -136,7 +119,7 @@ bool Obj::Save(const std::filesystem::path& filepath) {
         ++iter;
     }
     buffer.flush();
-    if(FileUtils::WriteBufferToFile(buffer.str().data(), buffer.str().size(), filepath.string())) {
+    if(FileUtils::WriteBufferToFile(buffer.str().data(), buffer.str().size(), filepath)) {
         _is_saved = true;
         _is_saving = false;
         return true;
@@ -146,31 +129,31 @@ bool Obj::Save(const std::filesystem::path& filepath) {
     return false;
 }
 
-bool Obj::IsLoaded() const {
+bool Obj::IsLoaded() const noexcept {
     return _is_loaded;
 }
 
-bool Obj::IsLoading() const {
+bool Obj::IsLoading() const noexcept {
     return _is_loading;
 }
 
-bool Obj::IsSaving() const {
+bool Obj::IsSaving() const noexcept {
     return _is_saving;
 }
 
-bool Obj::IsSaved() const {
+bool Obj::IsSaved() const noexcept {
     return _is_saved;
 }
 
-const std::vector<Vertex3D>& Obj::GetVbo() const {
+const std::vector<Vertex3D>& Obj::GetVbo() const noexcept {
     return _vbo;
 }
 
-const std::vector<unsigned int>& Obj::GetIbo() const {
+const std::vector<unsigned int>& Obj::GetIbo() const noexcept {
     return _ibo;
 }
 
-void Obj::Unload() {
+void Obj::Unload() noexcept {
     _vbo.clear();
     _vbo.shrink_to_fit();
     _ibo.clear();
@@ -189,7 +172,7 @@ void Obj::Unload() {
     _face_idxs.shrink_to_fit();
 }
 
-bool Obj::Parse(const std::filesystem::path& filepath) {
+bool Obj::Parse(const std::filesystem::path& filepath) noexcept {
     PROFILE_LOG_SCOPE_FUNCTION();
     _verts.clear();
     _tex_coords.clear();
@@ -203,7 +186,7 @@ bool Obj::Parse(const std::filesystem::path& filepath) {
     _is_saved = false;
     _is_loading = true;
     std::vector<unsigned char> buffer{};
-    if(FileUtils::ReadBufferFromFile(buffer, filepath.string())) {
+    if(FileUtils::ReadBufferFromFile(buffer, filepath)) {
         std::stringstream ss{};
         if(ss.write(reinterpret_cast<const char*>(buffer.data()), buffer.size())) {
             buffer.clear();
@@ -244,7 +227,7 @@ bool Obj::Parse(const std::filesystem::path& filepath) {
                     case 3: v_str += ",1.0";                         break;
                     case 2: v_str += ",0.0,1.0";                     break;
                     case 1: v_str += ",0.0,0.0,1.0";                 break;
-                    default: PrintErrorToDebugger(filepath.string(), "vertex", line_index); return false;
+                    default: PrintErrorToDebugger(filepath, "vertex", line_index); return false;
                     }
                     v_str += "]";
                     Vector4 v(v_str);
@@ -258,7 +241,7 @@ bool Obj::Parse(const std::filesystem::path& filepath) {
                     case 3: /* DO NOTHING */    break;
                     case 2: v_str += ",0.0";     break;
                     case 1: v_str += ",0.0,0.0"; break;
-                    default: PrintErrorToDebugger(filepath.string(), "texture coordinate", line_index); return false;
+                    default: PrintErrorToDebugger(filepath, "texture coordinate", line_index); return false;
                     }
                     v_str += "]";
                     _tex_coords.emplace_back(v_str);
@@ -267,7 +250,7 @@ bool Obj::Parse(const std::filesystem::path& filepath) {
                     std::string v_str = { "[" };
                     v_str += StringUtils::Join(elems, ',');
                     if(elems.size() != 3) {
-                        PrintErrorToDebugger(filepath.string(), "vertex normal", line_index);
+                        PrintErrorToDebugger(filepath, "vertex normal", line_index);
                         return false;
                     }
                     v_str += "]";
@@ -275,13 +258,13 @@ bool Obj::Parse(const std::filesystem::path& filepath) {
                 } else if(StringUtils::StartsWith(cur_line, "f ")) {
                     if(cur_line.find('-') != std::string::npos) {
                         DebuggerPrintf("OBJ implementation does not support relative reference numbers!\n");
-                        PrintErrorToDebugger(filepath.string(), "face index", line_index);
+                        PrintErrorToDebugger(filepath, "face index", line_index);
                         return false;
                     }
                     auto tris = StringUtils::Split(std::string{ std::begin(cur_line) + 2, std::end(cur_line) }, ' ');
                     if(tris.size() != 3) {
                         DebuggerPrintf("OBJ implementation does not support non-triangle faces!\n");
-                        PrintErrorToDebugger(filepath.string(), "face triplet", line_index);
+                        PrintErrorToDebugger(filepath, "face triplet", line_index);
                         return false;
                     }
                     for(auto& t : tris) {
@@ -341,13 +324,12 @@ bool Obj::Parse(const std::filesystem::path& filepath) {
     return false;
 }
 
-void Obj::PrintErrorToDebugger(const std::string& filePath, const std::string& elementType, unsigned long long line_index) const {
+void Obj::PrintErrorToDebugger(std::filesystem::path filepath, const std::string& elementType, unsigned long long line_index) const noexcept {
     namespace FS = std::filesystem;
     std::ostringstream error_ss{};
-    FS::path p(filePath);
-    p = FS::canonical(p);
-    p.make_preferred();
-    error_ss << p.string() << '(' << line_index << "): Invalid " << elementType << '\n';
+    filepath = FS::canonical(filepath);
+    filepath.make_preferred();
+    error_ss << filepath << '(' << line_index << "): Invalid " << elementType << '\n';
     DebuggerPrintf(error_ss.str().c_str());
 }
 

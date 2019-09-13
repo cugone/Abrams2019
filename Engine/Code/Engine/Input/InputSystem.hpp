@@ -278,72 +278,76 @@ enum class KeyCode : int {
     ,Max /* Internal use only */
 };
 
-KeyCode& operator++(KeyCode& keycode);
-KeyCode operator++(KeyCode& keycode, int);
+KeyCode& operator++(KeyCode& keycode) noexcept;
+KeyCode operator++(KeyCode& keycode, int) noexcept;
 
 class InputSystem : public EngineSubsystem {
 public:
-    InputSystem() = default;
-    virtual ~InputSystem() = default;
+    InputSystem() noexcept = default;
+    InputSystem(const InputSystem& other) noexcept = default;
+    InputSystem(InputSystem&& r_other) noexcept = default;
+    InputSystem& operator=(const InputSystem& rhs) noexcept = default;
+    InputSystem& operator=(InputSystem&& rhs) noexcept = default;
+    virtual ~InputSystem() noexcept = default;
 
-    void RegisterKeyDown(unsigned char keyIndex);
-    void RegisterKeyUp(unsigned char keyIndex);
+    void RegisterKeyDown(unsigned char keyIndex) noexcept;
+    void RegisterKeyUp(unsigned char keyIndex) noexcept;
     
-    virtual bool ProcessSystemMessage(const EngineMessage& msg) override;
+    virtual bool ProcessSystemMessage(const EngineMessage& msg) noexcept override;
     virtual void Initialize() override;
     virtual void BeginFrame() override;
     virtual void Update([[maybe_unused]]TimeUtils::FPSeconds) override;
     virtual void Render() const override;
     virtual void EndFrame() override;
 
-    bool WasAnyKeyPressed() const;
-    bool IsKeyUp(const KeyCode& key) const;
-    bool WasKeyJustPressed(const KeyCode& key) const;
-    bool IsKeyDown(const KeyCode& key) const;
-    bool IsAnyKeyDown() const;
-    bool WasKeyJustReleased(const KeyCode& key) const;
-    bool WasMouseWheelJustScrolledUp() const;
-    bool WasMouseWheelJustScrolledDown() const;
-    bool WasMouseWheelJustScrolledLeft() const;
-    bool WasMouseWheelJustScrolledRight() const;
+    bool WasAnyKeyPressed() const noexcept;
+    bool IsKeyUp(const KeyCode& key) const noexcept;
+    bool WasKeyJustPressed(const KeyCode& key) const noexcept;
+    bool IsKeyDown(const KeyCode& key) const noexcept;
+    bool IsAnyKeyDown() const noexcept;
+    bool WasKeyJustReleased(const KeyCode& key) const noexcept;
+    bool WasMouseWheelJustScrolledUp() const noexcept;
+    bool WasMouseWheelJustScrolledDown() const noexcept;
+    bool WasMouseWheelJustScrolledLeft() const noexcept;
+    bool WasMouseWheelJustScrolledRight() const noexcept;
 
-    std::size_t GetConnectedControllerCount() const;
-    bool IsAnyControllerConnected() const;
-    const XboxController& GetXboxController(const std::size_t& controllerIndex) const;
-    XboxController& GetXboxController(const std::size_t& controllerIndex);
+    std::size_t GetConnectedControllerCount() const noexcept;
+    bool IsAnyControllerConnected() const noexcept;
+    const XboxController& GetXboxController(const std::size_t& controllerIndex) const noexcept;
+    XboxController& GetXboxController(const std::size_t& controllerIndex) noexcept;
 
-    static unsigned char ConvertKeyCodeToWinVK(const KeyCode& code);
-    static KeyCode ConvertWinVKToKeyCode(unsigned char winVK);
+    static unsigned char ConvertKeyCodeToWinVK(const KeyCode& code) noexcept;
+    static KeyCode ConvertWinVKToKeyCode(unsigned char winVK) noexcept;
 
-    void ToggleMouseCursorVisibility();
-    void HideMouseCursor();
-    void ShowMouseCursor();
+    void ToggleMouseCursorVisibility() noexcept;
+    void HideMouseCursor() noexcept;
+    void ShowMouseCursor() noexcept;
 
-    void SetCursorScreenPosition(const Vector2& screen_pos);
-    Vector2 GetCursorScreenPosition() const;
+    void SetCursorScreenPosition(const Vector2& screen_pos) noexcept;
+    Vector2 GetCursorScreenPosition() const noexcept;
 
-    void SetCursorWindowPosition(const Window& window, const Vector2& window_pos);
-    Vector2 GetCursorWindowPosition(const Window& window_ref) const;
+    void SetCursorWindowPosition(const Window& window, const Vector2& window_pos) noexcept;
+    Vector2 GetCursorWindowPosition(const Window& window_ref) const noexcept;
 
-    void SetCursorToScreenCenter();
-    void SetCursorToWindowCenter(const Window& window_ref);
-    const Vector2& GetMouseCoords() const;
+    void SetCursorToScreenCenter() noexcept;
+    void SetCursorToWindowCenter(const Window& window_ref) noexcept;
+    const Vector2& GetMouseCoords() const noexcept;
 
-    int GetMouseWheelPosition() const;
-    int GetMouseWheelPositionNormalized() const;
+    int GetMouseWheelPosition() const noexcept;
+    int GetMouseWheelPositionNormalized() const noexcept;
 
-    int GetMouseWheelHorizontalPosition() const;
-    int GetMouseWheelHorizontalPositionNormalized() const;
+    int GetMouseWheelHorizontalPosition() const noexcept;
+    int GetMouseWheelHorizontalPositionNormalized() const noexcept;
 
-    IntVector2 GetMouseWheelPositionAsIntVector2() const;
+    IntVector2 GetMouseWheelPositionAsIntVector2() const noexcept;
 
 protected:
 private:
 
-    void UpdateXboxConnectedState();
+    void UpdateXboxConnectedState() noexcept;
 
-    Vector2 GetScreenCenter() const;
-    Vector2 GetWindowCenter(const Window& window) const;
+    Vector2 GetScreenCenter() const noexcept;
+    Vector2 GetWindowCenter(const Window& window) const noexcept;
 
     std::array<XboxController, 4> _xboxControllers{};
     std::bitset<(std::size_t)KeyCode::Max> _previousKeys{};

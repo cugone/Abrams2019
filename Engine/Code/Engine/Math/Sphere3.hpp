@@ -17,18 +17,18 @@ public:
     Sphere3& operator=(Sphere3&& rhs) = default;
     ~Sphere3() = default;
 
-    explicit Sphere3(float initialX, float initialY, float initialZ, float initialRadius);
-    explicit Sphere3(const Vector3& initialCenter, float initialRadius);
+    explicit Sphere3(float initialX, float initialY, float initialZ, float initialRadius) noexcept;
+    explicit Sphere3(const Vector3& initialCenter, float initialRadius) noexcept;
 
-    void StretchToIncludePoint(const Vector3& point);
-    void AddPadding(float paddingRadius);
-    void Translate(const Vector3& translation);
+    void StretchToIncludePoint(const Vector3& point) noexcept;
+    void AddPadding(float paddingRadius) noexcept;
+    void Translate(const Vector3& translation) noexcept;
     
-    Sphere3 operator+(const Vector3& translation) const;
-    Sphere3 operator-(const Vector3& antiTranslation) const;
+    Sphere3 operator+(const Vector3& translation) const noexcept;
+    Sphere3 operator-(const Vector3& antiTranslation) const noexcept;
 
-    Sphere3& operator+=(const Vector3& translation);
-    Sphere3& operator-=(const Vector3& antiTranslation);
+    Sphere3& operator+=(const Vector3& translation) noexcept;
+    Sphere3& operator-=(const Vector3& antiTranslation) noexcept;
 
 protected:
 private:

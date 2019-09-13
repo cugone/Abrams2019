@@ -22,48 +22,48 @@ public:
     IntVector2(const IntVector2& rhs) = default;
     IntVector2(IntVector2&& rhs) = default;
 
-    explicit IntVector2(int initialX, int initialY);
-    explicit IntVector2(const Vector2& v2);
-    explicit IntVector2(const IntVector3& iv3);
-    explicit IntVector2(const std::string& value);
+    explicit IntVector2(int initialX, int initialY) noexcept;
+    explicit IntVector2(const Vector2& v2) noexcept;
+    explicit IntVector2(const IntVector3& iv3) noexcept;
+    explicit IntVector2(const std::string& value) noexcept;
 
     IntVector2& operator=(const IntVector2& rhs) = default;
     IntVector2& operator=(IntVector2&& rhs) = default;
     
-    IntVector2 operator+(const IntVector2& rhs) const;
-    IntVector2& operator+=(const IntVector2& rhs);
+    IntVector2 operator+(const IntVector2& rhs) const noexcept;
+    IntVector2& operator+=(const IntVector2& rhs) noexcept;
 
-    IntVector2 operator-() const;
-    IntVector2 operator-(const IntVector2& rhs) const;
-    IntVector2& operator-=(const IntVector2& rhs);
+    IntVector2 operator-() const noexcept;
+    IntVector2 operator-(const IntVector2& rhs) const noexcept;
+    IntVector2& operator-=(const IntVector2& rhs) noexcept;
 
-    friend IntVector2 operator*(int lhs, const IntVector2& rhs);
-    IntVector2 operator*(const IntVector2& rhs) const;
-    IntVector2& operator*=(const IntVector2& rhs);
-    IntVector2 operator*(int scalar) const;
-    IntVector2& operator*=(int scalar);
-    IntVector2 operator*(float scalar) const;
-    IntVector2& operator*=(float scalar);
+    friend IntVector2 operator*(int lhs, const IntVector2& rhs) noexcept;
+    IntVector2 operator*(const IntVector2& rhs) const noexcept;
+    IntVector2& operator*=(const IntVector2& rhs) noexcept;
+    IntVector2 operator*(int scalar) const noexcept;
+    IntVector2& operator*=(int scalar) noexcept;
+    IntVector2 operator*(float scalar) const noexcept;
+    IntVector2& operator*=(float scalar) noexcept;
 
-    IntVector2 operator/(const IntVector2& rhs) const;
-    IntVector2& operator/=(const IntVector2& rhs);
-    IntVector2 operator/(int scalar) const;
-    IntVector2& operator/=(int scalar);
-    IntVector2 operator/(float scalar) const;
-    IntVector2& operator/=(float scalar);
+    IntVector2 operator/(const IntVector2& rhs) const noexcept;
+    IntVector2& operator/=(const IntVector2& rhs) noexcept;
+    IntVector2 operator/(int scalar) const noexcept;
+    IntVector2& operator/=(int scalar) noexcept;
+    IntVector2 operator/(float scalar) const noexcept;
+    IntVector2& operator/=(float scalar) noexcept;
 
-    bool operator==(const IntVector2& rhs) const;
-    bool operator!=(const IntVector2& rhs) const;
-    bool operator<(const IntVector2& rhs) const;
-    bool operator>=(const IntVector2& rhs) const;
-    bool operator>(const IntVector2& rhs) const;
-    bool operator<=(const IntVector2& rhs) const;
+    bool operator==(const IntVector2& rhs) const noexcept;
+    bool operator!=(const IntVector2& rhs) const noexcept;
+    bool operator<(const IntVector2& rhs) const noexcept;
+    bool operator>=(const IntVector2& rhs) const noexcept;
+    bool operator>(const IntVector2& rhs) const noexcept;
+    bool operator<=(const IntVector2& rhs) const noexcept;
 
-    friend std::ostream& operator<<(std::ostream& out_stream, const IntVector2& v);
-    friend std::istream& operator>>(std::istream& in_stream, IntVector2& v);
+    friend std::ostream& operator<<(std::ostream& out_stream, const IntVector2& v) noexcept;
+    friend std::istream& operator>>(std::istream& in_stream, IntVector2& v) noexcept;
 
-    void SetXY(int newX, int newY);
-    std::pair<int, int> GetXY() const;
+    void SetXY(int newX, int newY) noexcept;
+    std::pair<int, int> GetXY() const noexcept;
 
     int x = 0;
     int y = 0;

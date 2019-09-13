@@ -10,19 +10,19 @@
 #include <algorithm>
 #include <sstream>
 
-KeyCode& operator++(KeyCode& keycode) {
+KeyCode& operator++(KeyCode& keycode) noexcept {
     using IntType = typename std::underlying_type_t<KeyCode>;
     keycode = static_cast<KeyCode>(static_cast<IntType>(keycode) + 1);
     return keycode;
 }
 
-KeyCode operator++(KeyCode& keycode, int) {
+KeyCode operator++(KeyCode& keycode, int) noexcept {
     KeyCode result = keycode;
     ++keycode;
     return result;
 }
 
-unsigned char InputSystem::ConvertKeyCodeToWinVK(const KeyCode& code) {
+unsigned char InputSystem::ConvertKeyCodeToWinVK(const KeyCode& code) noexcept {
     switch(code) {
     case KeyCode::LButton: return VK_LBUTTON;
     case KeyCode::RButton: return VK_RBUTTON;
@@ -223,7 +223,7 @@ unsigned char InputSystem::ConvertKeyCodeToWinVK(const KeyCode& code) {
     }
 }
 
-KeyCode InputSystem::ConvertWinVKToKeyCode(unsigned char winVK) {
+KeyCode InputSystem::ConvertWinVKToKeyCode(unsigned char winVK) noexcept {
     switch(winVK) {
     case VK_LBUTTON: return KeyCode::LButton;
     case VK_RBUTTON: return KeyCode::RButton;
@@ -448,7 +448,7 @@ KeyCode InputSystem::ConvertWinVKToKeyCode(unsigned char winVK) {
     }
 }
 
-Vector2 InputSystem::GetCursorWindowPosition(const Window& window_ref) const {
+Vector2 InputSystem::GetCursorWindowPosition(const Window& window_ref) const noexcept {
     POINT p;
     if(::GetCursorPos(&p)) {
         if(::ScreenToClient(window_ref.GetWindowHandle(), &p)) {
@@ -458,7 +458,7 @@ Vector2 InputSystem::GetCursorWindowPosition(const Window& window_ref) const {
     return Vector2::ZERO;
 }
 
-Vector2 InputSystem::GetCursorScreenPosition() const {
+Vector2 InputSystem::GetCursorScreenPosition() const noexcept {
     POINT p;
     if(::GetCursorPos(&p)) {
         return Vector2{ static_cast<float>(p.x), static_cast<float>(p.y) };
@@ -466,7 +466,7 @@ Vector2 InputSystem::GetCursorScreenPosition() const {
     return Vector2::ZERO;
 }
 
-void InputSystem::SetCursorToScreenCenter() {
+void InputSystem::SetCursorToScreenCenter() noexcept {
     HWND desktop_window = ::GetDesktopWindow();
     RECT desktop_client;
     if(::GetClientRect(desktop_window, &desktop_client)) {
@@ -476,7 +476,7 @@ void InputSystem::SetCursorToScreenCenter() {
     }
 }
 
-void InputSystem::SetCursorToWindowCenter(const Window& window_ref) {
+void InputSystem::SetCursorToWindowCenter(const Window& window_ref) noexcept {
     RECT client_area;
     if(::GetClientRect(window_ref.GetWindowHandle(), &client_area)) {
         float center_x = (client_area.left + client_area.right) * 0.5f;
@@ -485,13 +485,13 @@ void InputSystem::SetCursorToWindowCenter(const Window& window_ref) {
     }
 }
 
-void InputSystem::SetCursorScreenPosition(const Vector2& screen_pos) {
+void InputSystem::SetCursorScreenPosition(const Vector2& screen_pos) noexcept {
     int x = static_cast<int>(screen_pos.x);
     int y = static_cast<int>(screen_pos.y);
     ::SetCursorPos(x, y);
 }
 
-void InputSystem::UpdateXboxConnectedState() {
+void InputSystem::UpdateXboxConnectedState() noexcept {
     _connected_controller_count = 0;
     for(int i = 0; i < 4; ++i) {
         _xboxControllers[i].UpdateConnectedState(i);
@@ -501,7 +501,7 @@ void InputSystem::UpdateXboxConnectedState() {
     }
 }
 
-Vector2 InputSystem::GetScreenCenter() const {
+Vector2 InputSystem::GetScreenCenter() const noexcept {
     RECT desktopRect;
     HWND desktopWindowHandle = ::GetDesktopWindow();
     if(::GetClientRect(desktopWindowHandle, &desktopRect)) {
@@ -512,7 +512,7 @@ Vector2 InputSystem::GetScreenCenter() const {
     return Vector2::ZERO;
 }
 
-Vector2 InputSystem::GetWindowCenter(const Window& window) const {
+Vector2 InputSystem::GetWindowCenter(const Window& window) const noexcept {
     RECT rect;
     HWND windowHandle = window.GetWindowHandle();
     if(::GetClientRect(windowHandle, &rect)) {
@@ -523,21 +523,21 @@ Vector2 InputSystem::GetWindowCenter(const Window& window) const {
     return Vector2::ZERO;
 }
 
-void InputSystem::HideMouseCursor() {
+void InputSystem::HideMouseCursor() noexcept {
     while(::ShowCursor(FALSE) >= 0);
     _cursor_visible = false;
 }
 
-void InputSystem::ShowMouseCursor() {
+void InputSystem::ShowMouseCursor() noexcept {
     while(::ShowCursor(TRUE) < 0);
     _cursor_visible = true;
 }
 
-void InputSystem::ToggleMouseCursorVisibility() {
+void InputSystem::ToggleMouseCursorVisibility() noexcept {
     _cursor_visible ? HideMouseCursor() : ShowMouseCursor();
 }
 
-void InputSystem::SetCursorWindowPosition(const Window& window, const Vector2& window_pos) {
+void InputSystem::SetCursorWindowPosition(const Window& window, const Vector2& window_pos) noexcept {
     POINT p;
     p.x = static_cast<long>(window_pos.x);
     p.y = static_cast<long>(window_pos.y);
@@ -546,48 +546,48 @@ void InputSystem::SetCursorWindowPosition(const Window& window, const Vector2& w
     }
 }
 
-const Vector2& InputSystem::GetMouseCoords() const {
+const Vector2& InputSystem::GetMouseCoords() const noexcept {
     return _mouseCoords;
 }
 
-int InputSystem::GetMouseWheelPosition() const {
+int InputSystem::GetMouseWheelPosition() const noexcept {
     return _mouseWheelPosition;
 }
 
-int InputSystem::GetMouseWheelPositionNormalized() const {
+int InputSystem::GetMouseWheelPositionNormalized() const noexcept {
     if(_mouseWheelPosition) {
         return _mouseWheelPosition / std::abs(_mouseWheelPosition);
     }
     return 0;
 }
 
-int InputSystem::GetMouseWheelHorizontalPosition() const {
+int InputSystem::GetMouseWheelHorizontalPosition() const noexcept {
     return _mouseWheelHPosition;
 }
 
-int InputSystem::GetMouseWheelHorizontalPositionNormalized() const {
+int InputSystem::GetMouseWheelHorizontalPositionNormalized() const noexcept {
     if(_mouseWheelHPosition) {
         return _mouseWheelHPosition / std::abs(_mouseWheelHPosition);
     }
     return 0;
 }
 
-IntVector2 InputSystem::GetMouseWheelPositionAsIntVector2() const {
+IntVector2 InputSystem::GetMouseWheelPositionAsIntVector2() const noexcept {
     return IntVector2{_mouseWheelHPosition, _mouseWheelPosition};
 }
 
-void InputSystem::RegisterKeyDown(unsigned char keyIndex) {
+void InputSystem::RegisterKeyDown(unsigned char keyIndex) noexcept {
     auto kc = ConvertWinVKToKeyCode(keyIndex);
     _currentKeys[(std::size_t)kc] = true;
 }
 
-void InputSystem::RegisterKeyUp(unsigned char keyIndex) {
+void InputSystem::RegisterKeyUp(unsigned char keyIndex) noexcept {
     auto kc = ConvertWinVKToKeyCode(keyIndex);
     _currentKeys[(std::size_t)kc] = false;
 
 }
 
-bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) {
+bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
 
     LPARAM lp = msg.lparam;
     WPARAM wp = msg.wparam;
@@ -750,8 +750,8 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) {
                 switch(my_key) {
                 case KeyCode::Shift:
                 {
-                    auto left_down = this->IsKeyDown(KeyCode::LShift);
-                    auto right_down = this->IsKeyDown(KeyCode::RShift);
+                    auto left_down = IsKeyDown(KeyCode::LShift);
+                    auto right_down = IsKeyDown(KeyCode::RShift);
                     auto left_key  = left_down && !!!(::GetKeyState(VK_LSHIFT) & keystate_state_mask);
                     auto right_key = right_down && !!!(::GetKeyState(VK_RSHIFT) & keystate_state_mask);
                     auto my_leftkey = ConvertWinVKToKeyCode(VK_LSHIFT);
@@ -765,8 +765,8 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) {
                 }
                 case KeyCode::Alt:
                 {
-                    auto left_down = this->IsKeyDown(KeyCode::LAlt);
-                    auto right_down = this->IsKeyDown(KeyCode::RAlt);
+                    auto left_down = IsKeyDown(KeyCode::LAlt);
+                    auto right_down = IsKeyDown(KeyCode::RAlt);
                     auto left_key = left_down && !!!(::GetKeyState(VK_LMENU) & keystate_state_mask);
                     auto right_key = right_down && !!!(::GetKeyState(VK_RMENU) & keystate_state_mask);
                     auto my_leftkey = ConvertWinVKToKeyCode(VK_LMENU);
@@ -780,8 +780,8 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) {
                 }
                 case KeyCode::Ctrl:
                 {
-                    auto left_down = this->IsKeyDown(KeyCode::LControl);
-                    auto right_down = this->IsKeyDown(KeyCode::RControl);
+                    auto left_down = IsKeyDown(KeyCode::LControl);
+                    auto right_down = IsKeyDown(KeyCode::RControl);
                     auto left_key = left_down && !!!(::GetKeyState(VK_LCONTROL) & keystate_state_mask);
                     auto right_key = right_down && !!!(::GetKeyState(VK_RCONTROL) & keystate_state_mask);
                     auto my_leftkey = ConvertWinVKToKeyCode(VK_LCONTROL);
@@ -796,7 +796,7 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) {
                 case KeyCode::Return: my_key = KeyCode::NumPadEnter; break;
                 case KeyCode::LWin:
                 {
-                    auto left_down = this->IsKeyDown(KeyCode::LWin);
+                    auto left_down = IsKeyDown(KeyCode::LWin);
                     auto left_key = left_down && !!!(::GetKeyState(VK_LWIN) & keystate_state_mask);
                     auto my_leftkey = ConvertWinVKToKeyCode(VK_LWIN);
                     my_key = left_key ? my_leftkey : KeyCode::Unknown;
@@ -804,7 +804,7 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) {
                 }
                 case KeyCode::RWin:
                 {
-                    auto right_down = this->IsKeyDown(KeyCode::RWin);
+                    auto right_down = IsKeyDown(KeyCode::RWin);
                     auto right_key = right_down && !!!(::GetKeyState(VK_RWIN) & keystate_state_mask);
                     auto my_rightkey = ConvertWinVKToKeyCode(VK_RWIN);
                     my_key = right_key ? my_rightkey : KeyCode::Unknown;
@@ -815,8 +815,8 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) {
             switch(my_key) {
             case KeyCode::Shift:
             {
-                auto left_down = this->IsKeyDown(KeyCode::LShift);
-                auto right_down = this->IsKeyDown(KeyCode::RShift);
+                auto left_down = IsKeyDown(KeyCode::LShift);
+                auto right_down = IsKeyDown(KeyCode::RShift);
                 auto left_key = left_down && !!!(::GetKeyState(VK_LSHIFT) & keystate_state_mask);
                 auto right_key = right_down && !!!(::GetKeyState(VK_RSHIFT) & keystate_state_mask);
                 auto my_leftkey = ConvertWinVKToKeyCode(VK_LSHIFT);
@@ -830,8 +830,8 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) {
             }
             case KeyCode::Ctrl:
             {
-                auto left_down = this->IsKeyDown(KeyCode::LControl);
-                auto right_down = this->IsKeyDown(KeyCode::RControl);
+                auto left_down = IsKeyDown(KeyCode::LControl);
+                auto right_down = IsKeyDown(KeyCode::RControl);
                 auto left_key = left_down && !!!(::GetKeyState(VK_LCONTROL) & keystate_state_mask);
                 auto right_key = right_down && !!!(::GetKeyState(VK_RCONTROL) & keystate_state_mask);
                 auto my_leftkey = ConvertWinVKToKeyCode(VK_LCONTROL);
@@ -845,8 +845,8 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) {
             }
             case KeyCode::Alt:
             {
-                auto left_down = this->IsKeyDown(KeyCode::LAlt);
-                auto right_down = this->IsKeyDown(KeyCode::RAlt);
+                auto left_down = IsKeyDown(KeyCode::LAlt);
+                auto right_down = IsKeyDown(KeyCode::RAlt);
                 auto left_key = left_down && !!!(::GetKeyState(VK_LMENU) & keystate_state_mask);
                 auto right_key = right_down && !!!(::GetKeyState(VK_RMENU) & keystate_state_mask);
                 auto my_leftkey = ConvertWinVKToKeyCode(VK_LMENU);
@@ -1238,7 +1238,7 @@ void InputSystem::EndFrame() {
     _mouseWheelHPosition = 0;
 }
 
-bool InputSystem::WasAnyKeyPressed() const {
+bool InputSystem::WasAnyKeyPressed() const noexcept {
     for(KeyCode k = KeyCode::First_; k < KeyCode::Last_; ++k) {
         if(WasKeyJustPressed(k)) {
             return true;
@@ -1247,19 +1247,19 @@ bool InputSystem::WasAnyKeyPressed() const {
     return false;
 }
 
-bool InputSystem::IsKeyUp(const KeyCode& key) const {
+bool InputSystem::IsKeyUp(const KeyCode& key) const noexcept {
     return !_previousKeys[(std::size_t)key] && !_currentKeys[(std::size_t)key];
 }
 
-bool InputSystem::WasKeyJustPressed(const KeyCode& key) const {
+bool InputSystem::WasKeyJustPressed(const KeyCode& key) const noexcept {
     return !_previousKeys[(std::size_t)key] && _currentKeys[(std::size_t)key];
 }
 
-bool InputSystem::IsKeyDown(const KeyCode& key) const {
+bool InputSystem::IsKeyDown(const KeyCode& key) const noexcept {
     return _previousKeys[(std::size_t)key] && _currentKeys[(std::size_t)key];
 }
 
-bool InputSystem::IsAnyKeyDown() const {
+bool InputSystem::IsAnyKeyDown() const noexcept {
     for(KeyCode k = KeyCode::First_; k < KeyCode::Last_; ++k) {
         if(IsKeyDown(k)) {
             return true;
@@ -1268,27 +1268,27 @@ bool InputSystem::IsAnyKeyDown() const {
     return false;
 }
 
-bool InputSystem::WasKeyJustReleased(const KeyCode& key) const {
+bool InputSystem::WasKeyJustReleased(const KeyCode& key) const noexcept {
     return _previousKeys[(std::size_t)key] && !_currentKeys[(std::size_t)key];
 }
 
-bool InputSystem::WasMouseWheelJustScrolledUp() const {
+bool InputSystem::WasMouseWheelJustScrolledUp() const noexcept {
     return GetMouseWheelPositionNormalized() > 0;
 }
 
-bool InputSystem::WasMouseWheelJustScrolledDown() const {
+bool InputSystem::WasMouseWheelJustScrolledDown() const noexcept {
     return GetMouseWheelPositionNormalized() < 0;
 }
 
-bool InputSystem::WasMouseWheelJustScrolledLeft() const {
+bool InputSystem::WasMouseWheelJustScrolledLeft() const noexcept {
     return GetMouseWheelHorizontalPositionNormalized() < 0;
 }
 
-bool InputSystem::WasMouseWheelJustScrolledRight() const {
+bool InputSystem::WasMouseWheelJustScrolledRight() const noexcept {
     return GetMouseWheelHorizontalPositionNormalized() > 0;
 }
 
-std::size_t InputSystem::GetConnectedControllerCount() const {
+std::size_t InputSystem::GetConnectedControllerCount() const noexcept {
     int connected_count = 0;
     for(const auto& controller : _xboxControllers) {
         if(controller.IsConnected()) {
@@ -1298,7 +1298,7 @@ std::size_t InputSystem::GetConnectedControllerCount() const {
     return connected_count;
 }
 
-bool InputSystem::IsAnyControllerConnected() const {
+bool InputSystem::IsAnyControllerConnected() const noexcept {
     bool result = false;
     for(const auto& controller : _xboxControllers) {
         result |= controller.IsConnected();
@@ -1306,10 +1306,10 @@ bool InputSystem::IsAnyControllerConnected() const {
     return result;
 }
 
-const XboxController& InputSystem::GetXboxController(const std::size_t& controllerIndex) const {
+const XboxController& InputSystem::GetXboxController(const std::size_t& controllerIndex) const noexcept {
     return _xboxControllers[controllerIndex];
 }
 
-XboxController& InputSystem::GetXboxController(const std::size_t& controllerIndex) {
-    return const_cast<XboxController&>(static_cast<const InputSystem&>(*this).GetXboxController(controllerIndex));
+XboxController& InputSystem::GetXboxController(const std::size_t& controllerIndex) noexcept {
+    return _xboxControllers[controllerIndex];
 }

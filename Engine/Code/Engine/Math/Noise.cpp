@@ -17,7 +17,7 @@ namespace MathUtils {
     // The base bit-noise constants were designed to have distinctive and interesting bits,
     //	and have so far produced seemingly excellent experimental test results.
     //
-    unsigned int Get1dNoiseUint(int positionX, unsigned int seed)
+    unsigned int Get1dNoiseUint(int positionX, unsigned int seed) noexcept
     {
         const unsigned int BIT_NOISE1 = 0x68E31DA4; // 0b0110'1000'1110'0011'0001'1101'1010'0100;
         const unsigned int BIT_NOISE2 = 0xB5297A4D; // 0b1011'0101'0010'1001'0111'1010'0100'1101;
@@ -48,7 +48,7 @@ namespace MathUtils {
 
 
     //-----------------------------------------------------------------------------------------------
-    float Compute1dFractalNoise(float position, float scale, unsigned int numOctaves, float octavePersistence, float octaveScale, bool renormalize, unsigned int seed)
+    float Compute1dFractalNoise(float position, float scale, unsigned int numOctaves, float octavePersistence, float octaveScale, bool renormalize, unsigned int seed) noexcept
     {
         const float OCTAVE_OFFSET = 0.636764989593174f; // Translation/bias to add to each octave
 
@@ -96,7 +96,7 @@ namespace MathUtils {
 
 
     //-----------------------------------------------------------------------------------------------
-    float Compute2dFractalNoise(float posX, float posY, float scale, unsigned int numOctaves, float octavePersistence, float octaveScale, bool renormalize, unsigned int seed)
+    float Compute2dFractalNoise(float posX, float posY, float scale, unsigned int numOctaves, float octavePersistence, float octaveScale, bool renormalize, unsigned int seed) noexcept
     {
         const float OCTAVE_OFFSET = 0.636764989593174f; // Translation/bias to add to each octave
 
@@ -155,7 +155,7 @@ namespace MathUtils {
 
 
     //-----------------------------------------------------------------------------------------------
-    float Compute3dFractalNoise(float posX, float posY, float posZ, float scale, unsigned int numOctaves, float octavePersistence, float octaveScale, bool renormalize, unsigned int seed)
+    float Compute3dFractalNoise(float posX, float posY, float posZ, float scale, unsigned int numOctaves, float octavePersistence, float octaveScale, bool renormalize, unsigned int seed) noexcept
     {
         const float OCTAVE_OFFSET = 0.636764989593174f; // Translation/bias to add to each octave
 
@@ -231,7 +231,7 @@ namespace MathUtils {
 
 
     //-----------------------------------------------------------------------------------------------
-    float Compute4dFractalNoise(float posX, float posY, float posZ, float posT, float scale, unsigned int numOctaves, float octavePersistence, float octaveScale, bool renormalize, unsigned int seed)
+    float Compute4dFractalNoise(float posX, float posY, float posZ, float posT, float scale, unsigned int numOctaves, float octavePersistence, float octaveScale, bool renormalize, unsigned int seed) noexcept
     {
         const float OCTAVE_OFFSET = 0.636764989593174f; // Translation/bias to add to each octave
 
@@ -333,7 +333,7 @@ namespace MathUtils {
     //
     // In 1D, the gradients are trivial: -1.0 or 1.0, so resulting noise is boring at one octave.
     //
-    float Compute1dPerlinNoise(float position, float scale, unsigned int numOctaves, float octavePersistence, float octaveScale, bool renormalize, unsigned int seed)
+    float Compute1dPerlinNoise(float position, float scale, unsigned int numOctaves, float octavePersistence, float octaveScale, bool renormalize, unsigned int seed) noexcept
     {
         const float OCTAVE_OFFSET = 0.636764989593174f; // Translation/bias to add to each octave
         const float gradients[2] = { -1.f, 1.f }; // 1D unit "gradient" vectors; one back, one forward
@@ -391,7 +391,7 @@ namespace MathUtils {
     //
     // In 2D, gradients are unit-length vectors in various directions with even angular distribution.
     //
-    float Compute2dPerlinNoise(float posX, float posY, float scale, unsigned int numOctaves, float octavePersistence, float octaveScale, bool renormalize, unsigned int seed)
+    float Compute2dPerlinNoise(float posX, float posY, float scale, unsigned int numOctaves, float octavePersistence, float octaveScale, bool renormalize, unsigned int seed) noexcept
     {
         const float OCTAVE_OFFSET = 0.636764989593174f; // Translation/bias to add to each octave
         const Vector2 gradients[8] = // Normalized unit vectors in 8 quarter-cardinal directions
@@ -482,7 +482,7 @@ namespace MathUtils {
     //
     // In 3D, gradients are unit-length vectors in random (3D) directions.
     //
-    float Compute3dPerlinNoise(float posX, float posY, float posZ, float scale, unsigned int numOctaves, float octavePersistence, float octaveScale, bool renormalize, unsigned int seed)
+    float Compute3dPerlinNoise(float posX, float posY, float posZ, float scale, unsigned int numOctaves, float octavePersistence, float octaveScale, bool renormalize, unsigned int seed) noexcept
     {
         const float OCTAVE_OFFSET = 0.636764989593174f; // Translation/bias to add to each octave
 
@@ -600,7 +600,7 @@ namespace MathUtils {
     //
     // In 4D, gradients are unit-length hyper-vectors in random (4D) directions.
     //
-    float Compute4dPerlinNoise(float posX, float posY, float posZ, float posT, float scale, unsigned int numOctaves, float octavePersistence, float octaveScale, bool renormalize, unsigned int seed)
+    float Compute4dPerlinNoise(float posX, float posY, float posZ, float posT, float scale, unsigned int numOctaves, float octavePersistence, float octaveScale, bool renormalize, unsigned int seed) noexcept
     {
         const float OCTAVE_OFFSET = 0.636764989593174f; // Translation/bias to add to each octave
 

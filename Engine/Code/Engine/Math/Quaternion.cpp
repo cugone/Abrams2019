@@ -8,7 +8,7 @@
 
 Quaternion Quaternion::I = Quaternion(1.0f, Vector3::ZERO);
 
-Quaternion::Quaternion(const Matrix4& mat)
+Quaternion::Quaternion(const Matrix4& mat) noexcept
     : w(1.0f)
     , axis(Vector3::ZERO) {
     //From http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/
@@ -95,7 +95,7 @@ Quaternion::Quaternion(const Matrix4& mat)
     }
 }
 
-Quaternion::Quaternion(float initialScalar, const Vector3& initialAxis)
+Quaternion::Quaternion(float initialScalar, const Vector3& initialAxis) noexcept
     : w(initialScalar)
     , axis(initialAxis) {
     if(!MathUtils::IsEquivalent(CalcLengthSquared(), 1.0f)) {
@@ -103,7 +103,7 @@ Quaternion::Quaternion(float initialScalar, const Vector3& initialAxis)
     }
 }
 
-Quaternion::Quaternion(float initialW, float initialX, float initialY, float initialZ)
+Quaternion::Quaternion(float initialW, float initialX, float initialY, float initialZ) noexcept
     : w(initialW)
     , axis(initialX, initialY, initialZ) {
     if(!MathUtils::IsEquivalent(CalcLengthSquared(), 1.0f)) {
@@ -111,7 +111,7 @@ Quaternion::Quaternion(float initialW, float initialX, float initialY, float ini
     }
 }
 
-Quaternion::Quaternion(const Vector3& rotations)
+Quaternion::Quaternion(const Vector3& rotations) noexcept
     : w(0.0f)
     , axis(rotations) {
     if(!MathUtils::IsEquivalent(CalcLengthSquared(), 1.0f)) {
@@ -119,7 +119,7 @@ Quaternion::Quaternion(const Vector3& rotations)
     }
 }
 
-Quaternion::Quaternion(const std::string& value)
+Quaternion::Quaternion(const std::string& value) noexcept
     : w(0.0f)
     , axis() {
     if(value[0] == '[') {
@@ -140,66 +140,63 @@ Quaternion::Quaternion(const std::string& value)
         Normalize();
     }
 }
-Quaternion::~Quaternion() {
-    /* DO NOTHING */
-}
 
-Quaternion  Quaternion::operator+(const Quaternion& rhs) const {
-    return Quaternion(this->w + rhs.w, this->axis + rhs.axis);
+Quaternion  Quaternion::operator+(const Quaternion& rhs) const noexcept {
+    return Quaternion(w + rhs.w, axis + rhs.axis);
 }
-Quaternion& Quaternion::operator+=(const Quaternion& rhs) {
-    this->w += rhs.w;
-    this->axis += rhs.axis;
+Quaternion& Quaternion::operator+=(const Quaternion& rhs) noexcept {
+    w += rhs.w;
+    axis += rhs.axis;
     return *this;
 }
-Quaternion  Quaternion::operator-(const Quaternion& rhs) const {
-    return Quaternion(this->w - rhs.w, this->axis - rhs.axis);
+Quaternion  Quaternion::operator-(const Quaternion& rhs) const noexcept {
+    return Quaternion(w - rhs.w, axis - rhs.axis);
 }
-Quaternion& Quaternion::operator-=(const Quaternion& rhs) {
-    this->w -= rhs.w;
-    this->axis -= rhs.axis;
+Quaternion& Quaternion::operator-=(const Quaternion& rhs) noexcept {
+    w -= rhs.w;
+    axis -= rhs.axis;
     return *this;
 }
 
-Quaternion Quaternion::operator*(const Quaternion& rhs) const {
-    return Quaternion(this->w * rhs.w - MathUtils::DotProduct(this->axis, rhs.axis),
-                      this->w * rhs.axis + rhs.w * this->axis + MathUtils::CrossProduct(this->axis, rhs.axis));
+Quaternion Quaternion::operator*(const Quaternion& rhs) const noexcept {
+    return Quaternion(w * rhs.w - MathUtils::DotProduct(axis, rhs.axis),
+                      w * rhs.axis + rhs.w * axis + MathUtils::CrossProduct(axis, rhs.axis));
 }
-Quaternion& Quaternion::operator*=(const Quaternion& rhs) {
-    this->w = this->w * rhs.w - MathUtils::DotProduct(this->axis, rhs.axis);
-    this->axis = this->w * rhs.axis + rhs.w * this->axis + MathUtils::CrossProduct(this->axis, rhs.axis);
+Quaternion& Quaternion::operator*=(const Quaternion& rhs) noexcept {
+    w = w * rhs.w - MathUtils::DotProduct(axis, rhs.axis);
+    axis = w * rhs.axis + rhs.w * axis + MathUtils::CrossProduct(axis, rhs.axis);
     return *this;
 }
 
-Quaternion Quaternion::operator*(float scalar) const {
-    return Quaternion(this->w * scalar, this->axis * scalar);
+Quaternion Quaternion::operator*(float scalar) const noexcept {
+    return Quaternion(w * scalar, axis * scalar);
 }
-Quaternion& Quaternion::operator*=(float scalar) {
-    this->w *= scalar;
-    this->axis *= axis;
+Quaternion& Quaternion::operator*=(float scalar) noexcept {
+    w *= scalar;
+    axis *= axis;
     return *this;
 }
 
-Quaternion Quaternion::operator*(const Vector3& rhs) const {
+Quaternion Quaternion::operator*(const Vector3& rhs) const noexcept {
     return *this * Quaternion(rhs);
 }
-Quaternion& Quaternion::operator*=(const Vector3& rhs) {
-    return this->operator*=(Quaternion(rhs));
+Quaternion& Quaternion::operator*=(const Vector3& rhs) noexcept {
+    return operator*=(Quaternion(rhs));
 }
-Quaternion Quaternion::operator-() {
-    return Quaternion(-this->w, -this->axis);
+Quaternion Quaternion::operator-() noexcept {
+    return Quaternion(-w, -axis);
 }
 
 
-bool Quaternion::operator==(const Quaternion& rhs) const {
+bool Quaternion::operator==(const Quaternion& rhs) const noexcept {
     return w == rhs.w && axis == rhs.axis;
 }
 
-bool Quaternion::operator!=(const Quaternion& rhs) const {
+bool Quaternion::operator!=(const Quaternion& rhs) const noexcept {
     return !(*this == rhs);
 }
 
-Vector4 Quaternion::CalcAxisAngles(bool degrees) const {
+Vector4 Quaternion::CalcAxisAngles(bool degrees) const noexcept {
     if(degrees) {
         return CalcAxisAnglesDegrees();
     } else {
@@ -207,7 +204,7 @@ Vector4 Quaternion::CalcAxisAngles(bool degrees) const {
     }
 }
 
-Vector4 Quaternion::CalcAxisAnglesDegrees() const {
+Vector4 Quaternion::CalcAxisAnglesDegrees() const noexcept {
     auto q_n = GetNormalize();
     if(q_n.w > 1.0f) {
         q_n.Normalize();
@@ -229,7 +226,7 @@ Vector4 Quaternion::CalcAxisAnglesDegrees() const {
     return Vector4(x, y, z, MathUtils::ConvertRadiansToDegrees(angle));
 }
 
-Vector4 Quaternion::CalcAxisAnglesRadians() const {
+Vector4 Quaternion::CalcAxisAnglesRadians() const noexcept {
     auto q_n = GetNormalize();
     if(q_n.w > 1.0f) {
         q_n.Normalize();
@@ -251,16 +248,16 @@ Vector4 Quaternion::CalcAxisAnglesRadians() const {
     return Vector4(x, y, z, angle);
 }
 
-Vector3 Quaternion::CalcEulerAnglesDegrees() const {
+Vector3 Quaternion::CalcEulerAnglesDegrees() const noexcept {
     return CalcEulerAngles(true);
 }
 
-Vector3 Quaternion::CalcEulerAnglesRadians() const {
+Vector3 Quaternion::CalcEulerAnglesRadians() const noexcept {
     return CalcEulerAngles(false);
 }
 
 //From http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToEuler/index.htm
-Vector3 Quaternion::CalcEulerAngles(bool degrees) const {
+Vector3 Quaternion::CalcEulerAngles(bool degrees) const noexcept {
 
     //First pass change to non-normalized version later.
 
@@ -314,52 +311,52 @@ Vector3 Quaternion::CalcEulerAngles(bool degrees) const {
     return result;
 }
 
-float Quaternion::CalcLength() const {
+float Quaternion::CalcLength() const noexcept {
     return std::sqrt(CalcLengthSquared());
 }
 
-float Quaternion::CalcLengthSquared() const {
+float Quaternion::CalcLengthSquared() const noexcept {
     return w * w + axis.x * axis.x + axis.y * axis.y + axis.z * axis.z;
 }
 
-void Quaternion::Normalize() {
+void Quaternion::Normalize() noexcept {
     float lengthSq = CalcLengthSquared();
     if(!MathUtils::IsEquivalent(lengthSq, 0.0f)) {
         float invLength = 1.0f / std::sqrt(lengthSq);
-        this->w *= invLength;
-        this->axis *= invLength;
+        w *= invLength;
+        axis *= invLength;
     }
 }
 
-Quaternion Quaternion::GetNormalize() const {
+Quaternion Quaternion::GetNormalize() const noexcept {
     Quaternion q = *this;
     q.Normalize();
     return q;
 }
 
-void Quaternion::Conjugate() {
-    this->axis = -this->axis;
+void Quaternion::Conjugate() noexcept {
+    axis = -axis;
 }
 
-Quaternion Quaternion::GetConjugate() const {
+Quaternion Quaternion::GetConjugate() const noexcept {
     Quaternion q = *this;
     q.Conjugate();
     return q;
 }
 
-void Quaternion::Inverse() {
+void Quaternion::Inverse() noexcept {
     float lengthSq = CalcLengthSquared();
     if(!MathUtils::IsEquivalent(lengthSq, 0.0f)) {
         Quaternion q_conj = *this;
         q_conj.Conjugate();
         float invLengthSq = 1.0f / lengthSq;
         Quaternion result = q_conj * invLengthSq;
-        this->w = result.w;
-        this->axis = result.axis;
+        w = result.w;
+        axis = result.axis;
     }
 }
 
-Quaternion Quaternion::CalcInverse() const {
+Quaternion Quaternion::CalcInverse() const noexcept {
     float lengthSq = CalcLengthSquared();
     Quaternion result;
     if(!MathUtils::IsEquivalent(lengthSq, 0.0f)) {
@@ -371,14 +368,14 @@ Quaternion Quaternion::CalcInverse() const {
     return result;
 }
 
-Quaternion Quaternion::CreateRealQuaternion(float scalar) {
+Quaternion Quaternion::CreateRealQuaternion(float scalar) noexcept {
     return Quaternion(scalar, Vector3::ZERO);
 }
-Quaternion Quaternion::CreatePureQuaternion(const Vector3& v) {
+Quaternion Quaternion::CreatePureQuaternion(const Vector3& v) noexcept {
     return Quaternion(0.0f, v.GetNormalize());
 }
 
-Quaternion Quaternion::CreateFromAxisAngle(const Vector3& axis, float degreesAngle) {
+Quaternion Quaternion::CreateFromAxisAngle(const Vector3& axis, float degreesAngle) noexcept {
     float angle = MathUtils::ConvertDegreesToRadians(degreesAngle);
     float factor = std::sin(angle * 0.5f);
 
@@ -388,15 +385,15 @@ Quaternion Quaternion::CreateFromAxisAngle(const Vector3& axis, float degreesAng
     return Quaternion(w, factoredAxis);
 }
 
-Quaternion Quaternion::CreateFromEulerAnglesDegrees(float pitch, float yaw, float roll) {
+Quaternion Quaternion::CreateFromEulerAnglesDegrees(float pitch, float yaw, float roll) noexcept {
     return CreateFromEulerAngles(pitch, yaw, roll, true);
 }
 
-Quaternion Quaternion::CreateFromEulerAnglesRadians(float pitch, float yaw, float roll) {
+Quaternion Quaternion::CreateFromEulerAnglesRadians(float pitch, float yaw, float roll) noexcept {
     return CreateFromEulerAngles(pitch, yaw, roll, false);
 }
 
-Quaternion Quaternion::CreateFromEulerAngles(float pitch, float yaw, float roll, bool degrees) {
+Quaternion Quaternion::CreateFromEulerAngles(float pitch, float yaw, float roll, bool degrees) noexcept {
     //quaternion quaternion::FromEuler(vec3 const &euler) {
     //    // If this changes - this method is no longer valid
     //    ASSERT(ROTATE_DEFAULT == ROTATE_ZXY);
@@ -462,14 +459,14 @@ Quaternion Quaternion::CreateFromEulerAngles(float pitch, float yaw, float roll,
     return result;
 }
 
-Quaternion Quaternion::GetIdentity() {
+Quaternion Quaternion::GetIdentity() noexcept {
     return Quaternion(1.0f, Vector3::ZERO);
 }
-Quaternion Conjugate(const Quaternion& q) {
+Quaternion Conjugate(const Quaternion& q) noexcept {
     return Quaternion(q.w, -q.axis);
 }
 
-Quaternion Inverse(const Quaternion& q) {
+Quaternion Inverse(const Quaternion& q) noexcept {
     float lengthSq = q.CalcLengthSquared();
     if(!MathUtils::IsEquivalent(lengthSq, 0.0f)) {
         Quaternion q_conj = q;
@@ -481,21 +478,21 @@ Quaternion Inverse(const Quaternion& q) {
     return q;
 }
 
-Quaternion operator*(float scalar, const Quaternion& rhs) {
+Quaternion operator*(float scalar, const Quaternion& rhs) noexcept {
     return Quaternion(scalar * rhs.w, scalar * rhs.axis);
 }
 
-Quaternion& operator*=(float scalar, Quaternion& rhs) {
+Quaternion& operator*=(float scalar, Quaternion& rhs) noexcept {
     rhs.w *= scalar;
     rhs.axis *= scalar;
     return rhs;
 }
 
-Quaternion operator*(const Vector3& lhs, const Quaternion& rhs) {
+Quaternion operator*(const Vector3& lhs, const Quaternion& rhs) noexcept {
     return Quaternion(Quaternion(lhs) * rhs);
 }
 
-Quaternion& operator*=(const Vector3& lhs, Quaternion& rhs) {
+Quaternion& operator*=(const Vector3& lhs, Quaternion& rhs) noexcept {
     rhs = Quaternion(lhs) * rhs;
     return rhs;
 }

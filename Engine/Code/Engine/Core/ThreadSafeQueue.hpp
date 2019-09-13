@@ -6,18 +6,17 @@
 template<typename T>
 class ThreadSafeQueue {
 public:
-    ThreadSafeQueue() = default;
-    ~ThreadSafeQueue();
+    void push(const T& t) noexcept;
+    void pop() noexcept;
+    decltype(auto) size() const noexcept;
+    bool empty() const noexcept;
 
-    void push(const T& t);
-    void pop();
-    decltype(auto) size() const;
-    bool empty() const;
+    T& back() const noexcept;
+    T& back() noexcept;
+    T& front() const noexcept;
+    T& front() noexcept;
 
-    T& back() const;
-    T& back();
-    T& front() const;
-    T& front();
+    void swap(ThreadSafeQueue<T>& b) noexcept;
 
 protected:
 private:
@@ -26,56 +25,55 @@ private:
 };
 
 template<typename T>
-ThreadSafeQueue<T>::~ThreadSafeQueue() {
-    std::scoped_lock<std::mutex> lock(_cs);
-    std::queue<T> temp{};
-    _queue.swap(temp);
+void ThreadSafeQueue<T>::swap(ThreadSafeQueue<T>& b) noexcept {
+    std::scoped_lock<std::mutex, std::mutex> lock(_cs, b._cs);
+    _queue.swap(b._queue);
 }
 
 template<typename T>
-void ThreadSafeQueue<T>::push(const T& t) {
+void ThreadSafeQueue<T>::push(const T& t) noexcept {
     std::scoped_lock<std::mutex> lock(_cs);
     _queue.push(t);
 }
 
 template<typename T>
-void ThreadSafeQueue<T>::pop() {
+void ThreadSafeQueue<T>::pop() noexcept {
     std::scoped_lock<std::mutex> lock(_cs);
     _queue.pop();
 }
 
 template<typename T>
-decltype(auto) ThreadSafeQueue<T>::size() const {
+decltype(auto) ThreadSafeQueue<T>::size() const noexcept {
     std::scoped_lock<std::mutex> lock(_cs);
     return _queue.size();
 }
 
 template<typename T>
-bool ThreadSafeQueue<T>::empty() const {
+bool ThreadSafeQueue<T>::empty() const noexcept {
     std::scoped_lock<std::mutex> lock(_cs);
     return _queue.empty();
 }
 
 template<typename T>
-T& ThreadSafeQueue<T>::back() const {
+T& ThreadSafeQueue<T>::back() const noexcept {
     std::scoped_lock<std::mutex> lock(_cs);
     return _queue.back();
 }
 
 template<typename T>
-T& ThreadSafeQueue<T>::back() {
+T& ThreadSafeQueue<T>::back() noexcept {
     std::scoped_lock<std::mutex> lock(_cs);
     return _queue.back();
 }
 
 template<typename T>
-T& ThreadSafeQueue<T>::front() const {
+T& ThreadSafeQueue<T>::front() const noexcept {
     std::scoped_lock<std::mutex> lock(_cs);
     return _queue.front();
 }
 
 template<typename T>
-T& ThreadSafeQueue<T>::front() {
+T& ThreadSafeQueue<T>::front() noexcept {
     std::scoped_lock<std::mutex> lock(_cs);
     return _queue.front();
 }

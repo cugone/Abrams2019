@@ -11,14 +11,14 @@ struct IDXGIDebug;
 
 class RHIInstance {
 public:
-    static RHIInstance* const CreateInstance();
-    static void DestroyInstance();
+    static RHIInstance* const CreateInstance() noexcept;
+    static void DestroyInstance() noexcept;
 
     std::unique_ptr<RHIDevice> CreateDevice() const noexcept;
 
 protected:
     RHIInstance() = default;
-    ~RHIInstance();
+    ~RHIInstance() noexcept;
 
 private:
     static RHIInstance* _instance;

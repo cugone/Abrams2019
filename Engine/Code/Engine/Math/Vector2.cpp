@@ -15,21 +15,21 @@ const Vector2 Vector2::ONE(1.0f, 1.0);
 const Vector2 Vector2::XY_AXIS(1.0f, 1.0);
 const Vector2 Vector2::YX_AXIS(1.0f, 1.0);
 
-Vector2::Vector2(float initialX, float initialY)
+Vector2::Vector2(float initialX, float initialY) noexcept
 : x(initialX)
 , y(initialY)
 {
     /* DO NOTHING */
 }
 
-Vector2::Vector2(const Vector3& rhs)
+Vector2::Vector2(const Vector3& rhs) noexcept
     : x(rhs.x)
     , y(rhs.y)
 {
     /* DO NOTHING */
 }
 
-Vector2::Vector2(const std::string& value)
+Vector2::Vector2(const std::string& value) noexcept
     : x(0.0f)
     , y(0.0f)
 {
@@ -50,96 +50,96 @@ Vector2::Vector2(const std::string& value)
 }
 
 
-Vector2::Vector2(const IntVector2& intvec2)
+Vector2::Vector2(const IntVector2& intvec2) noexcept
     : x(static_cast<float>(intvec2.x))
     , y(static_cast<float>(intvec2.y))
 {
     /* DO NOTHING */
 }
 
-Vector2 Vector2::operator+(const Vector2& rhs) const {
+Vector2 Vector2::operator+(const Vector2& rhs) const noexcept {
     return Vector2(x + rhs.x, y + rhs.y);
 }
 
-Vector2& Vector2::operator+=(const Vector2& rhs) {
+Vector2& Vector2::operator+=(const Vector2& rhs) noexcept {
     x += rhs.x;
     y += rhs.y;
     return *this;
 }
 
-Vector2 Vector2::operator-(const Vector2& rhs) const {
+Vector2 Vector2::operator-(const Vector2& rhs) const noexcept {
     return Vector2(x - rhs.x, y - rhs.y);
 }
 
-Vector2& Vector2::operator-=(const Vector2& rhs) {
+Vector2& Vector2::operator-=(const Vector2& rhs) noexcept {
     x -= rhs.x;
     y -= rhs.y;
     return *this;
 }
 
-Vector2 Vector2::operator-() const {
+Vector2 Vector2::operator-() const noexcept {
     return Vector2(-x, -y);
 }
 
-Vector2 Vector2::operator*(const Vector2& rhs) const {
+Vector2 Vector2::operator*(const Vector2& rhs) const noexcept {
     return Vector2(x * rhs.x, y * rhs.y);
 }
 
-Vector2 operator*(float lhs, const Vector2& rhs) {
+Vector2 operator*(float lhs, const Vector2& rhs) noexcept {
     return Vector2(lhs * rhs.x, lhs * rhs.y);
 }
 
-Vector2 Vector2::operator*(float scalar) const {
+Vector2 Vector2::operator*(float scalar) const noexcept {
     return Vector2(x * scalar, y * scalar);
 }
 
-Vector2& Vector2::operator*=(float scalar) {
+Vector2& Vector2::operator*=(float scalar) noexcept {
     x *= scalar;
     y *= scalar;
     return *this;
 }
 
-Vector2& Vector2::operator*=(const Vector2& rhs) {
+Vector2& Vector2::operator*=(const Vector2& rhs) noexcept {
     x *= rhs.x;
     y *= rhs.y;
     return *this;
 }
 
-Vector2 Vector2::operator/(float scalar) const {
+Vector2 Vector2::operator/(float scalar) const noexcept {
     return Vector2(x / scalar, y / scalar);
 }
 
-Vector2 Vector2::operator/=(float scalar) {
+Vector2 Vector2::operator/=(float scalar) noexcept {
     x /= scalar;
     y /= scalar;
     return *this;
 }
 
-Vector2 Vector2::operator/(const Vector2& rhs) const {
+Vector2 Vector2::operator/(const Vector2& rhs) const noexcept {
     return Vector2(x / rhs.x, y / rhs.y);
 }
 
-Vector2 Vector2::operator/=(const Vector2& rhs) {
+Vector2 Vector2::operator/=(const Vector2& rhs) noexcept {
     x /= rhs.x;
     y /= rhs.y;
     return *this;
 }
 
-bool Vector2::operator==(const Vector2& rhs) const {
+bool Vector2::operator==(const Vector2& rhs) const noexcept {
     return x == rhs.x && y == rhs.y;
 }
 
-bool Vector2::operator!=(const Vector2& rhs) const {
+bool Vector2::operator!=(const Vector2& rhs) const noexcept {
     return !(*this == rhs);
 }
 
 
-std::ostream& operator<<(std::ostream& out_stream, const Vector2& v) {
+std::ostream& operator<<(std::ostream& out_stream, const Vector2& v) noexcept {
     out_stream << '[' << v.x << ',' << v.y << ']';
     return out_stream;
 }
 
-std::istream& operator>>(std::istream& in_stream, Vector2& v) {
+std::istream& operator>>(std::istream& in_stream, Vector2& v) noexcept {
     float x = 0.0f;
     float y = 0.0f;
 
@@ -156,52 +156,52 @@ std::istream& operator>>(std::istream& in_stream, Vector2& v) {
 }
 
 
-void Vector2::GetXY(float& outX, float& outY) const {
+void Vector2::GetXY(float& outX, float& outY) const noexcept {
     outX = x;
     outY = y;
 }
 
-float* Vector2::GetAsFloatArray() {
+float* Vector2::GetAsFloatArray() noexcept {
     return &x;
 }
 
-float Vector2::CalcHeadingRadians() const {
+float Vector2::CalcHeadingRadians() const noexcept {
     return std::atan2(y, x);
 }
 
-float Vector2::CalcHeadingDegrees() const {
+float Vector2::CalcHeadingDegrees() const noexcept {
     return MathUtils::ConvertRadiansToDegrees(CalcHeadingRadians());
 }
 
-float Vector2::CalcLength() const {
+float Vector2::CalcLength() const noexcept {
     return std::sqrt(CalcLengthSquared());
 }
 
-float Vector2::CalcLengthSquared() const {
+float Vector2::CalcLengthSquared() const noexcept {
     return x * x + y * y;
 }
 
-void Vector2::SetHeadingDegrees(float headingDegrees) {
+void Vector2::SetHeadingDegrees(float headingDegrees) noexcept {
     SetHeadingRadians(MathUtils::ConvertDegreesToRadians(headingDegrees));
 }
 
-void Vector2::SetHeadingRadians(float headingRadians) {
+void Vector2::SetHeadingRadians(float headingRadians) noexcept {
     float R = CalcLength();
     float theta = headingRadians;
     x = R * std::cos(theta);
     y = R * std::sin(theta);
 }
 
-void Vector2::SetUnitLengthAndHeadingDegrees(float headingDegrees) {
+void Vector2::SetUnitLengthAndHeadingDegrees(float headingDegrees) noexcept {
     SetUnitLengthAndHeadingRadians(MathUtils::ConvertDegreesToRadians(headingDegrees));
 }
 
-void Vector2::SetUnitLengthAndHeadingRadians(float headingRadians) {
+void Vector2::SetUnitLengthAndHeadingRadians(float headingRadians) noexcept {
     Normalize();
     SetHeadingRadians(headingRadians);
 }
 
-float Vector2::SetLength(float length) {
+float Vector2::SetLength(float length) noexcept {
     float R = CalcLength();
     float theta = CalcHeadingRadians();
     x = length * std::cos(theta);
@@ -209,16 +209,16 @@ float Vector2::SetLength(float length) {
     return R;    
 }
 
-void Vector2::SetLengthAndHeadingDegrees(float headingDegrees, float length) {
+void Vector2::SetLengthAndHeadingDegrees(float headingDegrees, float length) noexcept {
     SetLengthAndHeadingRadians(MathUtils::ConvertDegreesToRadians(headingDegrees), length);
 }
 
-void Vector2::SetLengthAndHeadingRadians(float headingRadians, float length) {
+void Vector2::SetLengthAndHeadingRadians(float headingRadians, float length) noexcept {
     SetLength(length);
     SetHeadingRadians(headingRadians);
 }
 
-void Vector2::RotateRadians(float radians) {
+void Vector2::RotateRadians(float radians) noexcept {
     float R = CalcLength();
     float old_angle = std::atan2(y, x);
     float new_angle = old_angle + radians;
@@ -227,7 +227,7 @@ void Vector2::RotateRadians(float radians) {
     y = R * std::sin(new_angle);
 }
 
-float Vector2::Normalize() {
+float Vector2::Normalize() noexcept {
     float length = CalcLength();
     if(length > 0.0f) {
         float inv_length = 1.0f / length;
@@ -238,7 +238,7 @@ float Vector2::Normalize() {
     return 0.0f;
 }
 
-Vector2 Vector2::GetNormalize() const {
+Vector2 Vector2::GetNormalize() const noexcept {
     float length = CalcLength();
     if(length > 0.0f) {
         float inv_length = 1.0f / length;
@@ -247,15 +247,29 @@ Vector2 Vector2::GetNormalize() const {
     return Vector2::ZERO;
 }
 
-void Vector2::Rotate90Degrees() {
+
+Vector2 Vector2::GetLeftHandNormal() noexcept {
+    Vector2 result = *this;
+    result.RotateNegative90Degrees();
+    return result;
+}
+
+
+Vector2 Vector2::GetRightHandNormal() noexcept {
+    Vector2 result = *this;
+    result.Rotate90Degrees();
+    return result;
+}
+
+void Vector2::Rotate90Degrees() noexcept {
     SetXY(-y, x);
 }
 
-void Vector2::RotateNegative90Degrees() {
+void Vector2::RotateNegative90Degrees() noexcept {
     SetXY(y, -x);
 }
 
-void Vector2::SetXY(float newX, float newY) {
+void Vector2::SetXY(float newX, float newY) noexcept {
     x = newX;
     y = newY;
 }

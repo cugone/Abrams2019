@@ -5,15 +5,15 @@
 template<typename T, std::size_t maxSize>
 class MemoryPool {
 public:
-	MemoryPool();
+	MemoryPool() noexcept;
     MemoryPool(const MemoryPool& other) = delete;
     MemoryPool(MemoryPool&& other) = delete;
     MemoryPool& operator=(const MemoryPool& rhs) = delete;
     MemoryPool& operator=(MemoryPool&& rhs) = delete;
-	~MemoryPool();
+	~MemoryPool() noexcept;
 
-    [[nodiscard]] void* allocate(std::size_t size);
-    void deallocate(void* ptr, std::size_t size);
+    [[nodiscard]] void* allocate(std::size_t size) noexcept;
+    void deallocate(void* ptr, std::size_t size) noexcept;
 
 protected:
 private:
@@ -25,7 +25,7 @@ private:
 };
 
 template<typename T, std::size_t maxSize>
-[[nodiscard]] void* MemoryPool<T, maxSize>::allocate(std::size_t size) {
+[[nodiscard]] void* MemoryPool<T, maxSize>::allocate(std::size_t size) noexcept {
     std::size_t elems = size / sizeof(T);
     if(_count + elems < _max) {
         auto front = _ptr;
@@ -37,7 +37,7 @@ template<typename T, std::size_t maxSize>
 }
 
 template<typename T, std::size_t maxSize>
-void MemoryPool<T, maxSize>::deallocate(void* ptr, std::size_t size) {
+void MemoryPool<T, maxSize>::deallocate(void* ptr, std::size_t size) noexcept {
     auto elems = static_cast<int>(size / sizeof(T));
     if(0 < _count - elems) {
         _ptr -= elems;
@@ -49,7 +49,7 @@ void MemoryPool<T, maxSize>::deallocate(void* ptr, std::size_t size) {
 }
 
 template<typename T, std::size_t maxSize>
-MemoryPool<T, maxSize>::~MemoryPool() {
+MemoryPool<T, maxSize>::~MemoryPool() noexcept {
     std::free(_data);
     _data = nullptr;
     _ptr = nullptr;
@@ -58,7 +58,7 @@ MemoryPool<T, maxSize>::~MemoryPool() {
 }
 
 template<typename T, std::size_t maxSize>
-MemoryPool<T, maxSize>::MemoryPool() {
+MemoryPool<T, maxSize>::MemoryPool() noexcept {
     _data = reinterpret_cast<T*>(std::malloc(maxSize * sizeof(T)));
     _ptr = _data;
     _count = 0;

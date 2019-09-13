@@ -7,7 +7,7 @@
 
 #include <sstream>
 
-ConstantBuffer::ConstantBuffer(const RHIDevice* owner, const buffer_t& buffer, const std::size_t& buffer_size, const BufferUsage& usage, const BufferBindUsage& bindUsage)
+ConstantBuffer::ConstantBuffer(const RHIDevice* owner, const buffer_t& buffer, const std::size_t& buffer_size, const BufferUsage& usage, const BufferBindUsage& bindUsage) noexcept
     : Buffer<void*>()
     , _buffer_size(buffer_size)
 {
@@ -39,14 +39,14 @@ ConstantBuffer::ConstantBuffer(const RHIDevice* owner, const buffer_t& buffer, c
     }
 }
 
-ConstantBuffer::~ConstantBuffer() {
+ConstantBuffer::~ConstantBuffer() noexcept {
     if(IsValid()) {
         _dx_buffer->Release();
         _dx_buffer = nullptr;
     }
 }
 
-void ConstantBuffer::Update(RHIDeviceContext* context, const buffer_t& buffer) {
+void ConstantBuffer::Update(RHIDeviceContext* context, const buffer_t& buffer) noexcept {
     D3D11_MAPPED_SUBRESOURCE resource = {};
     auto dx_context = context->GetDxContext();
     HRESULT hr = dx_context->Map(_dx_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0U, &resource);

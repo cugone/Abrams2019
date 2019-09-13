@@ -13,7 +13,7 @@
 #include <processthreadsapi.h>
 #endif
 
-std::ostream& System::OS::operator<<(std::ostream& out, const System::OS::OsDesc& os) {
+std::ostream& System::OS::operator<<(std::ostream& out, const System::OS::OsDesc& os) noexcept {
     auto old_fmt = out.flags();
     auto old_w = out.width();
     out << std::left << std::setw(25) << "Operating System:" << std::right << std::setw(25) << os.VersionFriendly << '\n';
@@ -22,7 +22,7 @@ std::ostream& System::OS::operator<<(std::ostream& out, const System::OS::OsDesc
     return out;
 }
 
-System::OS::OsDesc System::OS::GetOsDesc() {
+System::OS::OsDesc System::OS::GetOsDesc() noexcept {
     OsDesc desc{};
     const auto& type = GetOperatingSystemType();
     desc.type = type;
@@ -30,7 +30,7 @@ System::OS::OsDesc System::OS::GetOsDesc() {
     return desc;
 }
 
-System::OS::OperatingSystem& System::OS::operator&=(OperatingSystem& a, const OperatingSystem& b) {
+System::OS::OperatingSystem& System::OS::operator&=(OperatingSystem& a, const OperatingSystem& b) noexcept {
     using underlying = std::underlying_type_t<OperatingSystem>;
     auto underlying_a = static_cast<underlying>(a);
     auto underlying_b = static_cast<underlying>(b);
@@ -38,12 +38,12 @@ System::OS::OperatingSystem& System::OS::operator&=(OperatingSystem& a, const Op
     return a;
 }
 
-System::OS::OperatingSystem System::OS::operator&(OperatingSystem a, const OperatingSystem& b) {
+System::OS::OperatingSystem System::OS::operator&(OperatingSystem a, const OperatingSystem& b) noexcept {
     a &= b;
     return a;
 }
 
-System::OS::OperatingSystem& System::OS::operator|=(OperatingSystem& a, const OperatingSystem& b) {
+System::OS::OperatingSystem& System::OS::operator|=(OperatingSystem& a, const OperatingSystem& b) noexcept {
     using underlying = std::underlying_type_t<OperatingSystem>;
     auto underlying_a = static_cast<underlying>(a);
     auto underlying_b = static_cast<underlying>(b);
@@ -51,24 +51,24 @@ System::OS::OperatingSystem& System::OS::operator|=(OperatingSystem& a, const Op
     return a;
 }
 
-System::OS::OperatingSystem System::OS::operator|(OperatingSystem a, const OperatingSystem& b) {
+System::OS::OperatingSystem System::OS::operator|(OperatingSystem a, const OperatingSystem& b) noexcept {
     a |= b;
     return a;
 }
 
-System::OS::OperatingSystem System::OS::operator~(const OperatingSystem& a) {
+System::OS::OperatingSystem System::OS::operator~(const OperatingSystem& a) noexcept {
     using underlying = std::underlying_type_t<OperatingSystem>;
     auto underlying_a = static_cast<underlying>(a);
     return static_cast<OperatingSystem>(~underlying_a);
 }
 
-System::OS::OperatingSystemArchitecture System::OS::GetOperatingSystemArchitecture() {
+System::OS::OperatingSystemArchitecture System::OS::GetOperatingSystemArchitecture() noexcept {
     OperatingSystemArchitecture arch{ OperatingSystemArchitecture::Unknown };
 #ifdef HAS_VERSION_HELPERS
     auto pid = ::GetCurrentProcess();
     USHORT process_machine_raw{};
     USHORT native_machine_raw{};
-    bool succeeded = SUCCEEDED(::IsWow64Process2(pid, &process_machine_raw, &native_machine_raw));
+    bool succeeded = !!::IsWow64Process2(pid, &process_machine_raw, &native_machine_raw);
     if(!succeeded) {
         return arch;
     }
@@ -81,13 +81,13 @@ System::OS::OperatingSystemArchitecture System::OS::GetOperatingSystemArchitectu
     return arch;
 }
 
-System::OS::OperatingSystem System::OS::GetOperatingSystemType() {
+System::OS::OperatingSystem System::OS::GetOperatingSystemType() noexcept {
     OperatingSystem type{ OperatingSystem::Unknown };
 #ifdef HAS_VERSION_HELPERS
     auto pid = ::GetCurrentProcess();
     USHORT process_machine_raw{};
     USHORT native_machine_raw{};
-    bool succeeded = SUCCEEDED(::IsWow64Process2(pid, &process_machine_raw, &native_machine_raw));
+    bool succeeded = !!::IsWow64Process2(pid, &process_machine_raw, &native_machine_raw);
     if(!succeeded) {
         return type;
     }
@@ -131,7 +131,7 @@ System::OS::OperatingSystem System::OS::GetOperatingSystemType() {
     return type;
 }
 
-std::string System::OS::GetFriendlyStringFromOperatingSystemType(System::OS::OperatingSystem type) {
+std::string System::OS::GetFriendlyStringFromOperatingSystemType(System::OS::OperatingSystem type) noexcept {
     if((type & OperatingSystem::Windows) != OperatingSystem::Unknown) {
         std::string s{};
         if((type & OperatingSystem::Windows_x86) != OperatingSystem::Unknown) {

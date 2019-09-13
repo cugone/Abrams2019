@@ -29,7 +29,7 @@
 struct AdapterInfo {
     IDXGIAdapter4* adapter = nullptr;
     DXGI_ADAPTER_DESC3 desc{};
-    void Release() {
+    void Release() noexcept {
         if(adapter) {
             adapter->Release();
             adapter = nullptr;
@@ -37,7 +37,14 @@ struct AdapterInfo {
     }
 };
 
-GraphicsCardDesc AdapterInfoToGraphicsCardDesc(const AdapterInfo& adapterInfo);
+enum class AdapterPreference {
+    None
+    ,Unspecified = None
+    ,HighPerformance
+    ,MinimumPower
+};
+
+GraphicsCardDesc AdapterInfoToGraphicsCardDesc(const AdapterInfo& adapterInfo) noexcept;
 
 struct OutputInfo {
     IDXGIOutput6* output = nullptr;
@@ -54,50 +61,50 @@ using bitfield8_t = std::uint8_t;
 using bitfield16_t = std::uint16_t;
 using bitfield32_t = std::uint32_t;
 using bitfield64_t = std::uint64_t;
-bitfield8_t GetFilterMaskFromModes(const FilterMode& minFilterMode, const FilterMode& magFilterMode, const FilterMode& mipFilterMode, const FilterComparisonMode& minMaxComparison);
+bitfield8_t GetFilterMaskFromModes(const FilterMode& minFilterMode, const FilterMode& magFilterMode, const FilterMode& mipFilterMode, const FilterComparisonMode& minMaxComparison) noexcept;
 
-D3D11_FILTER FilterModeToD3DFilter(const FilterMode& minFilterMode, const FilterMode& magFilterMode, const FilterMode& mipFilterMode, const FilterComparisonMode& minMaxComparison);
-FilterMode FilterModeFromString(const char* str);
-FilterMode FilterModeFromString(std::string str);
+D3D11_FILTER FilterModeToD3DFilter(const FilterMode& minFilterMode, const FilterMode& magFilterMode, const FilterMode& mipFilterMode, const FilterComparisonMode& minMaxComparison) noexcept;
+FilterMode FilterModeFromString(const char* str) noexcept;
+FilterMode FilterModeFromString(std::string str) noexcept;
 
-FilterComparisonMode FilterComparisonModeFromString(const char* str);
-FilterComparisonMode FilterComparisonModeFromString(std::string str);
+FilterComparisonMode FilterComparisonModeFromString(const char* str) noexcept;
+FilterComparisonMode FilterComparisonModeFromString(std::string str) noexcept;
 
-D3D11_TEXTURE_ADDRESS_MODE AddressModeToD3DAddressMode(const TextureAddressMode& address_mode);
-TextureAddressMode TextureAddressModeFromString(const char* str);
-TextureAddressMode TextureAddressModeFromString(std::string str);
+D3D11_TEXTURE_ADDRESS_MODE AddressModeToD3DAddressMode(const TextureAddressMode& address_mode) noexcept;
+TextureAddressMode TextureAddressModeFromString(const char* str) noexcept;
+TextureAddressMode TextureAddressModeFromString(std::string str) noexcept;
 
-D3D11_COMPARISON_FUNC ComparisonFunctionToD3DComparisonFunction(const ComparisonFunction& compareFunc);
-ComparisonFunction ComparisonFunctionFromString(std::string str);
-ComparisonFunction ComparisonFunctionFromString(const char* str);
+D3D11_COMPARISON_FUNC ComparisonFunctionToD3DComparisonFunction(const ComparisonFunction& compareFunc) noexcept;
+ComparisonFunction ComparisonFunctionFromString(std::string str) noexcept;
+ComparisonFunction ComparisonFunctionFromString(const char* str) noexcept;
 
-D3D11_STENCIL_OP StencilOperationToD3DStencilOperation(const StencilOperation& stencil_operation);
-StencilOperation StencilOperationFromString(const char* str);
-StencilOperation StencilOperationFromString(std::string str);
+D3D11_STENCIL_OP StencilOperationToD3DStencilOperation(const StencilOperation& stencil_operation) noexcept;
+StencilOperation StencilOperationFromString(const char* str) noexcept;
+StencilOperation StencilOperationFromString(std::string str) noexcept;
 
-D3D11_USAGE BufferUsageToD3DUsage(const BufferUsage& usage);
-D3D11_BIND_FLAG BufferBindUsageToD3DBindFlags(const BufferBindUsage& bindFlags);
-D3D11_CPU_ACCESS_FLAG CPUAccessFlagFromUsage(const BufferUsage& usage);
+D3D11_USAGE BufferUsageToD3DUsage(const BufferUsage& usage) noexcept;
+D3D11_BIND_FLAG BufferBindUsageToD3DBindFlags(const BufferBindUsage& bindFlags) noexcept;
+D3D11_CPU_ACCESS_FLAG CPUAccessFlagFromUsage(const BufferUsage& usage) noexcept;
 
-D3D11_PRIMITIVE_TOPOLOGY PrimitiveTypeToD3dTopology(const PrimitiveType& topology);
+D3D11_PRIMITIVE_TOPOLOGY PrimitiveTypeToD3dTopology(const PrimitiveType& topology) noexcept;
 
-DXGI_FORMAT ImageFormatToDxgiFormat(const ImageFormat& format);
-ImageFormat DxgiFormatToImageFormat(DXGI_FORMAT format);
+DXGI_FORMAT ImageFormatToDxgiFormat(const ImageFormat& format) noexcept;
+ImageFormat DxgiFormatToImageFormat(DXGI_FORMAT format) noexcept;
 
-D3D11_BLEND BlendFactorToD3DBlendFactor(const BlendFactor& factor);
-D3D11_BLEND_OP BlendOpToD3DBlendOp(const BlendOperation& op);
-UINT8 BlendColorWriteEnableToD3DBlendColorWriteEnable(const BlendColorWriteEnable& rt_mask);
+D3D11_BLEND BlendFactorToD3DBlendFactor(const BlendFactor& factor) noexcept;
+D3D11_BLEND_OP BlendOpToD3DBlendOp(const BlendOperation& op) noexcept;
+UINT8 BlendColorWriteEnableToD3DBlendColorWriteEnable(const BlendColorWriteEnable& rt_mask) noexcept;
 
-BlendFactor BlendFactorFromString(std::string str);
-BlendOperation BlendOperationFromString(std::string str);
-BlendColorWriteEnable BlendColorWriteEnableFromString(std::string str);
+BlendFactor BlendFactorFromString(std::string str) noexcept;
+BlendOperation BlendOperationFromString(std::string str) noexcept;
+BlendColorWriteEnable BlendColorWriteEnableFromString(std::string str) noexcept;
 
-D3D11_FILL_MODE FillModeToD3DFillMode(const FillMode& fillmode);
-D3D11_CULL_MODE CullModeToD3DCullMode(const CullMode& fillmode);
-FillMode FillModeFromString(std::string str);
-CullMode CullModeFromString(std::string str);
+D3D11_FILL_MODE FillModeToD3DFillMode(const FillMode& fillmode) noexcept;
+D3D11_CULL_MODE CullModeToD3DCullMode(const CullMode& fillmode) noexcept;
+FillMode FillModeFromString(std::string str) noexcept;
+CullMode CullModeFromString(std::string str) noexcept;
 
-D3D11_RESOURCE_MISC_FLAG ResourceMiscFlagToD3DMiscFlag(const ResourceMiscFlag& flags);
+D3D11_RESOURCE_MISC_FLAG ResourceMiscFlagToD3DMiscFlag(const ResourceMiscFlag& flags) noexcept;
 
-std::string PipelineStageToString(const PipelineStage& stage);
-PipelineStage PipelineStageFromString(std::string stage);
+std::string PipelineStageToString(const PipelineStage& stage) noexcept;
+PipelineStage PipelineStageFromString(std::string stage) noexcept;

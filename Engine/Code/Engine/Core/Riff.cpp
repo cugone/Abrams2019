@@ -10,7 +10,7 @@
 namespace FileUtils {
 
 namespace RiffChunkID {
-constexpr const bool IsValid(const char* id) {
+constexpr const bool IsValid(const char* id) noexcept {
     return (StringUtils::FourCC(id) == RiffChunkID::RIFF
             || StringUtils::FourCC(id) == RiffChunkID::LIST
             || StringUtils::FourCC(id) == RiffChunkID::INFO
@@ -19,7 +19,7 @@ constexpr const bool IsValid(const char* id) {
 }
 } //End RiffChunkID
 
-bool Riff::ParseDataIntoChunks(std::vector<unsigned char>& buffer) {
+bool Riff::ParseDataIntoChunks(std::vector<unsigned char>& buffer) noexcept {
     std::stringstream stream(std::ios_base::in | std::ios_base::out | std::ios_base::binary);
     stream.write(reinterpret_cast<const char*>(buffer.data()), buffer.size());
     buffer.clear();
@@ -38,8 +38,9 @@ bool Riff::ParseDataIntoChunks(std::vector<unsigned char>& buffer) {
                 if(!stream.read(reinterpret_cast<char*>(&subdata->fourcc), 4)) {
                     return false;
                 }
-                subdata->subdata = std::move(std::make_unique<uint8_t[]>(cur_header.length - 4));
-                if(!stream.read(reinterpret_cast<char*>(subdata->subdata.get()), cur_header.length - 4)) {
+                subdata->subdata_length = cur_header.length - 4;
+                subdata->subdata = std::move(std::make_unique<uint8_t[]>(subdata->subdata_length));
+                if(!stream.read(reinterpret_cast<char*>(subdata->subdata.get()), subdata->subdata_length)) {
                     return false;
                 }
                 cur_chunk->data = std::move(subdata);
@@ -51,8 +52,9 @@ bool Riff::ParseDataIntoChunks(std::vector<unsigned char>& buffer) {
                 if(!stream.read(reinterpret_cast<char*>(&subdata->fourcc), 4)) {
                     return false;
                 }
-                subdata->subdata = std::move(std::make_unique<uint8_t[]>(cur_header.length - 4));
-                if(!stream.read(reinterpret_cast<char*>(subdata->subdata.get()), cur_header.length - 4)) {
+                subdata->subdata_length = cur_header.length - 4;
+                subdata->subdata = std::move(std::make_unique<uint8_t[]>(subdata->subdata_length));
+                if(!stream.read(reinterpret_cast<char*>(subdata->subdata.get()), subdata->subdata_length)) {
                     return false;
                 }
                 {
@@ -62,7 +64,7 @@ bool Riff::ParseDataIntoChunks(std::vector<unsigned char>& buffer) {
                     std::string len{"Length: "};
                     len += std::to_string(cur_header.length);
                     err_ss.write(len.c_str(), len.size());
-                    err_ss.write(reinterpret_cast<char*>(subdata->subdata.get()), cur_header.length - 4);
+                    err_ss.write(reinterpret_cast<char*>(subdata->subdata.get()), subdata->subdata_length);
                     DebuggerPrintf(err_ss.str().c_str());
                 }
                 cur_chunk->data = std::move(subdata);
@@ -74,10 +76,10 @@ bool Riff::ParseDataIntoChunks(std::vector<unsigned char>& buffer) {
                 if(!stream.read(reinterpret_cast<char*>(&subdata->fourcc), 4)) {
                     return false;
                 }
-                auto subdata_length = cur_header.length - 4;
-                subdata->subdata = std::move(std::make_unique<uint8_t[]>(subdata_length));
+                subdata->subdata_length = cur_header.length - 4;
+                subdata->subdata = std::move(std::make_unique<uint8_t[]>(subdata->subdata_length));
                 auto subdata_head = subdata->subdata.get();
-                if(!stream.read(reinterpret_cast<char*>(subdata_head), subdata_length)) {
+                if(!stream.read(reinterpret_cast<char*>(subdata_head), subdata->subdata_length)) {
                     return false;
                 }
                 cur_chunk = std::move(ReadListChunk(stream));
@@ -109,7 +111,7 @@ bool Riff::ParseDataIntoChunks(std::vector<unsigned char>& buffer) {
     return true;
 }
 
-void Riff::ShowRiffChunkHeaders() {
+void Riff::ShowRiffChunkHeaders() noexcept {
 #ifdef AUDIO_DEBUG
     std::ostringstream ss;
     ss << "Chunks:\n";
@@ -129,7 +131,7 @@ void Riff::ShowRiffChunkHeaders() {
                << chunk->data->fourcc[2]
                << chunk->data->fourcc[3];
             ss << '\n';
-            ss << "Length: " << sizeof(chunk->data->subdata.get()) / sizeof(chunk->data->subdata[0]) << '\n';
+            ss << "Length: " << chunk->data->subdata_length << '\n';
         }
         ss << "------------\n";
     }
@@ -138,7 +140,7 @@ void Riff::ShowRiffChunkHeaders() {
 #endif
 }
 
-Riff::RiffChunk* Riff::GetNextChunk() {
+Riff::RiffChunk* Riff::GetNextChunk() noexcept {
     if(_current_chunk == _chunks.end()) {
         return nullptr;
     }
@@ -147,7 +149,7 @@ Riff::RiffChunk* Riff::GetNextChunk() {
     return chunk;
 }
 
-unsigned int Riff::Load(const std::string& filename) {
+unsigned int Riff::Load(std::filesystem::path filename) noexcept {
     std::vector<unsigned char> buffer{};
     if(!FileUtils::ReadBufferFromFile(buffer, filename)) {
         return RIFF_ERROR_INVALID_ARGUMENT;
@@ -155,7 +157,7 @@ unsigned int Riff::Load(const std::string& filename) {
     return Load(buffer);
 }
 
-unsigned int Riff::Load(const std::vector<unsigned char>& data) {
+unsigned int Riff::Load(const std::vector<unsigned char>& data) noexcept {
     std::vector<unsigned char> buffer = data;
     if(!ParseDataIntoChunks(buffer)) {
         return RIFF_ERROR_NOT_A_RIFF;
@@ -164,7 +166,7 @@ unsigned int Riff::Load(const std::vector<unsigned char>& data) {
     return RIFF_SUCCESS;
 }
 
-std::unique_ptr<Riff::RiffChunk> Riff::ReadListChunk(std::stringstream& stream) {
+std::unique_ptr<Riff::RiffChunk> Riff::ReadListChunk(std::stringstream& stream) noexcept {
     if(!stream) {
         return false;
     }

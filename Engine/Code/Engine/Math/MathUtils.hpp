@@ -67,197 +67,195 @@ constexpr const long double BYTES_KIB_RATIO = 1024.0L;                          
 constexpr const long double BYTES_MIB_RATIO = 1048576.0L;                         // Bytes/Megabytes
 constexpr const long double BYTES_GIB_RATIO = 1073741824.0L;                      // Bytes/Gigabytes
 
-void SetRandomEngineSeed(unsigned int seed);
-std::random_device& GetRandomDevice();
-std::mt19937& GetMTRandomEngine(unsigned int seed = 0);
-std::mt19937_64& GetMT64RandomEngine(unsigned int seed = 0);
+void SetRandomEngineSeed(unsigned int seed) noexcept;
+std::random_device& GetRandomDevice() noexcept;
+std::mt19937& GetMTRandomEngine(unsigned int seed = 0) noexcept;
+std::mt19937_64& GetMT64RandomEngine(unsigned int seed = 0) noexcept;
 
-std::pair<float, float> SplitFloatingPointValue(float value);
-std::pair<double, double> SplitFloatingPointValue(double value);
-std::pair<long double, long double> SplitFloatingPointValue(long double value);
+std::pair<float, float> SplitFloatingPointValue(float value) noexcept;
+std::pair<double, double> SplitFloatingPointValue(double value) noexcept;
+std::pair<long double, long double> SplitFloatingPointValue(long double value) noexcept;
 
-float ConvertDegreesToRadians(float degrees);
-float ConvertRadiansToDegrees(float radians);
+float ConvertDegreesToRadians(float degrees) noexcept;
+float ConvertRadiansToDegrees(float radians) noexcept;
 
-bool GetRandomBool();
+bool GetRandomBool() noexcept;
 
-int GetRandomIntLessThan(int maxValueNotInclusive);
-int GetRandomIntInRange(int minInclusive, int maxInclusive);
+int GetRandomIntLessThan(int maxValueNotInclusive) noexcept;
+int GetRandomIntInRange(int minInclusive, int maxInclusive) noexcept;
 
-long GetRandomLongLessThan(long maxValueNotInclusive);
-long GetRandomLongInRange(long minInclusive, long maxInclusive);
+long GetRandomLongLessThan(long maxValueNotInclusive) noexcept;
+long GetRandomLongInRange(long minInclusive, long maxInclusive) noexcept;
 
-long long GetRandomLongLongLessThan(long long maxValueNotInclusive);
-long long GetRandomLongLongInRange(long long minInclusive, long long maxInclusive);
+long long GetRandomLongLongLessThan(long long maxValueNotInclusive) noexcept;
+long long GetRandomLongLongInRange(long long minInclusive, long long maxInclusive) noexcept;
 
-float GetRandomFloatInRange(float minInclusive, float maxInclusive);
-float GetRandomFloatZeroToOne();
-float GetRandomFloatZeroUpToOne();
-float GetRandomFloatNegOneToOne();
-bool IsPercentChance(float probability);
+float GetRandomFloatInRange(float minInclusive, float maxInclusive) noexcept;
+float GetRandomFloatZeroToOne() noexcept;
+float GetRandomFloatZeroUpToOne() noexcept;
+float GetRandomFloatNegOneToOne() noexcept;
+bool IsPercentChance(float probability) noexcept;
 
-double GetRandomDoubleInRange(double minInclusive, double maxInclusive);
-double GetRandomDoubleZeroToOne();
-double GetRandomDoubleZeroUpToOne();
-double GetRandomDoubleNegOneToOne();
-bool IsPercentChance(double probability);
+double GetRandomDoubleInRange(double minInclusive, double maxInclusive) noexcept;
+double GetRandomDoubleZeroToOne() noexcept;
+double GetRandomDoubleZeroUpToOne() noexcept;
+double GetRandomDoubleNegOneToOne() noexcept;
+bool IsPercentChance(double probability) noexcept;
 
-long double GetRandomLongDoubleInRange(long double minInclusive, long double maxInclusive);
-long double GetRandomLongDoubleZeroToOne();
-long double GetRandomLongDoubleZeroUpToOne();
-long double GetRandomLongDoubleNegOneToOne();
-bool IsPercentChance(long double probability);
-
-
-float CosDegrees(float degrees);
-float SinDegrees(float degrees);
-float Atan2Degrees(float y, float x);
-
-bool IsEquivalent(float a, float b, float epsilon = 0.00001f);
-bool IsEquivalent(double a, double b, double epsilon = 0.0001);
-bool IsEquivalent(long double a, long double b, long double epsilon = 0.0001L);
-bool IsEquivalent(const Vector2& a, const Vector2& b, float epsilon = 0.0001f);
-bool IsEquivalent(const Vector3& a, const Vector3& b, float epsilon = 0.0001f);
-bool IsEquivalent(const Vector4& a, const Vector4& b, float epsilon = 0.0001f);
-bool IsEquivalent(const Quaternion& a, const Quaternion& b, float epsilon = 0.0001f);
-
-bool IsEquivalentOrLessThan(float a, float b, float epsilon = 0.00001f);
-bool IsEquivalentOrLessThan(double a, double b, double epsilon = 0.0001);
-bool IsEquivalentOrLessThan(long double a, long double b, long double epsilon = 0.0001L);
-
-bool IsEquivalentToZero(float a, float epsilon = 0.00001f);
-bool IsEquivalentToZero(double a, double epsilon = 0.0001);
-bool IsEquivalentToZero(long double a, long double epsilon = 0.0001L);
-bool IsEquivalentToZero(const Vector2& a, float epsilon = 0.0001f);
-bool IsEquivalentToZero(const Vector3& a, float epsilon = 0.0001f);
-bool IsEquivalentToZero(const Vector4& a, float epsilon = 0.0001f);
-bool IsEquivalentToZero(const Quaternion& a, float epsilon = 0.0001f);
-
-float CalcDistance(const Vector2& a, const Vector2& b);
-float CalcDistance(const Vector3& a, const Vector3& b);
-float CalcDistance(const Vector4& a, const Vector4& b);
-float CalcDistance(const Vector2& p, const LineSegment2& line);
-float CalcDistance(const Vector3& p, const LineSegment3& line);
-
-float CalcDistanceSquared(const Vector2& a, const Vector2& b);
-float CalcDistanceSquared(const Vector3& a, const Vector3& b);
-float CalcDistanceSquared(const Vector4& a, const Vector4& b);
-float CalcDistanceSquared(const Vector2& p, const LineSegment2& line);
-float CalcDistanceSquared(const Vector3& p, const LineSegment3& line);
-
-Vector3 CrossProduct(const Vector3& a, const Vector3& b);
-
-float DotProduct(const Vector2& a, const Vector2& b);
-float DotProduct(const Vector3& a, const Vector3& b);
-float DotProduct(const Vector4& a, const Vector4& b);
-float DotProduct(const Quaternion& a, const Quaternion& b);
-
-Vector2 Project(const Vector2& a, const Vector2& b);
-Vector3 Project(const Vector3& a, const Vector3& b);
-Vector4 Project(const Vector4& a, const Vector4& b);
-
-Vector2 Reflect(const Vector2& in, const Vector2& normal);
-Vector3 Reflect(const Vector3& in, const Vector3& normal);
-Vector4 Reflect(const Vector4& in, const Vector4& normal);
-
-Vector2 Rotate(const Vector2& v, const Quaternion& q);
-Vector3 Rotate(const Vector3& v, const Quaternion& q);
-
-Vector2 ProjectAlongPlane(const Vector2& v, const Vector2& n);
-Vector3 ProjectAlongPlane(const Vector3& v, const Vector3& n);
-Vector4 ProjectAlongPlane(const Vector4& v, const Vector4& n);
-
-unsigned int CalculateManhattanDistance(const IntVector2& start, const IntVector2& end);
-unsigned int CalculateManhattanDistance(const IntVector3& start, const IntVector3& end);
-unsigned int CalculateManhattanDistance(const IntVector4& start, const IntVector4& end);
-
-Vector2 GetRandomPointOn(const AABB2& aabb);
-Vector2 GetRandomPointOn(const Disc2& disc);
-Vector2 GetRandomPointOn(const LineSegment2& line);
-
-Vector3 GetRandomPointOn(const AABB3& aabb);
-Vector3 GetRandomPointOn(const Sphere3& sphere);
-Vector3 GetRandomPointOn(const LineSegment3& line);
-
-Vector2 GetRandomPointInside(const AABB2& aabb);
-Vector2 GetRandomPointInside(const Disc2& disc);
-
-Vector3 GetRandomPointInside(const AABB3& aabb);
-Vector3 GetRandomPointInside(const Sphere3& sphere);
+long double GetRandomLongDoubleInRange(long double minInclusive, long double maxInclusive) noexcept;
+long double GetRandomLongDoubleZeroToOne() noexcept;
+long double GetRandomLongDoubleZeroUpToOne() noexcept;
+long double GetRandomLongDoubleNegOneToOne() noexcept;
+bool IsPercentChance(long double probability) noexcept;
 
 
-bool IsPointInside(const AABB2& aabb, const Vector2& point);
-bool IsPointInside(const AABB3& aabb, const Vector3& point);
-bool IsPointInside(const OBB2& obb, const Vector2& point);
-bool IsPointInside(const Disc2& disc, const Vector2& point);
-bool IsPointInside(const Capsule2& capsule, const Vector2& point);
-bool IsPointInside(const Sphere3& sphere, const Vector3& point);
-bool IsPointInside(const Capsule3& capsule, const Vector3& point);
+float CosDegrees(float degrees) noexcept;
+float SinDegrees(float degrees) noexcept;
+float Atan2Degrees(float y, float x) noexcept;
 
-bool IsPointOn(const Disc2& disc, const Vector2& point);
-bool IsPointOn(const LineSegment2& line, const Vector2& point);
-bool IsPointOn(const Capsule2& capsule, const Vector2& point);
-bool IsPointOn(const LineSegment3& line, const Vector3& point);
-bool IsPointOn(const Sphere3& sphere, const Vector3& point);
-bool IsPointOn(const Capsule3& capsule, const Vector3& point);
+bool IsEquivalent(float a, float b, float epsilon = 0.00001f) noexcept;
+bool IsEquivalent(double a, double b, double epsilon = 0.0001) noexcept;
+bool IsEquivalent(long double a, long double b, long double epsilon = 0.0001L) noexcept;
+bool IsEquivalent(const Vector2& a, const Vector2& b, float epsilon = 0.0001f) noexcept;
+bool IsEquivalent(const Vector3& a, const Vector3& b, float epsilon = 0.0001f) noexcept;
+bool IsEquivalent(const Vector4& a, const Vector4& b, float epsilon = 0.0001f) noexcept;
+bool IsEquivalent(const Quaternion& a, const Quaternion& b, float epsilon = 0.0001f) noexcept;
 
-Vector2 CalcClosestPoint(const Vector2& p, const AABB2& aabb);
-Vector3 CalcClosestPoint(const Vector3& p, const AABB3& aabb);
-Vector2 CalcClosestPoint(const Vector2& p, const Disc2& disc);
-Vector2 CalcClosestPoint(const Vector2& p, const LineSegment2& line);
-Vector2 CalcClosestPoint(const Vector2& p, const Capsule2& capsule);
-Vector3 CalcClosestPoint(const Vector3& p, const LineSegment3& line);
-Vector3 CalcClosestPoint(const Vector3& p, const Sphere3& sphere);
-Vector3 CalcClosestPoint(const Vector3& p, const Capsule3& capsule);
+bool IsEquivalentOrLessThan(float a, float b, float epsilon = 0.00001f) noexcept;
+bool IsEquivalentOrLessThan(double a, double b, double epsilon = 0.0001) noexcept;
+bool IsEquivalentOrLessThan(long double a, long double b, long double epsilon = 0.0001L) noexcept;
 
-Vector2 CalcNormalizedPointFromPoint(const Vector2& pos, const AABB2& bounds);
-Vector2 CalcPointFromNormalizedPoint(const Vector2& uv, const AABB2& bounds);
-Vector2 CalcNormalizedHalfExtentsFromPoint(const Vector2& pos, const AABB2& bounds);
-Vector2 CalcPointFromNormalizedHalfExtents(const Vector2& uv, const AABB2& bounds);
+bool IsEquivalentToZero(float a, float epsilon = 0.00001f) noexcept;
+bool IsEquivalentToZero(double a, double epsilon = 0.0001) noexcept;
+bool IsEquivalentToZero(long double a, long double epsilon = 0.0001L) noexcept;
+bool IsEquivalentToZero(const Vector2& a, float epsilon = 0.0001f) noexcept;
+bool IsEquivalentToZero(const Vector3& a, float epsilon = 0.0001f) noexcept;
+bool IsEquivalentToZero(const Vector4& a, float epsilon = 0.0001f) noexcept;
+bool IsEquivalentToZero(const Quaternion& a, float epsilon = 0.0001f) noexcept;
 
-bool DoDiscsOverlap(const Disc2& a, const Disc2& b);
-bool DoDiscsOverlap(const Vector2& centerA, float radiusA, const Vector2& centerB, float radiusB);
-bool DoDiscsOverlap(const Disc2& a, const Capsule2& b);
+float CalcDistance(const Vector2& a, const Vector2& b) noexcept;
+float CalcDistance(const Vector3& a, const Vector3& b) noexcept;
+float CalcDistance(const Vector4& a, const Vector4& b) noexcept;
+float CalcDistance(const Vector2& p, const LineSegment2& line) noexcept;
+float CalcDistance(const Vector3& p, const LineSegment3& line) noexcept;
 
-bool DoSpheresOverlap(const Sphere3& a, const Sphere3& b);
-bool DoSpheresOverlap(const Vector3& centerA, float radiusA, const Vector3& centerB, float radiusB);
-bool DoSpheresOverlap(const Sphere3& a, const Capsule3& b);
+float CalcDistanceSquared(const Vector2& a, const Vector2& b) noexcept;
+float CalcDistanceSquared(const Vector3& a, const Vector3& b) noexcept;
+float CalcDistanceSquared(const Vector4& a, const Vector4& b) noexcept;
+float CalcDistanceSquared(const Vector2& p, const LineSegment2& line) noexcept;
+float CalcDistanceSquared(const Vector3& p, const LineSegment3& line) noexcept;
 
-bool DoAABBsOverlap(const AABB2& a, const AABB2& b);
-bool DoAABBsOverlap(const AABB3& a, const AABB3& b);
+Vector3 CrossProduct(const Vector3& a, const Vector3& b) noexcept;
 
-bool DoOBBsOverlap(const OBB2& a, const OBB2& b);
+float DotProduct(const Vector2& a, const Vector2& b) noexcept;
+float DotProduct(const Vector3& a, const Vector3& b) noexcept;
+float DotProduct(const Vector4& a, const Vector4& b) noexcept;
+float DotProduct(const Quaternion& a, const Quaternion& b) noexcept;
+
+Vector2 Project(const Vector2& a, const Vector2& b) noexcept;
+Vector3 Project(const Vector3& a, const Vector3& b) noexcept;
+Vector4 Project(const Vector4& a, const Vector4& b) noexcept;
+
+Vector2 Reflect(const Vector2& in, const Vector2& normal) noexcept;
+Vector3 Reflect(const Vector3& in, const Vector3& normal) noexcept;
+Vector4 Reflect(const Vector4& in, const Vector4& normal) noexcept;
+
+Vector2 Rotate(const Vector2& v, const Quaternion& q) noexcept;
+Vector3 Rotate(const Vector3& v, const Quaternion& q) noexcept;
+
+Vector2 ProjectAlongPlane(const Vector2& v, const Vector2& n) noexcept;
+Vector3 ProjectAlongPlane(const Vector3& v, const Vector3& n) noexcept;
+Vector4 ProjectAlongPlane(const Vector4& v, const Vector4& n) noexcept;
+
+unsigned int CalculateManhattanDistance(const IntVector2& start, const IntVector2& end) noexcept;
+unsigned int CalculateManhattanDistance(const IntVector3& start, const IntVector3& end) noexcept;
+unsigned int CalculateManhattanDistance(const IntVector4& start, const IntVector4& end) noexcept;
+
+Vector2 GetRandomPointOn(const AABB2& aabb) noexcept;
+Vector2 GetRandomPointOn(const Disc2& disc) noexcept;
+Vector2 GetRandomPointOn(const LineSegment2& line) noexcept;
+
+Vector3 GetRandomPointOn(const AABB3& aabb) noexcept;
+Vector3 GetRandomPointOn(const Sphere3& sphere) noexcept;
+Vector3 GetRandomPointOn(const LineSegment3& line) noexcept;
+
+Vector2 GetRandomPointInside(const AABB2& aabb) noexcept;
+Vector2 GetRandomPointInside(const Disc2& disc) noexcept;
+
+Vector3 GetRandomPointInside(const AABB3& aabb) noexcept;
+Vector3 GetRandomPointInside(const Sphere3& sphere) noexcept;
 
 
-bool DoLineSegmentOverlap(const Disc2& a, const LineSegment2& b);
-bool DoLineSegmentOverlap(const Sphere3& a, const LineSegment3& b);
+bool IsPointInside(const AABB2& aabb, const Vector2& point) noexcept;
+bool IsPointInside(const AABB3& aabb, const Vector3& point) noexcept;
+bool IsPointInside(const OBB2& obb, const Vector2& point) noexcept;
+bool IsPointInside(const Disc2& disc, const Vector2& point) noexcept;
+bool IsPointInside(const Capsule2& capsule, const Vector2& point) noexcept;
+bool IsPointInside(const Sphere3& sphere, const Vector3& point) noexcept;
+bool IsPointInside(const Capsule3& capsule, const Vector3& point) noexcept;
 
-bool DoCapsuleOverlap(const Disc2& a, const Capsule2& b);
-bool DoCapsuleOverlap(const Sphere3& a, const Capsule3& b);
+bool IsPointOn(const Disc2& disc, const Vector2& point) noexcept;
+bool IsPointOn(const LineSegment2& line, const Vector2& point) noexcept;
+bool IsPointOn(const Capsule2& capsule, const Vector2& point) noexcept;
+bool IsPointOn(const LineSegment3& line, const Vector3& point) noexcept;
+bool IsPointOn(const Sphere3& sphere, const Vector3& point) noexcept;
+bool IsPointOn(const Capsule3& capsule, const Vector3& point) noexcept;
 
-bool DoPlaneOverlap(const Disc2& a, const Plane2& b);
-bool DoPlaneOverlap(const Sphere3& a, const Plane3& b);
-bool DoPlaneOverlap(const Capsule2& a, const Plane2& b);
-bool DoPlaneOverlap(const Capsule3& a, const Plane3& b);
+Vector2 CalcClosestPoint(const Vector2& p, const AABB2& aabb) noexcept;
+Vector3 CalcClosestPoint(const Vector3& p, const AABB3& aabb) noexcept;
+Vector2 CalcClosestPoint(const Vector2& p, const Disc2& disc) noexcept;
+Vector2 CalcClosestPoint(const Vector2& p, const LineSegment2& line) noexcept;
+Vector2 CalcClosestPoint(const Vector2& p, const Capsule2& capsule) noexcept;
+Vector3 CalcClosestPoint(const Vector3& p, const LineSegment3& line) noexcept;
+Vector3 CalcClosestPoint(const Vector3& p, const Sphere3& sphere) noexcept;
+Vector3 CalcClosestPoint(const Vector3& p, const Capsule3& capsule) noexcept;
 
-bool IsPointInFrontOfPlane(const Vector3& point, const Plane3& plane);
-bool IsPointBehindOfPlane(const Vector3& point, const Plane3& plane);
-bool IsPointOnPlane(const Vector3& point, const Plane3& plane);
+Vector2 CalcNormalizedPointFromPoint(const Vector2& pos, const AABB2& bounds) noexcept;
+Vector2 CalcPointFromNormalizedPoint(const Vector2& uv, const AABB2& bounds) noexcept;
+Vector2 CalcNormalizedHalfExtentsFromPoint(const Vector2& pos, const AABB2& bounds) noexcept;
+Vector2 CalcPointFromNormalizedHalfExtents(const Vector2& uv, const AABB2& bounds) noexcept;
 
-bool IsPointInFrontOfPlane(const Vector2& point, const Plane2& plane);
-bool IsPointBehindOfPlane(const Vector2& point, const Plane2& plane);
-bool IsPointOnPlane(const Vector2& point, const Plane2& plane);
+bool DoDiscsOverlap(const Disc2& a, const Disc2& b) noexcept;
+bool DoDiscsOverlap(const Vector2& centerA, float radiusA, const Vector2& centerB, float radiusB) noexcept;
+bool DoDiscsOverlap(const Disc2& a, const Capsule2& b) noexcept;
+
+bool DoSpheresOverlap(const Sphere3& a, const Sphere3& b) noexcept;
+bool DoSpheresOverlap(const Vector3& centerA, float radiusA, const Vector3& centerB, float radiusB) noexcept;
+bool DoSpheresOverlap(const Sphere3& a, const Capsule3& b) noexcept;
+
+bool DoAABBsOverlap(const AABB2& a, const AABB2& b) noexcept;
+bool DoAABBsOverlap(const AABB3& a, const AABB3& b) noexcept;
+bool DoOBBsOverlap(const OBB2& a, const OBB2& b) noexcept;
+
+bool DoLineSegmentOverlap(const Disc2& a, const LineSegment2& b) noexcept;
+bool DoLineSegmentOverlap(const Sphere3& a, const LineSegment3& b) noexcept;
+
+bool DoCapsuleOverlap(const Disc2& a, const Capsule2& b) noexcept;
+bool DoCapsuleOverlap(const Sphere3& a, const Capsule3& b) noexcept;
+
+bool DoPlaneOverlap(const Disc2& a, const Plane2& b) noexcept;
+bool DoPlaneOverlap(const Sphere3& a, const Plane3& b) noexcept;
+bool DoPlaneOverlap(const Capsule2& a, const Plane2& b) noexcept;
+bool DoPlaneOverlap(const Capsule3& a, const Plane3& b) noexcept;
+
+bool IsPointInFrontOfPlane(const Vector3& point, const Plane3& plane) noexcept;
+bool IsPointBehindOfPlane(const Vector3& point, const Plane3& plane) noexcept;
+bool IsPointOnPlane(const Vector3& point, const Plane3& plane) noexcept;
+
+bool IsPointInFrontOfPlane(const Vector2& point, const Plane2& plane) noexcept;
+bool IsPointBehindOfPlane(const Vector2& point, const Plane2& plane) noexcept;
+bool IsPointOnPlane(const Vector2& point, const Plane2& plane) noexcept;
 
 //Column major
 float CalculateMatrix3Determinant(float m00, float m01, float m02,
-                                  float m10, float m11, float m12,
-                                  float m20, float m21, float m22);
+    float m10, float m11, float m12,
+    float m20, float m21, float m22) noexcept;
 
 //Column major
 float CalculateMatrix2Determinant(float m00, float m01,
-                                  float m10, float m11);
+    float m10, float m11) noexcept;
 
-Quaternion SLERP(const Quaternion& a, const Quaternion& b, float t);
+Quaternion SLERP(const Quaternion& a, const Quaternion& b, float t) noexcept;
 
 template<typename T>
 T Interpolate(const T& a, const T& b, float t) {

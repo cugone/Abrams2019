@@ -3,7 +3,7 @@
 #include "Engine/Core/BuildConfig.hpp"
 #include "Engine/Renderer/DirectX/DX11.hpp"
 
-Texture3D::Texture3D(const RHIDevice* device, ID3D11Texture3D* dxTexture)
+Texture3D::Texture3D(const RHIDevice* device, ID3D11Texture3D* dxTexture) noexcept
     : Texture(device)
     , _dx_tex(dxTexture)
 {
@@ -16,7 +16,7 @@ void Texture3D::SetDebugName([[maybe_unused]] const std::string& name) const noe
 #endif
 }
 
-Texture3D::~Texture3D() {
+Texture3D::~Texture3D() noexcept {
     _device = nullptr;
     if(_dx_tex) {
         _dx_tex->Release();
@@ -24,7 +24,7 @@ Texture3D::~Texture3D() {
     }
 }
 
-ID3D11Resource* Texture3D::GetDxResource() const {
+ID3D11Resource* Texture3D::GetDxResource() const noexcept {
     return _dx_tex;
 }
 

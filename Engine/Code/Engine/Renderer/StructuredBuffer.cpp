@@ -6,7 +6,7 @@
 #include "Engine/RHI/RHIDeviceContext.hpp"
 
 
-StructuredBuffer::StructuredBuffer(const RHIDevice* owner, const buffer_t& buffer, std::size_t element_size, std::size_t element_count, const BufferUsage& usage, const BufferBindUsage& bindUsage)
+StructuredBuffer::StructuredBuffer(const RHIDevice* owner, const buffer_t& buffer, std::size_t element_size, std::size_t element_count, const BufferUsage& usage, const BufferBindUsage& bindUsage) noexcept
     : Buffer<void*>()
     , _element_count(element_count)
     , _element_size(element_size)
@@ -44,14 +44,14 @@ StructuredBuffer::StructuredBuffer(const RHIDevice* owner, const buffer_t& buffe
 
 }
 
-StructuredBuffer::~StructuredBuffer() {
+StructuredBuffer::~StructuredBuffer() noexcept {
     if(IsValid()) {
         _dx_buffer->Release();
         _dx_buffer = nullptr;
     }
 }
 
-void StructuredBuffer::Update(RHIDeviceContext* context, const buffer_t& buffer) {
+void StructuredBuffer::Update(RHIDeviceContext* context, const buffer_t& buffer) noexcept {
     D3D11_MAPPED_SUBRESOURCE resource = {};
     auto dx_context = context->GetDxContext();
     HRESULT hr = dx_context->Map(_dx_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0U, &resource);

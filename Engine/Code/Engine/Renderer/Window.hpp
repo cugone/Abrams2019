@@ -11,44 +11,44 @@ class IntVector2;
 
 class Window {
 public:
-    Window();
-    explicit Window(const IntVector2& position, const IntVector2& dimensions);
-    ~Window();
+    Window() noexcept;
+    explicit Window(const IntVector2& position, const IntVector2& dimensions) noexcept;
+    ~Window() noexcept;
 
-    void Open();
-    void Close();
+    void Open() noexcept;
+    void Close() noexcept;
 
-    void Show();
-    void Hide();
-    void UnHide();
-    bool IsOpen();
-    bool IsClosed();
-    bool IsWindowed() const;
-    bool IsFullscreen() const;
+    void Show() noexcept;
+    void Hide() noexcept;
+    void UnHide() noexcept;
+    bool IsOpen() const noexcept;
+    bool IsClosed() const noexcept;
+    bool IsWindowed() const noexcept;
+    bool IsFullscreen() const noexcept;
 
-    IntVector2 GetDimensions() const;
-    IntVector2 GetPosition() const;
+    IntVector2 GetDimensions() const noexcept;
+    IntVector2 GetPosition() const noexcept;
 
-    void SetDimensionsAndPosition(const IntVector2& new_position, const IntVector2& new_size);
-    void SetPosition(const IntVector2& new_position);
-    void SetDimensions(const IntVector2& new_dimensions);
-    void SetForegroundWindow();
-    void SetFocus();
+    void SetDimensionsAndPosition(const IntVector2& new_position, const IntVector2& new_size) noexcept;
+    void SetPosition(const IntVector2& new_position) noexcept;
+    void SetDimensions(const IntVector2& new_dimensions) noexcept;
+    void SetForegroundWindow() noexcept;
+    void SetFocus() noexcept;
     
-    HWND GetWindowHandle() const;
-    void SetWindowHandle(HWND hWnd);
+    HWND GetWindowHandle() const noexcept;
+    void SetWindowHandle(HWND hWnd) noexcept;
 
-    const RHIOutputMode& GetDisplayMode() const;
-    void SetDisplayMode(const RHIOutputMode& display_mode);
+    const RHIOutputMode& GetDisplayMode() const noexcept;
+    void SetDisplayMode(const RHIOutputMode& display_mode) noexcept;
 
     std::function<bool(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)> custom_message_handler;
 
-    void SetTitle(const std::string& title);
+    void SetTitle(const std::string& title) noexcept;
 
 protected:
-    bool Register();
-    bool Unregister();
-    bool Create();
+    bool Register() noexcept;
+    bool Unregister() noexcept;
+    bool Create() noexcept;
 private:
     RHIOutputMode _currentDisplayMode = RHIOutputMode::Windowed;
     HWND _hWnd{};

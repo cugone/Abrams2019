@@ -15,28 +15,28 @@ const IntVector2 IntVector2::Y_AXIS(0, 1);
 const IntVector2 IntVector2::XY_AXIS(1, 1);
 const IntVector2 IntVector2::YX_AXIS(1, 1);
 
-IntVector2::IntVector2(int initialX, int initialY)
+IntVector2::IntVector2(int initialX, int initialY) noexcept
     : x(initialX)
     , y(initialY)
 {
     /* DO NOTHING */
 }
 
-IntVector2::IntVector2(const Vector2& v2)
+IntVector2::IntVector2(const Vector2& v2) noexcept
     : x(static_cast<int>(std::floor(v2.x)))
     , y(static_cast<int>(std::floor(v2.y)))
 {
     /* DO NOTHING */
 }
 
-IntVector2::IntVector2(const IntVector3& iv3)
+IntVector2::IntVector2(const IntVector3& iv3) noexcept
     : x(iv3.x)
     , y(iv3.y)
 {
     /* DO NOTHING */
 }
 
-IntVector2::IntVector2(const std::string& value)
+IntVector2::IntVector2(const std::string& value) noexcept
     : x(0)
     , y(0)
 {
@@ -56,36 +56,36 @@ IntVector2::IntVector2(const std::string& value)
     }
 }
 
-IntVector2 IntVector2::operator-() const {
+IntVector2 IntVector2::operator-() const noexcept {
     return IntVector2(-x, -y);
 }
 
-IntVector2 IntVector2::operator+(const IntVector2& rhs) const {
+IntVector2 IntVector2::operator+(const IntVector2& rhs) const noexcept {
     return IntVector2(x + rhs.x, y + rhs.y);
 }
 
-IntVector2& IntVector2::operator+=(const IntVector2& rhs) {
+IntVector2& IntVector2::operator+=(const IntVector2& rhs) noexcept {
     x += rhs.x;
     y += rhs.y;
     return *this;
 }
 
-IntVector2 IntVector2::operator-(const IntVector2& rhs) const {
+IntVector2 IntVector2::operator-(const IntVector2& rhs) const noexcept {
     return IntVector2(x - rhs.x, y - rhs.y);
 }
 
-IntVector2& IntVector2::operator-=(const IntVector2& rhs) {
+IntVector2& IntVector2::operator-=(const IntVector2& rhs) noexcept {
     x -= rhs.x;
     y -= rhs.y;
     return *this;
 }
 
-std::ostream& operator<<(std::ostream& out_stream, const IntVector2& v) {
+std::ostream& operator<<(std::ostream& out_stream, const IntVector2& v) noexcept {
     out_stream << '[' << v.x << ',' << v.y << ']';
     return out_stream;
 }
 
-std::istream& operator>>(std::istream& in_stream, IntVector2& v) {
+std::istream& operator>>(std::istream& in_stream, IntVector2& v) noexcept {
     int x = 0;
     int y = 0;
 
@@ -100,106 +100,106 @@ std::istream& operator>>(std::istream& in_stream, IntVector2& v) {
 
     return in_stream;
 }
-IntVector2 operator*(int lhs, const IntVector2& rhs) {
+IntVector2 operator*(int lhs, const IntVector2& rhs) noexcept {
     return IntVector2(lhs * rhs.x, lhs * rhs.y);
 }
 
-IntVector2 IntVector2::operator*(const IntVector2& rhs) const {
+IntVector2 IntVector2::operator*(const IntVector2& rhs) const noexcept {
     return IntVector2(x * rhs.x, y * rhs.y);
 }
 
-IntVector2& IntVector2::operator*=(const IntVector2& rhs) {
+IntVector2& IntVector2::operator*=(const IntVector2& rhs) noexcept {
     x *= rhs.x;
     y *= rhs.y;
     return *this;
 }
 
-IntVector2 IntVector2::operator*(int scalar) const {
+IntVector2 IntVector2::operator*(int scalar) const noexcept {
     return IntVector2(x * scalar, y * scalar);
 }
 
-IntVector2& IntVector2::operator*=(int scalar) {
+IntVector2& IntVector2::operator*=(int scalar) noexcept {
     x *= scalar;
     y *= scalar;
     return *this;
 }
 
-IntVector2 IntVector2::operator*(float scalar) const {
+IntVector2 IntVector2::operator*(float scalar) const noexcept {
     int nx = static_cast<int>(std::floor(static_cast<float>(x) * scalar));
     int ny = static_cast<int>(std::floor(static_cast<float>(y) * scalar));
     return IntVector2(nx, ny);
 }
 
-IntVector2& IntVector2::operator*=(float scalar) {
+IntVector2& IntVector2::operator*=(float scalar) noexcept {
     x = static_cast<int>(std::floor(static_cast<float>(x) * scalar));
     y = static_cast<int>(std::floor(static_cast<float>(y) * scalar));
     return *this;
 }
 
-IntVector2 IntVector2::operator/(const IntVector2& rhs) const {
+IntVector2 IntVector2::operator/(const IntVector2& rhs) const noexcept {
     return IntVector2(x / rhs.x, y / rhs.y);
 }
 
-IntVector2& IntVector2::operator/=(const IntVector2& rhs) {
+IntVector2& IntVector2::operator/=(const IntVector2& rhs) noexcept {
     x /= rhs.x;
     y /= rhs.y;
     return *this;
 }
 
-IntVector2 IntVector2::operator/(int scalar) const {
+IntVector2 IntVector2::operator/(int scalar) const noexcept {
     return IntVector2(x / scalar, y / scalar);
 }
 
-IntVector2& IntVector2::operator/=(int scalar) {
+IntVector2& IntVector2::operator/=(int scalar) noexcept {
     x /= scalar;
     y /= scalar;
     return *this;
 }
 
-IntVector2 IntVector2::operator/(float scalar) const {
+IntVector2 IntVector2::operator/(float scalar) const noexcept {
     int nx = static_cast<int>(std::floor(static_cast<float>(x) / scalar));
     int ny = static_cast<int>(std::floor(static_cast<float>(y) / scalar));
     return IntVector2(nx, ny);
 }
 
-IntVector2& IntVector2::operator/=(float scalar) {
+IntVector2& IntVector2::operator/=(float scalar) noexcept {
     x = static_cast<int>(std::floor(static_cast<float>(x) / scalar));
     y = static_cast<int>(std::floor(static_cast<float>(y) / scalar));
     return *this;
 }
 
-void IntVector2::SetXY(int newX, int newY) {
+void IntVector2::SetXY(int newX, int newY) noexcept {
     x = newX;
     y = newY;
 }
 
-std::pair<int,int> IntVector2::GetXY() const {
+std::pair<int,int> IntVector2::GetXY() const noexcept {
     return std::make_pair(x, y);
 }
 
-bool IntVector2::operator!=(const IntVector2& rhs) const {
+bool IntVector2::operator!=(const IntVector2& rhs) const noexcept {
     return !(*this == rhs);
 }
 
-bool IntVector2::operator==(const IntVector2& rhs) const {
+bool IntVector2::operator==(const IntVector2& rhs) const noexcept {
     return x == rhs.x && y == rhs.y;
 }
 
-bool IntVector2::operator<(const IntVector2& rhs) const {
+bool IntVector2::operator<(const IntVector2& rhs) const noexcept {
     if(x < rhs.x) return true;
     if(rhs.x < x) return false;
     if(y < rhs.y) return true;
     return false;
 }
 
-bool IntVector2::operator>=(const IntVector2& rhs) const {
+bool IntVector2::operator>=(const IntVector2& rhs) const noexcept {
     return !(*this < rhs);
 }
 
-bool IntVector2::operator>(const IntVector2& rhs) const {
+bool IntVector2::operator>(const IntVector2& rhs) const noexcept {
     return rhs < *this;
 }
 
-bool IntVector2::operator<=(const IntVector2& rhs) const {
+bool IntVector2::operator<=(const IntVector2& rhs) const noexcept {
     return !(*this > rhs);
 }

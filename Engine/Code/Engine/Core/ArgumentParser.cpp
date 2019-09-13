@@ -19,40 +19,40 @@ ArgumentParser::ArgumentParser(const std::string& args) noexcept
     /* DO NOTHING */
 }
 
-void ArgumentParser::clear() {
+void ArgumentParser::clear() noexcept {
     _state_bits.reset();
 }
 
 
-bool ArgumentParser::fail() const {
+bool ArgumentParser::fail() const noexcept {
     bool badbit = _state_bits[static_cast<std::size_t>(ArgumentParserState::BadBit)];
     bool failbit = _state_bits[static_cast<std::size_t>(ArgumentParserState::FailBit)];
     return badbit || failbit;
 }
 
-bool ArgumentParser::good() const {
+bool ArgumentParser::good() const noexcept {
     bool eofbit = _state_bits[static_cast<std::size_t>(ArgumentParserState::EndOfFileBit)];
     bool failbit = _state_bits[static_cast<std::size_t>(ArgumentParserState::FailBit)];
     bool badbit = _state_bits[static_cast<std::size_t>(ArgumentParserState::BadBit)];
     return !eofbit && !failbit && !badbit;
 }
 
-bool ArgumentParser::bad() const {
+bool ArgumentParser::bad() const noexcept {
     bool badbit = _state_bits[static_cast<std::size_t>(ArgumentParserState::BadBit)];
     return badbit;
 }
 
 
-bool ArgumentParser::eof() const {
+bool ArgumentParser::eof() const noexcept {
     bool eofbit = _state_bits[static_cast<std::size_t>(ArgumentParserState::EndOfFileBit)];
     return eofbit;
 }
 
-ArgumentParser::operator bool() const {
+ArgumentParser::operator bool() const noexcept {
     return !(fail() || bad()) && (good() || eof());
 }
 
-bool ArgumentParser::operator!() const {
+bool ArgumentParser::operator!() const noexcept {
     return !operator bool();
 }
 
@@ -376,7 +376,7 @@ bool ArgumentParser::GetNext(long double& value) const noexcept {
     return false;
 }
 
-ArgumentParserState& operator|=(ArgumentParserState& a, const ArgumentParserState& b) {
+ArgumentParserState& operator|=(ArgumentParserState& a, const ArgumentParserState& b) noexcept {
     using underlying = std::underlying_type_t<ArgumentParserState>;
     auto underlying_a = static_cast<underlying>(a);
     auto underlying_b = static_cast<underlying>(b);
@@ -384,12 +384,12 @@ ArgumentParserState& operator|=(ArgumentParserState& a, const ArgumentParserStat
     return a;
 }
 
-ArgumentParserState operator|(ArgumentParserState a, const ArgumentParserState& b) {
+ArgumentParserState operator|(ArgumentParserState a, const ArgumentParserState& b) noexcept {
     a |= b;
     return a;
 }
 
-ArgumentParserState& operator&=(ArgumentParserState& a, const ArgumentParserState& b) {
+ArgumentParserState& operator&=(ArgumentParserState& a, const ArgumentParserState& b) noexcept {
     using underlying = std::underlying_type_t<ArgumentParserState>;
     auto underlying_a = static_cast<underlying>(a);
     auto underlying_b = static_cast<underlying>(b);
@@ -397,12 +397,12 @@ ArgumentParserState& operator&=(ArgumentParserState& a, const ArgumentParserStat
     return a;
 }
 
-ArgumentParserState operator&(ArgumentParserState a, const ArgumentParserState& b) {
+ArgumentParserState operator&(ArgumentParserState a, const ArgumentParserState& b) noexcept {
     a &= b;
     return a;
 }
 
-void ArgumentParser::SetState(const ArgumentParserState& stateBits, bool newValue) const {
+void ArgumentParser::SetState(const ArgumentParserState& stateBits, bool newValue) const noexcept {
     if((stateBits & ArgumentParserState::BadBit) == ArgumentParserState::BadBit) {
         _state_bits[static_cast<std::size_t>(ArgumentParserState::BadBit)] = newValue;
     } else if((stateBits & ArgumentParserState::FailBit) == ArgumentParserState::FailBit) {

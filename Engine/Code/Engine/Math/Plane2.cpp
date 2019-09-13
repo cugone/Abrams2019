@@ -1,13 +1,13 @@
 #include "Engine/Math/Plane2.hpp"
 
-Plane2::Plane2(const Vector2& normal, float distance_from_origin)
+Plane2::Plane2(const Vector2& normal, float distance_from_origin) noexcept
     : normal(normal.GetNormalize())
     , dist(distance_from_origin)
 {
     /* DO NOTHING */
 }
 
-float Plane2::Normalize() {
+float Plane2::Normalize() noexcept {
     float length = normal.CalcLength();
     if(length > 0.0f) {
         float inv_length = 1.0f / length;
@@ -18,7 +18,7 @@ float Plane2::Normalize() {
     return length;
 }
 
-Plane2 Plane2::GetNormalize() const {
+Plane2 Plane2::GetNormalize() const noexcept {
     Plane2 result(*this);
     result.Normalize();
     return result;

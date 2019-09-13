@@ -20,48 +20,48 @@ public:
     LineSegment2& operator=(LineSegment2&& rhs) = default;
     LineSegment2& operator=(const LineSegment2& rhs) = default;
 
-    explicit LineSegment2(float startX, float startY, float endX, float endY);
-    explicit LineSegment2(const Vector2& startPosition, const Vector2& endPosition);
-    explicit LineSegment2(const Vector2& startPosition, const Vector2& direction, float length);
-    explicit LineSegment2(const Vector2& startPosition, float angleDegrees, float length);
+    explicit LineSegment2(float startX, float startY, float endX, float endY) noexcept;
+    explicit LineSegment2(const Vector2& startPosition, const Vector2& endPosition) noexcept;
+    explicit LineSegment2(const Vector2& startPosition, const Vector2& direction, float length) noexcept;
+    explicit LineSegment2(const Vector2& startPosition, float angleDegrees, float length) noexcept;
 
-    void SetLengthFromStart(float length);
-    void SetLengthFromCenter(float length);
-    void SetLengthFromEnd(float length);
+    void SetLengthFromStart(float length) noexcept;
+    void SetLengthFromCenter(float length) noexcept;
+    void SetLengthFromEnd(float length) noexcept;
 
-    Vector2 CalcCenter() const;
+    Vector2 CalcCenter() const noexcept;
 
-    float CalcLength() const;
-    float CalcLengthSquared() const;
+    float CalcLength() const noexcept;
+    float CalcLengthSquared() const noexcept;
 
-    void SetDirectionFromStart(float angleDegrees);
-    void SetDirectionFromCenter(float angleDegrees);
-    void SetDirectionFromEnd(float angleDegrees);
+    void SetDirectionFromStart(float angleDegrees) noexcept;
+    void SetDirectionFromCenter(float angleDegrees) noexcept;
+    void SetDirectionFromEnd(float angleDegrees) noexcept;
 
-    void SetStartEndPositions(const Vector2& startPosition, const Vector2& endPosition);
+    void SetStartEndPositions(const Vector2& startPosition, const Vector2& endPosition) noexcept;
 
-    void Translate(const Vector2& translation);
+    void Translate(const Vector2& translation) noexcept;
 
-    void Rotate(float angleDegrees);
-    void RotateStartPosition(float angleDegrees);
-    void RotateEndPosition(float angleDegrees);
-    void Rotate90Degrees();
-    void RotateNegative90Degrees();
-    void Rotate180Degrees();
+    void Rotate(float angleDegrees) noexcept;
+    void RotateStartPosition(float angleDegrees) noexcept;
+    void RotateEndPosition(float angleDegrees) noexcept;
+    void Rotate90Degrees() noexcept;
+    void RotateNegative90Degrees() noexcept;
+    void Rotate180Degrees() noexcept;
 
-    Vector2 CalcDisplacement() const;
-    Vector2 CalcDirection() const;
-    Vector2 CalcPositiveNormal() const;
-    Vector2 CalcNegativeNormal() const;
+    Vector2 CalcDisplacement() const noexcept;
+    Vector2 CalcDirection() const noexcept;
+    Vector2 CalcPositiveNormal() const noexcept;
+    Vector2 CalcNegativeNormal() const noexcept;
 
-    LineSegment2 operator+(const Vector2& translation) const;
-    LineSegment2 operator-(const Vector2& antiTranslation) const;
-    LineSegment2& operator+=(const Vector2& translation);
-    LineSegment2& operator-=(const Vector2& antiTranslation);
+    LineSegment2 operator+(const Vector2& translation) const noexcept;
+    LineSegment2 operator-(const Vector2& antiTranslation) const noexcept;
+    LineSegment2& operator+=(const Vector2& translation) noexcept;
+    LineSegment2& operator-=(const Vector2& antiTranslation) noexcept;
 
 protected:
 private:
-    void SetAngle(float angleDegrees);
+    void SetAngle(float angleDegrees) noexcept;
 
     friend class Capsule2;
 };

@@ -3,6 +3,7 @@
 #include "Engine/Core/StringUtils.hpp"
 
 #include <string>
+#include <filesystem>
 #include <vector>
 #include <memory>
 
@@ -14,7 +15,7 @@ namespace RiffChunkID {
     constexpr const uint32_t WAVE = StringUtils::FourCC("WAVE");
     constexpr const uint32_t INFO = StringUtils::FourCC("INFO");
     constexpr const uint32_t AVI  = StringUtils::FourCC("AVI ");
-    constexpr const bool IsValid(const char* id);
+    constexpr const bool IsValid(const char* id) noexcept;
 }
 
 
@@ -27,11 +28,12 @@ public:
     static constexpr const unsigned int RIFF_ERROR_INVALID_ARGUMENT = 3;
 
     struct RiffHeader {
-        char fourcc[4];
-        uint32_t length{};
+        char fourcc[4] = {0};
+        uint32_t length = 0u;
     };
     struct RiffSubChunk {
-        char fourcc[4];
+        char fourcc[4] = {0};
+        std::size_t subdata_length{0};
         std::unique_ptr<uint8_t[]> subdata{};
     };
     struct RiffChunk {
@@ -39,15 +41,15 @@ public:
         std::unique_ptr<RiffSubChunk> data{};
     };
 
-    RiffChunk* GetNextChunk();
-    unsigned int Load(const std::string& filename);
-    unsigned int Load(const std::vector<unsigned char>& data);
-    static std::unique_ptr<Riff::RiffChunk> ReadListChunk(std::stringstream& stream);
+    RiffChunk* GetNextChunk() noexcept;
+    unsigned int Load(std::filesystem::path filename) noexcept;
+    unsigned int Load(const std::vector<unsigned char>& data) noexcept;
+    static std::unique_ptr<Riff::RiffChunk> ReadListChunk(std::stringstream& stream) noexcept;
 protected:
 private:
-    bool ParseDataIntoChunks(std::vector<unsigned char>& buffer);
+    bool ParseDataIntoChunks(std::vector<unsigned char>& buffer) noexcept;
 
-    void ShowRiffChunkHeaders();
+    void ShowRiffChunkHeaders() noexcept;
     std::vector<std::unique_ptr<RiffChunk>> _chunks{};
     decltype(_chunks)::iterator _current_chunk{};
 

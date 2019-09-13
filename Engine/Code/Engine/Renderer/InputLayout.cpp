@@ -6,13 +6,13 @@
 
 #include "Engine/RHI/RHIDevice.hpp"
 
-InputLayout::InputLayout(const RHIDevice* parent_device)
+InputLayout::InputLayout(const RHIDevice* parent_device) noexcept
 : _parent_device(parent_device)
 {
     /* DO NOTHING */
 }
 
-InputLayout::~InputLayout() {
+InputLayout::~InputLayout() noexcept {
 
     _elements.clear();
     _elements.shrink_to_fit();
@@ -23,7 +23,7 @@ InputLayout::~InputLayout() {
     }
 }
 
-void InputLayout::AddElement(std::size_t memberByteOffset, const ImageFormat& format, const char* semantic, unsigned int inputSlot /*= 0*/, bool isVertexData /*= true*/, unsigned int instanceDataStepRate /*= 0*/) {
+void InputLayout::AddElement(std::size_t memberByteOffset, const ImageFormat& format, const char* semantic, unsigned int inputSlot /*= 0*/, bool isVertexData /*= true*/, unsigned int instanceDataStepRate /*= 0*/) noexcept {
     D3D11_INPUT_ELEMENT_DESC e_desc = {};
     e_desc.Format = ImageFormatToDxgiFormat(format);
     e_desc.InputSlotClass = isVertexData ? D3D11_INPUT_PER_VERTEX_DATA : D3D11_INPUT_PER_INSTANCE_DATA;
@@ -35,11 +35,11 @@ void InputLayout::AddElement(std::size_t memberByteOffset, const ImageFormat& fo
     _elements.push_back(e_desc);
 }
 
-void InputLayout::AddElement(const D3D11_INPUT_ELEMENT_DESC& desc) {
+void InputLayout::AddElement(const D3D11_INPUT_ELEMENT_DESC& desc) noexcept {
     _elements.push_back(desc);
 }
 
-void InputLayout::CreateInputLayout(void* byte_code, std::size_t byte_code_length) {
+void InputLayout::CreateInputLayout(void* byte_code, std::size_t byte_code_length) noexcept {
     _elements.shrink_to_fit();
     if(_dx_input_layout) {
         _dx_input_layout->Release();
@@ -51,11 +51,11 @@ void InputLayout::CreateInputLayout(void* byte_code, std::size_t byte_code_lengt
     GUARANTEE_OR_DIE(succeeded, "Create Input Layout failed.");
 }
 
-ID3D11InputLayout* InputLayout::GetDxInputLayout() const {
+ID3D11InputLayout* InputLayout::GetDxInputLayout() const noexcept {
     return _dx_input_layout;
 }
 
-void InputLayout::PopulateInputLayoutUsingReflection(ID3D11ShaderReflection& vertexReflection) {
+void InputLayout::PopulateInputLayoutUsingReflection(ID3D11ShaderReflection& vertexReflection) noexcept {
     D3D11_SHADER_DESC desc{};
     vertexReflection.GetDesc(&desc);
     unsigned int input_count = desc.InputParameters;
@@ -67,7 +67,7 @@ void InputLayout::PopulateInputLayoutUsingReflection(ID3D11ShaderReflection& ver
     }
 }
 
-D3D11_INPUT_ELEMENT_DESC InputLayout::CreateInputElementFromSignature(D3D11_SIGNATURE_PARAMETER_DESC& input_desc, unsigned int& last_input_slot) {
+D3D11_INPUT_ELEMENT_DESC InputLayout::CreateInputElementFromSignature(D3D11_SIGNATURE_PARAMETER_DESC& input_desc, unsigned int& last_input_slot) noexcept {
     D3D11_INPUT_ELEMENT_DESC elem{};
     //TODO: Meta file may be required in the future!
     elem.InputSlot = 0;

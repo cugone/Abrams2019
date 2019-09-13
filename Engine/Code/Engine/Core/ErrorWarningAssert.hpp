@@ -25,14 +25,14 @@ enum SeverityLevel {
 
 
 //-----------------------------------------------------------------------------------------------
-void DebuggerPrintf(const char* messageFormat, ...);
-bool IsDebuggerAvailable();
-__declspec(noreturn) void FatalError(const char* filePath, const char* functionName, int lineNum, const std::string& reasonForError, const char* conditionText = nullptr);
-void RecoverableWarning(const char* filePath, const char* functionName, int lineNum, const std::string& reasonForWarning, const char* conditionText = nullptr);
-void SystemDialogue_Okay(const std::string& messageTitle, const std::string& messageText, SeverityLevel severity);
-bool SystemDialogue_OkayCancel(const std::string& messageTitle, const std::string& messageText, SeverityLevel severity);
-bool SystemDialogue_YesNo(const std::string& messageTitle, const std::string& messageText, SeverityLevel severity);
-int SystemDialogue_YesNoCancel(const std::string& messageTitle, const std::string& messageText, SeverityLevel severity);
+void DebuggerPrintf(const char* messageFormat, ...) noexcept;
+bool IsDebuggerAvailable() noexcept;
+[[noreturn]] void FatalError(const char* filePath, const char* functionName, int lineNum, const std::string& reasonForError, const char* conditionText = nullptr);
+void RecoverableWarning(const char* filePath, const char* functionName, int lineNum, const std::string& reasonForWarning, const char* conditionText = nullptr) noexcept;
+void SystemDialogue_Okay(const std::string& messageTitle, const std::string& messageText, SeverityLevel severity) noexcept;
+bool SystemDialogue_OkayCancel(const std::string& messageTitle, const std::string& messageText, SeverityLevel severity) noexcept;
+bool SystemDialogue_YesNo(const std::string& messageTitle, const std::string& messageText, SeverityLevel severity) noexcept;
+int SystemDialogue_YesNoCancel(const std::string& messageTitle, const std::string& messageText, SeverityLevel severity) noexcept;
 
 
 
