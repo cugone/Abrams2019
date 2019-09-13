@@ -11,6 +11,19 @@
       <Command>xcopy /Y /F /I "$(TargetPath)" "$(SolutionDir)Run_$(PlatformName)\"</Command>
       <Message>Copying $(TargetFileName) to Run_$(PlatformName)...</Message>
     </PostBuildEvent>
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+    </ClCompile>
+    <ClCompile>
+      <TreatWarningAsError>true</TreatWarningAsError>
+    </ClCompile>
+    <ClCompile>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <ClCompile>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup />
 </Project>

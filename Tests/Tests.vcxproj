@@ -22,7 +22,16 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings" />
   <ImportGroup Label="Shared" />
-  <ImportGroup Label="PropertySheets" />
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="..\Engine\Code\Engine\Abrams2019.Default.props" />
+    <Import Project="..\Engine\Code\Engine\Abrams2019.Debug.Default.props" />
+    <Import Project="..\Engine\Code\Engine\Game.Abrams2019.Default.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="..\Engine\Code\Engine\Abrams2019.Default.props" />
+    <Import Project="..\Engine\Code\Engine\Abrams2019.Release.Default.props" />
+    <Import Project="..\Engine\Code\Engine\Game.Abrams2019.Default.props" />
+  </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)Temporary\$(ProjectName)_$(Platform)_$(Configuration)\</OutDir>
@@ -48,12 +57,12 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Engine\Code\Engine\Engine.vcxproj">
       <Project>{acbda225-83de-4fba-a746-0135429fb391}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

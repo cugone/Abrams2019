@@ -2,6 +2,8 @@
 
 #include "Engine/Renderer/DirectX/DX11.hpp"
 
+#include <memory>
+
 class InputLayout;
 class RHIDevice;
 
