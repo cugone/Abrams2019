@@ -11,6 +11,7 @@
 #include "Engine/Core/Vertex3D.hpp"
 
 #include "Engine/Math/AABB2.hpp"
+#include "Engine/Math/Disc2.hpp"
 #include "Engine/Math/Frustum.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/OBB2.hpp"
@@ -923,6 +924,14 @@ void Renderer::DrawCircle2D(float centerX, float centerY, float radius, const Rg
 
 void Renderer::DrawCircle2D(const Vector2& center, float radius, const Rgba& color /*= Rgba::WHITE*/) noexcept {
     DrawCircle2D(center.x, center.y, radius, color);
+}
+
+void Renderer::DrawCircle2D(const Disc2& circle, const Rgba& color /*= Rgba::White*/) noexcept {
+    DrawCircle2D(circle.center, circle.radius, color);
+}
+
+void Renderer::DrawFilledCircle2D(const Disc2& circle, const Rgba& color /*= Rgba::White*/) noexcept {
+    DrawFilledCircle2D(circle.center, circle.radius, color);
 }
 
 void Renderer::DrawFilledCircle2D(const Vector2& center, float radius, const Rgba& color /*= Rgba::WHITE*/) noexcept {

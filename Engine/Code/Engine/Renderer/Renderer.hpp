@@ -29,6 +29,7 @@ class BlendState;
 class ConstantBuffer;
 class DepthStencilState;
 struct DepthStencilDesc;
+class Disc2;
 class IndexBuffer;
 class IntVector3;
 class KerningFont;
@@ -335,6 +336,8 @@ public:
     void DrawQuad2D(const Rgba& color, const Vector4& texCoords) noexcept;
     void DrawCircle2D(float centerX, float centerY, float radius, const Rgba& color = Rgba::White) noexcept;
     void DrawCircle2D(const Vector2& center, float radius, const Rgba& color = Rgba::White) noexcept;
+    void DrawCircle2D(const Disc2& circle, const Rgba& color = Rgba::White) noexcept;
+    void DrawFilledCircle2D(const Disc2& circle, const Rgba& color = Rgba::White) noexcept;
     void DrawFilledCircle2D(const Vector2& center, float radius, const Rgba& color = Rgba::White) noexcept;
     void DrawAABB2(const AABB2& bounds, const Rgba& edgeColor, const Rgba& fillColor, const Vector2& edgeHalfExtents = Vector2::ZERO) noexcept;
     void DrawAABB2(const Rgba& edgeColor, const Rgba& fillColor) noexcept;
