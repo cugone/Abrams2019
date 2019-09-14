@@ -141,25 +141,25 @@ Vector2 OBB2::GetBottomEdge() const noexcept {
 
 
 Vector2 OBB2::GetBottomLeft() const noexcept {
-    auto S = Matrix4::CreateScaleMatrix(Vector2{ -half_extents.x, +half_extents.y } * 2.0f);
+    auto S = Matrix4::CreateScaleMatrix(half_extents * 2.0f);
     auto R = Matrix4::Create2DRotationDegreesMatrix(orientationDegrees);
     auto T = Matrix4::CreateTranslationMatrix(position);
     auto M = T * R * S;
-    return M.TransformPosition(Vector2{ +0.5, -0.5 });
+    return M.TransformPosition(Vector2{ -0.5, +0.5 });
 }
 
 
 Vector2 OBB2::GetTopLeft() const noexcept {
-    auto S = Matrix4::CreateScaleMatrix(Vector2{ -half_extents.x, -half_extents.y } * 2.0f);
+    auto S = Matrix4::CreateScaleMatrix(half_extents * 2.0f);
     auto R = Matrix4::Create2DRotationDegreesMatrix(orientationDegrees);
     auto T = Matrix4::CreateTranslationMatrix(position);
     auto M = T * R * S;
-    return M.TransformPosition(Vector2{ +0.5, -0.5 });
+    return M.TransformPosition(Vector2{ -0.5, +0.5 });
 }
 
 
 Vector2 OBB2::GetTopRight() const noexcept {
-    auto S = Matrix4::CreateScaleMatrix(Vector2{ +half_extents.x, -half_extents.y } * 2.0f);
+    auto S = Matrix4::CreateScaleMatrix(half_extents * 2.0f);
     auto R = Matrix4::Create2DRotationDegreesMatrix(orientationDegrees);
     auto T = Matrix4::CreateTranslationMatrix(position);
     auto M = T * R * S;
@@ -168,11 +168,11 @@ Vector2 OBB2::GetTopRight() const noexcept {
 
 
 Vector2 OBB2::GetBottomRight() const noexcept {
-    auto S = Matrix4::CreateScaleMatrix(Vector2{ +half_extents.x, +half_extents.y } * 2.0f);
+    auto S = Matrix4::CreateScaleMatrix(half_extents * 2.0f);
     auto R = Matrix4::Create2DRotationDegreesMatrix(orientationDegrees);
     auto T = Matrix4::CreateTranslationMatrix(position);
     auto M = T * R * S;
-    return M.TransformPosition(Vector2{ +0.5, -0.5 });
+    return M.TransformPosition(Vector2{ +0.5, +0.5 });
 }
 
 Vector2 OBB2::CalcDimensions() const noexcept {
