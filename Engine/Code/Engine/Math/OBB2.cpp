@@ -154,7 +154,7 @@ Vector2 OBB2::GetTopLeft() const noexcept {
     auto R = Matrix4::Create2DRotationDegreesMatrix(orientationDegrees);
     auto T = Matrix4::CreateTranslationMatrix(position);
     auto M = T * R * S;
-    return M.TransformPosition(Vector2{ -0.5, +0.5 });
+    return M.TransformPosition(Vector2{ -0.5, -0.5 });
 }
 
 
