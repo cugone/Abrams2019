@@ -590,6 +590,26 @@ Vector2 CalcClosestPoint(const Vector2& p, const AABB2& aabb) noexcept {
     return Vector2::ZERO;
 }
 
+Vector2 CalcClosestPoint(const Vector2& p, const OBB2& obb) noexcept {
+    if(IsPointInside(obb, p)) {
+        return p;
+    }
+    const auto displacement = p - obb.position;
+    const auto T = Matrix4::CreateTranslationMatrix(obb.position);
+    const auto R = Matrix4::Create2DRotationDegreesMatrix(obb.orientationDegrees);
+    const auto M = T * R;
+    const auto u0 = M.TransformDirection(Vector2(obb.half_extents.x, 0.0f).GetNormalize());
+    const auto u1 = M.TransformDirection(Vector2(0.0f, obb.half_extents.y).GetNormalize());
+
+    auto x_distance = MathUtils::DotProduct(u0, displacement);
+    if(x_distance > obb.half_extents.x) x_distance = obb.half_extents.x;
+    if(x_distance < -obb.half_extents.x) x_distance = -obb.half_extents.x;
+    auto y_distance = MathUtils::DotProduct(u1, displacement);
+    if(y_distance > obb.half_extents.y) y_distance = obb.half_extents.y;
+    if(y_distance < -obb.half_extents.y) y_distance = -obb.half_extents.y;
+    return M.TransformPosition(Vector2{ x_distance, y_distance });
+}
+
 Vector3 CalcClosestPoint(const Vector3& p, const AABB3& aabb) noexcept {
     float nearestX = std::clamp(p.x, aabb.mins.x, aabb.maxs.x);
     float nearestY = std::clamp(p.y, aabb.mins.y, aabb.maxs.y);
