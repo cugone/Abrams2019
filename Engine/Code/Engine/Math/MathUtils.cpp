@@ -507,8 +507,8 @@ bool IsPointInside(const AABB3& aabb, const Vector3& point) noexcept {
     return true;
 }
 
-bool IsPointInside(const OBB2& /*obb*/, const Vector2& /*point*/) noexcept {
-    return false;
+bool IsPointInside(const OBB2& obb, const Vector2& point) noexcept {
+    return DoOBBsOverlap(obb, { point, 0.0f });
 }
 
 bool IsPointInside(const Disc2& disc, const Vector2& point) noexcept {
