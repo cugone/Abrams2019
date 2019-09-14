@@ -1017,6 +1017,14 @@ AABB3 Interpolate(const AABB3& a, const AABB3& b, float t) {
 }
 
 template<>
+OBB2 Interpolate(const OBB2& a, const OBB2& b, float t) {
+    float orientation(Interpolate(a.orientationDegrees, b.orientationDegrees, t));
+    Vector2 he(Interpolate(a.half_extents, b.half_extents, t));
+    Vector2 p(Interpolate(a.position, b.position, t));
+    return OBB2(p, he, orientation);
+}
+
+template<>
 Disc2 Interpolate(const Disc2& a, const Disc2& b, float t) {
     Vector2 c(Interpolate(a.center, b.center, t));
     float r(Interpolate(a.radius, b.radius, t));

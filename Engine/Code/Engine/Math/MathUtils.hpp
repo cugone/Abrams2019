@@ -288,6 +288,9 @@ template<>
 AABB3 Interpolate(const AABB3& a, const AABB3& b, float t);
 
 template<>
+OBB2 Interpolate(const OBB2& a, const OBB2& b, float t);
+
+template<>
 Disc2 Interpolate(const Disc2& a, const Disc2& b, float t);
 
 template<>
