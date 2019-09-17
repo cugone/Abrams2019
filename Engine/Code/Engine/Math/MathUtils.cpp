@@ -16,6 +16,7 @@
 #include "Engine/Math/Matrix4.hpp"
 #include "Engine/Math/Plane2.hpp"
 #include "Engine/Math/Plane3.hpp"
+#include "Engine/Math/Polygon2.hpp"
 #include "Engine/Math/Quaternion.hpp"
 
 namespace MathUtils {
@@ -833,6 +834,68 @@ bool DoOBBsOverlap(const OBB2& a, const OBB2& b) noexcept {
     return true;
 }
 
+bool DoPolygonsOverlap(const Polygon2& a, const Polygon2& b) noexcept {
+    //Separating Axis Theorem
+    const auto Pa = a.GetPosition();
+    const auto Oa = a.GetOrientationDegrees();
+    const auto Hea = a.GetHalfExtents();
+    const auto Sa = Matrix4::CreateScaleMatrix(Hea);
+    const auto Ra = Matrix4::Create2DRotationDegreesMatrix(Oa);
+    const auto Ta = Matrix4::CreateTranslationMatrix(Pa);
+    const auto Ma = Ta * Ra * Sa;
+
+    const auto Pb = b.GetPosition();
+    const auto Ob = b.GetOrientationDegrees();
+    const auto Heb = b.GetHalfExtents();
+    const auto Sb = Matrix4::CreateScaleMatrix(Heb);
+    const auto Rb = Matrix4::Create2DRotationDegreesMatrix(Ob);
+    const auto Tb = Matrix4::CreateTranslationMatrix(Pb);
+    const auto Mb = Tb * Rb * Sb;
+
+    for(const auto& an : a.GetNormals()) {
+        auto min_a = std::numeric_limits<float>::infinity();
+        auto max_a = std::numeric_limits<float>::lowest();
+        for(const auto& ac : a.GetVerts()) {
+            const auto proj_dp = DotProduct(ac, an);
+            min_a = (std::min)(min_a, proj_dp);
+            max_a = (std::max)(max_a, proj_dp);
+        }
+
+        auto min_b = std::numeric_limits<float>::infinity();
+        auto max_b = std::numeric_limits<float>::lowest();
+        for(const auto& bc : b.GetVerts()) {
+            const auto proj_dp = DotProduct(bc, an);
+            min_b = (std::min)(min_b, proj_dp);
+            max_b = (std::max)(max_b, proj_dp);
+        }
+
+        if(max_a < min_b) return false;
+        if(max_b < min_a) return false;
+    }
+    for(const auto& bn : b.GetNormals()) {
+        auto min_b = std::numeric_limits<float>::infinity();
+        auto max_b = std::numeric_limits<float>::lowest();
+        for(const auto& bc : b.GetVerts()) {
+            const auto proj_dp = DotProduct(bc, bn);
+            min_b = (std::min)(min_b, proj_dp);
+            max_b = (std::max)(max_b, proj_dp);
+        }
+
+        auto min_a = std::numeric_limits<float>::infinity();
+        auto max_a = std::numeric_limits<float>::lowest();
+        for(const auto& ac : a.GetVerts()) {
+            const auto proj_dp = DotProduct(ac, bn);
+            min_a = (std::min)(min_a, proj_dp);
+            max_a = (std::max)(max_a, proj_dp);
+        }
+
+        if(max_b < min_a) return false;
+        if(max_a < min_b) return false;
+    }
+    return true;
+}
+
+
 bool DoLineSegmentOverlap(const Disc2& a, const LineSegment2& b) noexcept {
     return CalcDistanceSquared(a.center, b) < a.radius * a.radius;
 }
@@ -1022,6 +1085,15 @@ OBB2 Interpolate(const OBB2& a, const OBB2& b, float t) {
     Vector2 he(Interpolate(a.half_extents, b.half_extents, t));
     Vector2 p(Interpolate(a.position, b.position, t));
     return OBB2(p, he, orientation);
+}
+
+template<>
+Polygon2 Interpolate(const Polygon2& a, const Polygon2& b, float t) {
+    int sides = static_cast<int>(Interpolate(static_cast<float>(a.GetSides()), static_cast<float>(b.GetSides()), t));
+    float orientation(Interpolate(a.GetOrientationDegrees(), b.GetOrientationDegrees(), t));
+    Vector2 he(Interpolate(a.GetHalfExtents(), b.GetHalfExtents(), t));
+    Vector2 p(Interpolate(a.GetPosition(), b.GetPosition(), t));
+    return Polygon2(sides, p, he, orientation);
 }
 
 template<>

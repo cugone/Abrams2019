@@ -16,6 +16,7 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/OBB2.hpp"
 #include "Engine/Math/Vector2.hpp"
+#include "Engine/Math/Polygon2.hpp"
 
 #include "Engine/Profiling/ProfileLogScope.hpp"
 
@@ -1124,6 +1125,24 @@ void Renderer::DrawPolygon2D(float centerX, float centerY, float radius, std::si
 
 void Renderer::DrawPolygon2D(const Vector2& center, float radius, std::size_t numSides /*= 3*/, const Rgba& color /*= Rgba::WHITE*/) noexcept {
     DrawPolygon2D(center.x, center.y, radius, numSides, color);
+}
+
+void Renderer::DrawPolygon2D(const Polygon2& polygon, const Rgba& color /*= Rgba::White*/) {
+    const std::vector<Vertex3D> vbo = [&polygon, &color]() {
+        std::vector<Vertex3D> buffer;
+        buffer.reserve(polygon.GetVerts().size());
+        for(const auto& v : polygon.GetVerts()) {
+            buffer.push_back(Vertex3D(Vector3(v, 0.0f), color));
+        }
+        return buffer;
+    }();
+    const std::vector<unsigned int> ibo = [this, &vbo]() {
+        std::vector<unsigned int> buffer(vbo.size() + 1);
+        std::iota(std::begin(buffer), std::end(buffer), 0u);
+        buffer.back() = 0;
+        return buffer;
+    }();
+    DrawIndexed(PrimitiveType::LinesStrip, vbo, ibo);
 }
 
 void Renderer::DrawTextLine(const KerningFont* font, const std::string& text, const Rgba& color /*= Rgba::WHITE*/) noexcept {

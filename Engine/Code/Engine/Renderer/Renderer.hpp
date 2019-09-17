@@ -30,11 +30,13 @@ class ConstantBuffer;
 class DepthStencilState;
 struct DepthStencilDesc;
 class Disc2;
+class Frustum;
 class IndexBuffer;
 class IntVector3;
 class KerningFont;
 class Material;
 class OBB2;
+class Polygon2;
 class RasterState;
 struct RasterDesc;
 class Renderer;
@@ -50,7 +52,6 @@ class Texture1D;
 class Texture2D;
 class Texture3D;
 class VertexBuffer;
-class Frustum;
 
 struct matrix_buffer_t {
     Matrix4 model{};
@@ -345,6 +346,7 @@ public:
     void DrawOBB2(const OBB2& obb, const Rgba& edgeColor, const Rgba& fillColor, const Vector2& edgeHalfExtents = Vector2::ZERO) noexcept;
     void DrawPolygon2D(float centerX, float centerY, float radius, std::size_t numSides = 3, const Rgba& color = Rgba::White) noexcept;
     void DrawPolygon2D(const Vector2& center, float radius, std::size_t numSides = 3, const Rgba& color = Rgba::White) noexcept;
+    void DrawPolygon2D(const Polygon2& polygon, const Rgba& color = Rgba::White);
     void DrawX2D(const Vector2& position = Vector2::ZERO, const Vector2& half_extents = Vector2(0.5f, 0.5f), const Rgba& color = Rgba::White) noexcept;
     void DrawX2D(const Rgba& color) noexcept;
     void DrawTextLine(const KerningFont* font, const std::string& text, const Rgba& color = Rgba::White) noexcept;

@@ -72,6 +72,7 @@
     <ClCompile Include="Math\OBB2.cpp" />
     <ClCompile Include="Math\Plane2.cpp" />
     <ClCompile Include="Math\Plane3.cpp" />
+    <ClCompile Include="Math\Polygon2.cpp" />
     <ClCompile Include="Math\Quaternion.cpp" />
     <ClCompile Include="Math\Sphere3.cpp" />
     <ClCompile Include="Math\Vector2.cpp" />
@@ -79,6 +80,7 @@
     <ClCompile Include="Math\Vector4.cpp" />
     <ClCompile Include="Networking\Address.cpp" />
     <ClCompile Include="Networking\NetUtils.cpp" />
+    <ClCompile Include="Physics\PhysicsSystem.cpp" />
     <ClCompile Include="Profiling\Memory.cpp" />
     <ClCompile Include="Profiling\ProfileLogScope.cpp" />
     <ClCompile Include="Profiling\StackTrace.cpp" />
@@ -191,6 +193,7 @@
     <ClInclude Include="Math\OBB2.hpp" />
     <ClInclude Include="Math\Plane2.hpp" />
     <ClInclude Include="Math\Plane3.hpp" />
+    <ClInclude Include="Math\Polygon2.hpp" />
     <ClInclude Include="Math\Quaternion.hpp" />
     <ClInclude Include="Math\Sphere3.hpp" />
     <ClInclude Include="Math\Vector2.hpp" />
@@ -199,6 +202,7 @@
     <ClInclude Include="Memory\MemoryPool.hpp" />
     <ClInclude Include="Networking\Address.hpp" />
     <ClInclude Include="Networking\NetUtils.hpp" />
+    <ClInclude Include="Physics\PhysicsSystem.hpp" />
     <ClInclude Include="Profiling\Memory.hpp" />
     <ClInclude Include="Profiling\ProfileLogScope.hpp" />
     <ClInclude Include="Profiling\StackTrace.hpp" />

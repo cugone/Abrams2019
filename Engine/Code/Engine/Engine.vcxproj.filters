@@ -394,6 +394,12 @@
     <ClCompile Include="Core\ThreadUtils.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Physics\PhysicsSystem.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\Polygon2.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vector2.hpp">
@@ -755,6 +761,12 @@
     </ClInclude>
     <ClInclude Include="Core\ThreadUtils.hpp">
       <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics\PhysicsSystem.hpp">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Polygon2.hpp">
+      <Filter>Math</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

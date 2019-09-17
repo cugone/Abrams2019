@@ -23,6 +23,7 @@ class Sphere3;
 class Capsule3;
 class Plane2;
 class Plane3;
+class Polygon2;
 class Quaternion;
 class Rgba;
 
@@ -227,6 +228,7 @@ bool DoSpheresOverlap(const Sphere3& a, const Capsule3& b) noexcept;
 bool DoAABBsOverlap(const AABB2& a, const AABB2& b) noexcept;
 bool DoAABBsOverlap(const AABB3& a, const AABB3& b) noexcept;
 bool DoOBBsOverlap(const OBB2& a, const OBB2& b) noexcept;
+bool DoPolygonsOverlap(const Polygon2& a, const Polygon2& b) noexcept;
 
 bool DoLineSegmentOverlap(const Disc2& a, const LineSegment2& b) noexcept;
 bool DoLineSegmentOverlap(const Sphere3& a, const LineSegment3& b) noexcept;
@@ -289,6 +291,9 @@ AABB3 Interpolate(const AABB3& a, const AABB3& b, float t);
 
 template<>
 OBB2 Interpolate(const OBB2& a, const OBB2& b, float t);
+
+template<>
+Polygon2 Interpolate(const Polygon2& a, const Polygon2& b, float t);
 
 template<>
 Disc2 Interpolate(const Disc2& a, const Disc2& b, float t);
