@@ -25,12 +25,10 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="..\Engine\Code\Engine\Abrams2019.Default.props" />
     <Import Project="..\Engine\Code\Engine\Abrams2019.Debug.Default.props" />
-    <Import Project="..\Engine\Code\Engine\Game.Abrams2019.Default.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="..\Engine\Code\Engine\Abrams2019.Default.props" />
     <Import Project="..\Engine\Code\Engine\Abrams2019.Release.Default.props" />
-    <Import Project="..\Engine\Code\Engine\Game.Abrams2019.Default.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
