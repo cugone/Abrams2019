@@ -259,7 +259,7 @@ const Vector2& RigidBody::GetPosition() const {
 }
 
 Vector2 RigidBody::GetVelocity() const {
-    return (position - prev_position) / dt;
+    return (position - prev_position) / dt.count();
 }
 
 const Vector2& RigidBody::GetAcceleration() const {
@@ -271,9 +271,13 @@ float RigidBody::GetOrientationDegrees() const {
 }
 
 float RigidBody::GetAngularVelocityDegrees() const {
-    return (orientationDegrees - prev_orientationDegrees) / dt;
+    return (orientationDegrees - prev_orientationDegrees) / dt.count();
 }
 
 float RigidBody::GetAngularAccelerationDegrees() const {
     return angular_acceleration;
+}
+
+bool RigidBody::IsAwake() const {
+    return is_awake;
 }
