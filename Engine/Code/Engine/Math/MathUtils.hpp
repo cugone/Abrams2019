@@ -157,6 +157,14 @@ Vector2 Project(const Vector2& a, const Vector2& b) noexcept;
 Vector3 Project(const Vector3& a, const Vector3& b) noexcept;
 Vector4 Project(const Vector4& a, const Vector4& b) noexcept;
 
+Vector2 Reject(const Vector2& a, const Vector2& b) noexcept;
+Vector3 Reject(const Vector3& a, const Vector3& b) noexcept;
+Vector4 Reject(const Vector4& a, const Vector4& b) noexcept;
+
+std::pair<Vector2, Vector2> DivideIntoProjectAndReject(const Vector2& a, const Vector2& b) noexcept;
+std::pair<Vector3, Vector3> DivideIntoProjectAndReject(const Vector3& a, const Vector3& b) noexcept;
+std::pair<Vector4, Vector4> DivideIntoProjectAndReject(const Vector4& a, const Vector4& b) noexcept;
+
 Vector2 Reflect(const Vector2& in, const Vector2& normal) noexcept;
 Vector3 Reflect(const Vector3& in, const Vector3& normal) noexcept;
 Vector4 Reflect(const Vector4& in, const Vector4& normal) noexcept;

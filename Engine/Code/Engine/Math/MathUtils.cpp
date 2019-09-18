@@ -1,7 +1,5 @@
 #include "Engine/Math/MathUtils.hpp"
 
-#include <cmath>
-
 #include "Engine/Core/Rgba.hpp"
 
 #include "Engine/Math/AABB2.hpp"
@@ -18,6 +16,9 @@
 #include "Engine/Math/Plane3.hpp"
 #include "Engine/Math/Polygon2.hpp"
 #include "Engine/Math/Quaternion.hpp"
+
+#include <algorithm>
+#include <cmath>
 
 namespace MathUtils {
 
@@ -357,6 +358,34 @@ Vector3 Project(const Vector3& a, const Vector3& b) noexcept {
 
 Vector4 Project(const Vector4& a, const Vector4& b) noexcept {
     return (DotProduct(a, b) / DotProduct(b, b)) * b;
+}
+
+Vector2 Reject(const Vector2& a, const Vector2& b) noexcept {
+    const auto proj_aB = Project(a, b);
+    return a - proj_aB;
+}
+
+Vector3 Reject(const Vector3& a, const Vector3& b) noexcept {
+    const auto proj_aB = Project(a, b);
+    return a - proj_aB;
+}
+
+Vector4 Reject(const Vector4& a, const Vector4& b) noexcept {
+    const auto proj_aB = Project(a, b);
+    return a - proj_aB;
+}
+
+std::pair<Vector2, Vector2> DivideIntoProjectAndReject(const Vector2& a, const Vector2& b) noexcept {
+    const auto proj = Project(a, b);
+    return std::make_pair(proj, a - proj);
+}
+std::pair<Vector3, Vector3> DivideIntoProjectAndReject(const Vector3& a, const Vector3& b) noexcept {
+    const auto proj = Project(a, b);
+    return std::make_pair(proj, a - proj);
+}
+std::pair<Vector4, Vector4> DivideIntoProjectAndReject(const Vector4& a, const Vector4& b) noexcept {
+    const auto proj = Project(a, b);
+    return std::make_pair(proj, a - proj);
 }
 
 Vector2 Reflect(const Vector2& in, const Vector2& normal) noexcept {
@@ -839,18 +868,10 @@ bool DoPolygonsOverlap(const Polygon2& a, const Polygon2& b) noexcept {
     const auto Pa = a.GetPosition();
     const auto Oa = a.GetOrientationDegrees();
     const auto Hea = a.GetHalfExtents();
-    const auto Sa = Matrix4::CreateScaleMatrix(Hea);
-    const auto Ra = Matrix4::Create2DRotationDegreesMatrix(Oa);
-    const auto Ta = Matrix4::CreateTranslationMatrix(Pa);
-    const auto Ma = Ta * Ra * Sa;
 
     const auto Pb = b.GetPosition();
     const auto Ob = b.GetOrientationDegrees();
     const auto Heb = b.GetHalfExtents();
-    const auto Sb = Matrix4::CreateScaleMatrix(Heb);
-    const auto Rb = Matrix4::Create2DRotationDegreesMatrix(Ob);
-    const auto Tb = Matrix4::CreateTranslationMatrix(Pb);
-    const auto Mb = Tb * Rb * Sb;
 
     for(const auto& an : a.GetNormals()) {
         auto min_a = std::numeric_limits<float>::infinity();
