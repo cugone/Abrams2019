@@ -231,7 +231,7 @@ void RigidBody::ApplyForceAt(const Vector2& position_on_object, const Vector2& f
     const auto [parallel, perpendicular] = MathUtils::DivideIntoProjectAndReject(force, r);
     const auto angular_result = force - parallel;
     const auto linear_result = force - perpendicular;
-    ApplyTorque(angular_result.CalcLength());
+    ApplyTorqueAt(position_on_object, angular_result);
     ApplyForce(linear_result);
 }
 
@@ -245,7 +245,7 @@ void RigidBody::ApplyImpulseAt(const Vector2& position_on_object, const Vector2&
     const auto [parallel, perpendicular] = MathUtils::DivideIntoProjectAndReject(force, r);
     const auto angular_result = force - parallel;
     const auto linear_result = force - perpendicular;
-    ApplyTorque(angular_result.CalcLength(), true);
+    ApplyTorqueAt(position_on_object, angular_result.GetNormalize(), angular_result.CalcLength(), true);
     ApplyImpulse(linear_result);
 }
 
