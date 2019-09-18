@@ -177,6 +177,7 @@ struct RigidBodyDesc {
     Vector2 initialPosition = Vector2::ZERO;
     Vector2 initialVelocity = Vector2::ZERO;
     Vector2 initialAcceleration = Vector2::ZERO;
+    //TODO: Refactor to using Collider pointers
     OBB2 collider = OBB2(initialPosition, Vector2::ONE * 0.5f, 0.0f);
 };
 
@@ -226,6 +227,7 @@ public:
     float GetAngularVelocityDegrees() const;
     float GetAngularAccelerationDegrees() const;
 
+    bool IsAwake() const;
 protected:
 private:
     OBB2 collider{};
@@ -239,7 +241,8 @@ private:
     float prev_orientationDegrees = 0.0f;
     float orientationDegrees = 0.0f;
     float angular_acceleration = 0.0f;
-    float dt = 0.0f;
+    TimeUtils::FPSeconds dt;
+    TimeUtils::FPSeconds time_since_last_move{};
     std::vector<Vector2> linear_forces{};
     std::vector<Vector2> linear_impulses{};
     std::vector<float> angular_forces{};

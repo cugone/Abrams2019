@@ -91,16 +91,26 @@ void RigidBody::BeginFrame() {
 }
 
 void RigidBody::Update(TimeUtils::FPSeconds deltaSeconds) {
-    if(!enable_physics || MathUtils::IsEquivalentToZero(inv_mass)) {
+    if(!is_awake || !enable_physics || MathUtils::IsEquivalentToZero(inv_mass)) {
         return;
     }
     const auto linear_impulse_sum = std::accumulate(std::begin(linear_impulses), std::end(linear_impulses), Vector2::ZERO);
+    const auto angular_impulse_sum = std::accumulate(std::begin(angular_impulses), std::end(angular_impulses), 0.0f);
+    linear_impulses.clear();
+    angular_impulses.clear();
     const auto linear_force_sum = std::accumulate(std::begin(linear_forces), std::end(linear_forces), Vector2::ZERO);
     const auto angular_force_sum = std::accumulate(std::begin(angular_forces), std::end(angular_forces), 0.0f);
-    const auto new_angular_acceleration = angular_force_sum * inv_mass;
+    const auto new_angular_acceleration = angular_impulse_sum  + angular_force_sum * inv_mass;
     const auto new_acceleration = (linear_impulse_sum + linear_force_sum) * inv_mass;
     const auto t = deltaSeconds.count();
-    dt = t;
+    dt = deltaSeconds;
+    if(MathUtils::IsEquivalentToZero(prev_position - position)
+        && MathUtils::IsEquivalentToZero(prev_orientationDegrees - orientationDegrees)) {
+        time_since_last_move += dt;
+    } else {
+        time_since_last_move = TimeUtils::FPSeconds{ 0.0f };
+    }
+    is_awake = time_since_last_move < TimeUtils::FPSeconds{ 1.0f };
     const auto new_position = 2.0f * position - prev_position + new_acceleration * t * t;
     const auto new_orientationDegrees = 2.0f * orientationDegrees - prev_orientationDegrees + new_angular_acceleration * t * t;
 
@@ -171,6 +181,7 @@ Matrix4 RigidBody::GetParentTransform() const {
 }
 
 void RigidBody::ApplyImpulse(const Vector2& impulse) {
+    is_awake = true;
     linear_impulses.push_back(impulse);
 }
 
@@ -179,6 +190,7 @@ void RigidBody::ApplyImpulse(const Vector2& direction, float magnitude) {
 }
 
 void RigidBody::ApplyForce(const Vector2& force) {
+    is_awake = true;
     linear_forces.push_back(force);
 }
 
@@ -187,6 +199,7 @@ void RigidBody::ApplyForce(const Vector2& direction, float magnitude) {
 }
 
 void RigidBody::ApplyTorque(float force, bool asImpulse /*= false*/) {
+    is_awake = true;
     if(asImpulse) {
         angular_impulses.push_back(force);
     } else {
