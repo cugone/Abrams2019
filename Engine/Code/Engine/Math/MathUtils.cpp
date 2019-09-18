@@ -336,6 +336,16 @@ float DotProduct(const Quaternion& a, const Quaternion& b) noexcept {
     return (a.w * b.w) + DotProduct(a.axis, b.axis);
 }
 
+float CrossProduct(const Vector2& a, const Vector2& b) noexcept {
+    float a1 = a.x;
+    float a2 = a.y;
+
+    float b1 = b.x;
+    float b2 = b.y;
+
+    return a1 * b2 - a2 * b1;
+}
+
 Vector3 CrossProduct(const Vector3& a, const Vector3& b) noexcept {
     float a1 = a.x;
     float a2 = a.y;

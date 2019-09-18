@@ -146,6 +146,7 @@ float CalcDistanceSquared(const Vector4& a, const Vector4& b) noexcept;
 float CalcDistanceSquared(const Vector2& p, const LineSegment2& line) noexcept;
 float CalcDistanceSquared(const Vector3& p, const LineSegment3& line) noexcept;
 
+float CrossProduct(const Vector2& a, const Vector2& b) noexcept;
 Vector3 CrossProduct(const Vector3& a, const Vector3& b) noexcept;
 
 float DotProduct(const Vector2& a, const Vector2& b) noexcept;
