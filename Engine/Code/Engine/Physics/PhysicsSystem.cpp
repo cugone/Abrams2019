@@ -4,6 +4,10 @@ void PhysicsSystem::Update_Worker(TimeUtils::FPSeconds /*deltaSeconds*/) noexcep
 
 }
 
+void PhysicsSystem::Enable(bool enable) {
+    _is_running = enable;
+}
+
 PhysicsSystem::PhysicsSystem(Renderer& renderer, const PhysicsSystemDesc& desc /*= PhysicsSystemDesc{}*/)
 	: _renderer(renderer)
 	, _desc(desc)
@@ -20,8 +24,13 @@ void PhysicsSystem::Initialize() noexcept {
 }
 
 void PhysicsSystem::BeginFrame() noexcept {
+    if(!_is_running) {
+        return;
+    }
     for(auto& body : _rigidBodies) {
-        body->ApplyForce(Vector2::Y_AXIS * _desc.gravity);
+        if(body->IsGravityEnabled()) {
+            body->ApplyForce(Vector2::Y_AXIS * _desc.gravity);
+        }
         body->BeginFrame();
     }
 }
@@ -31,9 +40,7 @@ void PhysicsSystem::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
         return;
     }
     for(auto& body : _rigidBodies) {
-        if(body->enable_physics) {
-            body->Update(deltaSeconds);
-        }
+        body->Update(deltaSeconds);
     }
 }
 
@@ -49,10 +56,19 @@ void PhysicsSystem::EndFrame() noexcept {
     for(auto& body : _rigidBodies) {
         body->Endframe();
     }
+    for(const auto* r : _pending_removal) {
+        _rigidBodies.erase(std::remove_if(std::begin(_rigidBodies), std::end(_rigidBodies), [this, r](const RigidBody* b) { return b == r; }), std::end(_rigidBodies));
+    }
+    _pending_removal.clear();
+    _pending_removal.shrink_to_fit();
 }
 
 void PhysicsSystem::AddObject(RigidBody& body) {
     _rigidBodies.push_back(&body);
+}
+
+void PhysicsSystem::RemoveObject(const RigidBody& body) {
+    _pending_removal.push_back(&body);
 }
 
 void PhysicsSystem::DebugShowCollision(bool show) {
@@ -64,7 +80,6 @@ RigidBody::RigidBody(const RigidBodyDesc desc /*= RigidBodyDesc{}*/)
     , phys_material(desc.physicsMaterial)
     , prev_position(desc.initialPosition)
     , position(desc.initialPosition)
-    , velocity(desc.initialVelocity)
     , acceleration(desc.initialAcceleration)
     , inv_mass(1.0f / (desc.physicsMaterial.density * desc.collider.CalcDimensions().x * desc.collider.CalcDimensions().y))
 {
@@ -81,20 +96,18 @@ void RigidBody::Update(TimeUtils::FPSeconds deltaSeconds) {
     }
     const auto linear_impulse_sum = std::accumulate(std::begin(linear_impulses), std::end(linear_impulses), Vector2::ZERO);
     const auto linear_force_sum = std::accumulate(std::begin(linear_forces), std::end(linear_forces), Vector2::ZERO);
-    const auto angular_force_sum = std::accumulate(std::begin(angular_forces), std::end(angular_forces), Vector2::ZERO);
+    const auto angular_force_sum = std::accumulate(std::begin(angular_forces), std::end(angular_forces), 0.0f);
     const auto new_angular_acceleration = angular_force_sum * inv_mass;
     const auto new_acceleration = (linear_impulse_sum + linear_force_sum) * inv_mass;
     const auto t = deltaSeconds.count();
+    dt = t;
     const auto new_position = 2.0f * position - prev_position + new_acceleration * t * t;
-    //TODO: Fix for ACTUAL angular acceleration
-    const auto new_orientationDegrees = 2.0f * orientationDegrees - prev_orientationDegrees + new_angular_acceleration.CalcLength() * t * t;
+    const auto new_orientationDegrees = 2.0f * orientationDegrees - prev_orientationDegrees + new_angular_acceleration * t * t;
 
     prev_position = position;
     position = new_position;
-    velocity = (position - prev_position) / t;
     prev_orientationDegrees = orientationDegrees;
     orientationDegrees = new_orientationDegrees;
-    angular_velocity = (orientationDegrees - prev_orientationDegrees) / t;
     acceleration = new_acceleration;
 
     const auto S = Matrix4::CreateScaleMatrix(collider.half_extents);
@@ -138,6 +151,10 @@ bool RigidBody::IsPhysicsEnabled() const {
     return enable_physics;
 }
 
+bool RigidBody::IsGravityEnabled() const {
+    return enable_gravity;
+}
+
 float RigidBody::GetMass() const {
     return 1.0f / inv_mass;
 }
@@ -169,7 +186,7 @@ void RigidBody::ApplyForce(const Vector2& direction, float magnitude) {
     ApplyForce(direction.GetNormalize() * magnitude);
 }
 
-void RigidBody::ApplyTorque(const Vector2& force, bool asImpulse /*= false*/) {
+void RigidBody::ApplyTorque(float force, bool asImpulse /*= false*/) {
     if(asImpulse) {
         angular_impulses.push_back(force);
     } else {
@@ -177,8 +194,19 @@ void RigidBody::ApplyTorque(const Vector2& force, bool asImpulse /*= false*/) {
     }
 }
 
+void RigidBody::ApplyTorqueAt(const Vector2& position_on_object, const Vector2& direction, float magnitude, bool asImpulse /*= false*/) {
+    ApplyTorqueAt(position_on_object, direction.GetNormalize() * magnitude, asImpulse);
+}
+
+void RigidBody::ApplyTorqueAt(const Vector2& position_on_object, const Vector2& force, bool asImpulse /*= false*/) {
+    const auto point_of_collision = MathUtils::CalcClosestPoint(position_on_object, collider);
+    const auto r = position - point_of_collision;
+    const auto torque = MathUtils::CrossProduct(force, r);
+    ApplyTorque(torque, asImpulse);
+}
+
 void RigidBody::ApplyTorque(const Vector2& direction, float magnitude, bool asImpulse /*= false*/) {
-    ApplyTorque(direction.GetNormalize() * magnitude, asImpulse);
+    ApplyTorqueAt(position, direction * magnitude, asImpulse);
 }
 
 void RigidBody::ApplyForceAt(const Vector2& position_on_object, const Vector2& direction, float magnitude) {
@@ -191,7 +219,7 @@ void RigidBody::ApplyForceAt(const Vector2& position_on_object, const Vector2& f
     const auto [parallel, perpendicular] = MathUtils::DivideIntoProjectAndReject(force, r);
     const auto angular_result = force - parallel;
     const auto linear_result = force - perpendicular;
-    ApplyTorque(angular_result * r.CalcLength());
+    ApplyTorque(angular_result.CalcLength());
     ApplyForce(linear_result);
 }
 
@@ -205,6 +233,34 @@ void RigidBody::ApplyImpulseAt(const Vector2& position_on_object, const Vector2&
     const auto [parallel, perpendicular] = MathUtils::DivideIntoProjectAndReject(force, r);
     const auto angular_result = force - parallel;
     const auto linear_result = force - perpendicular;
-    ApplyTorque(angular_result * r.CalcLength(), true);
+    ApplyTorque(angular_result.CalcLength(), true);
     ApplyImpulse(linear_result);
+}
+
+const OBB2& RigidBody::GetCollider() const {
+    return collider;
+}
+
+const Vector2& RigidBody::GetPosition() const {
+    return position;
+}
+
+Vector2 RigidBody::GetVelocity() const {
+    return (position - prev_position) / dt;
+}
+
+const Vector2& RigidBody::GetAcceleration() const {
+    return acceleration;
+}
+
+float RigidBody::GetOrientationDegrees() const {
+    return orientationDegrees;
+}
+
+float RigidBody::GetAngularVelocityDegrees() const {
+    return (orientationDegrees - prev_orientationDegrees) / dt;
+}
+
+float RigidBody::GetAngularAccelerationDegrees() const {
+    return angular_acceleration;
 }

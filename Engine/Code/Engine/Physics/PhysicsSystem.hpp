@@ -193,6 +193,7 @@ public:
     void EnablePhysics(bool enabled);
     void EnableGravity(bool enabled);
     bool IsPhysicsEnabled() const;
+    bool IsGravityEnabled() const;
 
     float GetMass() const;
     float GetInverseMass() const;
@@ -205,14 +206,25 @@ public:
     void ApplyForce(const Vector2& force);
     void ApplyForce(const Vector2& direction, float magnitude);
 
-    void ApplyTorque(const Vector2& force, bool asImpulse = false);
+    void ApplyTorque(float force, bool asImpulse = false);
     void ApplyTorque(const Vector2& direction, float magnitude, bool asImpulse = false);
+    
+    void ApplyTorqueAt(const Vector2& position_on_object, const Vector2& force, bool asImpulse = false);
+    void ApplyTorqueAt(const Vector2& position_on_object, const Vector2& direction, float magnitude, bool asImpulse = false);
 
     void ApplyForceAt(const Vector2& position_on_object, const Vector2& direction, float magnitude);
     void ApplyForceAt(const Vector2& position_on_object, const Vector2& force);
     
     void ApplyImpulseAt(const Vector2& position_on_object, const Vector2& direction, float magnitude);
     void ApplyImpulseAt(const Vector2& position_on_object, const Vector2& force);
+
+    const OBB2& GetCollider() const;
+    const Vector2& GetPosition() const;
+    Vector2 GetVelocity() const;
+    const Vector2& GetAcceleration() const;
+    float GetOrientationDegrees() const;
+    float GetAngularVelocityDegrees() const;
+    float GetAngularAccelerationDegrees() const;
 
 protected:
 private:
@@ -222,17 +234,16 @@ private:
     PhysicsMaterial phys_material{};
     Vector2 prev_position{};
     Vector2 position{};
-    Vector2 velocity{};
     Vector2 acceleration{};
     float inv_mass = 1.0f;
     float prev_orientationDegrees = 0.0f;
     float orientationDegrees = 0.0f;
-    float angular_velocity = 0.0f;
     float angular_acceleration = 0.0f;
+    float dt = 0.0f;
     std::vector<Vector2> linear_forces{};
     std::vector<Vector2> linear_impulses{};
-    std::vector<Vector2> angular_forces{};
-    std::vector<Vector2> angular_impulses{};
+    std::vector<float> angular_forces{};
+    std::vector<float> angular_impulses{};
 	bool is_colliding = false;
 	bool enable_physics = true;
 	bool enable_gravity = true;
@@ -243,8 +254,8 @@ private:
 
 struct PhysicsSystemDesc {
 	Vector2 worldsize = Vector2{1000.0f, 1000.0f};
-	float gravity = 98.0665f;
-	float world_to_meters = 100.0f;
+	float gravity = 980.665f;
+	float world_to_meters = 1000.0f;
 	int position_solver_iterations = 1;
 	int velocity_solver_iterations = 1;
 };
@@ -261,9 +272,10 @@ public:
 	void EndFrame() noexcept;
 
     void AddObject(RigidBody& body);
+    void RemoveObject(const RigidBody& body);
 
     void DebugShowCollision(bool show);
-
+    void Enable(bool enable);
 protected:
 private:
 	void Update_Worker(TimeUtils::FPSeconds deltaSeconds) noexcept;
@@ -274,5 +286,6 @@ private:
 	std::condition_variable _signal;
 	std::atomic_bool _is_running = true;
 	std::vector<RigidBody*> _rigidBodies;
-    bool _show_colliders = true;
+	std::vector<const RigidBody*> _pending_removal;
+    bool _show_colliders = false;
 };
