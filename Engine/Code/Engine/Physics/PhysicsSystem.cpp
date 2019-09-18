@@ -145,8 +145,7 @@ void RigidBody::DebugRender(Renderer& renderer) const {
 }
 
 void RigidBody::Endframe() {
-    linear_impulses.clear();
-    angular_impulses.clear();
+    /* DO NOTHING */
 }
 
 void RigidBody::EnablePhysics(bool enabled) {
