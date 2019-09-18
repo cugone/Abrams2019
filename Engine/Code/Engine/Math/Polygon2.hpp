@@ -8,8 +8,7 @@
 
 class Polygon2 {
 public:
-    Polygon2() = default;
-    explicit Polygon2(int sides = 3, const Vector2 & position = Vector2::ZERO, const Vector2 & half_extents = Vector2(0.5f, 0.5f), float orientationDegrees = 0.0f)
+    Polygon2(int sides = 3, const Vector2& position = Vector2::ZERO, const Vector2& half_extents = Vector2(0.5f, 0.5f), float orientationDegrees = 0.0f)
         : _sides(sides)
         , _orientationDegrees(orientationDegrees)
         , _half_extents(half_extents)
@@ -42,11 +41,14 @@ public:
         _position += translation;
         CalcVerts();
     }
-    void Rotate(float displacementDegrees) {
+    void RotateDegrees(float displacementDegrees) {
         _orientationDegrees += displacementDegrees;
         _orientationDegrees = MathUtils::Wrap(_orientationDegrees, 0.0f, 360.0f);
         CalcVerts();
         CalcNormals();
+    }
+    void Rotate(float displacementRadians) {
+        RotateDegrees(MathUtils::ConvertRadiansToDegrees(displacementRadians));
     }
     float GetOrientationDegrees() const {
         return _orientationDegrees;
@@ -57,10 +59,10 @@ public:
         CalcVerts();
         CalcNormals();
     }
-    std::vector<Vector2> GetVerts() const {
+    const std::vector<Vector2>& GetVerts() const {
         return _verts;
     }
-    std::vector<Vector2> GetNormals() const {
+    const std::vector<Vector2>& GetNormals() const {
         return _normals;
     }
     const Vector2& GetHalfExtents() const {
