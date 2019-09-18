@@ -18,6 +18,8 @@
 #include <thread>
 #include <vector>
 
+class Renderer;
+
 class ColliderPolygon {
 public:
     ColliderPolygon() {
@@ -164,19 +166,84 @@ protected:
 private:
 };
 
-struct PhysicsObject {
+struct PhysicsMaterial {
+    float friction = 0.7f;
+    float restitution = 0.3f;
+    float density = 1.0f;
+};
+
+struct RigidBodyDesc {
+    PhysicsMaterial physicsMaterial = PhysicsMaterial{};
+    Vector2 initialPosition = Vector2::ZERO;
+    Vector2 initialVelocity = Vector2::ZERO;
+    Vector2 initialAcceleration = Vector2::ZERO;
+    OBB2 collider = OBB2(initialPosition, Vector2::ONE * 0.5f, 0.0f);
+};
+
+class RigidBody {
+public:
+    explicit RigidBody(const RigidBodyDesc desc = RigidBodyDesc{});
 	Matrix4 transform{};
-	Polygon2 collider;
-	PhysicsObject* parent = nullptr;
-	std::vector<PhysicsObject*> children{};
+
+    void BeginFrame();
+    void Update(TimeUtils::FPSeconds deltaSeconds);
+    void DebugRender(Renderer& renderer) const;
+    void Endframe();
+
+    void EnablePhysics(bool enabled);
+    void EnableGravity(bool enabled);
+    bool IsPhysicsEnabled() const;
+
+    float GetMass() const;
+    float GetInverseMass() const;
+
+    Matrix4 GetParentTransform() const;
+
+    void ApplyImpulse(const Vector2& impulse);
+    void ApplyImpulse(const Vector2& direction, float magnitude);
+
+    void ApplyForce(const Vector2& force);
+    void ApplyForce(const Vector2& direction, float magnitude);
+
+    void ApplyTorque(const Vector2& force, bool asImpulse = false);
+    void ApplyTorque(const Vector2& direction, float magnitude, bool asImpulse = false);
+
+    void ApplyForceAt(const Vector2& position_on_object, const Vector2& direction, float magnitude);
+    void ApplyForceAt(const Vector2& position_on_object, const Vector2& force);
+    
+    void ApplyImpulseAt(const Vector2& position_on_object, const Vector2& direction, float magnitude);
+    void ApplyImpulseAt(const Vector2& position_on_object, const Vector2& force);
+
+protected:
+private:
+    OBB2 collider{};
+	RigidBody* parent = nullptr;
+	std::vector<RigidBody*> children{};
+    PhysicsMaterial phys_material{};
+    Vector2 prev_position{};
+    Vector2 position{};
+    Vector2 velocity{};
+    Vector2 acceleration{};
+    float inv_mass = 1.0f;
+    float prev_orientationDegrees = 0.0f;
+    float orientationDegrees = 0.0f;
+    float angular_velocity = 0.0f;
+    float angular_acceleration = 0.0f;
+    std::vector<Vector2> linear_forces{};
+    std::vector<Vector2> linear_impulses{};
+    std::vector<Vector2> angular_forces{};
+    std::vector<Vector2> angular_impulses{};
 	bool is_colliding = false;
-	bool enable_physics = false;
-	bool is_awake = false;
+	bool enable_physics = true;
+	bool enable_gravity = true;
+	bool is_awake = true;
+
+    friend class PhysicsSystem;
 };
 
 struct PhysicsSystemDesc {
 	Vector2 worldsize = Vector2{1000.0f, 1000.0f};
-	float gravity = 0.0980665f;
+	float gravity = 98.0665f;
 	float world_to_meters = 100.0f;
 	int position_solver_iterations = 1;
 	int velocity_solver_iterations = 1;
@@ -184,7 +251,7 @@ struct PhysicsSystemDesc {
 
 class PhysicsSystem {
 public:
-    PhysicsSystem(const PhysicsSystemDesc& desc = PhysicsSystemDesc{});
+    explicit PhysicsSystem(Renderer& renderer, const PhysicsSystemDesc& desc = PhysicsSystemDesc{});
 	~PhysicsSystem();
 
 	void Initialize() noexcept;
@@ -193,13 +260,19 @@ public:
 	void Render() const noexcept;
 	void EndFrame() noexcept;
 
+    void AddObject(RigidBody& body);
+
+    void DebugShowCollision(bool show);
+
 protected:
 private:
 	void Update_Worker(TimeUtils::FPSeconds deltaSeconds) noexcept;
 
-	PhysicsSystemDesc desc;
+    Renderer& _renderer;
+	PhysicsSystemDesc _desc;
 	std::thread _update_thread;
 	std::condition_variable _signal;
-	std::atomic_bool _is_running;
-	ThreadSafeQueue<PhysicsObject*> _physicsObjects;
+	std::atomic_bool _is_running = true;
+	std::vector<RigidBody*> _rigidBodies;
+    bool _show_colliders = true;
 };
