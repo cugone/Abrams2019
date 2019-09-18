@@ -1015,7 +1015,7 @@ void Renderer::DrawAABB2(const Rgba& edgeColor, const Rgba& fillColor) noexcept 
     DrawAABB2(bounds, edgeColor, fillColor, edge_half_extents);
 }
 
-void Renderer::DrawOBB2(const OBB2& obb, const Rgba& edgeColor, const Rgba& fillColor, const Vector2& edgeHalfExtents /*= Vector2::ZERO*/) noexcept {
+void Renderer::DrawOBB2(const OBB2& obb, const Rgba& edgeColor, const Rgba& fillColor /*= Rgba::NoAlpha*/, const Vector2& edgeHalfExtents /*= Vector2::ZERO*/) noexcept {
     Vector2 lt = obb.GetTopLeft();
     Vector2 lb = obb.GetBottomLeft();
     Vector2 rt = obb.GetTopRight();
@@ -1028,7 +1028,7 @@ void Renderer::DrawOBB2(const OBB2& obb, const Rgba& edgeColor, const Rgba& fill
     Vector2 lb_outer(lb.x - edgeHalfExtents.x, lb.y + edgeHalfExtents.y);
     Vector2 rt_outer(rt.x + edgeHalfExtents.x, rt.y - edgeHalfExtents.y);
     Vector2 rb_outer(rb.x + edgeHalfExtents.x, rb.y + edgeHalfExtents.y);
-    std::vector<Vertex3D> vbo = {
+    const std::vector<Vertex3D> vbo = {
         Vertex3D(Vector3(rt_outer, 0.0f), edgeColor),
         Vertex3D(Vector3(lt_outer, 0.0f), edgeColor),
         Vertex3D(Vector3(lt_inner, 0.0f), edgeColor),
@@ -1043,7 +1043,7 @@ void Renderer::DrawOBB2(const OBB2& obb, const Rgba& edgeColor, const Rgba& fill
         Vertex3D(Vector3(rb_inner, 0.0f), fillColor),
     };
 
-    std::vector<unsigned int> ibo = {
+    const std::vector<unsigned int> ibo = {
         8, 9, 10,
         8, 10, 11,
         0, 1, 2,
@@ -1062,7 +1062,7 @@ void Renderer::DrawOBB2(const OBB2& obb, const Rgba& edgeColor, const Rgba& fill
     }
 }
 
-void Renderer::DrawOBB2(float orientationDegrees, const Rgba& edgeColor, const Rgba& fillColor) noexcept {
+void Renderer::DrawOBB2(float orientationDegrees, const Rgba& edgeColor, const Rgba& fillColor /*= Rgba::NoAlpha*/) noexcept {
     OBB2 obb;
     obb.half_extents = Vector2(0.5f, 0.5f);
     obb.orientationDegrees = orientationDegrees;
@@ -1138,8 +1138,9 @@ void Renderer::DrawPolygon2D(const Polygon2& polygon, const Rgba& color /*= Rgba
     }();
     const std::vector<unsigned int> ibo = [this, &vbo]() {
         std::vector<unsigned int> buffer(vbo.size() + 1);
-        std::iota(std::begin(buffer), std::end(buffer), 0u);
-        buffer.back() = 0;
+        for(unsigned int i = 0u; i < buffer.size(); ++i) {
+            buffer[i] = i % vbo.size();
+        }
         return buffer;
     }();
     DrawIndexed(PrimitiveType::LinesStrip, vbo, ibo);

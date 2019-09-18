@@ -342,8 +342,8 @@ public:
     void DrawFilledCircle2D(const Vector2& center, float radius, const Rgba& color = Rgba::White) noexcept;
     void DrawAABB2(const AABB2& bounds, const Rgba& edgeColor, const Rgba& fillColor, const Vector2& edgeHalfExtents = Vector2::ZERO) noexcept;
     void DrawAABB2(const Rgba& edgeColor, const Rgba& fillColor) noexcept;
-    void DrawOBB2(float orientationDegrees, const Rgba& edgeColor, const Rgba& fillColor) noexcept;
-    void DrawOBB2(const OBB2& obb, const Rgba& edgeColor, const Rgba& fillColor, const Vector2& edgeHalfExtents = Vector2::ZERO) noexcept;
+    void DrawOBB2(float orientationDegrees, const Rgba& edgeColor, const Rgba& fillColor = Rgba::NoAlpha) noexcept;
+    void DrawOBB2(const OBB2& obb, const Rgba& edgeColor, const Rgba& fillColor = Rgba::NoAlpha, const Vector2& edgeHalfExtents = Vector2::ZERO) noexcept;
     void DrawPolygon2D(float centerX, float centerY, float radius, std::size_t numSides = 3, const Rgba& color = Rgba::White) noexcept;
     void DrawPolygon2D(const Vector2& center, float radius, std::size_t numSides = 3, const Rgba& color = Rgba::White) noexcept;
     void DrawPolygon2D(const Polygon2& polygon, const Rgba& color = Rgba::White);
