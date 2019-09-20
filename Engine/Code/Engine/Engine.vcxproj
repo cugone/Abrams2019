@@ -81,6 +81,7 @@
     <ClCompile Include="Networking\Address.cpp" />
     <ClCompile Include="Networking\NetUtils.cpp" />
     <ClCompile Include="Physics\PhysicsSystem.cpp" />
+    <ClCompile Include="Physics\QuadTree.cpp" />
     <ClCompile Include="Profiling\Memory.cpp" />
     <ClCompile Include="Profiling\ProfileLogScope.cpp" />
     <ClCompile Include="Profiling\StackTrace.cpp" />
@@ -203,6 +204,7 @@
     <ClInclude Include="Networking\Address.hpp" />
     <ClInclude Include="Networking\NetUtils.hpp" />
     <ClInclude Include="Physics\PhysicsSystem.hpp" />
+    <ClInclude Include="Physics\QuadTree.hpp" />
     <ClInclude Include="Profiling\Memory.hpp" />
     <ClInclude Include="Profiling\ProfileLogScope.hpp" />
     <ClInclude Include="Profiling\StackTrace.hpp" />
