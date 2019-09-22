@@ -34,6 +34,9 @@ public:
     bool HasFocus() const noexcept;
 
     ImGuiIO& GetIO() const noexcept;
+    bool WantsInputCapture() const noexcept;
+    bool WantsInputKeyboardCapture() const noexcept;
+    bool WantsInputMouseCapture() const noexcept;
 
     void ToggleImguiDemoWindow() noexcept;
 protected:

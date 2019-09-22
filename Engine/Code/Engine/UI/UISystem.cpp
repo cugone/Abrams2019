@@ -140,6 +140,18 @@ ImGuiIO& UISystem::GetIO() const noexcept {
     return *_io;
 }
 
+bool UISystem::WantsInputCapture() const noexcept {
+    return WantsInputKeyboardCapture() || WantsInputMouseCapture();
+}
+
+bool UISystem::WantsInputKeyboardCapture() const noexcept {
+    return GetIO().WantCaptureKeyboard;
+}
+
+bool UISystem::WantsInputMouseCapture() const noexcept {
+    return GetIO().WantCaptureMouse;
+}
+
 void UISystem::ToggleImguiDemoWindow() noexcept {
 #if !defined(IMGUI_DISABLE_DEMO_WINDOWS)
     show_imgui_demo_window = !show_imgui_demo_window;
