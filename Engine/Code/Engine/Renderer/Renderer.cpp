@@ -3689,10 +3689,8 @@ void Renderer::SetViewportAsPercent(float x /*= 0.0f*/, float y /*= 0.0f*/, floa
     auto window_height = window_dimensions.y;
     auto left = x * window_width;
     auto top = y * window_height;
-    auto right = left + window_width * w;
-    auto bottom = top + window_height * h;
-    auto width = (right - left) * w;
-    auto height = (bottom - top) * h;
+    auto width = window_width * w;
+    auto height = window_height * h;
     SetViewport(static_cast<unsigned int>(left),
                 static_cast<unsigned int>(top),
                 static_cast<unsigned int>(width),
