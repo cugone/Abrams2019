@@ -45,6 +45,10 @@ OBB2::OBB2(const AABB2& aabb) noexcept
 }
 
 
+AABB2 OBB2::AsAABB2() const {
+    return {position - half_extents, position + half_extents};
+}
+
 void OBB2::SetOrientationDegrees(float newOrientationDegrees) noexcept {
     orientationDegrees = newOrientationDegrees;
     orientationDegrees = MathUtils::Wrap(orientationDegrees, 0.0f, 360.0f);

@@ -23,6 +23,8 @@ public:
     OBB2(const AABB2& aabb) noexcept;
     ~OBB2() = default;
 
+    AABB2 AsAABB2() const;
+
     void SetOrientationDegrees(float newOrientationDegrees) noexcept;
     void SetOrientation(float newOrientationRadians) noexcept;
     void RotateDegrees(float rotationDegrees) noexcept;
