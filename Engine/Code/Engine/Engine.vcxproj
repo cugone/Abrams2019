@@ -302,12 +302,10 @@
     <Import Project="Abrams2019.Debug.Default.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <Import Project="Abrams2018.Release.Default.props" />
     <Import Project="Abrams2019.Default.props" />
     <Import Project="Abrams2019.Release.Default.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='FinalBuild|x64'" Label="PropertySheets">
-    <Import Project="Abrams2018.FinalBuild.Default.props" />
     <Import Project="Abrams2019.Default.props" />
     <Import Project="Abrams2019.FinalBuild.Default.props" />
   </ImportGroup>
