@@ -2783,7 +2783,7 @@ std::unique_ptr<Texture> Renderer::CreateDefaultEmissiveTexture() noexcept {
 
 std::unique_ptr<Texture> Renderer::CreateDefaultFullscreenTexture() noexcept {
     auto dims = GetOutput()->GetDimensions();
-    auto data = std::vector<Rgba>(dims.x * dims.y, Rgba::Magenta);
+    auto data = std::vector<Rgba>(static_cast<std::size_t>(dims.x) * static_cast<std::size_t>(dims.y), Rgba::Magenta);
     return Create2DTextureFromMemory(data, dims.x, dims.y, BufferUsage::Gpu, BufferBindUsage::Render_Target | BufferBindUsage::Shader_Resource);
 }
 void Renderer::CreateDefaultColorTextures() noexcept {
