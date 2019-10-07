@@ -195,6 +195,8 @@ Vector2 GetRandomPointInside(const Disc2& disc) noexcept;
 Vector3 GetRandomPointInside(const AABB3& aabb) noexcept;
 Vector3 GetRandomPointInside(const Sphere3& sphere) noexcept;
 
+bool Contains(const AABB2& aabb, const Vector2& point) noexcept;
+bool Contains(const AABB2& a, const AABB2& b) noexcept;
 
 bool IsPointInside(const AABB2& aabb, const Vector2& point) noexcept;
 bool IsPointInside(const AABB3& aabb, const Vector3& point) noexcept;

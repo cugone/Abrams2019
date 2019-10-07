@@ -529,6 +529,20 @@ Vector3 GetRandomPointInside(const Sphere3& sphere) noexcept {
     return sphere.center + Vector3{ x,y,z };
 }
 
+
+bool Contains(const AABB2& aabb, const Vector2& point) noexcept {
+    return IsPointInside(aabb, point);
+}
+
+
+bool Contains(const AABB2& a, const AABB2& b) noexcept {
+    const auto tl = Vector2{ b.mins.x, b.mins.y };
+    const auto tr = Vector2{ b.maxs.x, b.mins.y };
+    const auto bl = Vector2{ b.mins.x, b.maxs.y };
+    const auto br = Vector2{ b.maxs.x, b.maxs.y };
+    return IsPointInside(a, tl) && IsPointInside(a, tr) && IsPointInside(a, bl) && IsPointInside(a, br);
+}
+
 bool IsPointInside(const AABB2& aabb, const Vector2& point) noexcept {
     if(aabb.maxs.x < point.x) return false;
     if(point.x < aabb.mins.x) return false;
