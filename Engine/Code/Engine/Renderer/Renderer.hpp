@@ -367,6 +367,19 @@ public:
     void CopyTexture(Texture* src, Texture* dst) noexcept;
 protected:
 private:
+    struct DrawInstruction {
+        PrimitiveType type;
+        std::size_t start;
+        std::size_t count;
+        std::size_t baseVertexLocation;
+        Material* material;
+        bool operator==(const DrawInstruction& rhs) {
+            return material == rhs.material && type == rhs.type;
+        }
+        bool operator!=(const DrawInstruction& rhs) {
+            return !(*this == rhs);
+        }
+    };
     void UpdateSystemTime(TimeUtils::FPSeconds deltaSeconds) noexcept;
     bool RegisterTexture(const std::filesystem::path& filepath) noexcept;
     void RegisterShaderProgram(const std::string& name, std::unique_ptr<ShaderProgram> sp) noexcept;
