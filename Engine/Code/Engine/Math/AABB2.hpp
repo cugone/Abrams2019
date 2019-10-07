@@ -2,6 +2,8 @@
 
 #include "Engine/Math/Vector2.hpp"
 
+class OBB2;
+
 class AABB2 {
 public:
 
@@ -21,14 +23,17 @@ public:
     AABB2(float minX, float minY, float maxX, float maxY) noexcept;
     AABB2(const Vector2& mins, const Vector2& maxs) noexcept;
     AABB2(const Vector2& center, float radiusX, float radiusY) noexcept;
+    AABB2(const OBB2& obb) noexcept;
 
     void StretchToIncludePoint(const Vector2& point) noexcept;
+    void ScalePadding(float scaleX, float scaleY) noexcept;
     void AddPaddingToSides(float paddingX, float paddingY) noexcept;
     void AddPaddingToSidesClamped(float paddingX, float paddingY) noexcept;
     void Translate(const Vector2& translation) noexcept;
 
     Vector2 CalcDimensions() const noexcept;
     Vector2 CalcCenter() const noexcept;
+    void SetPosition(const Vector2& center) noexcept;
 
     AABB2 operator+(const Vector2& translation) const noexcept;
     AABB2 operator-(const Vector2& antiTranslation) const noexcept;

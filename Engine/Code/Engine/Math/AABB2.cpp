@@ -1,5 +1,7 @@
 #include "Engine/Math/AABB2.hpp"
 
+#include "Engine/Math/OBB2.hpp"
+
 #include <algorithm>
 
 const AABB2 AABB2::ZERO_TO_ONE(0.0f, 0.0f, 1.0f, 1.0f);
@@ -33,6 +35,13 @@ AABB2::AABB2(const Vector2& center, float radiusX, float radiusY) noexcept
     /* DO NOTHING */
 }
 
+
+AABB2::AABB2(const OBB2& obb) noexcept
+    : AABB2(obb.position, obb.half_extents.x, obb.half_extents.y)
+{
+    /* DO NOTHING */
+}
+
 void AABB2::StretchToIncludePoint(const Vector2& point) noexcept {
     if(point.x < mins.x) {
         mins.x = point.x;
@@ -46,6 +55,15 @@ void AABB2::StretchToIncludePoint(const Vector2& point) noexcept {
     if(maxs.y < point.y) {
         maxs.y = point.y;
     }
+}
+
+
+void AABB2::ScalePadding(float scaleX, float scaleY) noexcept {
+    auto width = maxs.x - mins.x;
+    auto height = maxs.y - mins.y;
+
+    maxs.x = mins.x + width * scaleX;
+    maxs.y = mins.y + height * scaleY;
 }
 
 void AABB2::AddPaddingToSides(float paddingX, float paddingY) noexcept {
@@ -83,6 +101,13 @@ Vector2 AABB2::CalcDimensions() const noexcept {
 
 Vector2 AABB2::CalcCenter() const noexcept {
     return Vector2(mins.x + (maxs.x - mins.x) * 0.5f, mins.y + (maxs.y - mins.y) * 0.5f);
+}
+
+
+void AABB2::SetPosition(const Vector2& center) noexcept {
+    const auto half_extents = CalcDimensions() * 0.5f;
+    mins = Vector2(center.x - half_extents.x, center.y - half_extents.y);
+    maxs = Vector2(center.x + half_extents.x, center.y + half_extents.y);
 }
 
 AABB2 AABB2::operator+(const Vector2& translation) const noexcept {
