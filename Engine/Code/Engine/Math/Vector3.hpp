@@ -19,14 +19,7 @@ public:
     static const Vector3 XZ_AXIS;
     static const Vector3 YZ_AXIS;
 
-
-    Vector3() = default;
-    Vector3(const Vector3& rhs) = default;
-    Vector3(Vector3&& rhs) = default;
-    Vector3& operator=(const Vector3& rhs) = default;
-    Vector3& operator=(Vector3&& rhs) = default;
-    ~Vector3() = default;
-
+    Vector3() noexcept = default;
     explicit Vector3(const std::string& value) noexcept;
     explicit Vector3(float initialX, float initialY, float initialZ) noexcept;
     explicit Vector3(const Vector2& vec2) noexcept;

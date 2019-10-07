@@ -15,13 +15,7 @@ public:
     static const Vector2 XY_AXIS;
     static const Vector2 YX_AXIS;
 
-    Vector2() = default;
-    Vector2(const Vector2& rhs) = default;
-    Vector2(Vector2&& rhs) = default;
-    Vector2& operator=(const Vector2& rhs) = default;
-    Vector2& operator=(Vector2&& rhs) = default;
-    ~Vector2() = default;
-
+    Vector2() noexcept = default;
     explicit Vector2(const std::string& value) noexcept;
     explicit Vector2(float initialX, float initialY) noexcept;
     explicit Vector2(const Vector3& rhs) noexcept;
