@@ -569,7 +569,7 @@ const Vector2& ColliderCircle::GetHalfExtents() const noexcept {
 }
 
 Vector2 ColliderCircle::Support(const Vector2& d) const noexcept {
-    return _position + d * _half_extents.x;
+    return _position + d.GetNormalize() * _half_extents.x;
 }
 
 void ColliderCircle::DebugRender(Renderer* renderer) const noexcept {
