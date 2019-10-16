@@ -660,10 +660,12 @@ std::pair<float, bool> GJKDistance(const Collider& a, const Collider& b) {
         switch(S) {
         case 2:
             doSimplexLine(simplex, D);
+            break;
         case 3:
             doSimplexTriangle(simplex, D);
+            break;
         default:
-            /* DO NOTHING */;
+            break;
         }
     };
     const auto result = [&](std::vector<Vector2>& simplex, Vector2& D) {
