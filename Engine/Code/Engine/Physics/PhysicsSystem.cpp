@@ -680,6 +680,6 @@ std::pair<float, bool> GJKDistance(const Collider& a, const Collider& b) {
                 return true;
             }
         }
-    }(simplex, D);
+    }(simplex, D); //IIIL
     return std::make_pair(simplex.back().CalcLength(), result);
 }
