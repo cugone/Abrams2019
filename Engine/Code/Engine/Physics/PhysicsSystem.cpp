@@ -338,6 +338,10 @@ bool RigidBody::IsAwake() const {
     return is_awake;
 }
 
+const Collider* RigidBody::GetCollider() const noexcept {
+    return collider.get();
+}
+
 ColliderPolygon::ColliderPolygon(int sides /*= 4*/, const Vector2& position /*= Vector2::ZERO*/, const Vector2& half_extents /*= Vector2(0.5f, 0.5f)*/, float orientationDegrees /*= 0.0f*/) : Collider()
 , _sides(sides)
 , _orientationDegrees(orientationDegrees)

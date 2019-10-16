@@ -187,6 +187,7 @@ public:
 
     bool IsAwake() const;
 
+    const  Collider* GetCollider() const noexcept;
 protected:
 private:
     std::unique_ptr<Collider> collider = nullptr;
