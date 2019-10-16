@@ -614,17 +614,17 @@ std::pair<float, bool> GJKDistance(const Collider& a, const Collider& b) {
     const auto doSimplexLine = [&](std::vector<Vector2>& simplex, Vector2& D) {
         const auto i_b = simplex.size() - 2;
         const auto i_a = simplex.size() - 1;
-        const auto A = simplex[i_a];
-        const auto B = simplex[i_b];
-        const auto AB = B - A;
-        const auto AO = -A;
-        if(MathUtils::DotProduct(AB, AO) > 0.0f) {
-            D = Vector2(MathUtils::CrossProduct(MathUtils::CrossProduct(Vector3(AB, 0.0f), Vector3(AO, 0.0f)), Vector3(AB, 0.0f)));
+        const auto pointA = simplex[i_a];
+        const auto pointB = simplex[i_b];
+        const auto lineAB = pointB - pointA;
+        const auto lineAO = -pointA;
+        if(MathUtils::DotProduct(lineAB, lineAO) > 0.0f) {
+            D.SetHeadingDegrees(90.0f - 90.0f * MathUtils::DotProduct(lineAB, lineAO));
             simplex.clear();
-            simplex.push_back(A);
-            simplex.push_back(B);
+            simplex.push_back(pointA);
+            simplex.push_back(pointB);
         } else {
-            D = AO;
+            D = lineAO.GetNormalize();
             simplex.clear();
             simplex.push_back(A);
         }
@@ -633,23 +633,23 @@ std::pair<float, bool> GJKDistance(const Collider& a, const Collider& b) {
         const auto i_c = simplex.size() - 3;
         const auto i_b = simplex.size() - 2;
         const auto i_a = simplex.size() - 1;
-        const auto C = simplex[i_c];
-        const auto B = simplex[i_b];
-        const auto A = simplex[i_a];
-        const auto AC = C - A;
-        const auto AB = B - A;
-        const auto AO = -A;
-        if(MathUtils::DotProduct(AC, AO) > 0.0f) {
-            D = Vector2(MathUtils::CrossProduct(MathUtils::CrossProduct(Vector3(AC, 0.0f), Vector3(AO, 0.0f)), Vector3(AC, 0.0f)));
+        const auto pointC = simplex[i_c];
+        const auto pointB = simplex[i_b];
+        const auto pointA = simplex[i_a];
+        const auto lineAC = pointC - pointA;
+        const auto lineAB = pointB - pointA;
+        const auto lineAO = -pointA;
+        if(MathUtils::DotProduct(lineAC, lineAO) > 0.0f) {
+            D.SetHeadingDegrees(90.0f - 90.0f * MathUtils::DotProduct(lineAC, lineAO));
             simplex.clear();
-            simplex.push_back(A);
-            simplex.push_back(C);
+            simplex.push_back(pointA);
+            simplex.push_back(pointC);
             containsOrigin = false;
-        } else if(MathUtils::DotProduct(AB, AO) > 0.0f) {
-            D = Vector2(MathUtils::CrossProduct(MathUtils::CrossProduct(Vector3(AB, 0.0f), Vector3(AO, 0.0f)), Vector3(AB, 0.0f)));
+        } else if(MathUtils::DotProduct(lineAB, lineAO) > 0.0f) {
+            D.SetHeadingDegrees(90.0f - 90.0f * MathUtils::DotProduct(lineAB, lineAO));
             simplex.clear();
-            simplex.push_back(A);
-            simplex.push_back(B);
+            simplex.push_back(pointA);
+            simplex.push_back(pointB);
             containsOrigin = false;
         } else {
             containsOrigin = true;
