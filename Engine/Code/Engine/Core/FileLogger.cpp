@@ -163,7 +163,7 @@ void FileLogger::Shutdown() noexcept {
         {
             std::ostringstream ss;
             if(Memory::is_enabled()) {
-                ss << Memory::status();
+                ss << Memory::status() << '\n';
             }
             ss << "Shutting down Logger: " << _current_log_path << "...";
             LogLine(ss.str().c_str());
