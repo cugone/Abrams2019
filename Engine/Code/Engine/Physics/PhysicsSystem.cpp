@@ -437,10 +437,10 @@ void ColliderPolygon::SetHalfExtents(const Vector2& newHalfExtents) {
 }
 
 Vector2 ColliderPolygon::CalcDimensions() const noexcept {
-    const auto [min_x, max_x] = std::minmax_element(std::begin(_verts), std::end(_verts), [](const Vector2& a, const Vector2& b) {
+    const auto [min_x, max_x] = std::minmax_element(std::cbegin(_verts), std::cend(_verts), [](const Vector2& a, const Vector2& b) {
         return a.x < b.x;
     });
-    const auto [min_y, max_y] = std::minmax_element(std::begin(_verts), std::end(_verts), [](const Vector2& a, const Vector2& b) {
+    const auto [min_y, max_y] = std::minmax_element(std::cbegin(_verts), std::cend(_verts), [](const Vector2& a, const Vector2& b) {
         return a.y < b.y;
     });
     const float width = (*max_x).x - (*min_x).x;
@@ -504,7 +504,7 @@ void ColliderPolygon::CalcVerts() {
 }
 
 Vector2 ColliderPolygon::Support(const Vector2& d) const noexcept {
-    return *std::max_element(std::begin(_verts), std::end(_verts), [&d](const Vector2& a, const Vector2& b) { return MathUtils::DotProduct(a, d) < MathUtils::DotProduct(b, d);  });
+    return *std::max_element(std::cbegin(_verts), std::cend(_verts), [&d](const Vector2& a, const Vector2& b) { return MathUtils::DotProduct(a, d.GetNormalize()) < MathUtils::DotProduct(b, d.GetNormalize());  });
 }
 
 Vector2 ColliderPolygon::CalcCenter() const noexcept {
