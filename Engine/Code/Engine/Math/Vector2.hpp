@@ -66,8 +66,8 @@ public:
     float Normalize() noexcept;
     Vector2 GetNormalize() const noexcept;
 
-    Vector2 GetLeftHandNormal() noexcept;
-    Vector2 GetRightHandNormal() noexcept;
+    Vector2 GetLeftHandNormal() const noexcept;
+    Vector2 GetRightHandNormal() const noexcept;
     void Rotate90Degrees() noexcept;
     void RotateNegative90Degrees() noexcept;
     void RotateRadians(float radians) noexcept;

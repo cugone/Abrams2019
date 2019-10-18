@@ -248,14 +248,14 @@ Vector2 Vector2::GetNormalize() const noexcept {
 }
 
 
-Vector2 Vector2::GetLeftHandNormal() noexcept {
+Vector2 Vector2::GetLeftHandNormal() const noexcept {
     Vector2 result = *this;
     result.Rotate90Degrees();
     return result;
 }
 
 
-Vector2 Vector2::GetRightHandNormal() noexcept {
+Vector2 Vector2::GetRightHandNormal() const noexcept {
     Vector2 result = *this;
     result.RotateNegative90Degrees();
     return result;
