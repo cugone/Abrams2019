@@ -394,7 +394,8 @@ bool IsSafeReadPath(const std::filesystem::path& p) noexcept {
             << "\nPath2: " << e.path2()
             << '\n';
         ss.flush();
-        DebuggerPrintf(ss.str().c_str());
+        const auto str = ss.str();
+        DebuggerPrintf(str.c_str());
         return false;
     }
 
