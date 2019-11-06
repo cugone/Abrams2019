@@ -130,8 +130,7 @@ Image& Image::operator=(Image&& rhs) noexcept {
 Rgba Image::GetTexel(const IntVector2& texelPos) const noexcept {
     int index = texelPos.x + texelPos.y * m_dimensions.x;
     int byteOffset = index * m_bytesPerTexel;
-    //HACK: If too slow, use following commented line instead.
-    Rgba color;// = *(reinterpret_cast<Rgba>(&m_texelBytes[byteOffset]));
+    Rgba color;
     color.r = m_texelBytes[byteOffset + 0];
     color.g = m_texelBytes[byteOffset + 1];
     color.b = m_texelBytes[byteOffset + 2];
@@ -146,8 +145,6 @@ void Image::SetTexel(const IntVector2& texelPos, const Rgba& color) noexcept {
     Rgba oldColor = GetTexel(texelPos);
     int index = texelPos.x + texelPos.y * m_dimensions.x;
     int byteOffset = index * m_bytesPerTexel;
-    //HACK: If too slow, use following commented line instead.
-    //m_texelBytes[byteOffset] = reinterpret_cast<unsigned char*>(&color);
     m_texelBytes[byteOffset + 0] = color.r;
     m_texelBytes[byteOffset + 1] = color.g;
     m_texelBytes[byteOffset + 2] = color.b;
