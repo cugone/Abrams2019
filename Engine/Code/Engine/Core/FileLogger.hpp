@@ -6,7 +6,7 @@
 #include <condition_variable>
 #include <fstream>
 #include <filesystem>
-#include <iostream>
+#include <iosfwd>
 #include <mutex>
 #include <sstream>
 #include <string>
@@ -55,7 +55,7 @@ private:
     mutable std::mutex _cs{};
     std::ofstream _stream{};
     std::filesystem::path _current_log_path{};
-    decltype(std::cout.rdbuf()) _old_cout{};
+    std::streambuf* _old_cout{};
     std::thread _worker{};
     std::condition_variable _signal{};
     ThreadSafeQueue<std::string> _queue;
