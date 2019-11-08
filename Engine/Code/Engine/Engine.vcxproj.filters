@@ -771,5 +771,8 @@
     <ClInclude Include="Physics\QuadTree.hpp">
       <Filter>Physics</Filter>
     </ClInclude>
+    <ClInclude Include="Core\ThreadSafeVector.hpp">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
