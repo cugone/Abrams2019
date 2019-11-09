@@ -169,7 +169,6 @@
     <ClInclude Include="Core\Riff.hpp" />
     <ClInclude Include="Core\Stopwatch.hpp" />
     <ClInclude Include="Core\StringUtils.hpp" />
-    <ClInclude Include="Core\ThreadSafeVector.hpp" />
     <ClInclude Include="Core\ThreadUtils.hpp" />
     <ClInclude Include="Core\ThreadSafeQueue.hpp" />
     <ClInclude Include="Core\TimeUtils.hpp" />
