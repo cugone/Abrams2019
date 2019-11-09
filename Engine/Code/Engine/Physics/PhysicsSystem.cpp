@@ -65,13 +65,64 @@ void PhysicsSystem::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
     if(!this->_is_running) {
         return;
     }
-    for(auto& body : _rigidBodies) {
+    UpdateBodiesInBounds(deltaSeconds);
+    const auto camera_position = Vector2(_renderer.GetCamera().GetPosition());
+    const auto half_extents = Vector2(_renderer.GetOutput()->GetDimensions()) * 0.5f;
+    const auto query_area = AABB2(camera_position - half_extents, camera_position + half_extents);
+    std::vector<RigidBody*> potential_collisions = BroadPhaseCollision(query_area);
+    std::vector<CollisionData> actual_collisions = NarrowPhaseCollision(potential_collisions);
+
+}
+
+void PhysicsSystem::UpdateBodiesInBounds(TimeUtils::FPSeconds deltaSeconds) noexcept {
+    for (auto body : _rigidBodies) {
+        if (!body) {
+            continue;
+        }
+        if (MathUtils::DoOBBsOverlap(_desc.world_bounds, body->GetBounds())) {
+            body->Update(deltaSeconds);
+        }
+    }
+}
+
+std::vector<RigidBody*> PhysicsSystem::BroadPhaseCollision(const AABB2& query_area) noexcept {
+    std::vector<RigidBody*> potential_collisions{};
+    for (auto body : _rigidBodies) {
+        if (!body) {
+            continue;
+        }
+        if(!MathUtils::DoOBBsOverlap(query_area, body->GetBounds())) {
+            continue;
+        }
         if(MathUtils::DoOBBsOverlap(_desc.world_bounds, body->GetBounds())) {
-            if(body) {
-                body->Update(deltaSeconds);
+            const auto queried_bodies = _world_partition.Query(query_area);
+            for (auto* query : queried_bodies) {
+                potential_collisions.push_back(query);
             }
         }
     }
+    return potential_collisions;
+}
+
+std::vector<CollisionData> PhysicsSystem::NarrowPhaseCollision(std::vector<RigidBody*>& potential_collisions) noexcept {
+    std::vector<CollisionData> result{};
+    if(potential_collisions.size() < 2) {
+        return {};
+    }
+    for (auto iter_a = potential_collisions.begin(); iter_a != potential_collisions.end(); ++iter_a) {
+        for (auto iter_b = potential_collisions.begin() + 1; iter_b != potential_collisions.end(); ++iter_b) {
+            auto* const cur_body = *iter_a;
+            auto* const next_body = *iter_b;
+            auto [collides, distance, normal] = GJKDistance(*cur_body->GetCollider(), *next_body->GetCollider());
+            if(collides) {
+                CollisionData new_collision(cur_body, next_body, distance, normal);
+                if(std::find(std::begin(result), std::end(result), new_collision) == std::end(result)) {
+                    result.push_back(new_collision);
+                }
+            }
+        }
+    }
+    return result;
 }
 
 void PhysicsSystem::Render() const noexcept {
@@ -95,9 +146,7 @@ void PhysicsSystem::EndFrame() noexcept {
     _pending_removal.clear();
     _pending_removal.shrink_to_fit();
     _world_partition.Clear();
-    for(const auto& body : _rigidBodies) {
-        _world_partition.Add(body);
-    }
+    _world_partition.Add(_rigidBodies);
 }
 
 void PhysicsSystem::AddObject(RigidBody* body) {
@@ -107,8 +156,9 @@ void PhysicsSystem::AddObject(RigidBody* body) {
 
 void PhysicsSystem::AddObjects(std::vector<RigidBody*> bodies) {
     _rigidBodies.reserve(_rigidBodies.size() + bodies.size());
-    std::merge(std::begin(_rigidBodies), std::end(_rigidBodies), std::begin(bodies), std::end(bodies), std::back_inserter(_rigidBodies));
-    _world_partition.Add(bodies);
+    for(auto* body : bodies) {
+        AddObject(body);
+    }
 }
 
 void PhysicsSystem::RemoveObject(const RigidBody* body) {
@@ -190,7 +240,7 @@ void RigidBody::Update(TimeUtils::FPSeconds deltaSeconds) {
 
 void RigidBody::DebugRender(Renderer& renderer) const {
     renderer.SetModelMatrix(Matrix4::I);
-    renderer.DrawOBB2(collider->GetBounds(), Rgba::Pink);
+    collider->DebugRender(renderer);
 }
 
 void RigidBody::Endframe() {
@@ -358,10 +408,7 @@ ColliderPolygon::ColliderPolygon() : Collider() {
 
 ColliderPolygon::~ColliderPolygon() = default;
 
-void ColliderPolygon::DebugRender(Renderer* renderer) const noexcept {
-    if(!renderer) {
-        return;
-    }
+void ColliderPolygon::DebugRender(Renderer& renderer) const noexcept {
     const std::vector<Vertex3D> vbo = [this]() {
         std::vector<Vertex3D> buffer;
         buffer.reserve(_verts.size());
@@ -376,7 +423,7 @@ void ColliderPolygon::DebugRender(Renderer* renderer) const noexcept {
         buffer.back() = 0;
         return buffer;
     }();
-    renderer->DrawIndexed(PrimitiveType::LinesStrip, vbo, ibo);
+    renderer.DrawIndexed(PrimitiveType::LinesStrip, vbo, ibo);
 }
 
 int ColliderPolygon::GetSides() const {
@@ -520,8 +567,8 @@ float ColliderOBB::CalcArea() const noexcept {
     return dims.x * dims.y;
 }
 
-void ColliderOBB::DebugRender(Renderer* renderer) const noexcept {
-    renderer->DrawOBB2(_orientationDegrees, Rgba::Pink);
+void ColliderOBB::DebugRender(Renderer& renderer) const noexcept {
+    renderer.DrawOBB2(_orientationDegrees, Rgba::Pink);
 }
 
 const Vector2& ColliderOBB::GetHalfExtents() const noexcept {
@@ -570,10 +617,11 @@ const Vector2& ColliderCircle::GetHalfExtents() const noexcept {
 
 Vector2 ColliderCircle::Support(const Vector2& d) const noexcept {
     return _position + d.GetNormalize() * _half_extents.x;
+    //return ColliderPolygon::Support(d);
 }
 
-void ColliderCircle::DebugRender(Renderer* renderer) const noexcept {
-    renderer->DrawCircle2D(_position, _half_extents.x, Rgba::Pink);
+void ColliderCircle::DebugRender(Renderer& renderer) const noexcept {
+    renderer.DrawCircle2D(_position, _half_extents.x, Rgba::Pink);
 }
 
 void ColliderCircle::SetPosition(const Vector2& position) noexcept {
@@ -604,8 +652,8 @@ Vector2 MathUtils::CalcClosestPoint(const Vector2& p, const Collider& collider) 
     return collider.Support(p - collider.CalcCenter());
 }
 
-std::pair<float, bool> GJKDistance(const Collider& a, const Collider& b) {
-    const auto calcMinkowskiDiff = [](const Vector2& direction, const Collider& a) { return a.Support(direction); };
+std::tuple<bool, float, Vector2> GJKDistance(const Collider& a, const Collider& b) {
+    const auto calcMinkowskiDiff = [](const Vector2& direction, const Collider& a) { return a.Support(direction.GetNormalize()); };
     const auto support = [&](const Vector2& direction) { return calcMinkowskiDiff(direction, a) - calcMinkowskiDiff(-direction, b); };
     auto A = support(Vector2::X_AXIS);
     std::vector<Vector2> simplex{ A };
@@ -681,5 +729,5 @@ std::pair<float, bool> GJKDistance(const Collider& a, const Collider& b) {
             }
         }
     }(simplex, D); //IIIL
-    return std::make_pair(simplex.back().CalcLength(), result);
+    return std::make_tuple(result, simplex.back().CalcLength(), D);
 }

@@ -19,6 +19,7 @@
 #include <memory>
 #include <numeric>
 #include <thread>
+#include <tuple>
 #include <vector>
 
 class Renderer;
@@ -26,7 +27,7 @@ class Renderer;
 class Collider {
 public:
     virtual ~Collider() = default;
-    virtual void DebugRender(Renderer* renderer) const noexcept = 0;
+    virtual void DebugRender(Renderer& renderer) const noexcept = 0;
     virtual Vector2 CalcDimensions() const noexcept = 0;
     virtual Vector2 CalcCenter() const noexcept = 0;
     virtual float CalcArea() const noexcept = 0;
@@ -45,7 +46,7 @@ public:
     explicit ColliderPolygon(int sides = 4, const Vector2& position = Vector2::ZERO, const Vector2& half_extents = Vector2(0.5f, 0.5f), float orientationDegrees = 0.0f);
 
     virtual ~ColliderPolygon();
-	virtual void DebugRender(Renderer* renderer) const noexcept override;
+	virtual void DebugRender(Renderer& renderer) const noexcept override;
     int GetSides() const;
     void SetSides(int sides);
     const std::vector<Vector2>& GetVerts() const noexcept;
@@ -81,7 +82,7 @@ public:
 	ColliderOBB(const Vector2& position, const Vector2& half_extents);
     virtual float CalcArea() const noexcept override;
 
-    virtual void DebugRender(Renderer* renderer) const noexcept override;
+    virtual void DebugRender(Renderer& renderer) const noexcept override;
     virtual const Vector2& GetHalfExtents() const noexcept override;
     virtual Vector2 Support(const Vector2& d) const noexcept override;
     virtual void SetPosition(const Vector2& position) noexcept override;
@@ -101,7 +102,7 @@ public:
     virtual float CalcArea() const noexcept override;
     virtual const Vector2& GetHalfExtents() const noexcept override;
     virtual Vector2 Support(const Vector2& d) const noexcept override;
-    virtual void DebugRender(Renderer* renderer) const noexcept override;
+    virtual void DebugRender(Renderer& renderer) const noexcept override;
     virtual void SetPosition(const Vector2& position) noexcept override;
     virtual float GetOrientationDegrees() const noexcept override;
     virtual void SetOrientationDegrees(float degrees) noexcept override;
@@ -113,7 +114,7 @@ protected:
 private:
 };
 
-std::pair<float, bool> GJKDistance(const Collider& a, const Collider& b);
+std::tuple<bool, float, Vector2> GJKDistance(const Collider& a, const Collider& b);
 
 namespace MathUtils {
     Vector2 CalcClosestPoint(const Vector2& p, const Collider& collider);
@@ -215,6 +216,21 @@ private:
     friend class PhysicsSystem;
 };
 
+struct CollisionData {
+    RigidBody* const a = nullptr;
+    RigidBody* const b = nullptr;
+    float distance = 0.0f;
+    Vector2 normal{};
+    CollisionData(RigidBody* const a, RigidBody* const b, float distance, Vector2 normal) : a(a), b(b), distance(distance), normal(normal)
+    {}
+    bool operator==(const CollisionData& rhs) const noexcept {
+        return (this->a == rhs.a && this->b == rhs.b) || (this->b == rhs.a && this->a == rhs.b);
+    }
+    bool operator!=(const CollisionData& rhs) const noexcept {
+        return !(*this == rhs);
+    }
+};
+
 struct PhysicsSystemDesc {
     AABB2 world_bounds = AABB2(Vector2::ZERO, 500.0f, 500.0f);
 	float gravity = 980.665f;
@@ -231,7 +247,7 @@ public:
 	void Initialize() noexcept;
 	void BeginFrame() noexcept;
 	void Update(TimeUtils::FPSeconds deltaSeconds) noexcept;
-	void Render() const noexcept;
+    void Render() const noexcept;
 	void EndFrame() noexcept;
 
     void AddObject(RigidBody* body);
@@ -249,6 +265,9 @@ public:
 protected:
 private:
 	void Update_Worker(TimeUtils::FPSeconds deltaSeconds) noexcept;
+    void UpdateBodiesInBounds(TimeUtils::FPSeconds deltaSeconds) noexcept;
+    std::vector<RigidBody*> BroadPhaseCollision(const AABB2& query_area) noexcept;
+    std::vector<CollisionData> NarrowPhaseCollision(std::vector<RigidBody*>& potential_collisions) noexcept;
 
     Renderer& _renderer;
     PhysicsSystemDesc _desc{};
@@ -261,8 +280,3 @@ private:
     bool _show_colliders = false;
     bool _show_world_partition = false;
 };
-
-
-//Visitor helpers
-template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
-template<class... Ts> overloaded(Ts...)->overloaded<Ts...>;
