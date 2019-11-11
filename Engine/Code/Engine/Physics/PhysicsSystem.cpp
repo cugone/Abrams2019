@@ -34,7 +34,7 @@ void PhysicsSystem::EnableGravity(bool isGravityEnabled) noexcept {
 }
 
 PhysicsSystem::PhysicsSystem(Renderer& renderer, const PhysicsSystemDesc& desc /*= PhysicsSystemDesc{}*/)
-	: _renderer(renderer)
+	: _renderer(&renderer)
 	, _desc(desc)
     , _world_partition(_desc.world_bounds)
 {
@@ -66,8 +66,8 @@ void PhysicsSystem::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
         return;
     }
     UpdateBodiesInBounds(deltaSeconds);
-    const auto camera_position = Vector2(_renderer.GetCamera().GetPosition());
-    const auto half_extents = Vector2(_renderer.GetOutput()->GetDimensions()) * 0.5f;
+    const auto camera_position = Vector2(_renderer->GetCamera().GetPosition());
+    const auto half_extents = Vector2(_renderer->GetOutput()->GetDimensions()) * 0.5f;
     const auto query_area = AABB2(camera_position - half_extents, camera_position + half_extents);
     std::vector<RigidBody*> potential_collisions = BroadPhaseCollision(query_area);
     std::vector<CollisionData> actual_collisions = NarrowPhaseCollision(potential_collisions);
@@ -128,11 +128,11 @@ std::vector<CollisionData> PhysicsSystem::NarrowPhaseCollision(std::vector<Rigid
 void PhysicsSystem::Render() const noexcept {
     if(_show_colliders) {
         for(const auto& body : _rigidBodies) {
-            body->DebugRender(_renderer);
+            body->DebugRender(*_renderer);
         }
     }
     if(_show_world_partition) {
-        _world_partition.DebugRender(_renderer);
+        _world_partition.DebugRender(*_renderer);
     }
 }
 
