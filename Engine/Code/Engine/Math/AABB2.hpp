@@ -23,7 +23,7 @@ public:
     AABB2(float minX, float minY, float maxX, float maxY) noexcept;
     AABB2(const Vector2& mins, const Vector2& maxs) noexcept;
     AABB2(const Vector2& center, float radiusX, float radiusY) noexcept;
-    AABB2(const OBB2& obb) noexcept;
+    AABB2(const OBB2& obb) noexcept; //Implicit conversion from OBB2
 
     void StretchToIncludePoint(const Vector2& point) noexcept;
     void ScalePadding(float scaleX, float scaleY) noexcept;
