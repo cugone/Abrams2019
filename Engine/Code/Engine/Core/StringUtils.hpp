@@ -117,10 +117,10 @@ namespace Encryption {
 std::string ROT13(std::string text) noexcept;
 
 //NOT USEFUL AS TRUE ENCRYPTION!! DO NOT USE IF SERIOUS ENCRYPTION IS NEEDED!!!
-std::string CaesarShiftEncode(int key, std::string plaintext) noexcept;
+std::string CaesarShift(std::string text, bool encode = true) noexcept;
 
 //NOT USEFUL AS TRUE ENCRYPTION!! DO NOT USE IF SERIOUS ENCRYPTION IS NEEDED!!!
-std::string CaesarShiftDecode(int key, std::string ciphertext) noexcept;
+std::string ShiftCipher(int key, std::string text) noexcept;
 
 } //End Encryption
 
@@ -217,45 +217,4 @@ namespace detail {
     struct encode_tag {};
     struct decode_tag {};
 
-    //NOT USEFUL AS TRUE ENCRYPTION!! DO NOT USE IF SERIOUS ENCRYPTION IS NEEDED!!!
-    template<int key, typename Op = encode_tag>
-    std::string CaesarShift(std::string plaintext) noexcept {
-        auto caesarshift = [](unsigned char a) {
-            bool lower = 'a' <= a && a <= 'z';
-            bool upper = 'A' <= a && a <= 'Z';
-            char base = lower ? 'a' : upper ? 'A' : 0;
-            if (!base) {
-                return a;
-            }
-            int shift_result = 0;
-            if (std::is_same_v<Op, encode_tag>) {
-                shift_result = (a - base + key) % 26;
-            }
-            else if (std::is_same_v<Op, decode_tag>) {
-                shift_result = (a - base - key) % 26;
-            }
-            if (shift_result < 0) {
-                shift_result += 26;
-            }
-            if (25 < shift_result) {
-                shift_result -= 26;
-            }
-            return static_cast<unsigned char>(static_cast<char>(base + shift_result));
-        };
-        std::transform(std::begin(plaintext), std::end(plaintext), std::begin(plaintext), caesarshift);
-        return plaintext;
-    }
-
-
-    //NOT USEFUL AS TRUE ENCRYPTION!! DO NOT USE IF SERIOUS ENCRYPTION IS NEEDED!!!
-    template<int key>
-    std::string CaesarShiftEncode(std::string plaintext) noexcept {
-        return detail::CaesarShift<key, detail::encode_tag>(plaintext);
-    }
-
-    //NOT USEFUL AS TRUE ENCRYPTION!! DO NOT USE IF SERIOUS ENCRYPTION IS NEEDED!!!
-    template<int key>
-    std::string CaesarShiftDecode(std::string ciphertext) noexcept {
-        return detail::CaesarShift<key, detail::decode_tag>(ciphertext);
-    }
 } //End detail

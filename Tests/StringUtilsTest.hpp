@@ -233,5 +233,42 @@ World"
     EXPECT_EQ(a, b);
 }
 
+TEST(StringUtils, ROT13) {
+    using namespace StringUtils::Encryption;
+    const auto plaintext = "The quick brown fox jumps over the lazy dog.";
+    const auto ciphertext = ROT13(plaintext);
+    const auto deciphertext = ROT13(ciphertext);
+    EXPECT_EQ(plaintext,deciphertext);
+}
+
+TEST(StringUtils, CaesarShift) {
+    //Plain:  ABCDEFGHIJKLMNOPQRSTUVWXYZ
+    //Cipher: DEFGHIJKLMNOPQRSTUVWXYZABC
+    using namespace StringUtils::Encryption;
+    const auto plaintext = std::string{ "The Quick Brown Fox Jumps Over The Lazy Dog." };
+    const auto ciphertext = std::string{ "Wkh Txlfn Eurzq Ira Mxpsv Ryhu Wkh Odcb Grj." };
+    const auto a = CaesarShift(plaintext, true);
+    EXPECT_EQ(a, ciphertext);
+
+    const auto b = CaesarShift(ciphertext, false);
+    EXPECT_EQ(b, plaintext);
+
+}
+
+TEST(StringUtils, ShiftCipher) {
+    //Plaintext:  THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG
+    //Ciphertext: QEB NRFZH YOLTK CLU GRJMP LSBO QEB IXWV ALD
+    using namespace StringUtils::Encryption;
+    const auto plaintext = std::string{ "THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG." };
+    const auto ciphertext = std::string{ "QEB NRFZH YOLTK CLU GRJMP LSBO QEB IXWV ALD." };
+    const auto a = ShiftCipher(-3, plaintext);
+    EXPECT_EQ(a, ciphertext);
+
+    const auto b = ShiftCipher(3, ciphertext);
+    EXPECT_EQ(b, plaintext);
+
+}
+
+
 //std::vector<std::string> SplitOnUnquoted(const std::string& string, char delim = ',', bool skip_empty = true);
 //std::vector<std::wstring> SplitOnUnquoted(const std::wstring& string, wchar_t delim = ',', bool skip_empty = true);

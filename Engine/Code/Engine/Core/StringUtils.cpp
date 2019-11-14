@@ -541,80 +541,32 @@ std::string FourCCToString(const char* id) noexcept {
 namespace Encryption {
 
 std::string ROT13(std::string text) noexcept {
-    return detail::CaesarShift<13>(text);
+    return ShiftCipher(13, text);
 }
 
-std::string CaesarShiftEncode(int key, std::string plaintext) noexcept {
-    if(key < 0) {
-        key = -key;
-    }
-    key %= 26;
-    switch(key) {
-    case 0:  return detail::CaesarShiftEncode<0>(plaintext);
-    case 1:  return detail::CaesarShiftEncode<1>(plaintext);
-    case 2:  return detail::CaesarShiftEncode<2>(plaintext);
-    case 3:  return detail::CaesarShiftEncode<3>(plaintext);
-    case 4:  return detail::CaesarShiftEncode<4>(plaintext);
-    case 5:  return detail::CaesarShiftEncode<5>(plaintext);
-    case 6:  return detail::CaesarShiftEncode<6>(plaintext);
-    case 7:  return detail::CaesarShiftEncode<7>(plaintext);
-    case 8:  return detail::CaesarShiftEncode<8>(plaintext);
-    case 9:  return detail::CaesarShiftEncode<9>(plaintext);
-    case 10: return detail::CaesarShiftEncode<10>(plaintext);
-    case 11: return detail::CaesarShiftEncode<11>(plaintext);
-    case 12: return detail::CaesarShiftEncode<12>(plaintext);
-    case 13: return detail::CaesarShiftEncode<13>(plaintext);
-    case 14: return detail::CaesarShiftEncode<14>(plaintext);
-    case 15: return detail::CaesarShiftEncode<15>(plaintext);
-    case 16: return detail::CaesarShiftEncode<16>(plaintext);
-    case 17: return detail::CaesarShiftEncode<17>(plaintext);
-    case 18: return detail::CaesarShiftEncode<18>(plaintext);
-    case 19: return detail::CaesarShiftEncode<19>(plaintext);
-    case 20: return detail::CaesarShiftEncode<20>(plaintext);
-    case 21: return detail::CaesarShiftEncode<21>(plaintext);
-    case 22: return detail::CaesarShiftEncode<22>(plaintext);
-    case 23: return detail::CaesarShiftEncode<23>(plaintext);
-    case 24: return detail::CaesarShiftEncode<24>(plaintext);
-    case 25: return detail::CaesarShiftEncode<25>(plaintext);
-    default: return plaintext;
-    }
+std::string CaesarShift(std::string text, bool encode /*= true*/) noexcept {
+    return ShiftCipher(encode ? 3 : -3, text);
 }
 
-
-std::string CaesarShiftDecode(int key, std::string ciphertext) noexcept {
-    if(key < 0) {
-        key = -key;
-    }
-    key %= 26;
-    switch(key) {
-    case 0:  return detail::CaesarShiftDecode<0>(ciphertext);
-    case 1:  return detail::CaesarShiftDecode<1>(ciphertext);
-    case 2:  return detail::CaesarShiftDecode<2>(ciphertext);
-    case 3:  return detail::CaesarShiftDecode<3>(ciphertext);
-    case 4:  return detail::CaesarShiftDecode<4>(ciphertext);
-    case 5:  return detail::CaesarShiftDecode<5>(ciphertext);
-    case 6:  return detail::CaesarShiftDecode<6>(ciphertext);
-    case 7:  return detail::CaesarShiftDecode<7>(ciphertext);
-    case 8:  return detail::CaesarShiftDecode<8>(ciphertext);
-    case 9:  return detail::CaesarShiftDecode<9>(ciphertext);
-    case 10: return detail::CaesarShiftDecode<10>(ciphertext);
-    case 11: return detail::CaesarShiftDecode<11>(ciphertext);
-    case 12: return detail::CaesarShiftDecode<12>(ciphertext);
-    case 13: return detail::CaesarShiftDecode<13>(ciphertext);
-    case 14: return detail::CaesarShiftDecode<14>(ciphertext);
-    case 15: return detail::CaesarShiftDecode<15>(ciphertext);
-    case 16: return detail::CaesarShiftDecode<16>(ciphertext);
-    case 17: return detail::CaesarShiftDecode<17>(ciphertext);
-    case 18: return detail::CaesarShiftDecode<18>(ciphertext);
-    case 19: return detail::CaesarShiftDecode<19>(ciphertext);
-    case 20: return detail::CaesarShiftDecode<20>(ciphertext);
-    case 21: return detail::CaesarShiftDecode<21>(ciphertext);
-    case 22: return detail::CaesarShiftDecode<22>(ciphertext);
-    case 23: return detail::CaesarShiftDecode<23>(ciphertext);
-    case 24: return detail::CaesarShiftDecode<24>(ciphertext);
-    case 25: return detail::CaesarShiftDecode<25>(ciphertext);
-    default: return ciphertext;
-    }
+std::string ShiftCipher(int key, std::string text) noexcept {
+    auto shiftcipher = [key](unsigned char a) {
+        bool lower = 'a' <= a && a <= 'z';
+        bool upper = 'A' <= a && a <= 'Z';
+        char base = lower ? 'a' : upper ? 'A' : 0;
+        if (!base) {
+            return a;
+        }
+        int shift_result = (a - base + key) % 26;
+        if (shift_result < 0) {
+            shift_result += 26;
+        }
+        if (25 < shift_result) {
+            shift_result -= 26;
+        }
+        return static_cast<unsigned char>(static_cast<char>(base + shift_result));
+    };
+    std::transform(std::begin(text), std::end(text), std::begin(text), shiftcipher);
+    return text;
 }
 
 } //End Encryption
