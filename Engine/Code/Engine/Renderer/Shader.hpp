@@ -19,7 +19,7 @@ enum class PipelineStage : uint8_t;
 
 class Shader {
 public:
-    Shader(Renderer* renderer, ShaderProgram* shaderProgram = nullptr, DepthStencilState* depthStencil = nullptr, RasterState* rasterState = nullptr, BlendState* blendState = nullptr, Sampler* sampler = nullptr) noexcept;
+    explicit Shader(Renderer* renderer, ShaderProgram* shaderProgram = nullptr, DepthStencilState* depthStencil = nullptr, RasterState* rasterState = nullptr, BlendState* blendState = nullptr, Sampler* sampler = nullptr) noexcept;
     Shader(Renderer* renderer, const XMLElement& element) noexcept;
     ~Shader() = default;
 
