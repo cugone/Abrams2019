@@ -549,10 +549,10 @@ std::string CaesarShift(std::string text, bool encode /*= true*/) noexcept {
 }
 
 std::string ShiftCipher(int key, std::string text) noexcept {
-    auto shiftcipher = [key](unsigned char a) {
-        bool lower = 'a' <= a && a <= 'z';
-        bool upper = 'A' <= a && a <= 'Z';
-        char base = lower ? 'a' : upper ? 'A' : 0;
+    const auto shiftcipher = [key](unsigned char a) {
+        const bool lower = 'a' <= a && a <= 'z';
+        const bool upper = 'A' <= a && a <= 'Z';
+        const char base = lower ? 'a' : upper ? 'A' : 0;
         if (!base) {
             return a;
         }
