@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -114,13 +115,13 @@ std::string FourCCToString(const char* id) noexcept;
 namespace Encryption {
 
 //NOT USEFUL AS TRUE ENCRYPTION!! DO NOT USE IF SERIOUS ENCRYPTION IS NEEDED!!!
-std::string ROT13(std::string text) noexcept;
+std::string ROT13(std::string_view text) noexcept;
 
 //NOT USEFUL AS TRUE ENCRYPTION!! DO NOT USE IF SERIOUS ENCRYPTION IS NEEDED!!!
-std::string CaesarShift(std::string text, bool encode = true) noexcept;
+std::string CaesarShift(std::string_view text, bool encode = true) noexcept;
 
 //NOT USEFUL AS TRUE ENCRYPTION!! DO NOT USE IF SERIOUS ENCRYPTION IS NEEDED!!!
-std::string ShiftCipher(int key, std::string text) noexcept;
+std::string ShiftCipher(int key, std::string_view text) noexcept;
 
 } //End Encryption
 

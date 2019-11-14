@@ -540,15 +540,15 @@ std::string FourCCToString(const char* id) noexcept {
 
 namespace Encryption {
 
-std::string ROT13(std::string text) noexcept {
+std::string ROT13(std::string_view text) noexcept {
     return ShiftCipher(13, text);
 }
 
-std::string CaesarShift(std::string text, bool encode /*= true*/) noexcept {
+std::string CaesarShift(std::string_view text, bool encode /*= true*/) noexcept {
     return ShiftCipher(encode ? 3 : -3, text);
 }
 
-std::string ShiftCipher(int key, std::string text) noexcept {
+std::string ShiftCipher(int key, std::string_view text) noexcept {
     const auto shiftcipher = [key](unsigned char a) {
         const bool lower = 'a' <= a && a <= 'z';
         const bool upper = 'A' <= a && a <= 'Z';
@@ -565,8 +565,9 @@ std::string ShiftCipher(int key, std::string text) noexcept {
         }
         return static_cast<unsigned char>(static_cast<char>(base + shift_result));
     };
-    std::transform(std::begin(text), std::end(text), std::begin(text), shiftcipher);
-    return text;
+    std::string cipher(text.size(), '\0');
+    std::transform(std::begin(text), std::end(text), std::begin(cipher), shiftcipher);
+    return cipher;
 }
 
 } //End Encryption
