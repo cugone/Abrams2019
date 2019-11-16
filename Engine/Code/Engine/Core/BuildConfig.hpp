@@ -57,7 +57,7 @@
         #define PLATFORM_WINDOWS
     #endif
     #if !defined(_MSC_VER)
-        #error "There's no reason you shouldn't be using Visual Studio!"
+        #pragma message("There's no reason you shouldn't be using Visual Studio!")
     #endif
 #endif
 
