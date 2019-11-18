@@ -121,7 +121,7 @@ void Window::SetDimensionsAndPosition(const IntVector2& new_position, const IntV
 }
 
 void Window::SetPosition(const IntVector2& new_position) noexcept {
-    SetDimensionsAndPosition(GetDimensions(), new_position);
+    SetDimensionsAndPosition(new_position, GetDimensions());
 }
 
 void Window::SetDimensions(const IntVector2& new_dimensions) noexcept {
