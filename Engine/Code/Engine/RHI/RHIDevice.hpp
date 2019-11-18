@@ -55,7 +55,7 @@ public:
     mutable std::set<DisplayDesc, DisplayDescGTComparator> displayModes{};
 
 private:
-    std::pair<std::unique_ptr<RHIOutput>, std::unique_ptr<RHIDeviceContext>> CreateOutputAndContextFromWindow(Window*& window) noexcept;
+    std::pair<std::unique_ptr<RHIOutput>, std::unique_ptr<RHIDeviceContext>> CreateOutputAndContextFromWindow(std::unique_ptr<Window> window) noexcept;
 
     DeviceInfo CreateDeviceFromFirstAdapter(const std::vector<AdapterInfo>& adapters) noexcept;
     void OutputAdapterInfo(const std::vector<AdapterInfo>& adapters) const noexcept;

@@ -17,9 +17,9 @@
 
 #include <sstream>
 
-RHIOutput::RHIOutput(const RHIDevice* parent, Window* wnd, IDXGISwapChain4* swapchain) noexcept
+RHIOutput::RHIOutput(const RHIDevice* parent, std::unique_ptr<Window> wnd, IDXGISwapChain4* swapchain) noexcept
     : _parent_device(parent)
-    , _window(wnd)
+    , _window(std::move(wnd))
     , _dxgi_swapchain(swapchain)
 {
     CreateBackbuffer();
@@ -33,12 +33,6 @@ RHIOutput::~RHIOutput() noexcept {
         _dxgi_swapchain = nullptr;
     }
 
-    delete _back_buffer;
-    _back_buffer = nullptr;
-
-    delete _window;
-    _window = nullptr;
-
 }
 
 const RHIDevice* RHIOutput::GetParentDevice() const noexcept {
@@ -46,15 +40,15 @@ const RHIDevice* RHIOutput::GetParentDevice() const noexcept {
 }
 
 const Window* RHIOutput::GetWindow() const noexcept {
-    return _window;
+    return _window.get();
 }
 
 Window* RHIOutput::GetWindow() noexcept {
-    return _window;
+    return _window.get();
 }
 
 Texture* RHIOutput::GetBackBuffer() noexcept {
-    return _back_buffer;
+    return _back_buffer.get();
 }
 
 IntVector2 RHIOutput::GetDimensions() const noexcept {
@@ -107,17 +101,12 @@ void RHIOutput::Present(bool vsync) noexcept {
 }
 
 void RHIOutput::CreateBackbuffer() noexcept {
-    if(_back_buffer != nullptr) {
-        delete _back_buffer;
-    }
     ID3D11Texture2D* back_buffer = nullptr;
     _dxgi_swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<LPVOID*>(&back_buffer));
-    _back_buffer = new Texture2D(_parent_device, back_buffer);
+    _back_buffer.reset(new Texture2D(_parent_device, back_buffer));
     _back_buffer->SetDebugName("__back_buffer");
 }
 
 void RHIOutput::ResetBackbuffer() noexcept {
-    delete _back_buffer;
-    _back_buffer = nullptr;
     CreateBackbuffer();
 }

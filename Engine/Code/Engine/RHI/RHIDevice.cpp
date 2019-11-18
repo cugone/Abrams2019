@@ -30,10 +30,10 @@ RHIDevice::~RHIDevice() {
 }
 
 std::pair<std::unique_ptr<RHIOutput>, std::unique_ptr<RHIDeviceContext>> RHIDevice::CreateOutputAndContext(const IntVector2& clientSize, const IntVector2& clientPosition /*= IntVector2::ZERO*/, const RHIOutputMode& outputMode /*= RHIOutputMode::WINDOWED*/) noexcept {
-    Window* window = new Window;
+    auto window = std::make_unique<Window>();
     window->SetDimensionsAndPosition(clientPosition, clientSize);
     window->SetDisplayMode(outputMode);
-    return CreateOutputAndContextFromWindow(window);
+    return CreateOutputAndContextFromWindow(std::move(window));
 }
 
 D3D_FEATURE_LEVEL RHIDevice::GetFeatureLevel() const noexcept {
@@ -68,11 +68,7 @@ std::unique_ptr<ConstantBuffer> RHIDevice::CreateConstantBuffer(const ConstantBu
     return std::move(std::make_unique<ConstantBuffer>(this, buffer, buffer_size, usage, bindUsage));
 }
 
-std::pair<std::unique_ptr<RHIOutput>, std::unique_ptr<RHIDeviceContext>> RHIDevice::CreateOutputAndContextFromWindow(Window*& window) noexcept {
-
-    if(window == nullptr) {
-        ERROR_AND_DIE("RHIDevice: Invalid Window!");
-    }
+std::pair<std::unique_ptr<RHIOutput>, std::unique_ptr<RHIDeviceContext>> RHIDevice::CreateOutputAndContextFromWindow(std::unique_ptr<Window> window) noexcept {
 
     window->Open();
     RHIFactory factory{};
@@ -80,8 +76,7 @@ std::pair<std::unique_ptr<RHIOutput>, std::unique_ptr<RHIDeviceContext>> RHIDevi
 
     std::vector<AdapterInfo> adapters = factory.GetAdaptersByHighPerformancePreference();
     if(adapters.empty()) {
-        delete window;
-        window = nullptr;
+        window.reset();
         ERROR_AND_DIE("RHIDevice: Graphics card not found.")
     }
     OutputAdapterInfo(adapters);
@@ -100,7 +95,7 @@ std::pair<std::unique_ptr<RHIOutput>, std::unique_ptr<RHIDeviceContext>> RHIDevi
     SetupDebuggingInfo();
 
     return std::make_pair(
-        std::move(std::make_unique<RHIOutput>(this, window, dxgi_swap_chain)),
+        std::move(std::make_unique<RHIOutput>(this, std::move(window), dxgi_swap_chain)),
         std::move(std::make_unique<RHIDeviceContext>(this, device_info.dx_context)));
 }
 

@@ -2,6 +2,8 @@
 
 #include "Engine/RHI/RHITypes.hpp"
 
+#include <memory>
+
 class Window;
 class RHIDevice;
 class Texture;
@@ -11,7 +13,7 @@ struct IDXGISwapChain4;
 
 class RHIOutput {
 public:
-    RHIOutput(const RHIDevice* parent, Window* wnd, IDXGISwapChain4* swapchain) noexcept;
+    RHIOutput(const RHIDevice* parent, std::unique_ptr<Window> wnd, IDXGISwapChain4* swapchain) noexcept;
 
     ~RHIOutput() noexcept;
 
@@ -32,9 +34,9 @@ public:
 protected:
     void CreateBackbuffer() noexcept;
     void ResetBackbuffer() noexcept;
-    Window * _window = nullptr;
+    std::unique_ptr<Window> _window = nullptr;
     const RHIDevice* _parent_device = nullptr;
-    Texture* _back_buffer = nullptr;
+    std::unique_ptr<Texture> _back_buffer = nullptr;
     IDXGISwapChain4* _dxgi_swapchain = nullptr;
 private:
 
