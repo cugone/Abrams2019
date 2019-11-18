@@ -245,11 +245,18 @@ std::filesystem::path GetExePath() noexcept {
     namespace FS = std::filesystem;
     FS::path result{};
     {
-        TCHAR filename[MAX_PATH];
-        ::GetModuleFileName(nullptr, filename, MAX_PATH);
-        result = FS::path(filename);
-        result = FS::canonical(result);
-        result.make_preferred();
+        std::basic_string<TCHAR> filename(MAX_PATH, '\0');
+        while(DWORD buffer_length = ::GetModuleFileName(nullptr, filename.data(), static_cast<DWORD>(filename.size()))) {
+            if(::GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
+                filename.resize(filename.size() * 2);
+                continue;
+            }
+            filename = filename.substr(0, buffer_length);
+            result = FS::path(filename);
+            result = FS::canonical(result);
+            result.make_preferred();
+            return result;
+        }
     }
     return result;
 }
@@ -344,12 +351,19 @@ bool IsSafeWritePath(const std::filesystem::path& p) noexcept {
 
     try {
         auto working_dir = GetWorkingDirectory();
-        bool is_in_working_dir = IsChildOf(p, working_dir);
-        bool is_in_data_dir = IsChildOf(p, FS::path{ "Data/" });
-        bool is_next_to_exe = IsSiblingOf(p, GetExePath());
-        bool is_temp_dir = IsChildOf(p, GetTempDirectory());
-        bool safe = is_in_working_dir || is_in_data_dir || is_next_to_exe || is_temp_dir;
-        return safe;
+        if(bool is_in_working_dir = IsChildOf(p, working_dir)) {
+            return true;
+        }
+        if(bool is_in_data_dir = IsChildOf(p, FS::path{ "Data/" })) {
+            return true;
+        }
+        if(bool is_next_to_exe = IsSiblingOf(p, GetExePath())) {
+            return true;
+        }
+        if(bool is_temp_dir = IsChildOf(p, GetTempDirectory())) {
+            return true;
+        }
+        return false;
     } catch(const std::filesystem::filesystem_error& e) {
         std::ostringstream ss{};
         ss << "\nFilesystem Error:"
@@ -362,7 +376,15 @@ bool IsSafeWritePath(const std::filesystem::path& p) noexcept {
         DebuggerPrintf(ss.str().c_str());
         return false;
     }
-
+    catch (...) {
+        std::ostringstream ss{};
+        ss << "\nUnspecified error trying to determine if path:\n"
+            << p << '\n'
+            << " is a safe write path.";
+        ss.flush();
+        DebuggerPrintf(ss.str().c_str());
+        return false;
+    }
 }
 
 bool IsSafeReadPath(const std::filesystem::path& p) noexcept {
