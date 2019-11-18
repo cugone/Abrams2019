@@ -388,6 +388,11 @@ enum class CullMode {
     Both,
 };
 
+enum class WindingOrder {
+    CCW,
+    CW,
+};
+
 enum class ResourceMiscFlag : long {
      Generate_Mips                   = 0x1L
     ,Shared                          = 0x2L

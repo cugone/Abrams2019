@@ -820,6 +820,17 @@ CullMode CullModeFromString(std::string str) noexcept {
     }
 }
 
+WindingOrder WindingOrderFromString(std::string str) noexcept {
+    str = StringUtils::ToLowerCase(str);
+    if(str == "cw" || str == "clockwise") {
+        return WindingOrder::CW;
+    } else if(str == "ccw" || str == "counterclockwise") {
+        return WindingOrder::CCW;
+    } else {
+        return WindingOrder::CW;
+    }
+}
+
 D3D11_RESOURCE_MISC_FLAG ResourceMiscFlagToD3DMiscFlag(const ResourceMiscFlag& flags) noexcept {
     return static_cast<D3D11_RESOURCE_MISC_FLAG>(flags);
 }

@@ -103,6 +103,7 @@ D3D11_FILL_MODE FillModeToD3DFillMode(const FillMode& fillmode) noexcept;
 D3D11_CULL_MODE CullModeToD3DCullMode(const CullMode& fillmode) noexcept;
 FillMode FillModeFromString(std::string str) noexcept;
 CullMode CullModeFromString(std::string str) noexcept;
+WindingOrder WindingOrderFromString(std::string str) noexcept;
 
 D3D11_RESOURCE_MISC_FLAG ResourceMiscFlagToD3DMiscFlag(const ResourceMiscFlag& flags) noexcept;
 

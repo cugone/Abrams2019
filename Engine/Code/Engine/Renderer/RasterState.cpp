@@ -121,12 +121,17 @@ RasterDesc::RasterDesc(const XMLElement& element) noexcept {
             DataUtils::ValidateXmlElement(*xml_windingorder, "windingorder", "", "");
             std::string value{"cw"};
             value = DataUtils::ParseXmlElementText(*xml_raster, value);
-            if(value == "cw") {
-                frontCounterClockwise = false;
-            } else if(value == "ccw") {
+            auto windingOrder = WindingOrderFromString(value);
+            switch (windingOrder) {
+            case WindingOrder::CCW:
                 frontCounterClockwise = true;
-            } else {
+                break;
+            case WindingOrder::CW:
                 frontCounterClockwise = false;
+                break;
+            default:
+                frontCounterClockwise = false;
+                break;
             }
         }
     }
