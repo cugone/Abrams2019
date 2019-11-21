@@ -2300,6 +2300,16 @@ void Renderer::CreateAndRegisterDefaultRasterStates() noexcept {
     default_raster->SetDebugName("__default_raster");
     RegisterRasterState(name, std::move(default_raster));
 
+    auto scissorenable_raster = CreateScissorEnableRaster();
+    name = "__scissorenable";
+    scissorenable_raster->SetDebugName("__scissorenable");
+    RegisterRasterState(name, std::move(scissorenable_raster));
+    
+    auto scissordisable_raster = CreateScissorDisableRaster();
+    name = "__scissordisable";
+    scissordisable_raster->SetDebugName("__scissordisable");
+    RegisterRasterState(name, std::move(scissordisable_raster));
+
     auto wireframe_raster = CreateWireframeRaster();
     name = "__wireframe";
     wireframe_raster->SetDebugName("__wireframe");
@@ -2335,6 +2345,18 @@ void Renderer::CreateAndRegisterDefaultRasterStates() noexcept {
 std::unique_ptr<RasterState> Renderer::CreateDefaultRaster() noexcept {
     RasterDesc default_raster{};
     return std::make_unique<RasterState>(_rhi_device.get(), default_raster);
+}
+
+std::unique_ptr<RasterState> Renderer::CreateScissorEnableRaster() noexcept {
+    RasterDesc scissorenable{};
+    scissorenable.scissorEnable = true;
+    return std::make_unique<RasterState>(_rhi_device.get(), scissorenable);
+}
+
+std::unique_ptr<RasterState> Renderer::CreateScissorDisableRaster() noexcept {
+    RasterDesc scissordisable{};
+    scissordisable.scissorEnable = false;
+    return std::make_unique<RasterState>(_rhi_device.get(), scissordisable);
 }
 
 std::unique_ptr<RasterState> Renderer::CreateWireframeRaster() noexcept {
@@ -3637,8 +3659,22 @@ void Renderer::SetViewport(unsigned int x, unsigned int y, unsigned int width, u
     _rhi_context->GetDxContext()->RSSetViewports(1, &viewport);
 }
 
+void Renderer::SetViewport(const AABB2& viewport) noexcept {
+    SetViewport(static_cast<unsigned int>(viewport.mins.x)
+                , static_cast<unsigned int>(viewport.mins.y)
+                , static_cast<unsigned int>(viewport.maxs.x - viewport.mins.x)
+                , static_cast<unsigned int>(viewport.maxs.y - viewport.mins.y));
+}
+
 void Renderer::SetViewportAndScissor(unsigned int x, unsigned int y, unsigned int width, unsigned int height) noexcept {
     SetScissorAndViewport(x, y, width, height);
+}
+
+void Renderer::SetViewportAndScissor(const AABB2& viewport_and_scissor) noexcept {
+    SetViewportAndScissor(static_cast<unsigned int>(viewport_and_scissor.mins.x)
+                          , static_cast<unsigned int>(viewport_and_scissor.mins.y)
+                          , static_cast<unsigned int>(viewport_and_scissor.maxs.x - viewport_and_scissor.mins.x)
+                          , static_cast<unsigned int>(viewport_and_scissor.maxs.y - viewport_and_scissor.mins.y));
 }
 
 void Renderer::SetViewports(const std::vector<AABB3>& viewports) noexcept {
@@ -3665,9 +3701,38 @@ void Renderer::SetScissor(unsigned int x, unsigned int y, unsigned int width, un
     _rhi_context->GetDxContext()->RSSetScissorRects(1, &scissor);
 }
 
+void Renderer::SetScissor(const AABB2& scissor) noexcept {
+    SetScissor(static_cast<unsigned int>(scissor.mins.x)
+               , static_cast<unsigned int>(scissor.mins.y)
+               , static_cast<unsigned int>(scissor.maxs.x - scissor.mins.x)
+               , static_cast<unsigned int>(scissor.maxs.y - scissor.mins.y));
+}
+
+void Renderer::SetScissorAsPercent(float x /*= 0.0f*/, float y /*= 0.0f*/, float w /*= 1.0f*/, float h /*= 1.0f*/) noexcept {
+    auto window_dimensions = GetOutput()->GetDimensions();
+    auto window_width = window_dimensions.x;
+    auto window_height = window_dimensions.y;
+    auto left = x * window_width;
+    auto top = y * window_height;
+    auto width = window_width * w;
+    auto height = window_height * h;
+    SetScissor(static_cast<unsigned int>(left),
+        static_cast<unsigned int>(top),
+        static_cast<unsigned int>(width),
+        static_cast<unsigned int>(height));
+
+}
+
 void Renderer::SetScissorAndViewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height) noexcept {
     SetViewport(x, y, width, height);
     SetScissor(x, y, width, height);
+}
+
+void Renderer::SetScissorAndViewport(const AABB2& scissor_and_viewport) noexcept {
+    SetScissorAndViewport(static_cast<unsigned int>(scissor_and_viewport.mins.x)
+                          , static_cast<unsigned int>(scissor_and_viewport.mins.y)
+                          , static_cast<unsigned int>(scissor_and_viewport.maxs.x - scissor_and_viewport.mins.x)
+                          , static_cast<unsigned int>(scissor_and_viewport.maxs.y - scissor_and_viewport.mins.y));
 }
 
 void Renderer::SetScissors(const std::vector<AABB2>& scissors) noexcept {
@@ -3683,7 +3748,7 @@ void Renderer::SetScissors(const std::vector<AABB2>& scissors) noexcept {
     _rhi_context->GetDxContext()->RSSetScissorRects(static_cast<unsigned int>(dxScissors.size()), dxScissors.data());
 }
 
-void Renderer::SetViewportAsPercent(float x /*= 0.0f*/, float y /*= 0.0f*/, float w /*= 0.0f*/, float h /*= 0.0f*/) noexcept {
+void Renderer::SetViewportAsPercent(float x /*= 0.0f*/, float y /*= 0.0f*/, float w /*= 1.0f*/, float h /*= 1.0f*/) noexcept {
     auto window_dimensions = GetOutput()->GetDimensions();
     auto window_width = window_dimensions.x;
     auto window_height = window_dimensions.y;
@@ -3695,6 +3760,45 @@ void Renderer::SetViewportAsPercent(float x /*= 0.0f*/, float y /*= 0.0f*/, floa
                 static_cast<unsigned int>(top),
                 static_cast<unsigned int>(width),
                 static_cast<unsigned int>(height));
+}
+
+void Renderer::SetViewportAndScissorAsPercent(float x /*= 0.0f*/, float y /*= 0.0f*/, float w /*= 1.0f*/, float h /*= 1.0f*/) noexcept {
+    SetViewportAsPercent(x, y, w, h);
+    SetScissorAsPercent(x, y, w, h);
+}
+
+void Renderer::EnableScissorTest() {
+    ID3D11RasterizerState* state{};
+    auto dc = GetDeviceContext();
+    auto dx_dc = dc->GetDxContext();
+    dx_dc->RSGetState(&state);
+
+    D3D11_RASTERIZER_DESC desc{};
+    state->GetDesc(&desc);
+    if(!desc.ScissorEnable) {
+        desc.ScissorEnable = true;
+        auto hr = GetDevice()->GetDxDevice()->CreateRasterizerState(&desc, &state);
+        if(SUCCEEDED(hr)) {
+            dx_dc->RSSetState(state);
+        }
+    }
+    state->Release();
+}
+
+void Renderer::DisableScissorTest() {
+    ID3D11RasterizerState* state{};
+    auto dc = GetDeviceContext();
+    auto dx_dc = dc->GetDxContext();
+    dx_dc->RSGetState(&state);
+
+    D3D11_RASTERIZER_DESC desc{};
+    state->GetDesc(&desc);
+    if(desc.ScissorEnable) {
+        desc.ScissorEnable = false;
+        GetDevice()->GetDxDevice()->CreateRasterizerState(&desc, &state);
+        dx_dc->RSSetState(state);
+    }
+    state->Release();
 }
 
 void Renderer::ClearColor(const Rgba& color) noexcept {
@@ -3848,11 +3952,31 @@ void Renderer::CreateAndRegisterDepthStencilStateFromDepthStencilDescription(con
 }
 
 void Renderer::EnableDepth() noexcept {
-    SetDepthStencilState(GetDepthStencilState("__depthenabled"));
+    auto dx = GetDeviceContext();
+    auto dx_dc = dx->GetDxContext();
+    unsigned int stencil_value = 0;
+    ID3D11DepthStencilState* state{};
+    dx_dc->OMGetDepthStencilState(&state, &stencil_value);
+    D3D11_DEPTH_STENCIL_DESC desc{};
+    state->GetDesc(&desc);
+    desc.DepthEnable = true;
+    GetDevice()->GetDxDevice()->CreateDepthStencilState(&desc, &state);
+    dx_dc->OMSetDepthStencilState(state, stencil_value);
+    state->Release();
 }
 
 void Renderer::DisableDepth() noexcept {
-    SetDepthStencilState(GetDepthStencilState("__depthdisabled"));
+    auto dx = GetDeviceContext();
+    auto dx_dc = dx->GetDxContext();
+    unsigned int stencil_value = 0;
+    ID3D11DepthStencilState* state{};
+    dx_dc->OMGetDepthStencilState(&state, &stencil_value);
+    D3D11_DEPTH_STENCIL_DESC desc{};
+    state->GetDesc(&desc);
+    desc.DepthEnable = false;
+    GetDevice()->GetDxDevice()->CreateDepthStencilState(&desc, &state);
+    dx_dc->OMSetDepthStencilState(state, stencil_value);
+    state->Release();
 }
 
 Texture* Renderer::Create1DTexture(std::filesystem::path filepath, const BufferUsage& bufferUsage, const BufferBindUsage& bindUsage, const ImageFormat& imageFormat) noexcept {
