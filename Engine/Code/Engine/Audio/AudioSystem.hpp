@@ -20,6 +20,9 @@
 #include <vector>
 #include <Xaudio2.h>
 
+#include "Engine/Core/Win.hpp"
+
+#pragma comment(lib, "winmm.lib")
 #pragma comment(lib, "Xaudio2.lib")
 
 namespace FileUtils {
