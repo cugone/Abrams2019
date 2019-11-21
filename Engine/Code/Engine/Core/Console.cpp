@@ -675,7 +675,6 @@ void Console::RegisterDefaultCommands() noexcept {
     help.help_text_short = "Displays every command with brief description.";
     help.help_text_long = "help [command|string]: Displays command's long description or all commands starting with \'string\'.";
     help.command_function = [this](const std::string& args)->void {
-        RunCommand("clear");
         ArgumentParser arg_set(args);
         std::string line{};
         if(arg_set >> line) {
@@ -783,17 +782,16 @@ void Console::DrawOutput(const Vector2& view_half_extents) const noexcept {
         auto draw_loc = Vector2(draw_x * 0.99f, draw_y);
         for(auto iter = _output_buffer.rbegin(); iter != _output_buffer.rend(); ++iter) {
             draw_loc.y -= font->CalculateTextHeight(iter->str);
-            if(draw_loc.y < -view_half_extents.y) {
-                break;
-            }
             ss << '\n' << iter->str;
             _renderer->AppendMultiLineTextBuffer(font, iter->str, draw_loc, iter->color, vbo, ibo);
         }
     }
-    
     _renderer->SetMaterial(font->GetMaterial());
+    _renderer->EnableScissorTest();
+    _renderer->SetScissorAsPercent();
     _renderer->SetModelMatrix(Matrix4::GetIdentity());
     _renderer->DrawIndexed(PrimitiveType::Triangles, vbo, ibo);
+    _renderer->DisableScissorTest();
 }
 
 void Console::OutputMsg(const std::string& msg, const Rgba& color) noexcept {
