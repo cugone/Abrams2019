@@ -84,6 +84,10 @@ std::ostream& operator<<(std::ostream& os, const Rgba& rhs) noexcept {
     return os;
 }
 
+Rgba::Rgba(const Vector4& fromFloats) noexcept {
+    SetRgbaFromFloats(fromFloats);
+}
+
 Rgba::Rgba(std::string name) noexcept {
     name = StringUtils::ToUpperCase(name);
 

@@ -51,6 +51,7 @@ public:
     Rgba& operator=(Rgba&& rhs) = default;
     ~Rgba() = default;
 
+    explicit Rgba(const Vector4& fromFloats) noexcept;
     explicit Rgba(std::string name) noexcept;
     explicit Rgba(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha = 0xFF) noexcept;
 
