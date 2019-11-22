@@ -14,6 +14,7 @@
 
 class Camera2D;
 class KerningFont;
+class FileLogger;
 class Renderer;
 
 class Console : public EngineSubsystem {
@@ -38,7 +39,7 @@ public:
         std::vector<Command> _commands{};
     };
     Console() = delete;
-    explicit Console(Renderer* renderer) noexcept;
+    explicit Console(FileLogger& fileLogger, Renderer* renderer) noexcept;
     Console(const Console& other) = delete;
     Console(Console&& other) = delete;
     Console& operator=(const Console& other) = delete;
@@ -135,6 +136,7 @@ private:
 
     Vector2 SetupViewFromCamera() const noexcept;
 
+    FileLogger* _fileLogger = nullptr;
     Renderer* _renderer = nullptr;
     Camera2D* _camera = nullptr;
     std::map<std::string, Console::Command> _commands{};

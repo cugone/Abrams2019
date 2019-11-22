@@ -4,6 +4,7 @@
 #include "Engine/Core/DataUtils.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/FileUtils.hpp"
+#include "Engine/Core/FileLogger.hpp"
 #include "Engine/Core/Image.hpp"
 #include "Engine/Core/KerningFont.hpp"
 #include "Engine/Core/Obj.hpp"
@@ -86,8 +87,9 @@ ComputeJob::~ComputeJob() noexcept {
     }
 }
 
-Renderer::Renderer(unsigned int width, unsigned int height) noexcept
-    : _window_dimensions(width, height)
+Renderer::Renderer(FileLogger& fileLogger, unsigned int width, unsigned int height) noexcept
+    : _fileLogger(&fileLogger)
+    , _window_dimensions(width, height)
 {
     /* DO NOTHING */
 }
@@ -185,7 +187,7 @@ void Renderer::LogAvailableDisplays() noexcept {
         ss << display.width << 'x' << display.height << 'x' << display.refreshRateHz << '\n';
     }
     ss << std::setw(60) << std::setfill('-') << '\n';
-    DebuggerPrintf(ss.str().c_str());
+    _fileLogger->LogLineAndFlush(ss.str());
 }
 
 void Renderer::CreateAndRegisterDefaultDepthStencil() noexcept {

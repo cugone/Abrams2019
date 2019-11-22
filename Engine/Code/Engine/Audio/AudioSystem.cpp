@@ -2,6 +2,7 @@
 
 #include "Engine/Core/BuildConfig.hpp"
 #include "Engine/Core/FileUtils.hpp"
+#include "Engine/Core/FileLogger.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 
 #include "Engine/Audio/Wav.hpp"
@@ -10,8 +11,9 @@
 
 #include <algorithm>
 
-AudioSystem::AudioSystem(std::size_t max_channels /*= 1024*/)
+AudioSystem::AudioSystem(FileLogger& fileLogger, std::size_t max_channels /*= 1024*/)
     : EngineSubsystem()
+    , _fileLogger(&fileLogger)
     , _max_channels(max_channels)
 {
     bool co_init_succeeded = SUCCEEDED(::CoInitializeEx(nullptr, COINIT_MULTITHREADED));

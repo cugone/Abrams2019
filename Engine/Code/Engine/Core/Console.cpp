@@ -5,6 +5,7 @@
 #include "Engine/Core/Clipboard.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/FileUtils.hpp"
+#include "Engine/Core/FileLogger.hpp"
 #include "Engine/Core/Image.hpp"
 #include "Engine/Core/KerningFont.hpp"
 #include "Engine/Core/StringUtils.hpp"
@@ -40,8 +41,9 @@ void* Console::GetAcceleratorTable() const noexcept {
     return reinterpret_cast<void*>(hAcceleratorTable);
 }
 
-Console::Console(Renderer* renderer) noexcept
+Console::Console(FileLogger& fileLogger, Renderer* renderer) noexcept
     : EngineSubsystem()
+    , _fileLogger(&fileLogger)
     , _renderer(renderer)
     , _show_cursor(false)
     , _is_open(false)
@@ -86,6 +88,7 @@ Console::~Console() noexcept {
 
     _commands.clear();
     _renderer = nullptr;
+    _fileLogger = nullptr;
 }
 
 bool Console::ProcessSystemMessage(const EngineMessage& msg) noexcept {

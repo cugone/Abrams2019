@@ -13,11 +13,12 @@
 #include "Thirdparty/Imgui/imgui_stdlib.h"
 
 class Renderer;
+class FileLogger;
 
 class UISystem : public EngineSubsystem {
 public:
     UISystem() = delete;
-    explicit UISystem(Renderer* renderer) noexcept;
+    explicit UISystem(FileLogger& fileLogger, Renderer* renderer) noexcept;
     UISystem(const UISystem& other) = default;
     UISystem(UISystem&& other) = default;
     UISystem& operator=(const UISystem& other) = default;
@@ -41,6 +42,7 @@ public:
     void ToggleImguiDemoWindow() noexcept;
 protected:
 private:
+    FileLogger* _fileLogger{};
     Renderer* _renderer{};
     ImGuiContext* _context{};
     ImGuiIO* _io{};

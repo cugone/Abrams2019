@@ -1,6 +1,7 @@
 #include "Engine/UI/UISystem.hpp"
 
 #include "Engine/Core/FileUtils.hpp"
+#include "Engine/Core/FileLogger.hpp"
 
 #include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Renderer/Texture.hpp"
@@ -69,8 +70,9 @@ namespace ImGui {
 
 }
 
-UISystem::UISystem(Renderer* renderer) noexcept
+UISystem::UISystem(FileLogger& fileLogger, Renderer* renderer) noexcept
     : EngineSubsystem()
+    , _fileLogger(&fileLogger)
     , _renderer(renderer)
     , _context(ImGui::CreateContext())
     , _io(&ImGui::GetIO())
@@ -89,6 +91,7 @@ UISystem::~UISystem() noexcept {
     _io = nullptr;
 
     _renderer = nullptr;
+    _fileLogger = nullptr;
 }
 
 void UISystem::Initialize() {

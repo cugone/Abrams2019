@@ -12,6 +12,7 @@
 #include <array>
 #include <bitset>
 
+class FileLogger;
 class Window;
 
 enum class KeyCode : int {
@@ -283,11 +284,11 @@ KeyCode operator++(KeyCode& keycode, int) noexcept;
 
 class InputSystem : public EngineSubsystem {
 public:
-    InputSystem() noexcept = default;
-    InputSystem(const InputSystem& other) noexcept = default;
-    InputSystem(InputSystem&& r_other) noexcept = default;
-    InputSystem& operator=(const InputSystem& rhs) noexcept = default;
-    InputSystem& operator=(InputSystem&& rhs) noexcept = default;
+    InputSystem(FileLogger& fileLogger) noexcept;
+    InputSystem(const InputSystem& other) noexcept = delete;
+    InputSystem(InputSystem&& r_other) noexcept = delete;
+    InputSystem& operator=(const InputSystem& rhs) noexcept = delete;
+    InputSystem& operator=(InputSystem&& rhs) noexcept = delete;
     virtual ~InputSystem() noexcept = default;
 
     void RegisterKeyDown(unsigned char keyIndex) noexcept;
@@ -349,6 +350,7 @@ private:
     Vector2 GetScreenCenter() const noexcept;
     Vector2 GetWindowCenter(const Window& window) const noexcept;
 
+    FileLogger* _fileLogger = nullptr;
     std::array<XboxController, 4> _xboxControllers{};
     std::bitset<(std::size_t)KeyCode::Max> _previousKeys{};
     std::bitset<(std::size_t)KeyCode::Max> _currentKeys{};

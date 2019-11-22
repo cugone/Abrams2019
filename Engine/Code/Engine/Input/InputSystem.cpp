@@ -1,6 +1,7 @@
 #include "Engine/Input/InputSystem.hpp"
 
 #include "Engine/Core/ErrorWarningAssert.hpp"
+#include "Engine/Core/FileLogger.hpp"
 #include "Engine/Core/Win.hpp"
 
 #include "Engine/Math/MathUtils.hpp"
@@ -1208,11 +1209,18 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
     return false;
 }
 
+InputSystem::InputSystem(FileLogger& fileLogger) noexcept
+    : EngineSubsystem()
+    , _fileLogger(&fileLogger)
+{
+    /* DO NOTHING */
+}
+
 void InputSystem::Initialize() {
     UpdateXboxConnectedState();
     std::ostringstream ss;
-    ss << _connected_controller_count << " Xbox controllers detected!\n";
-    DebuggerPrintf(ss.str().c_str());
+    ss << _connected_controller_count << " Xbox controllers detected!";
+    _fileLogger->LogLineAndFlush(ss.str());
 }
 
 void InputSystem::BeginFrame() {

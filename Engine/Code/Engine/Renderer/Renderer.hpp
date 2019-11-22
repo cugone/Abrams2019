@@ -31,6 +31,7 @@ class DepthStencilState;
 struct DepthStencilDesc;
 class Disc2;
 class Frustum;
+class FileLogger;
 class IndexBuffer;
 class IntVector3;
 class KerningFont;
@@ -130,8 +131,7 @@ struct ComputeJob {
 
 class Renderer {
 public:
-    Renderer() = default;
-    Renderer(unsigned int width, unsigned int height) noexcept;
+    Renderer(FileLogger& fileLogger, unsigned int width, unsigned int height) noexcept;
     ~Renderer() noexcept;
 
     void Initialize(bool headless = false);
@@ -509,6 +509,7 @@ private:
     RasterState* _current_raster_state = nullptr;
     Sampler* _current_sampler = nullptr;
     Material* _current_material = nullptr;
+    FileLogger* _fileLogger = nullptr;
     IntVector2 _window_dimensions = IntVector2::ZERO;
     RHIOutputMode _current_outputMode = RHIOutputMode::Windowed;
     std::unique_ptr<VertexBuffer> _temp_vbo = nullptr;

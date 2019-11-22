@@ -29,6 +29,8 @@ namespace FileUtils {
 class Wav;
 }
 
+class FileLogger;
+
 class AudioSystem : public EngineSubsystem {
 private:
     class Channel;
@@ -88,7 +90,7 @@ private:
         void SetVolume(float newVolume) noexcept;
     };
 public:
-    explicit AudioSystem(std::size_t max_channels = 1024);
+    explicit AudioSystem(FileLogger& fileLogger, std::size_t max_channels = 1024);
     AudioSystem(const AudioSystem& other) = delete;
     AudioSystem(AudioSystem&& other) = delete;
     AudioSystem& operator=(const AudioSystem& rhs) = delete;
@@ -124,6 +126,7 @@ protected:
 private:
     void DeactivateChannel(Channel& channel) noexcept;
 
+    FileLogger* _fileLogger = nullptr;
     WAVEFORMATEXTENSIBLE _audio_format_ex{};
     std::size_t _sound_count{};
     std::size_t _max_channels{};
