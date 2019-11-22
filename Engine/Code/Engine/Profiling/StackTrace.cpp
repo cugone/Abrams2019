@@ -83,6 +83,7 @@ void StackTrace::Initialize() noexcept {
 #ifdef PROFILE_BUILD
     debugHelpModule = ::LoadLibraryA("DbgHelp.dll");
     if(!debugHelpModule) {
+        ERROR_AND_DIE("Could not initialize StackTrace. Missing required DLL!\n");
         return;
     }
 
