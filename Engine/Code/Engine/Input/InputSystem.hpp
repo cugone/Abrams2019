@@ -284,7 +284,7 @@ KeyCode operator++(KeyCode& keycode, int) noexcept;
 
 class InputSystem : public EngineSubsystem {
 public:
-    InputSystem(FileLogger& fileLogger) noexcept;
+    explicit InputSystem(FileLogger& fileLogger) noexcept;
     InputSystem(const InputSystem& other) noexcept = delete;
     InputSystem(InputSystem&& r_other) noexcept = delete;
     InputSystem& operator=(const InputSystem& rhs) noexcept = delete;
