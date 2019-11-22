@@ -24,7 +24,7 @@ RenderTargetStack::RenderTargetStack(Renderer* renderer) noexcept
 }
 
 
-std::size_t RenderTargetStack::size() const {
+[[nodiscard]] std::size_t RenderTargetStack::size() const {
     return _stack.size();
 }
 
@@ -64,10 +64,10 @@ void RenderTargetStack::pop() noexcept {
     _renderer->SetViewport(x, y, w, h);
 }
 
-RenderTargetStack::Node& RenderTargetStack::top() noexcept {
+[[nodiscard]] RenderTargetStack::Node& RenderTargetStack::top() noexcept {
     return _stack.top();
 }
 
-const RenderTargetStack::Node& RenderTargetStack::top() const noexcept {
+[[nodiscard]] const RenderTargetStack::Node& RenderTargetStack::top() const noexcept {
     return _stack.top();
 }

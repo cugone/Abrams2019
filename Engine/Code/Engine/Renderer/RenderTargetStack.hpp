@@ -21,13 +21,13 @@ public:
 	explicit RenderTargetStack(Renderer* renderer) noexcept;
     ~RenderTargetStack() = default;
 
-    const RenderTargetStack::Node& top() const noexcept;
-    RenderTargetStack::Node& top() noexcept;
+    [[nodiscard]] const RenderTargetStack::Node& top() const noexcept;
+    [[nodiscard]] RenderTargetStack::Node& top() noexcept;
     void push(const RenderTargetStack::Node& node) noexcept;
     void push(RenderTargetStack::Node&& node) noexcept;
     void pop() noexcept;
     [[nodiscard]] bool empty() const;
-    std::size_t size() const;
+    [[nodiscard]] std::size_t size() const;
 
 protected:
 private:
