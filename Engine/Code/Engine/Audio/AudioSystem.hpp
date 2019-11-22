@@ -19,10 +19,10 @@
 #include <sstream>
 #include <vector>
 #include <Xaudio2.h>
+#include <x3daudio.h>
 
 #include "Engine/Core/Win.hpp"
 
-#pragma comment(lib, "winmm.lib")
 #pragma comment(lib, "Xaudio2.lib")
 
 namespace FileUtils {
@@ -133,6 +133,7 @@ private:
     std::vector<std::unique_ptr<Channel>> _active_channels{};
     std::vector<std::unique_ptr<Channel>> _idle_channels{};
     IXAudio2* _xaudio2 = nullptr;
+    X3DAUDIO_HANDLE _x3daudio;
     IXAudio2MasteringVoice* _master_voice = nullptr;
     EngineCallback _engine_callback{};
     std::mutex _cs{};
