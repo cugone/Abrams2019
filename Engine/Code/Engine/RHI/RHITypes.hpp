@@ -42,7 +42,6 @@ struct GraphicsCardDesc {
     unsigned int SubSysId = 0u;
     unsigned int Revision = 0u;
     bool is_software = false;
-    bool is_remote = false;
     bool is_unspecified = false;
     friend std::ostream& operator<<(std::ostream& out_stream, const GraphicsCardDesc& adapterInfo) noexcept;
 };

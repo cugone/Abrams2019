@@ -126,7 +126,6 @@ GraphicsCardDesc AdapterInfoToGraphicsCardDesc(const AdapterInfo& adapterInfo) n
     desc.DedicatedSystemMemory = adapterInfo.desc.DedicatedSystemMemory;
     desc.DedicatedVideoMemory = adapterInfo.desc.DedicatedVideoMemory;
     desc.SharedSystemMemory = adapterInfo.desc.SharedSystemMemory;
-    desc.is_remote = (adapterInfo.desc.Flags & DXGI_ADAPTER_FLAG_REMOTE) != 0;
     desc.is_software = (adapterInfo.desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE) != 0;
     desc.is_unspecified = (adapterInfo.desc.Flags | DXGI_ADAPTER_FLAG_NONE) == 0;
     return desc;

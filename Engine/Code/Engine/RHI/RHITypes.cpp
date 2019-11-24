@@ -40,10 +40,14 @@ std::ostream& operator<<(std::ostream& out_stream, const GraphicsCardDesc& graph
     out_stream << std::left << std::setw(22) << "System Memory:" << std::right << std::setw(30) << std::fixed << std::setprecision(1) << ded_sys_mem * MathUtils::GIB_BYTES_RATIO << " GB\n";
     auto shared_mem = graphicsCardDesc.SharedSystemMemory;
     out_stream << std::left << std::setw(22) << "Shared System Memory:" << std::right << std::setw(30) << std::fixed << std::setprecision(1) << shared_mem * MathUtils::GIB_BYTES_RATIO << " GB\n";
-    bool is_unspecified = graphicsCardDesc.is_unspecified;
     bool is_software = graphicsCardDesc.is_software;
-    bool is_remote = graphicsCardDesc.is_remote;
-    out_stream << std::left << std::setw(22) << "Adapter Type:" << std::right << std::setw(30) << (is_software ? "Software" : (is_remote ? "Remote" : (is_unspecified ? "Unspecified" : "Unknown")));
+    bool is_unspecified = graphicsCardDesc.is_unspecified;
+    out_stream << std::left << std::setw(22) << "Adapter Type:" << std::right << std::setw(30);
+    if(!is_unspecified) {
+        out_stream << std::left << std::setw(22) << (!is_software ? "Hardware" : "Software") << std::right << std::setw(30);
+    } else {
+        out_stream << std::left << std::setw(22) << "Unknown" << std::right << std::setw(30);
+    }
     return out_stream;
 }
 
