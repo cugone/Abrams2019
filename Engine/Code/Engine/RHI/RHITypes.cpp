@@ -44,9 +44,9 @@ std::ostream& operator<<(std::ostream& out_stream, const GraphicsCardDesc& graph
     bool is_unspecified = graphicsCardDesc.is_unspecified;
     out_stream << std::left << std::setw(22) << "Adapter Type:" << std::right << std::setw(30);
     if(!is_unspecified) {
-        out_stream << std::left << std::setw(22) << (!is_software ? "Hardware" : "Software") << std::right << std::setw(30);
+        out_stream << (!is_software ? "Hardware" : "Software") << std::right << std::setw(30);
     } else {
-        out_stream << std::left << std::setw(22) << "Unknown" << std::right << std::setw(30);
+        out_stream << "Unknown" << std::right << std::setw(30);
     }
     return out_stream;
 }
