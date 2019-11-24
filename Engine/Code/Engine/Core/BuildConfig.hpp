@@ -19,6 +19,8 @@
     #undef PROFILE_BUILD
 #else
     #define TRACK_MEMORY TRACK_MEMORY_BASIC
+    #define AUDIO_DEBUG
+    #define RENDER_DEBUG
     #define PROFILE_BUILD
     #define UI_DEBUG
 #endif
