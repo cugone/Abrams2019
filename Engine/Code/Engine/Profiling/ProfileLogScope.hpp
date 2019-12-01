@@ -30,7 +30,7 @@ private:
 #undef PROFILE_LOG_SCOPE_FUNCTION
 #endif
 #ifdef PROFILE_BUILD
-#define PROFILE_LOG_SCOPE(tag_str) ProfileLogScope TOKEN_PASTE(_plscope_,__LINE__)(tag_str)
+#define PROFILE_LOG_SCOPE(tag_str) ProfileLogScope TOKEN_PASTE(plscope_,__LINE__)(tag_str)
 #define PROFILE_LOG_SCOPE_FUNCTION() PROFILE_LOG_SCOPE(__FUNCSIG__)
 #else
 #define PROFILE_LOG_SCOPE(tag_str) 
