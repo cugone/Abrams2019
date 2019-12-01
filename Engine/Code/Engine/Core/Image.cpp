@@ -30,16 +30,18 @@ Image::Image(std::filesystem::path filepath) noexcept
         m_isGif = (buf[0] == 'G' && buf[1] == 'I' && buf[2] == 'F' && buf[3] == '8' && (buf[4] == '9' || buf[4] == '7') && buf[5] == 'a');
         if(!m_isGif) {
             int comp = 0;
-            auto texel_bytes = stbi_load_from_memory(buf.data(), static_cast<int>(buf.size()), &m_dimensions.x, &m_dimensions.y, &comp, 4);
-            m_bytesPerTexel = comp;
+            int req_comp = 4;
+            auto texel_bytes = stbi_load_from_memory(buf.data(), static_cast<int>(buf.size()), &m_dimensions.x, &m_dimensions.y, &comp, req_comp);
+            m_bytesPerTexel = req_comp;
             m_texelBytes = std::vector<unsigned char>(texel_bytes, texel_bytes + (static_cast<std::size_t>(m_dimensions.x) * m_dimensions.y * m_bytesPerTexel));
             stbi_image_free(texel_bytes);
         } else {
             int depth = 0;
             int* delays = nullptr;
             int comp = 0;
-            auto texel_bytes = stbi_load_gif_from_memory(buf.data(), static_cast<int>(buf.size()), &delays, &m_dimensions.x, &m_dimensions.y, &depth, &comp, 4);
-            m_bytesPerTexel = comp;
+            int req_comp = 4;
+            auto texel_bytes = stbi_load_gif_from_memory(buf.data(), static_cast<int>(buf.size()), &delays, &m_dimensions.x, &m_dimensions.y, &depth, &comp, req_comp);
+            m_bytesPerTexel = req_comp;
             m_gifDelays.resize(depth);
             for(int i = 0; i < depth; ++i) {
                 m_gifDelays[i] = delays[i];
