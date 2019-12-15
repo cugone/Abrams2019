@@ -110,6 +110,27 @@ std::string to_string(const System::SystemDesc& system) noexcept {
     return ss.str();
 }
 
+std::string FormatWindowsMessage(unsigned long messageId) noexcept {
+    HRESULT hresult = static_cast<HRESULT>(messageId);
+    LPSTR errorText = nullptr;
+    DWORD result = ::FormatMessageA(
+        FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER, nullptr, hresult,
+        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+        reinterpret_cast<LPSTR>(&errorText), 0, nullptr);
+    if(result > 0) {
+        std::string err{errorText ? errorText : ""};
+        ::LocalFree(errorText);
+        errorText = nullptr;
+        return err;
+    }
+    return {"Trying to Format unknown error."};
+}
+
+std::string FormatWindowsLastErrorMessage() noexcept {
+    const auto err = ::GetLastError();
+    return StringUtils::FormatWindowsMessage(err);    
+}
+
 const std::string Stringf(const char* format, ...) noexcept {
     char textLiteral[STRINGF_STACK_LOCAL_TEMP_LENGTH];
     va_list variableArgumentList;

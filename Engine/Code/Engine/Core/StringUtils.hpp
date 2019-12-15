@@ -28,6 +28,8 @@ std::string to_string(const Matrix4& m) noexcept;
 std::string to_string(const Rgba& clr) noexcept;
 std::string to_string(const System::Cpu::ProcessorArchitecture& architecture) noexcept;
 std::string to_string(const System::SystemDesc& system) noexcept;
+std::string FormatWindowsMessage(unsigned long messageId) noexcept;
+std::string FormatWindowsLastErrorMessage() noexcept;
 
 const std::string Stringf(const char* format, ...) noexcept;
 const std::string Stringf(const int maxLength, const char* format, ...) noexcept;
