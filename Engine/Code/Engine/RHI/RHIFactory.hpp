@@ -12,8 +12,9 @@ public:
     RHIFactory() noexcept;
     ~RHIFactory() noexcept;
 
-    void RestrictAltEnterToggle(const Window& window) noexcept;
+    void RestrictAltEnterToggle(const RHIDevice& device) noexcept;
     IDXGISwapChain4* CreateSwapChainForHwnd(RHIDevice* device, const Window& window, const DXGI_SWAP_CHAIN_DESC1& swapchain_desc) noexcept;
+
     IDXGIFactory6* GetDxFactory() const noexcept;
     bool QueryForAllowTearingSupport() const noexcept;
 

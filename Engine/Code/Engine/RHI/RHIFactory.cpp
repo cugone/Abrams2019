@@ -1,6 +1,7 @@
 #include "Engine/RHI/RHIFactory.hpp"
 
 #include "Engine/Core/ErrorWarningAssert.hpp"
+#include "Engine/Core/StringUtils.hpp"
 
 #include "Engine/Renderer/Window.hpp"
 
@@ -23,20 +24,33 @@ RHIFactory::~RHIFactory() noexcept {
     }
 }
 
-void RHIFactory::RestrictAltEnterToggle(const Window& window) noexcept {
-    auto hr_mwa = _dxgi_factory->MakeWindowAssociation(window.GetWindowHandle(), DXGI_MWA_NO_ALT_ENTER);
+void RHIFactory::RestrictAltEnterToggle(const RHIDevice& device) noexcept {
+    HWND hwnd{};
+    auto got_hwnd = device.GetDxSwapChain()->GetHwnd(&hwnd);
+    GUARANTEE_OR_DIE(SUCCEEDED(got_hwnd), "Failed to get Hwnd for restricting Alt+Enter usage.");
+    IDXGIFactory6* factory{};
+    auto got_parent = device.GetDxSwapChain()->GetParent(__uuidof(IDXGIFactory6), (void**)&factory);
+    GUARANTEE_OR_DIE(SUCCEEDED(got_parent), "Failed to get parent factory for restricting Alt+Enter usage.");
+    auto hr_mwa = factory->MakeWindowAssociation(hwnd, DXGI_MWA_NO_WINDOW_CHANGES);
     GUARANTEE_OR_DIE(SUCCEEDED(hr_mwa), "Failed to restrict Alt+Enter usage.");
 }
 
 IDXGISwapChain4* RHIFactory::CreateSwapChainForHwnd(RHIDevice* device, const Window& window, const DXGI_SWAP_CHAIN_DESC1& swapchain_desc) noexcept {
     IDXGISwapChain4* dxgi_swap_chain{};
+    IDXGISwapChain1* temp_swap_chain{};
     auto hr_createsc4hwnd = _dxgi_factory->CreateSwapChainForHwnd(device->GetDxDevice()
         , window.GetWindowHandle()
         , &swapchain_desc
         , nullptr
         , nullptr
-        , reinterpret_cast<IDXGISwapChain1**>(&dxgi_swap_chain));
-    GUARANTEE_OR_DIE(SUCCEEDED(hr_createsc4hwnd), "Failed to create swap chain.");
+        , &temp_swap_chain);
+    const auto hr_create = StringUtils::FormatWindowsMessage(hr_createsc4hwnd);
+    GUARANTEE_OR_DIE(SUCCEEDED(hr_createsc4hwnd), hr_create.c_str());
+    auto hr_dxgisc4 = temp_swap_chain->QueryInterface(__uuidof(IDXGISwapChain4), (void**)&dxgi_swap_chain);
+    const auto hr_error = StringUtils::FormatWindowsMessage(hr_dxgisc4);
+    GUARANTEE_OR_DIE(SUCCEEDED(hr_dxgisc4), hr_error.c_str());
+    temp_swap_chain->Release();
+    temp_swap_chain = nullptr;
     return dxgi_swap_chain;
 }
 
