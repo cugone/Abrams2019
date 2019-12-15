@@ -30,6 +30,7 @@ LRESULT CALLBACK EngineMessageHandlingProcedure(HWND windowHandle, UINT wmMessag
                     return 0;
                 }
             }
+            return 1;
         }
         case WM_PAINT:
         {
