@@ -164,6 +164,18 @@ Matrix4 Matrix4::CalculateChangeOfBasisMatrix(const Matrix4& output_basis, const
     return Matrix4::CalculateInverse(output_basis) * input_basis;
 }
 
+Matrix4 Matrix4::MakeSRT(const Matrix4& S, const Matrix4& R, const Matrix4& T) noexcept {
+    return T * R * S;
+}
+
+Matrix4 Matrix4::MakeRT(const Matrix4& R, const Matrix4& T) noexcept {
+    return T * R;
+}
+
+Matrix4 Matrix4::MakeViewProjection(const Matrix4& viewMatrix, const Matrix4& projectionMatrix) noexcept {
+    return projectionMatrix * viewMatrix;
+}
+
 void Matrix4::SetIBasis(const Vector4& iBasis) noexcept {
     m_indicies[0] = iBasis.x;
     m_indicies[4] = iBasis.y;
@@ -397,9 +409,9 @@ Matrix4 Matrix4::CreateDXPerspectiveProjection(float vfovDegrees, float aspect, 
         , 0.0f, 0.0f, sz, tz
         , 0.0f, 0.0f, 1.0f, 0.0f
     );
-    //mat.Transpose();
     return mat;
 }
+
 Matrix4 Matrix4::CreateOrthographicProjectionMatrix(float top, float bottom, float right, float left, float nearZ, float farZ) noexcept {
     return Matrix4(2.0f / (right - left), 0.0f, 0.0f, -((right + left) / (right - left))
         , 0.0f, 2.0f / (top - bottom), 0.0f, -((top + bottom) / (top - bottom))
@@ -418,15 +430,12 @@ Matrix4 Matrix4::CreateLookAtMatrix(const Vector3& eye, const Vector3& lookAt, c
         cam_right.z, cam_up.z, cam_forward.z, 0.0f,
         0.0f, 0.0f, 0.0f, 1.0f);
 
-    //R.Transpose();
-
     Matrix4 T(1.0f, 0.0f, 0.0f, -eye.x,
         0.0f, 1.0f, 0.0f, -eye.y,
         0.0f, 0.0f, 1.0f, -eye.z,
         0.0f, 0.0f, 0.0f, 1.0f);
-    //T.Transpose();
 
-    Matrix4 L = T * R;
+    Matrix4 L = Matrix4::MakeRT(R, T);
 
     return L;
 }

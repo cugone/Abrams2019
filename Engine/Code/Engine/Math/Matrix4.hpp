@@ -14,8 +14,8 @@ class Camera3D;
 class Matrix4 {
 public:
     static const Matrix4 I;
+    [[deprecated("Use Matrix::I instead.")]] static Matrix4 GetIdentity() noexcept;
 
-    static Matrix4 GetIdentity() noexcept;
     static Matrix4 CreateTranslationMatrix(const Vector2& position) noexcept;
     static Matrix4 CreateTranslationMatrix(const Vector3& position) noexcept;
 
@@ -41,6 +41,10 @@ public:
     static Matrix4 CreateOrthographicProjectionMatrix(float top, float bottom, float right, float left, float nearZ, float farZ) noexcept;
     static Matrix4 CreateLookAtMatrix(const Vector3& cameraPosition, const Vector3& lookAt, const Vector3& worldUp) noexcept;
     static Matrix4 CalculateChangeOfBasisMatrix(const Matrix4& output_basis, const Matrix4& input_basis = Matrix4::GetIdentity()) noexcept;
+
+    static Matrix4 MakeSRT(const Matrix4& S, const Matrix4& R, const Matrix4& T) noexcept;
+    static Matrix4 MakeRT(const Matrix4& R, const Matrix4& T) noexcept;
+    static Matrix4 MakeViewProjection(const Matrix4& viewMatrix, const Matrix4& projectionMatrix) noexcept;
 
     Matrix4() = default;
     explicit Matrix4(const std::string& value) noexcept;
@@ -120,6 +124,7 @@ public:
 
     Vector3 CalcEulerAngles() const noexcept;
 
+    //SRTs must be calculated as T * R * S
     Matrix4 operator*(const Matrix4& rhs) const noexcept;
     Vector4 operator*(const Vector4& rhs) const noexcept;
     friend Vector4 operator*(const Vector4& lhs, const Matrix4& rhs) noexcept;
