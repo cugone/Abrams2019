@@ -617,11 +617,11 @@ void InputSystem::RegisterKeyUp(unsigned char keyIndex) noexcept {
 
 bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
 
-    LPARAM lp = msg.lparam;
-    WPARAM wp = msg.wparam;
     switch(msg.wmMessageCode) {
         case WindowsSystemMessage::Keyboard_KeyDown:
         {
+            LPARAM lp = msg.lparam;
+            WPARAM wp = msg.wparam;
             auto key = static_cast<unsigned char>(wp);
             auto lpBits = static_cast<uint32_t>(lp & 0xFFFFFFFFu);
             //0bTPXRRRRESSSSSSSSCCCCCCCCCCCCCCCC
@@ -750,6 +750,8 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         }
         case WindowsSystemMessage::Keyboard_KeyUp:
         {
+            LPARAM lp = msg.lparam;
+            WPARAM wp = msg.wparam;
             auto key = static_cast<unsigned char>(wp);
             auto lpBits = static_cast<uint32_t>(lp & 0xFFFFFFFFu);
             //0bTPXRRRRESSSSSSSSCCCCCCCCCCCCCCCC
@@ -893,6 +895,8 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         }
         case WindowsSystemMessage::Keyboard_SysKeyDown:
         {
+            LPARAM lp = msg.lparam;
+            WPARAM wp = msg.wparam;
             auto key = static_cast<unsigned char>(wp);
             auto lpBits = static_cast<uint32_t>(lp & 0xFFFFFFFFu);
             //0bTPXRRRRESSSSSSSSCCCCCCCCCCCCCCCC
@@ -956,6 +960,8 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         }
         case WindowsSystemMessage::Keyboard_SysKeyUp:
         {
+            LPARAM lp = msg.lparam;
+            WPARAM wp = msg.wparam;
             auto key = static_cast<unsigned char>(wp);
             auto lpBits = static_cast<uint32_t>(lp & 0xFFFFFFFFu);
             //0bTPXRRRRESSSSSSSSCCCCCCCCCCCCCCCC
@@ -1026,9 +1032,11 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
             constexpr uint16_t mbutton_mask  = 0b0000'0000'0001'0000; //0x0010
             constexpr uint16_t xbutton1_mask = 0b0000'0000'0010'0000; //0x0020
             constexpr uint16_t xbutton2_mask = 0b0000'0000'0100'0000; //0x0040
+            WPARAM wp = msg.wparam;
             if(wp & lbutton_mask) {
                 unsigned char key = ConvertKeyCodeToWinVK(KeyCode::LButton);
                 RegisterKeyDown(key);
+                LPARAM lp = msg.lparam;
                 POINTS p = MAKEPOINTS(lp);
                 _mouseDelta = _mouseCoords;
                 _mouseCoords = Vector2(p.x, p.y);
@@ -1045,9 +1053,11 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
             constexpr uint16_t mbutton_mask  = 0b0000'0000'0001'0000; //0x0010
             constexpr uint16_t xbutton1_mask = 0b0000'0000'0010'0000; //0x0020
             constexpr uint16_t xbutton2_mask = 0b0000'0000'0100'0000; //0x0040
+            WPARAM wp = msg.wparam;
             if(!(wp & lbutton_mask)) {
                 unsigned char key = ConvertKeyCodeToWinVK(KeyCode::LButton);
                 RegisterKeyUp(key);
+                LPARAM lp = msg.lparam;
                 POINTS p = MAKEPOINTS(lp);
                 _mouseDelta = _mouseCoords;
                 _mouseCoords = Vector2(p.x, p.y);
@@ -1064,9 +1074,11 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
             constexpr uint16_t mbutton_mask = 0b0000'0000'0001'0000; //0x0010
             constexpr uint16_t xbutton1_mask = 0b0000'0000'0010'0000; //0x0020
             constexpr uint16_t xbutton2_mask = 0b0000'0000'0100'0000; //0x0040
+            WPARAM wp = msg.wparam;
             if(wp & rbutton_mask) {
                 unsigned char key = ConvertKeyCodeToWinVK(KeyCode::RButton);
                 RegisterKeyDown(key);
+                LPARAM lp = msg.lparam;
                 POINTS p = MAKEPOINTS(lp);
                 _mouseDelta = _mouseCoords;
                 _mouseCoords = Vector2(p.x, p.y);
@@ -1083,9 +1095,11 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
             constexpr uint16_t mbutton_mask = 0b0000'0000'0001'0000; //0x0010
             constexpr uint16_t xbutton1_mask = 0b0000'0000'0010'0000; //0x0020
             constexpr uint16_t xbutton2_mask = 0b0000'0000'0100'0000; //0x0040
+            WPARAM wp = msg.wparam;
             if(!(wp & rbutton_mask)) {
                 unsigned char key = ConvertKeyCodeToWinVK(KeyCode::RButton);
                 RegisterKeyUp(key);
+                LPARAM lp = msg.lparam;
                 POINTS p = MAKEPOINTS(lp);
                 _mouseDelta = _mouseCoords;
                 _mouseCoords = Vector2(p.x, p.y);
@@ -1102,9 +1116,11 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
             constexpr uint16_t mbutton_mask = 0b0000'0000'0001'0000; //0x0010
             constexpr uint16_t xbutton1_mask = 0b0000'0000'0010'0000; //0x0020
             constexpr uint16_t xbutton2_mask = 0b0000'0000'0100'0000; //0x0040
+            WPARAM wp = msg.wparam;
             if(wp & mbutton_mask) {
                 unsigned char key = ConvertKeyCodeToWinVK(KeyCode::MButton);
                 RegisterKeyDown(key);
+                LPARAM lp = msg.lparam;
                 POINTS p = MAKEPOINTS(lp);
                 _mouseDelta = _mouseCoords;
                 _mouseCoords = Vector2(p.x, p.y);
@@ -1121,9 +1137,11 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
             constexpr uint16_t mbutton_mask = 0b0000'0000'0001'0000; //0x0010
             constexpr uint16_t xbutton1_mask = 0b0000'0000'0010'0000; //0x0020
             constexpr uint16_t xbutton2_mask = 0b0000'0000'0100'0000; //0x0040
+            WPARAM wp = msg.wparam;
             if(!(wp & mbutton_mask)) {
                 unsigned char key = ConvertKeyCodeToWinVK(KeyCode::MButton);
                 RegisterKeyUp(key);
+                LPARAM lp = msg.lparam;
                 POINTS p = MAKEPOINTS(lp);
                 _mouseDelta = _mouseCoords;
                 _mouseCoords = Vector2(p.x, p.y);
@@ -1142,6 +1160,7 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
             constexpr uint16_t xbutton2_down_mask = 0b0000'0000'0100'0000; //0x0040
             constexpr uint16_t xbutton1_mask = 0b0000'0001; //0x0001
             constexpr uint16_t xbutton2_mask = 0b0000'0010; //0x0002
+            WPARAM wp = msg.wparam;
             auto buttons = GET_XBUTTON_WPARAM(wp);
             unsigned char key = ConvertKeyCodeToWinVK(KeyCode::XButton1);
             if(buttons & xbutton1_mask) {
@@ -1151,6 +1170,7 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
                 key = ConvertKeyCodeToWinVK(KeyCode::XButton2);
             }
             RegisterKeyDown(key);
+            LPARAM lp = msg.lparam;
             POINTS p = MAKEPOINTS(lp);
             _mouseDelta = _mouseCoords;
             _mouseCoords = Vector2(p.x, p.y);
@@ -1168,6 +1188,7 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
             constexpr uint16_t xbutton2_down_mask = 0b0000'0000'0100'0000; //0x0040
             constexpr uint16_t xbutton1_mask = 0b0000'0001; //0x0001
             constexpr uint16_t xbutton2_mask = 0b0000'0010; //0x0002
+            WPARAM wp = msg.wparam;
             auto buttons = GET_XBUTTON_WPARAM(wp);
             unsigned char key = 0;
             if(buttons & xbutton1_mask) {
@@ -1177,6 +1198,7 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
                 key = ConvertKeyCodeToWinVK(KeyCode::XButton2);
             }
             RegisterKeyUp(key);
+            LPARAM lp = msg.lparam;
             POINTS p = MAKEPOINTS(lp);
             _mouseDelta = _mouseCoords;
             _mouseCoords = Vector2(p.x, p.y);
@@ -1192,6 +1214,7 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
             constexpr uint16_t mbutton_mask = 0b0000'0000'0001'0000; //0x0010
             constexpr uint16_t xbutton1_down_mask = 0b0000'0000'0010'0000; //0x0020
             constexpr uint16_t xbutton2_down_mask = 0b0000'0000'0100'0000; //0x0040
+            LPARAM lp = msg.lparam;
             POINTS p = MAKEPOINTS(lp);
             _mouseDelta = _mouseCoords;
             _mouseCoords = Vector2(p.x, p.y);
@@ -1208,10 +1231,12 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
             constexpr uint16_t mbutton_mask = 0b0000'0000'0001'0000; //0x0010
             constexpr uint16_t xbutton1_down_mask = 0b0000'0000'0010'0000; //0x0020
             constexpr uint16_t xbutton2_down_mask = 0b0000'0000'0100'0000; //0x0040
+            LPARAM lp = msg.lparam;
             POINTS p = MAKEPOINTS(lp);
             _mouseDelta = _mouseCoords;
             _mouseCoords = Vector2(p.x, p.y);
             _mouseDelta = _mouseCoords - _mouseDelta;
+            WPARAM wp = msg.wparam;
             _mouseWheelPosition = GET_WHEEL_DELTA_WPARAM(wp);
             return true;
         }
@@ -1225,12 +1250,94 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
             constexpr uint16_t mbutton_mask = 0b0000'0000'0001'0000; //0x0010
             constexpr uint16_t xbutton1_down_mask = 0b0000'0000'0010'0000; //0x0020
             constexpr uint16_t xbutton2_down_mask = 0b0000'0000'0100'0000; //0x0040
+            LPARAM lp = msg.lparam;
             POINTS p = MAKEPOINTS(lp);
             _mouseDelta = _mouseCoords;
             _mouseCoords = Vector2(p.x, p.y);
             _mouseDelta = _mouseCoords - _mouseDelta;
+            WPARAM wp = msg.wparam;
             _mouseWheelHPosition = GET_WHEEL_DELTA_WPARAM(wp);
             return true;
+        }
+        case WindowsSystemMessage::Window_Move:
+        {
+            if(!IsMouseLockedToViewport()) {
+                return false;
+            }
+            LPARAM lp = msg.lparam;
+            const auto width = _currentClippingArea.right - _currentClippingArea.left;
+            const auto height = _currentClippingArea.bottom - _currentClippingArea.top;
+            const auto x = LOWORD(lp);
+            const auto y = HIWORD(lp);
+            _currentClippingArea.top = y;
+            _currentClippingArea.left = x;
+            _currentClippingArea.bottom = _currentClippingArea.top + height;
+            _currentClippingArea.right = _currentClippingArea.left + width;
+            ::ClipCursor(&_currentClippingArea);
+            return true;
+        }
+        case WindowsSystemMessage::Window_Size:
+        {
+            if(!IsMouseLockedToViewport()) {
+                return false;
+            }
+            WPARAM wp = msg.wparam;
+            const bool is_maxHide = wp == SIZE_MAXHIDE;
+            const bool is_maximized = wp == SIZE_MAXIMIZED;
+            const bool is_maxShow = wp == SIZE_MAXSHOW;
+            const bool is_minimized = wp == SIZE_MINIMIZED;
+            const bool is_restored = wp == SIZE_RESTORED;
+            const bool should_unclip = is_maxHide || is_minimized;
+            if(should_unclip) {
+                ::ClipCursor(nullptr);
+                return false; //App needs to respond.
+            }
+            LPARAM lp = msg.lparam;
+            const auto w = LOWORD(lp);
+            const auto h = HIWORD(lp);
+            const auto x = _currentClippingArea.left;
+            const auto y = _currentClippingArea.top;
+            _currentClippingArea.left = x;
+            _currentClippingArea.top = y;
+            _currentClippingArea.right = x + w;
+            _currentClippingArea.bottom = y + h;
+            ::ClipCursor(&_currentClippingArea);
+            return false; //App needs to respond
+        }
+        case WindowsSystemMessage::Window_ActivateApp:
+        {
+            if(!IsMouseLockedToViewport()) {
+                return false;
+            }
+            WPARAM wp = msg.wparam;
+            bool losing_focus = wp == FALSE;
+            bool gaining_focus = wp == TRUE;
+            if(losing_focus) {
+                ::ClipCursor(nullptr);
+            }
+            if(gaining_focus) {
+                ::ClipCursor(&_currentClippingArea);
+            }
+            return false; //App needs to respond
+        }
+        case WindowsSystemMessage::Keyboard_Activate:
+        {
+            if(!IsMouseLockedToViewport()) {
+                return false;
+            }
+            WPARAM wp = msg.wparam;
+            auto active_type = LOWORD(wp);
+            switch(active_type) {
+            case WA_ACTIVE: /** FALLTHROUGH **/
+            case WA_CLICKACTIVE:
+                ::ClipCursor(&_currentClippingArea);
+                return false; //App needs to respond
+            case WA_INACTIVE:
+                ::ClipCursor(nullptr);
+                return false; //App needs to respond
+            default:
+                return false; //App needs to respond
+            }
         }
     }
     return false;
@@ -1240,8 +1347,13 @@ InputSystem::InputSystem(FileLogger& fileLogger) noexcept
     : EngineSubsystem()
     , _fileLogger(&fileLogger)
 {
-    /* DO NOTHING */
+    ::GetClipCursor(&_initialClippingArea);
 }
+
+InputSystem::~InputSystem() noexcept {
+    ::ClipCursor(&_initialClippingArea);
+}
+
 
 void InputSystem::Initialize() {
     UpdateXboxConnectedState();
