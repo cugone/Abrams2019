@@ -68,11 +68,11 @@ void DebuggerPrintf(const char* messageFormat, ...) noexcept {
 #if defined( PLATFORM_WINDOWS )
 UINT GetWindowsMessageBoxIconFlagForSeverityLevel(SeverityLevel severity) noexcept {
     switch(severity) {
-        case SEVERITY_INFORMATION:		return MB_ICONASTERISK;		// blue circle with 'i' in Windows 7
-        case SEVERITY_QUESTION:			return MB_ICONQUESTION;		// blue circle with '?' in Windows 7
-        case SEVERITY_WARNING:			return MB_ICONEXCLAMATION;	// yellow triangle with '!' in Windows 7
-        case SEVERITY_FATAL:			return MB_ICONHAND;			// red circle with 'x' in Windows 7
-        default:						return MB_ICONEXCLAMATION;
+        case SeverityLevel::Information:   return MB_ICONASTERISK;		// blue circle with 'i' in Windows 7
+        case SeverityLevel::Question:      return MB_ICONQUESTION;		// blue circle with '?' in Windows 7
+        case SeverityLevel::Warning:       return MB_ICONEXCLAMATION;	// yellow triangle with '!' in Windows 7
+        case SeverityLevel::Fatal:         return MB_ICONHAND;			// red circle with 'x' in Windows 7
+        default:                                    return MB_ICONEXCLAMATION;
     }
 }
 #endif
@@ -187,13 +187,13 @@ int SystemDialogue_YesNoCancel(const std::string& messageTitle, const std::strin
     std::cout << fullMessageText;
 
     if(isDebuggerPresent) {
-        bool isAnswerYes = SystemDialogue_YesNo(fullMessageTitle, fullMessageText, SEVERITY_FATAL);
+        bool isAnswerYes = SystemDialogue_YesNo(fullMessageTitle, fullMessageText, SeverityLevel::Fatal);
         ShowCursor(TRUE);
         if(isAnswerYes) {
             __debugbreak();
         }
     } else {
-        SystemDialogue_Okay(fullMessageTitle, fullMessageText, SEVERITY_FATAL);
+        SystemDialogue_Okay(fullMessageTitle, fullMessageText, SeverityLevel::Fatal);
         ShowCursor(TRUE);
     }
     exit(0);
@@ -239,7 +239,7 @@ void RecoverableWarning(const char* filePath, const char* functionName, int line
     std::cout << fullMessageText;
 
     if(isDebuggerPresent) {
-        int answerCode = SystemDialogue_YesNoCancel(fullMessageTitle, fullMessageText, SEVERITY_WARNING);
+        int answerCode = SystemDialogue_YesNoCancel(fullMessageTitle, fullMessageText, SeverityLevel::Warning);
         ShowCursor(TRUE);
         if(answerCode == 0) // "NO"
         {
@@ -249,7 +249,7 @@ void RecoverableWarning(const char* filePath, const char* functionName, int line
             __debugbreak();
         }
     } else {
-        bool isAnswerYes = SystemDialogue_YesNo(fullMessageTitle, fullMessageText, SEVERITY_WARNING);
+        bool isAnswerYes = SystemDialogue_YesNo(fullMessageTitle, fullMessageText, SeverityLevel::Warning);
         ShowCursor(TRUE);
         if(!isAnswerYes) {
             exit(0);

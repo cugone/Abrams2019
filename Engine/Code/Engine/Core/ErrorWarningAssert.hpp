@@ -16,11 +16,11 @@
 #include <string>
 
 //-----------------------------------------------------------------------------------------------
-enum SeverityLevel {
-    SEVERITY_INFORMATION,
-    SEVERITY_QUESTION,
-    SEVERITY_WARNING,
-    SEVERITY_FATAL
+enum class SeverityLevel {
+     Information
+    ,Question
+    ,Warning
+    ,Fatal
 };
 
 
