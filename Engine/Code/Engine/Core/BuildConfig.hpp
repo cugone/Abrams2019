@@ -15,6 +15,8 @@
     #define UI_DEBUG
 #elif defined(FINAL_BUILD)
     #undef UI_DEBUG
+    #undef AUDIO_DEBUG
+    #undef RENDER_DEBUG
     #undef TRACK_MEMORY
     #undef PROFILE_BUILD
 #else
