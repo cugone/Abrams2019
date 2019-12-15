@@ -219,11 +219,11 @@ void Element::DebugRender(Renderer* renderer, bool showSortOrder /*= false*/) co
 }
 
 Matrix4 Element::GetLocalTransform() const noexcept {
-    auto t = Matrix4::CreateTranslationMatrix(CalcLocalPosition());
-    auto r = Matrix4::Create2DRotationMatrix(CalcLocalRotationRadians());
-    auto s = Matrix4::CreateScaleMatrix(CalcLocalScale());
-    auto model = t * r * s;
-    return model;
+    const auto T = Matrix4::CreateTranslationMatrix(CalcLocalPosition());
+    const auto R = Matrix4::Create2DRotationMatrix(CalcLocalRotationRadians());
+    const auto S = Matrix4::CreateScaleMatrix(CalcLocalScale());
+    const auto M = Matrix4::MakeSRT(S, R, T);
+    return M;
 }
 
 Vector2 Element::CalcLocalScale() const {
@@ -239,11 +239,11 @@ Vector2 Element::CalcLocalScale() const {
 }
 
 Matrix4 Element::GetWorldTransform() const noexcept {
-    return GetParentWorldTransform() * GetLocalTransform();
+    return Matrix4::MakeRT(GetLocalTransform(), GetParentWorldTransform());
 }
 
 Matrix4 Element::GetParentWorldTransform() const noexcept {
-    return _parent ? _parent->GetWorldTransform() : Matrix4::GetIdentity();
+    return _parent ? _parent->GetWorldTransform() : Matrix4::I;
 }
 
 void Element::DirtyElement() {
@@ -256,13 +256,13 @@ void Element::DebugRenderBoundsAndPivot(Renderer* renderer) const {
 }
 
 void Element::DebugRenderPivot(Renderer* renderer) const {
-    auto world_transform = GetWorldTransform();
-    auto scale = world_transform.GetScale();
-    auto inv_scale_matrix = Matrix4::CalculateInverse(Matrix4::CreateScaleMatrix(Vector3(scale.x * 0.10f, scale.y * 0.10f, 1.0f)));
-    auto extents = GetSize();
-    auto pivot_pos = MathUtils::CalcPointFromNormalizedPoint(_pivot, _bounds);
-    auto pivot_pos_matrix = Matrix4::CreateTranslationMatrix(pivot_pos);
-    auto transform = pivot_pos_matrix * world_transform * inv_scale_matrix;
+    const auto world_transform = GetWorldTransform();
+    const auto scale = world_transform.GetScale();
+    const auto inv_scale_matrix = Matrix4::CalculateInverse(Matrix4::CreateScaleMatrix(Vector3(scale.x * 0.10f, scale.y * 0.10f, 1.0f)));
+    const auto extents = GetSize();
+    const auto pivot_pos = MathUtils::CalcPointFromNormalizedPoint(_pivot, _bounds);
+    const auto pivot_pos_matrix = Matrix4::CreateTranslationMatrix(pivot_pos);
+    const auto transform = Matrix4::MakeSRT(inv_scale_matrix, world_transform, pivot_pos_matrix);
     renderer->SetMaterial(renderer->GetMaterial("__2D"));
     renderer->SetModelMatrix(transform);
     renderer->DrawX2D(_pivot_color);
@@ -276,23 +276,23 @@ void Element::DebugRenderBounds(Renderer* renderer) const {
 }
 
 void Element::DebugRenderOrder(Renderer* renderer) const {
-    auto world_transform = GetWorldTransform();
-    auto world_transform_scale = world_transform.GetScale();
-    auto inv_scale_x = 1.0f / world_transform_scale.x;
-    auto inv_scale_y = 1.0f / world_transform_scale.y;
-    auto inv_scale_z = 1.0f / world_transform_scale.z;
-    auto inv_scale = Vector3(inv_scale_x, inv_scale_y, inv_scale_z);
-    auto inv_scale_matrix = Matrix4::CreateScaleMatrix(inv_scale);
-    Vector2 extents = GetSize();
-    Vector2 half_extents = extents * 0.5f;
-    auto inv_half_extents = Vector2(half_extents.x, -half_extents.y);
-    auto font = renderer->GetFont("System32");
-    auto text_height_matrix = Matrix4::CreateTranslationMatrix(Vector2(-16.0f, 32.0f));
-    auto inv_half_extents_matrix = Matrix4::CreateTranslationMatrix(inv_half_extents);
+    const auto world_transform = GetWorldTransform();
+    const auto world_transform_scale = world_transform.GetScale();
+    const auto inv_scale_x = 1.0f / world_transform_scale.x;
+    const auto inv_scale_y = 1.0f / world_transform_scale.y;
+    const auto inv_scale_z = 1.0f / world_transform_scale.z;
+    const auto inv_scale = Vector3(inv_scale_x, inv_scale_y, inv_scale_z);
+    const auto inv_scale_matrix = Matrix4::CreateScaleMatrix(inv_scale);
+    const Vector2 extents = GetSize();
+    const Vector2 half_extents = extents * 0.5f;
+    const auto inv_half_extents = Vector2(half_extents.x, -half_extents.y);
+    const auto font = renderer->GetFont("System32");
+    const auto text_height_matrix = Matrix4::CreateTranslationMatrix(Vector2(-16.0f, 32.0f));
+    const auto inv_half_extents_matrix = Matrix4::CreateTranslationMatrix(inv_half_extents);
     std::ostringstream ss;
     ss << _order;
-    auto text = ss.str();
-    renderer->SetModelMatrix(world_transform * inv_scale_matrix * inv_half_extents_matrix * text_height_matrix);
+    const auto text = ss.str();
+    renderer->SetModelMatrix(Matrix4::MakeRT(Matrix4::MakeSRT(text_height_matrix, inv_half_extents_matrix, inv_scale_matrix), world_transform));
     renderer->SetMaterial(font->GetMaterial());
     renderer->DrawTextLine(font, text);
 }

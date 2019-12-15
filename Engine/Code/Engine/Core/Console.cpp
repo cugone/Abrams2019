@@ -741,9 +741,9 @@ void Console::Render() const {
         return;
     }
 
-    _renderer->SetModelMatrix(Matrix4::GetIdentity());
-    _renderer->SetViewMatrix(Matrix4::GetIdentity());
-    _renderer->SetProjectionMatrix(Matrix4::GetIdentity());
+    _renderer->SetModelMatrix(Matrix4::I);
+    _renderer->SetViewMatrix(Matrix4::I);
+    _renderer->SetProjectionMatrix(Matrix4::I);
 
     auto view_half_extents = SetupViewFromCamera();
     DrawBackground(view_half_extents);
@@ -792,7 +792,7 @@ void Console::DrawOutput(const Vector2& view_half_extents) const noexcept {
     _renderer->SetMaterial(font->GetMaterial());
     _renderer->EnableScissorTest();
     _renderer->SetScissorAsPercent();
-    _renderer->SetModelMatrix(Matrix4::GetIdentity());
+    _renderer->SetModelMatrix(Matrix4::I);
     _renderer->DrawIndexed(PrimitiveType::Triangles, vbo, ibo);
     _renderer->DisableScissorTest();
 }
@@ -911,12 +911,12 @@ void Console::DrawBackground(const Vector2& view_half_extents) const noexcept {
 
 void Console::DrawEntryLine(const Vector2& view_half_extents) const noexcept {
 
-    auto font = _renderer->GetFont("System32");
-    float textline_bottom = view_half_extents.y * 0.99f;
-    float textline_left = -view_half_extents.x * 0.99f;
+    const auto font = _renderer->GetFont("System32");
+    const float textline_bottom = view_half_extents.y * 0.99f;
+    const float textline_left = -view_half_extents.x * 0.99f;
 
-    Matrix4 entryline_t = Matrix4::CreateTranslationMatrix(Vector3(textline_left, textline_bottom, 0.0f));
-    Matrix4 model_entryline_mat = entryline_t;
+    const auto entryline_t = Matrix4::CreateTranslationMatrix(Vector3(textline_left, textline_bottom, 0.0f));
+    const auto model_entryline_mat = entryline_t;
     _renderer->SetModelMatrix(model_entryline_mat);
     _renderer->SetMaterial(font->GetMaterial());
 
@@ -940,13 +940,13 @@ void Console::DrawEntryLine(const Vector2& view_half_extents) const noexcept {
 
         _renderer->DrawTextLine(font, std::string(_entryline, 0, std::distance(std::cbegin(_entryline), rangeStart)), Rgba::White);
         Matrix4 rightside_t = Matrix4::CreateTranslationMatrix(Vector3(xPosOffsetToSelect, 0.0f, 0.0f));
-        rightside_t = rightside_t * model_entryline_mat;
+        rightside_t = Matrix4::MakeRT(model_entryline_mat, rightside_t);
         _renderer->SetModelMatrix(rightside_t);
         _renderer->DrawTextLine(font, std::string(_entryline, std::distance(std::cbegin(_entryline), rangeEnd), std::distance(rangeEnd, std::cend(_entryline))), Rgba::White);
 
         float xPosOffsetToStart = font->CalculateTextWidth(std::string(std::begin(_entryline), rangeStart));
         Matrix4 blacktext_t = Matrix4::CreateTranslationMatrix(Vector3(xPosOffsetToStart, 0.0f, 0.0f));
-        Matrix4 model_mat_blacktext = blacktext_t * model_entryline_mat;
+        Matrix4 model_mat_blacktext = Matrix4::MakeRT(model_entryline_mat, blacktext_t);
         _renderer->SetModelMatrix(model_mat_blacktext);
         _renderer->DrawTextLine(font, std::string(rangeStart, rangeEnd), Rgba::Black);
 

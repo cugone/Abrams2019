@@ -91,10 +91,10 @@ protected:
             auto n = (_verts[j] - _verts[i]).GetNormalize().GetLeftHandNormal();
             _normals.push_back(n);
         }
-        Matrix4 S = Matrix4::CreateScaleMatrix(_half_extents);
-        Matrix4 R = Matrix4::Create2DRotationDegreesMatrix(_orientationDegrees);
-        Matrix4 T = Matrix4::CreateTranslationMatrix(_position);
-        Matrix4 M = T * R * S;
+        const auto S = Matrix4::CreateScaleMatrix(_half_extents);
+        const auto R = Matrix4::Create2DRotationDegreesMatrix(_orientationDegrees);
+        const auto T = Matrix4::CreateTranslationMatrix(_position);
+        const auto M = Matrix4::MakeSRT(S, R, T);
         for(auto& n : _normals) {
             n = M.TransformDirection(n);
         }
@@ -113,10 +113,10 @@ protected:
             float pY = 0.5f * std::sin(radians);
             _verts.emplace_back(Vector2(pX, pY));
         }
-        Matrix4 S = Matrix4::CreateScaleMatrix(_half_extents);
-        Matrix4 R = Matrix4::Create2DRotationDegreesMatrix(_orientationDegrees);
-        Matrix4 T = Matrix4::CreateTranslationMatrix(_position);
-        Matrix4 M = T * R * S;
+        const auto S = Matrix4::CreateScaleMatrix(_half_extents);
+        const auto R = Matrix4::Create2DRotationDegreesMatrix(_orientationDegrees);
+        const auto T = Matrix4::CreateTranslationMatrix(_position);
+        const auto M = Matrix4::MakeSRT(S, R, T);
         for(auto& v : _verts) {
             v = M.TransformPosition(v);
         }

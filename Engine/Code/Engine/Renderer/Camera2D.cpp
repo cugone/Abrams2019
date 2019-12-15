@@ -11,7 +11,7 @@ void Camera2D::SetupView(const Vector2& leftBottom, const Vector2& rightTop, con
 }
 
 void Camera2D::CalcViewProjectionMatrix() noexcept {
-    view_projection_matrix = projection_matrix * view_matrix;
+    view_projection_matrix = Matrix4::MakeViewProjection(view_matrix, projection_matrix);
     inv_view_projection_matrix = Matrix4::CalculateInverse(view_projection_matrix);
 }
 
@@ -23,7 +23,7 @@ void Camera2D::CalcProjectionMatrix() noexcept {
 void Camera2D::CalcViewMatrix() noexcept {
     Matrix4 vT = Matrix4::CreateTranslationMatrix(-position);
     Matrix4 vR = Matrix4::Create2DRotationDegreesMatrix(orientation_degrees);
-    view_matrix = vT * vR;
+    view_matrix = Matrix4::MakeRT(vR, vT);
     inv_view_matrix = Matrix4::CalculateInverse(view_matrix);
 }
 

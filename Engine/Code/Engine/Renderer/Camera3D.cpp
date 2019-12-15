@@ -58,7 +58,7 @@ void Camera3D::SetupView(float fovVerticalDegrees, float aspectRatio /*= MathUti
 }
 
 void Camera3D::CalcViewProjectionMatrix() noexcept {
-    view_projection_matrix = projection_matrix * view_matrix;
+    view_projection_matrix = Matrix4::MakeViewProjection(view_matrix, projection_matrix);
     inv_view_projection_matrix = Matrix4::CalculateInverse(view_projection_matrix);
 }
 
@@ -68,11 +68,11 @@ void Camera3D::CalcProjectionMatrix() noexcept {
 }
 
 Matrix4 Camera3D::CreateBillboardMatrix(const Matrix4& rotationMatrix) noexcept {
-    return inv_view_matrix.GetRotation() * Matrix4::Create3DYRotationDegreesMatrix(180.0f) * rotationMatrix;
+    return Matrix4::MakeSRT(rotationMatrix, Matrix4::Create3DYRotationDegreesMatrix(180.0f), inv_view_matrix.GetRotation());
 }
 
 Matrix4 Camera3D::CreateReverseBillboardMatrix(const Matrix4& rotationMatrix) noexcept {
-    return inv_view_matrix.GetRotation() * rotationMatrix;
+    return Matrix4::MakeRT(rotationMatrix, inv_view_matrix.GetRotation());
 }
 
 Vector3 Camera3D::GetEulerAngles() const noexcept {
@@ -83,7 +83,7 @@ void Camera3D::CalcViewMatrix() noexcept {
 
     Matrix4 vT = Matrix4::CreateTranslationMatrix(-position);
     Matrix4 vQ = rotation_matrix;
-    view_matrix = vQ * vT;
+    view_matrix = Matrix4::MakeRT(vT, vQ);
     inv_view_matrix = Matrix4::CalculateInverse(view_matrix);
 }
 
@@ -109,7 +109,7 @@ void Camera3D::CalcRotationMatrix() noexcept {
     Rz.SetJBasis(Vector4(-s_z_theta, c_z_theta, 0.0f, 0.0f));
     Rz.SetKBasis(Vector4(0.0f, 0.0f, 1.0f, 0.0f));
 
-    Matrix4 R = Rz * Rx * Ry;
+    Matrix4 R = Matrix4::MakeSRT(Ry, Rx, Rz);
     rotation_matrix = R;
 }
 

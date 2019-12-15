@@ -29,10 +29,10 @@ void Label::Render(Renderer* renderer) const {
     if(IsHidden()) {
         return;
     }
-    auto world_transform = GetWorldTransform();
-    auto inv_scale = 1.0f / world_transform.GetScale();
-    auto inv_scale_matrix = Matrix4::CreateScaleMatrix(inv_scale);
-    auto model = world_transform * inv_scale_matrix;
+    const auto world_transform = GetWorldTransform();
+    const auto inv_scale = 1.0f / world_transform.GetScale();
+    const auto inv_scale_matrix = Matrix4::CreateScaleMatrix(inv_scale);
+    const auto model = Matrix4::MakeRT(inv_scale_matrix, world_transform);
     renderer->SetModelMatrix(model);
     renderer->SetMaterial(_font->GetMaterial());
     renderer->DrawMultilineText(_font, _text, _color);

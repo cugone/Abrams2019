@@ -651,7 +651,7 @@ Vector2 CalcClosestPoint(const Vector2& p, const OBB2& obb) noexcept {
     const auto displacement = p - obb.position;
     const auto T = Matrix4::CreateTranslationMatrix(obb.position);
     const auto R = Matrix4::Create2DRotationDegreesMatrix(obb.orientationDegrees);
-    const auto M = T * R;
+    const auto M = Matrix4::MakeRT(R, T);
     const auto u0 = M.TransformDirection(Vector2(obb.half_extents.x, 0.0f).GetNormalize());
     const auto u1 = M.TransformDirection(Vector2(0.0f, obb.half_extents.y).GetNormalize());
 
@@ -811,7 +811,7 @@ bool DoOBBsOverlap(const OBB2& a, const OBB2& b) noexcept {
     const auto Oa = a.orientationDegrees;
     const auto Ra = Matrix4::Create2DRotationDegreesMatrix(Oa);
     const auto Ta = Matrix4::CreateTranslationMatrix(Pa);
-    const auto Ma = Ta * Ra;
+    const auto Ma = Matrix4::MakeRT(Ra, Ta);
     const auto a_hex = a.half_extents.x;
     const auto a_hey = a.half_extents.y;
     const auto a_topright = Ma.TransformPosition(Vector2(+a_hex,-a_hey));
@@ -827,7 +827,7 @@ bool DoOBBsOverlap(const OBB2& a, const OBB2& b) noexcept {
     const auto Ob = b.orientationDegrees;
     const auto Rb = Matrix4::Create2DRotationDegreesMatrix(Ob);
     const auto Tb = Matrix4::CreateTranslationMatrix(Pb);
-    const auto Mb = Tb * Rb;
+    const auto Mb = Matrix4::MakeRT(Rb, Tb);
     const auto b_hex = b.half_extents.x;
     const auto b_hey = b.half_extents.y;
     const auto b_topright = Mb.TransformPosition(Vector2(+b_hex, -b_hey));
