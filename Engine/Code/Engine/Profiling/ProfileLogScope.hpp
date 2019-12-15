@@ -9,7 +9,7 @@
 
 class ProfileLogScope {
 public:
-    explicit ProfileLogScope(const std::string& scopeName) noexcept;
+    explicit ProfileLogScope(const char* scopeName) noexcept;
     ~ProfileLogScope() noexcept;
 
     ProfileLogScope() = delete;
@@ -21,7 +21,7 @@ protected:
 private:
     using time_point_t = std::chrono::time_point<std::chrono::steady_clock>;
 
-    std::string _scope_name{};
+    const char* _scope_name = nullptr;
     time_point_t _time_at_creation{};
 };
 

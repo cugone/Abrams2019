@@ -7,7 +7,7 @@
 #include <iomanip>
 #include <sstream>
 
-ProfileLogScope::ProfileLogScope(const std::string& scopeName) noexcept
+ProfileLogScope::ProfileLogScope(const char* scopeName) noexcept
     : _scope_name(scopeName)
     , _time_at_creation(TimeUtils::Now())
 {
