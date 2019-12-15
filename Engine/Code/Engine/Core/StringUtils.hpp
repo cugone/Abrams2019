@@ -48,36 +48,6 @@ std::wstring Join(const std::vector<std::wstring>& strings, wchar_t delim, bool 
 std::string Join(const std::vector<std::string>& strings, bool skip_empty = true) noexcept;
 std::wstring Join(const std::vector<std::wstring>& strings, bool skip_empty = true) noexcept;
 
-template<typename T, typename... U>
-T Join(char delim, const T& arg, const U& ... args) noexcept {
-    return detail::Join(delim, arg, args ...);
-}
-
-template<typename T, typename... U>
-T JoinSkipEmpty(char delim, const T& arg, const U& ... args) noexcept {
-    return detail::JoinSkipEmpty(delim, arg, args ...);
-}
-
-template<typename T, typename... U>
-T Join(wchar_t delim, const T& arg, const U& ... args) noexcept {
-    return detail::Join(delim, arg, args ...);
-}
-
-template<typename T, typename... U>
-T JoinSkipEmpty(wchar_t delim, const T& arg, const U& ... args) noexcept {
-    return detail::JoinSkipEmpty(delim, arg, args ...);
-}
-
-template<typename T, typename... U>
-T Join(const T& arg, const U& ... args) noexcept {
-    return detail::Join(arg, args ...);
-}
-
-template<typename T, typename... U>
-T JoinSkipEmpty(const T& arg, const U& ... args) noexcept {
-    return detail::JoinSkipEmpty(arg, args ...);
-}
-
 std::string ToUpperCase(std::string string) noexcept;
 std::wstring ToUpperCase(std::wstring string) noexcept;
 std::string ToLowerCase(std::string string) noexcept;
@@ -221,3 +191,34 @@ namespace detail {
     struct decode_tag {};
 
 } //End detail
+
+
+template<typename T, typename... U>
+T Join(char delim, const T& arg, const U& ... args) noexcept {
+    return detail::Join(delim, arg, args ...);
+}
+
+template<typename T, typename... U>
+T JoinSkipEmpty(char delim, const T& arg, const U& ... args) noexcept {
+    return detail::JoinSkipEmpty(delim, arg, args ...);
+}
+
+template<typename T, typename... U>
+T Join(wchar_t delim, const T& arg, const U& ... args) noexcept {
+    return detail::Join(delim, arg, args ...);
+}
+
+template<typename T, typename... U>
+T JoinSkipEmpty(wchar_t delim, const T& arg, const U& ... args) noexcept {
+    return detail::JoinSkipEmpty(delim, arg, args ...);
+}
+
+template<typename T, typename... U>
+T Join(const T& arg, const U& ... args) noexcept {
+    return detail::Join(arg, args ...);
+}
+
+template<typename T, typename... U>
+T JoinSkipEmpty(const T& arg, const U& ... args) noexcept {
+    return detail::JoinSkipEmpty(arg, args ...);
+}
