@@ -249,7 +249,7 @@ void FileLogger::InsertTag(std::stringstream& msg, const std::string& tag) noexc
 }
 
 void FileLogger::InsertMessage(std::stringstream& msg, const std::string& messageLiteral) noexcept {
-    msg << messageLiteral;
+    msg << ' ' << messageLiteral;
 }
 
 void FileLogger::Flush() noexcept {
