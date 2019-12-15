@@ -17,12 +17,7 @@ decltype(auto) Now() noexcept {
     return Clock::now();
 }
 
-template<typename Clock = std::chrono::steady_clock>
-decltype(auto) GetCurrentTimeElapsed() noexcept {
-    static auto initial_now = Now<Clock>();
-    auto now = Now<Clock>();
-    return (now - initial_now);
-}
+std::chrono::nanoseconds GetCurrentTimeElapsed() noexcept;
 
 struct DateTimeStampOptions {
     bool use_separator = false;

@@ -30,6 +30,12 @@ std::string GetDateTimeStampFromNow(const DateTimeStampOptions& options /*= Date
     return msg.str();
 }
 
+std::chrono::nanoseconds GetCurrentTimeElapsed() noexcept {
+    static auto initial_now = Now<std::chrono::steady_clock>();
+    auto now = Now<std::chrono::steady_clock>();
+    return (now - initial_now);
+}
+
 std::string GetTimeStampFromNow(const DateTimeStampOptions& options /*= DateTimeStampOptions{}*/) noexcept {
     using namespace std::chrono;
     auto now = Now<system_clock>();
