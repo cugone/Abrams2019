@@ -108,18 +108,18 @@ enum class WindowsSystemMessage : unsigned int {
 };
 
 struct EngineMessage64 {
-    WindowsSystemMessage wmMessageCode;
-    unsigned int nativeMessage;
-    void* hWnd;
-    unsigned __int64 wparam;
-    __int64 lparam;
+    WindowsSystemMessage wmMessageCode = WindowsSystemMessage::Message_Not_Supported;
+    unsigned int nativeMessage = 0U;
+    void* hWnd = nullptr;
+    unsigned __int64 wparam = 0ULL;
+    __int64 lparam = 0ULL;
 };
 struct EngineMessage32 {
-    WindowsSystemMessage wmMessageCode;
-    unsigned int nativeMessage;
-    void* hWnd;
-    unsigned int wparam;
-    long lparam;
+    WindowsSystemMessage wmMessageCode = WindowsSystemMessage::Message_Not_Supported;
+    unsigned int nativeMessage = 0U;
+    void* hWnd = nullptr;
+    unsigned int wparam = 0U;
+    long lparam = 0L;
 };
 
 #ifdef _WIN64
