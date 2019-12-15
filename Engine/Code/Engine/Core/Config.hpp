@@ -1,5 +1,6 @@
 #pragma once
 
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -16,6 +17,9 @@ public:
     Config& operator=(Config&& rhs) noexcept;
     explicit Config(KeyValueParser&& kvp) noexcept;
     ~Config() = default;
+
+    bool LoadFromFile(const std::filesystem::path& filepath) noexcept;
+    bool AppendFromFile(const std::filesystem::path& filepath) noexcept;
 
     bool HasKey(const std::string& key) const noexcept;
 

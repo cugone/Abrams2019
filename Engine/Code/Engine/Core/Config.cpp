@@ -29,6 +29,28 @@ Config& Config::operator=(Config&& rhs) noexcept {
     return *this;
 }
 
+
+bool Config::LoadFromFile(const std::filesystem::path& filepath) noexcept {
+    if(std::filesystem::exists(filepath)) {
+        KeyValueParser kvp(filepath);
+        _config = std::move(kvp.Release());
+        return true;
+    }
+    return false;
+}
+
+bool Config::AppendFromFile(const std::filesystem::path& filepath) noexcept {
+    if(std::filesystem::exists(filepath)) {
+        KeyValueParser kvp(filepath);
+        const auto&& new_entries = std::move(kvp.Release());
+        for(const auto& [key, value] : new_entries) {
+            SetValue(key, value);
+        }
+        return true;
+    }
+    return false;
+}
+
 bool Config::HasKey(const std::string& key) const noexcept {
     return _config.find(key) != _config.end();
 }
