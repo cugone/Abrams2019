@@ -382,6 +382,20 @@ IntVector2 Wrap(const IntVector2& valuesToWrap, const IntVector2& minValues, con
 
 namespace EasingFunctions {
 
+namespace detail {
+
+    template<typename T, std::size_t... Is>
+    T SmoothStart_helper(const T& t, std::index_sequence<Is...>) {
+        return (((void)Is, t) * ...);
+    }
+
+    template<typename T, std::size_t... Is>
+    T SmoothStop_helper(const T& t, std::index_sequence<Is...>) {
+        return (((void)Is, (1.0f - t)) * ...);
+    }
+
+}//detail
+
 template<std::size_t N, typename T>
 T SmoothStart(const T& t) {
     static_assert(std::is_floating_point_v<T>, "SmoothStart requires T to be non-integral.");
@@ -403,20 +417,6 @@ T SmoothStep(const T& t) {
     static_assert(N > 0, "SmoothStop requires value of N to be non-negative and non-zero.");
     return Interpolate(SmoothStart<N>(t), SmoothStop<N>(t), 0.5f);
 }
-
-namespace detail {
-
-template<typename T, std::size_t... Is>
-T SmoothStart_helper(const T& t, std::index_sequence<Is...>) {
-    return (((void)Is, t) * ...);
-}
-
-template<typename T, std::size_t... Is>
-T SmoothStop_helper(const T& t, std::index_sequence<Is...>) {
-    return (((void)Is, (1.0f - t)) * ...);
-}
-
-}//detail
 
 } //End EasingFunctions
 
