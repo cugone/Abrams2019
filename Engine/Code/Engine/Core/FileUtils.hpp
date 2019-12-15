@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine/Core/BuildConfig.hpp"
+#include "Engine/Core/StringUtils.hpp"
 
 #include <cstdlib>
 #include <filesystem>
