@@ -8,6 +8,7 @@ Window* GetWindowFromHwnd(HWND hwnd) {
 //-----------------------------------------------------------------------------------------------
 LRESULT CALLBACK EngineMessageHandlingProcedure(HWND windowHandle, UINT wmMessageCode, WPARAM wParam, LPARAM lParam) {
 
+    //Handles application-specific window setup such as icons.
     Window* window = GetWindowFromHwnd(windowHandle);
     if(window && window->custom_message_handler) {
         bool wasProcessed = window->custom_message_handler(windowHandle, wmMessageCode, wParam, lParam);
@@ -21,16 +22,8 @@ LRESULT CALLBACK EngineMessageHandlingProcedure(HWND windowHandle, UINT wmMessag
         {
             CREATESTRUCT *cp = (CREATESTRUCT*)lParam;
             Window *wnd = (Window*)cp->lpCreateParams;
-
             ::SetWindowLongPtr(windowHandle, GWLP_USERDATA, (LONG_PTR)wnd);
-
-            if(wnd && wnd->custom_message_handler) {
-                bool wasProcessed = wnd->custom_message_handler(windowHandle, wmMessageCode, wParam, lParam);
-                if(wasProcessed) {
-                    return 0;
-                }
-            }
-            return 1;
+            return 0;
         }
         case WM_PAINT:
         {
