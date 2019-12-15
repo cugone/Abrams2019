@@ -82,7 +82,10 @@ bool Riff::ParseDataIntoChunks(std::vector<unsigned char>& buffer) noexcept {
                 if(!stream.read(reinterpret_cast<char*>(subdata_head), subdata->subdata_length)) {
                     return false;
                 }
-                cur_chunk = std::move(ReadListChunk(stream));
+                auto list_chunk = std::move(ReadListChunk(stream));
+                if(list_chunk) {
+                    cur_chunk = std::move(list_chunk.value());
+                }
                 break;
             }
             default:
@@ -166,9 +169,9 @@ unsigned int Riff::Load(const std::vector<unsigned char>& data) noexcept {
     return RIFF_SUCCESS;
 }
 
-std::unique_ptr<Riff::RiffChunk> Riff::ReadListChunk(std::stringstream& stream) noexcept {
+std::optional<std::unique_ptr<Riff::RiffChunk>> Riff::ReadListChunk(std::stringstream& stream) noexcept {
     if(!stream) {
-        return false;
+        return {};
     }
     RiffHeader cur_header{};
     if(stream.read(reinterpret_cast<char*>(&cur_header), sizeof(cur_header))) {
@@ -180,13 +183,13 @@ std::unique_ptr<Riff::RiffChunk> Riff::ReadListChunk(std::stringstream& stream) 
             uint32_t subdata_length = cur_header.length - 4;
             subdata->subdata = std::move(std::make_unique<uint8_t[]>(subdata_length));
             if(!stream.read(reinterpret_cast<char*>(subdata->subdata.get()), subdata_length)) {
-                return false;
+                return {};
             }
             cur_chunk->data = std::move(subdata);
             return cur_chunk;
         }
     }
-    return false;
+    return {};
 }
 
 } //End FileUtils

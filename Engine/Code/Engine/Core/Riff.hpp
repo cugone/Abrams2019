@@ -6,6 +6,7 @@
 #include <filesystem>
 #include <vector>
 #include <memory>
+#include <optional>
 
 namespace FileUtils {
 
@@ -44,7 +45,7 @@ public:
     RiffChunk* GetNextChunk() noexcept;
     unsigned int Load(std::filesystem::path filename) noexcept;
     unsigned int Load(const std::vector<unsigned char>& data) noexcept;
-    static std::unique_ptr<Riff::RiffChunk> ReadListChunk(std::stringstream& stream) noexcept;
+    static std::optional<std::unique_ptr<Riff::RiffChunk>> ReadListChunk(std::stringstream& stream) noexcept;
 protected:
 private:
     bool ParseDataIntoChunks(std::vector<unsigned char>& buffer) noexcept;
