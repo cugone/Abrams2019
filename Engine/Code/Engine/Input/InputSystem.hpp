@@ -3,6 +3,7 @@
 
 #include "Engine/Core/EngineSubsystem.hpp"
 #include "Engine/Core/Stopwatch.hpp"
+#include "Engine/Core/Win.hpp"
 
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/IntVector2.hpp"
@@ -289,7 +290,7 @@ public:
     InputSystem(InputSystem&& r_other) noexcept = delete;
     InputSystem& operator=(const InputSystem& rhs) noexcept = delete;
     InputSystem& operator=(InputSystem&& rhs) noexcept = delete;
-    virtual ~InputSystem() noexcept = default;
+    virtual ~InputSystem() noexcept;
 
     void RegisterKeyDown(unsigned char keyIndex) noexcept;
     void RegisterKeyUp(unsigned char keyIndex) noexcept;
@@ -342,6 +343,10 @@ public:
 
     IntVector2 GetMouseWheelPositionAsIntVector2() const noexcept;
 
+    bool IsMouseLockedToViewport() const noexcept;
+    void LockMouseToViewport(const Window& window) const noexcept;
+    void UnlockMouseFromViewport() const noexcept;
+
 protected:
 private:
 
@@ -356,9 +361,12 @@ private:
     std::bitset<(std::size_t)KeyCode::Max> _currentKeys{};
     Vector2 _mouseCoords = Vector2::ZERO;
     Vector2 _mouseDelta = Vector2::ZERO;
+    mutable RECT _initialClippingArea{};
+    mutable RECT _currentClippingArea{};
     Stopwatch _connection_poll = Stopwatch(TimeUtils::FPSeconds{ 1.0f });
     int _mouseWheelPosition = 0;
     int _mouseWheelHPosition = 0;
     int _connected_controller_count = 0;
     bool _cursor_visible = true;
+    mutable bool _should_clip_cursor = false;
 };

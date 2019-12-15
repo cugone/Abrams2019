@@ -577,6 +577,33 @@ IntVector2 InputSystem::GetMouseWheelPositionAsIntVector2() const noexcept {
     return IntVector2{_mouseWheelHPosition, _mouseWheelPosition};
 }
 
+bool InputSystem::IsMouseLockedToViewport() const noexcept {
+    return _should_clip_cursor;
+}
+
+void InputSystem::LockMouseToViewport(const Window& window) const noexcept {
+    const auto dims = window.GetDimensions();
+    const auto pos = window.GetPosition();
+    long top = pos.x;
+    long left = pos.x;
+    long right = pos.x + dims.x;
+    long bottom = pos.y + dims.y;
+    RECT temp{top, left, right, bottom};
+    if(::ClipCursor(&temp)) {
+        _should_clip_cursor = true;
+        _currentClippingArea.left   = temp.left;
+        _currentClippingArea.top    = temp.top;
+        _currentClippingArea.right  = temp.right;
+        _currentClippingArea.bottom = temp.bottom;
+    }
+}
+
+
+void InputSystem::UnlockMouseFromViewport() const noexcept {
+    ::ClipCursor(nullptr);
+    _should_clip_cursor = false;
+}
+
 void InputSystem::RegisterKeyDown(unsigned char keyIndex) noexcept {
     auto kc = ConvertWinVKToKeyCode(keyIndex);
     _currentKeys[(std::size_t)kc] = true;
