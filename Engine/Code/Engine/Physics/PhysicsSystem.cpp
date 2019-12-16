@@ -1,7 +1,22 @@
 #include "Engine/Physics/PhysicsSystem.hpp"
 
-void PhysicsSystem::Update_Worker(TimeUtils::FPSeconds /*deltaSeconds*/) noexcept {
+#include "Engine/Core/ThreadUtils.hpp"
 
+void PhysicsSystem::Update_Worker() noexcept {
+    while(_is_running) {
+        std::unique_lock<std::mutex> lock(_cs);
+        //Condition to wake up: Not running or deltaSeconds has changed.
+        _signal.wait(lock, [this]()->bool { return !_is_running || _delta_seconds_changed; });
+        if(_delta_seconds_changed) {
+            _delta_seconds_changed = false;
+            UpdateBodiesInBounds(TimeUtils::FPSeconds(_deltaSeconds));
+            const auto camera_position = Vector2(_renderer->GetCamera().GetPosition());
+            const auto half_extents = Vector2(_renderer->GetOutput()->GetDimensions()) * 0.5f;
+            const auto query_area = AABB2(camera_position - half_extents, camera_position + half_extents);
+            const auto potential_collisions = BroadPhaseCollision(query_area);
+            const auto actual_collisions = NarrowPhaseCollision(potential_collisions);
+        }
+    }
 }
 
 void PhysicsSystem::Enable(bool enable) {
@@ -42,14 +57,21 @@ PhysicsSystem::PhysicsSystem(Renderer& renderer, const PhysicsSystemDesc& desc /
 }
 
 PhysicsSystem::~PhysicsSystem() {
-	/* DO NOTHING */
+    _is_running = false;
+    _signal.notify_all();
+    if(_update_thread.joinable()) {
+        _update_thread.join();
+    }
 }
 
 void PhysicsSystem::Initialize() noexcept {
-	/* DO NOTHING */
+    _is_running = true;
+    _update_thread = std::thread(&PhysicsSystem::Update_Worker, this);
+    ThreadUtils::SetThreadDescription(_update_thread, "Physics Async Update");
 }
 
 void PhysicsSystem::BeginFrame() noexcept {
+    PROFILE_LOG_SCOPE_FUNCTION();
     if(!_is_running) {
         return;
     }
@@ -62,19 +84,24 @@ void PhysicsSystem::BeginFrame() noexcept {
 }
 
 void PhysicsSystem::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
+    PROFILE_LOG_SCOPE_FUNCTION();
     if(!this->_is_running) {
         return;
     }
-    UpdateBodiesInBounds(deltaSeconds);
-    const auto camera_position = Vector2(_renderer->GetCamera().GetPosition());
-    const auto half_extents = Vector2(_renderer->GetOutput()->GetDimensions()) * 0.5f;
-    const auto query_area = AABB2(camera_position - half_extents, camera_position + half_extents);
-    std::vector<RigidBody*> potential_collisions = BroadPhaseCollision(query_area);
-    std::vector<CollisionData> actual_collisions = NarrowPhaseCollision(potential_collisions);
+    _deltaSeconds = deltaSeconds.count();
+    _delta_seconds_changed = true;
+    _signal.notify_all();
+    //UpdateBodiesInBounds(deltaSeconds);
+    //const auto camera_position = Vector2(_renderer->GetCamera().GetPosition());
+    //const auto half_extents = Vector2(_renderer->GetOutput()->GetDimensions()) * 0.5f;
+    //const auto query_area = AABB2(camera_position - half_extents, camera_position + half_extents);
+    //const auto potential_collisions = BroadPhaseCollision(query_area);
+    //const auto actual_collisions = NarrowPhaseCollision(potential_collisions);
 
 }
 
 void PhysicsSystem::UpdateBodiesInBounds(TimeUtils::FPSeconds deltaSeconds) noexcept {
+    PROFILE_LOG_SCOPE_FUNCTION();
     for (auto body : _rigidBodies) {
         if (!body) {
             continue;
@@ -86,6 +113,7 @@ void PhysicsSystem::UpdateBodiesInBounds(TimeUtils::FPSeconds deltaSeconds) noex
 }
 
 std::vector<RigidBody*> PhysicsSystem::BroadPhaseCollision(const AABB2& query_area) noexcept {
+    PROFILE_LOG_SCOPE_FUNCTION();
     std::vector<RigidBody*> potential_collisions{};
     for (auto body : _rigidBodies) {
         if (!body) {
@@ -104,20 +132,21 @@ std::vector<RigidBody*> PhysicsSystem::BroadPhaseCollision(const AABB2& query_ar
     return potential_collisions;
 }
 
-std::vector<CollisionData> PhysicsSystem::NarrowPhaseCollision(std::vector<RigidBody*>& potential_collisions) noexcept {
-    std::vector<CollisionData> result{};
+std::set<CollisionData, CollisionDataComparator> PhysicsSystem::NarrowPhaseCollision(const std::vector<RigidBody*>& potential_collisions) noexcept {
+    PROFILE_LOG_SCOPE_FUNCTION();
+    std::set<CollisionData, CollisionDataComparator> result{};
     if(potential_collisions.size() < 2) {
         return {};
     }
-    for (auto iter_a = potential_collisions.begin(); iter_a != potential_collisions.end(); ++iter_a) {
-        for (auto iter_b = potential_collisions.begin() + 1; iter_b != potential_collisions.end(); ++iter_b) {
+    for(auto iter_a = potential_collisions.begin(); iter_a != potential_collisions.end() - 1; ++iter_a) {
+        for(auto iter_b = iter_a + 1; iter_b != potential_collisions.end(); ++iter_b) {
             auto* const cur_body = *iter_a;
             auto* const next_body = *iter_b;
-            auto [collides, distance, normal] = GJKDistance(*cur_body->GetCollider(), *next_body->GetCollider());
+            const auto [collides, distance, normal] = GJKDistance(*cur_body->GetCollider(), *next_body->GetCollider());
             if(collides) {
-                CollisionData new_collision(cur_body, next_body, distance, normal);
-                if(std::find(std::begin(result), std::end(result), new_collision) == std::end(result)) {
-                    result.push_back(new_collision);
+                const auto [where_inserted, was_inserted] = result.insert({cur_body, next_body, distance, normal});
+                if(was_inserted) {
+                    DebuggerPrintf("Physics System: Attempting to insert already existing element.");
                 }
             }
         }
@@ -137,6 +166,7 @@ void PhysicsSystem::Render() const noexcept {
 }
 
 void PhysicsSystem::EndFrame() noexcept {
+    std::scoped_lock<std::mutex> lock(_cs);
     for(auto& body : _rigidBodies) {
         body->Endframe();
     }
@@ -147,6 +177,7 @@ void PhysicsSystem::EndFrame() noexcept {
     _pending_removal.shrink_to_fit();
     _world_partition.Clear();
     _world_partition.Add(_rigidBodies);
+    _signal.notify_all();
 }
 
 void PhysicsSystem::AddObject(RigidBody* body) {
@@ -190,6 +221,7 @@ void RigidBody::BeginFrame() {
 }
 
 void RigidBody::Update(TimeUtils::FPSeconds deltaSeconds) {
+    PROFILE_LOG_SCOPE_FUNCTION();
     if(!is_awake || !enable_physics || MathUtils::IsEquivalentToZero(inv_mass)) {
         return;
     }
@@ -222,14 +254,14 @@ void RigidBody::Update(TimeUtils::FPSeconds deltaSeconds) {
     const auto S = Matrix4::CreateScaleMatrix(collider->GetHalfExtents());
     const auto R = Matrix4::Create2DRotationDegreesMatrix(orientationDegrees);
     const auto T = Matrix4::CreateTranslationMatrix(position);
-    const auto M = T * R * S;
+    const auto M = Matrix4::MakeSRT(S, R, T);
     auto new_transform = Matrix4::I;
     if(!parent) {
         new_transform = M;
     } else {
         auto p = parent;
         while(p) {
-            new_transform = M * p->GetParentTransform();
+            new_transform = Matrix4::MakeRT(p->GetParentTransform(), M);
             p = p->parent;
         }
     }
@@ -519,10 +551,10 @@ void ColliderPolygon::CalcNormals() {
         auto n = (_verts[j] - _verts[i]).GetNormalize().GetLeftHandNormal();
         _normals.push_back(n);
     }
-    Matrix4 S = Matrix4::CreateScaleMatrix(_half_extents);
-    Matrix4 R = Matrix4::Create2DRotationDegreesMatrix(_orientationDegrees);
-    Matrix4 T = Matrix4::CreateTranslationMatrix(_position);
-    Matrix4 M = T * R * S;
+    const auto S = Matrix4::CreateScaleMatrix(_half_extents);
+    const auto R = Matrix4::Create2DRotationDegreesMatrix(_orientationDegrees);
+    const auto T = Matrix4::CreateTranslationMatrix(_position);
+    const auto M = Matrix4::MakeSRT(S, R, T);
     for(auto& n : _normals) {
         n = M.TransformDirection(n);
     }
@@ -541,17 +573,17 @@ void ColliderPolygon::CalcVerts() {
         float pY = 0.5f * std::sin(radians);
         _verts.emplace_back(Vector2(pX, pY));
     }
-    Matrix4 S = Matrix4::CreateScaleMatrix(_half_extents);
-    Matrix4 R = Matrix4::Create2DRotationDegreesMatrix(_orientationDegrees);
-    Matrix4 T = Matrix4::CreateTranslationMatrix(_position);
-    Matrix4 M = T * R * S;
+    const auto S = Matrix4::CreateScaleMatrix(_half_extents);
+    const auto R = Matrix4::Create2DRotationDegreesMatrix(_orientationDegrees);
+    const auto T = Matrix4::CreateTranslationMatrix(_position);
+    const auto M = Matrix4::MakeSRT(S, R, T);
     for(auto& v : _verts) {
         v = M.TransformPosition(v);
     }
 }
 
 Vector2 ColliderPolygon::Support(const Vector2& d) const noexcept {
-    return *std::max_element(std::cbegin(_verts), std::cend(_verts), [&d](const Vector2& a, const Vector2& b) { return MathUtils::DotProduct(a, d.GetNormalize()) < MathUtils::DotProduct(b, d.GetNormalize());  });
+    return *std::max_element(std::cbegin(_verts), std::cend(_verts), [&d](const Vector2& a, const Vector2& b) { return MathUtils::DotProduct(a, d) < MathUtils::DotProduct(b, d);  });
 }
 
 Vector2 ColliderPolygon::CalcCenter() const noexcept {
@@ -652,7 +684,7 @@ Vector2 MathUtils::CalcClosestPoint(const Vector2& p, const Collider& collider) 
     return collider.Support(p - collider.CalcCenter());
 }
 
-std::tuple<bool, float, Vector2> GJKDistance(const Collider& a, const Collider& b) {
+bool GJKIntersect(const Collider& a, const Collider& b) {
     const auto calcMinkowskiDiff = [](const Vector2& direction, const Collider& a) { return a.Support(direction.GetNormalize()); };
     const auto support = [&](const Vector2& direction) { return calcMinkowskiDiff(direction, a) - calcMinkowskiDiff(-direction, b); };
     auto A = support(Vector2::X_AXIS);
@@ -666,6 +698,172 @@ std::tuple<bool, float, Vector2> GJKDistance(const Collider& a, const Collider& 
         const auto pointB = simplex[i_b];
         const auto lineAB = pointB - pointA;
         const auto lineAO = -pointA;
+        if (MathUtils::DotProduct(lineAB, lineAO) > 0.0f) {
+            D.SetHeadingDegrees(90.0f - 90.0f * MathUtils::DotProduct(lineAB, lineAO));
+            simplex.clear();
+            simplex.push_back(pointA);
+            simplex.push_back(pointB);
+        }
+        else {
+            D = lineAO.GetNormalize();
+            simplex.clear();
+            simplex.push_back(A);
+        }
+    };
+    const auto doSimplexTriangle = [&](std::vector<Vector2>& simplex, Vector2& D) {
+        const auto i_c = simplex.size() - 3;
+        const auto i_b = simplex.size() - 2;
+        const auto i_a = simplex.size() - 1;
+        const auto pointC = simplex[i_c];
+        const auto pointB = simplex[i_b];
+        const auto pointA = simplex[i_a];
+        const auto lineAC = pointC - pointA;
+        const auto lineAB = pointB - pointA;
+        const auto lineAO = -pointA;
+        if (MathUtils::DotProduct(lineAC, lineAO) > 0.0f) {
+            D.SetHeadingDegrees(90.0f - 90.0f * MathUtils::DotProduct(lineAC, lineAO));
+            simplex.clear();
+            simplex.push_back(pointA);
+            simplex.push_back(pointC);
+            containsOrigin = false;
+        }
+        else if (MathUtils::DotProduct(lineAB, lineAO) > 0.0f) {
+            D.SetHeadingDegrees(90.0f - 90.0f * MathUtils::DotProduct(lineAB, lineAO));
+            simplex.clear();
+            simplex.push_back(pointA);
+            simplex.push_back(pointB);
+            containsOrigin = false;
+        }
+        else {
+            containsOrigin = true;
+        }
+    };
+    const auto doSimplex = [&](std::vector<Vector2>& simplex, Vector2& D) {
+        const auto S = simplex.size();
+        switch (S) {
+        case 2:
+            doSimplexLine(simplex, D);
+            break;
+        case 3:
+            doSimplexTriangle(simplex, D);
+            break;
+        default:
+            break;
+        }
+    };
+    const auto result = [&](std::vector<Vector2>& simplex, Vector2& D) {
+        for (;;) {
+            A = support(D);
+            if (MathUtils::DotProduct(A, D) < 0.0f) {
+                return false;
+            }
+            simplex.push_back(A);
+            doSimplex(simplex, D);
+            if (containsOrigin) {
+                return true;
+            }
+        }
+    }(simplex, D); //IIIL
+    return result;
+}
+
+Vector2 GJKClosestPoint(const Collider& a, const Collider& b) {
+    const auto calcMinkowskiDiff = [](const Vector2& direction, const Collider& a) { return a.Support(direction); };
+    const auto support = [&](const Vector2& direction) { return calcMinkowskiDiff(direction, a) - calcMinkowskiDiff(-direction, b); };
+    auto A = support((b.CalcCenter() - a.CalcCenter()).GetNormalize());
+    std::vector<Vector2> simplex{ A };
+    auto D = -A;
+    bool containsOrigin = false;
+    const auto doSimplexLine = [&](std::vector<Vector2>& simplex, Vector2& D) {
+        const auto i_b = simplex.size() - 2;
+        const auto i_a = simplex.size() - 1;
+        const auto pointA = simplex[i_a];
+        const auto pointB = simplex[i_b];
+        const auto lineAB = pointB - pointA;
+        const auto lineAO = -pointA;
+        if (MathUtils::DotProduct(lineAB, lineAO) > 0.0f) {
+            D.SetHeadingDegrees(90.0f - 90.0f * MathUtils::DotProduct(lineAB, lineAO));
+            simplex.clear();
+            simplex.push_back(pointA);
+            simplex.push_back(pointB);
+        }
+        else {
+            D = lineAO.GetNormalize();
+            simplex.clear();
+            simplex.push_back(A);
+        }
+    };
+    const auto doSimplexTriangle = [&](std::vector<Vector2>& simplex, Vector2& D) {
+        const auto i_c = simplex.size() - 3;
+        const auto i_b = simplex.size() - 2;
+        const auto i_a = simplex.size() - 1;
+        const auto pointC = simplex[i_c];
+        const auto pointB = simplex[i_b];
+        const auto pointA = simplex[i_a];
+        const auto lineAC = pointC - pointA;
+        const auto lineAB = pointB - pointA;
+        const auto lineAO = -pointA;
+        if (MathUtils::DotProduct(lineAC, lineAO) > 0.0f) {
+            D.SetHeadingDegrees(90.0f - 90.0f * MathUtils::DotProduct(lineAC, lineAO));
+            simplex.clear();
+            simplex.push_back(pointA);
+            simplex.push_back(pointC);
+            containsOrigin = false;
+        }
+        else if (MathUtils::DotProduct(lineAB, lineAO) > 0.0f) {
+            D.SetHeadingDegrees(90.0f - 90.0f * MathUtils::DotProduct(lineAB, lineAO));
+            simplex.clear();
+            simplex.push_back(pointA);
+            simplex.push_back(pointB);
+            containsOrigin = false;
+        }
+        else {
+            containsOrigin = true;
+        }
+    };
+    const auto doSimplex = [&](std::vector<Vector2>& simplex, Vector2& D) {
+        const auto S = simplex.size();
+        switch (S) {
+        case 2:
+            doSimplexLine(simplex, D);
+            break;
+        case 3:
+            doSimplexTriangle(simplex, D);
+            break;
+        default:
+            break;
+        }
+    };
+    const auto result = [&](std::vector<Vector2>& simplex, Vector2& D) {
+        for (;;) {
+            A = support(D);
+            if (MathUtils::DotProduct(A, D) < 0.0f) {
+                return false;
+            }
+            simplex.push_back(A);
+            doSimplex(simplex, D);
+            if (containsOrigin) {
+                return true;
+            }
+        }
+    }(simplex, D); //IIIL
+    return simplex.back();
+}
+
+std::tuple<bool, float, Vector2> GJKDistance(const Collider& a, const Collider& b) {
+    const auto calcMinkowskiDiff = [](const Vector2& direction, const Collider& a) { return a.Support(direction); };
+    const auto support = [&](const Vector2& direction) { return calcMinkowskiDiff(direction, a) - calcMinkowskiDiff(-direction, b); };
+    auto A = support((b.CalcCenter() - a.CalcCenter()).GetNormalize());
+    std::vector<Vector2> simplex{ A };
+    auto D = -A;
+    bool containsOrigin = false;
+    const auto doSimplexLine = [&](std::vector<Vector2>& simplex, Vector2& D) {
+        const auto i_b = simplex.size() - 2;
+        const auto i_a = simplex.size() - 1;
+        const auto pointA = simplex[i_a];
+        const auto pointB = simplex[i_b];
+        const auto lineAB = pointB - pointA;
+        const auto lineAO = (-pointA).GetNormalize();
         if(MathUtils::DotProduct(lineAB, lineAO) > 0.0f) {
             D.SetHeadingDegrees(90.0f - 90.0f * MathUtils::DotProduct(lineAB, lineAO));
             simplex.clear();
@@ -686,7 +884,7 @@ std::tuple<bool, float, Vector2> GJKDistance(const Collider& a, const Collider& 
         const auto pointA = simplex[i_a];
         const auto lineAC = pointC - pointA;
         const auto lineAB = pointB - pointA;
-        const auto lineAO = -pointA;
+        const auto lineAO = (-pointA).GetNormalize();
         if(MathUtils::DotProduct(lineAC, lineAO) > 0.0f) {
             D.SetHeadingDegrees(90.0f - 90.0f * MathUtils::DotProduct(lineAC, lineAO));
             simplex.clear();
@@ -718,16 +916,20 @@ std::tuple<bool, float, Vector2> GJKDistance(const Collider& a, const Collider& 
     };
     const auto result = [&](std::vector<Vector2>& simplex, Vector2& D) {
         for(;;) {
+            const auto simplex_copy = simplex;
             A = support(D);
             if(MathUtils::DotProduct(A, D) < 0.0f) {
                 return false;
             }
             simplex.push_back(A);
             doSimplex(simplex, D);
+            if(simplex_copy == simplex) {
+                return false;
+            }
             if(containsOrigin) {
                 return true;
             }
         }
     }(simplex, D); //IIIL
-    return std::make_tuple(result, simplex.back().CalcLength(), D);
+    return std::make_tuple(result, A.CalcLength(), D);
 }

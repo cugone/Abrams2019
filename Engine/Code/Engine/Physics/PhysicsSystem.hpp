@@ -20,6 +20,7 @@
 #include <numeric>
 #include <thread>
 #include <tuple>
+#include <set>
 #include <vector>
 
 class Renderer;
@@ -115,6 +116,8 @@ private:
 };
 
 std::tuple<bool, float, Vector2> GJKDistance(const Collider& a, const Collider& b);
+Vector2 GJKClosestPoint(const Collider& a, const Collider& b);
+bool GJKIntersect(const Collider& a, const Collider& b);
 
 namespace MathUtils {
     Vector2 CalcClosestPoint(const Vector2& p, const Collider& collider);
@@ -221,13 +224,19 @@ struct CollisionData {
     RigidBody* const b = nullptr;
     float distance = 0.0f;
     Vector2 normal{};
-    CollisionData(RigidBody* const a, RigidBody* const b, float distance, Vector2 normal) : a(a), b(b), distance(distance), normal(normal)
+    CollisionData(RigidBody* const a, RigidBody* const b, float distance, const Vector2& normal) : a(a), b(b), distance(distance), normal(normal)
     {}
     bool operator==(const CollisionData& rhs) const noexcept {
         return (this->a == rhs.a && this->b == rhs.b) || (this->b == rhs.a && this->a == rhs.b);
     }
     bool operator!=(const CollisionData& rhs) const noexcept {
         return !(*this == rhs);
+    }
+};
+
+struct CollisionDataComparator {
+    bool operator()(const CollisionData& a, const CollisionData& b) const noexcept {
+        return a == b;
     }
 };
 
@@ -264,19 +273,22 @@ public:
     void EnablePhysics(bool isGravityEnabled) noexcept;
 protected:
 private:
-	void Update_Worker(TimeUtils::FPSeconds deltaSeconds) noexcept;
+	void Update_Worker() noexcept;
     void UpdateBodiesInBounds(TimeUtils::FPSeconds deltaSeconds) noexcept;
     std::vector<RigidBody*> BroadPhaseCollision(const AABB2& query_area) noexcept;
-    std::vector<CollisionData> NarrowPhaseCollision(std::vector<RigidBody*>& potential_collisions) noexcept;
+    std::set<CollisionData, CollisionDataComparator> NarrowPhaseCollision(const std::vector<RigidBody*>& potential_collisions) noexcept;
 
     Renderer* _renderer = nullptr;
     PhysicsSystemDesc _desc{};
     std::thread _update_thread{};
     std::condition_variable _signal{};
+    std::mutex _cs{};
 	std::atomic_bool _is_running = false;
+	std::atomic_bool _delta_seconds_changed = false;
     std::vector<RigidBody*> _rigidBodies{};
     std::vector<const RigidBody*> _pending_removal{};
     QuadTree<RigidBody> _world_partition{};
+    std::atomic<float> _deltaSeconds = 0.0f;
     bool _show_colliders = false;
     bool _show_world_partition = false;
 };
