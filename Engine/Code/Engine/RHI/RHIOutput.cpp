@@ -3,6 +3,7 @@
 #include "Engine/Core/BuildConfig.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/Rgba.hpp"
+#include "Engine/Core/StringUtils.hpp"
 
 #include "Engine/Renderer/DirectX/DX11.hpp"
 
@@ -17,22 +18,15 @@
 
 #include <sstream>
 
-RHIOutput::RHIOutput(const RHIDevice* parent, std::unique_ptr<Window> wnd, IDXGISwapChain4* swapchain) noexcept
+RHIOutput::RHIOutput(RHIDevice* parent, std::unique_ptr<Window> wnd) noexcept
     : _parent_device(parent)
     , _window(std::move(wnd))
-    , _dxgi_swapchain(swapchain)
 {
     CreateBackbuffer();
 }
 
 RHIOutput::~RHIOutput() noexcept {
     _parent_device = nullptr;
-
-    if(_dxgi_swapchain) {
-        _dxgi_swapchain->Release();
-        _dxgi_swapchain = nullptr;
-    }
-
 }
 
 const RHIDevice* RHIOutput::GetParentDevice() const noexcept {
@@ -90,11 +84,12 @@ void RHIOutput::Present(bool vsync) noexcept {
     bool use_no_sync_interval = should_tear && is_vsync_off;
     unsigned int sync_interval = use_no_sync_interval ? 0u : 1u;
     unsigned int present_flags = use_no_sync_interval ? DXGI_PRESENT_ALLOW_TEARING : 0;
-    auto hr_present = _dxgi_swapchain->Present1(sync_interval, present_flags, &present_params);
+    auto hr_present = _parent_device->GetDxSwapChain()->Present1(sync_interval, present_flags, &present_params);
     #ifdef RENDER_DEBUG
     std::ostringstream ss;
-    ss << "Present call failed: " << hr_present;
-    GUARANTEE_OR_DIE(SUCCEEDED(hr_present), ss.str().c_str());
+    ss << "Present call failed: " << StringUtils::FormatWindowsMessage(hr_present);
+    const auto err_str = ss.str();
+    GUARANTEE_OR_DIE(SUCCEEDED(hr_present), err_str.c_str());
     #else
     GUARANTEE_OR_DIE(SUCCEEDED(hr_present), "Present call failed.");
     #endif
@@ -102,11 +97,17 @@ void RHIOutput::Present(bool vsync) noexcept {
 
 void RHIOutput::CreateBackbuffer() noexcept {
     ID3D11Texture2D* back_buffer = nullptr;
-    _dxgi_swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<LPVOID*>(&back_buffer));
+    _parent_device->GetDxSwapChain()->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<LPVOID*>(&back_buffer));
     _back_buffer.reset(new Texture2D(_parent_device, back_buffer));
     _back_buffer->SetDebugName("__back_buffer");
 }
 
+
+void RHIOutput::SetTitle(const std::string& newTitle) const noexcept {
+    _window->SetTitle(newTitle);
+}
+
 void RHIOutput::ResetBackbuffer() noexcept {
+    _parent_device->ResetSwapChainForHWnd();
     CreateBackbuffer();
 }

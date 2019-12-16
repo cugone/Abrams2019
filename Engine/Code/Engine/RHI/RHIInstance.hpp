@@ -8,13 +8,14 @@ class RHIOutput;
 class IntVector2;
 class RHIDevice;
 struct IDXGIDebug;
+class Renderer;
 
 class RHIInstance {
 public:
     static RHIInstance* const CreateInstance() noexcept;
     static void DestroyInstance() noexcept;
 
-    std::unique_ptr<RHIDevice> CreateDevice() const noexcept;
+    std::unique_ptr<RHIDevice> CreateDevice(Renderer& renderer) const noexcept;
 
 protected:
     RHIInstance() = default;

@@ -1,8 +1,9 @@
 #pragma once
 
-#include "Engine/RHI/RHITypes.hpp"
 #include "Engine/RHI/RHIDeviceContext.hpp"
+#include "Engine/RHI/RHIFactory.hpp"
 #include "Engine/RHI/RHIOutput.hpp"
+#include "Engine/RHI/RHITypes.hpp"
 
 #include "Engine/Math/IntVector2.hpp"
 
@@ -26,13 +27,14 @@ class DepthStencilState;
 class InputLayout;
 class Vertex3D;
 class ShaderProgram;
+class Renderer;
 
 class RHIDevice {
 public:
-    RHIDevice() = default;
+    RHIDevice(Renderer& parent_renderer) noexcept;
     ~RHIDevice() noexcept;
 
-    std::pair<std::unique_ptr<RHIOutput>, std::unique_ptr<RHIDeviceContext>> CreateOutputAndContext(const IntVector2& clientSize, const IntVector2& clientPosition = IntVector2::ZERO, const RHIOutputMode& outputMode = RHIOutputMode::Windowed) noexcept;
+    std::pair<std::unique_ptr<RHIOutput>, std::unique_ptr<RHIDeviceContext>> CreateOutputAndContext(const IntVector2& clientSize, const IntVector2& clientPosition = IntVector2::ZERO) noexcept;
 
     std::unique_ptr<VertexBuffer> CreateVertexBuffer(const VertexBuffer::buffer_t& vbo, const BufferUsage& usage, const BufferBindUsage& bindusage) const noexcept;
     std::unique_ptr<IndexBuffer> CreateIndexBuffer(const IndexBuffer::buffer_t& ibo, const BufferUsage& usage, const BufferBindUsage& bindusage) const noexcept;
@@ -44,6 +46,7 @@ public:
 
     D3D_FEATURE_LEVEL GetFeatureLevel() const noexcept;
     ID3D11Device5* GetDxDevice() const noexcept;
+    IDXGISwapChain4* GetDxSwapChain() const noexcept;
     bool IsAllowTearingSupported() const noexcept;
 
     std::unique_ptr<ShaderProgram> CreateShaderProgramFromHlslString(const std::string& name, const std::string& hlslString, const std::string& entryPoint, std::unique_ptr<InputLayout> inputLayout, const PipelineStage& target) const noexcept;
@@ -54,6 +57,8 @@ public:
 
     mutable std::set<DisplayDesc, DisplayDescGTComparator> displayModes{};
 
+    void ResetSwapChainForHWnd() noexcept;
+
 private:
     std::pair<std::unique_ptr<RHIOutput>, std::unique_ptr<RHIDeviceContext>> CreateOutputAndContextFromWindow(std::unique_ptr<Window> window) noexcept;
 
@@ -62,6 +67,7 @@ private:
     void GetDisplayModes(const std::vector<AdapterInfo>& adapters) const noexcept;
 
     IDXGISwapChain4* CreateSwapChain(const Window& window, RHIFactory& factory) noexcept;
+    IDXGISwapChain4* RecreateSwapChain(const Window& window) noexcept;
 
     std::vector<std::unique_ptr<ConstantBuffer>> CreateConstantBuffersUsingReflection(ID3D11ShaderReflection& cbufferReflection) const noexcept;
     std::unique_ptr<InputLayout> CreateInputLayoutFromByteCode(ID3DBlob* bytecode) const noexcept;
@@ -71,7 +77,10 @@ private:
     void GetDisplayModeDescriptions(const AdapterInfo& adapter, const OutputInfo& output, decltype(displayModes)& descriptions) const noexcept;
     DisplayDesc GetDisplayModeMatchingDimensions(const std::vector<DisplayDesc>& descriptions, unsigned int w, unsigned int h) noexcept;
 
+    Renderer& _parent_renderer;
+    IDXGISwapChain4* _dxgi_swapchain = nullptr;
     ID3D11Device5* _dx_device = nullptr;
+    RHIFactory _rhi_factory{};
     D3D_FEATURE_LEVEL _dx_highestSupportedFeatureLevel{};
     bool _allow_tearing_supported = false;
 

@@ -13,8 +13,7 @@ struct IDXGISwapChain4;
 
 class RHIOutput {
 public:
-    RHIOutput(const RHIDevice* parent, std::unique_ptr<Window> wnd, IDXGISwapChain4* swapchain) noexcept;
-
+    RHIOutput(RHIDevice* parent, std::unique_ptr<Window> wnd) noexcept;
     ~RHIOutput() noexcept;
 
     const RHIDevice* GetParentDevice() const noexcept;
@@ -23,21 +22,22 @@ public:
     Window* GetWindow() noexcept;
 
     Texture* GetBackBuffer() noexcept;
+    void ResetBackbuffer() noexcept;
+
     IntVector2 GetDimensions() const noexcept;
     float GetAspectRatio() const noexcept;
 
     void SetDisplayMode(const RHIOutputMode& newMode) noexcept;
     void SetDimensions(const IntVector2& clientSize) noexcept;
+    void SetTitle(const std::string& newTitle) const noexcept;
 
     void Present(bool vsync) noexcept;
 
 protected:
     void CreateBackbuffer() noexcept;
-    void ResetBackbuffer() noexcept;
     std::unique_ptr<Window> _window = nullptr;
-    const RHIDevice* _parent_device = nullptr;
+    RHIDevice* _parent_device = nullptr;
     std::unique_ptr<Texture> _back_buffer = nullptr;
-    IDXGISwapChain4* _dxgi_swapchain = nullptr;
 private:
 
 };

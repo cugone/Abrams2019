@@ -2,6 +2,7 @@
 
 #include "Engine/Core/BuildConfig.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
+#include "Engine/Core/StringUtils.hpp"
 
 #include "Engine/Renderer/Window.hpp"
 
@@ -45,8 +46,8 @@ void RHIInstance::DestroyInstance() noexcept {
     }
 }
 
-std::unique_ptr<RHIDevice> RHIInstance::CreateDevice() const noexcept {
-    return std::move(std::make_unique<RHIDevice>());
+std::unique_ptr<RHIDevice> RHIInstance::CreateDevice(Renderer& renderer) const noexcept {
+    return std::move(std::make_unique<RHIDevice>(renderer));
 }
 
 RHIInstance::~RHIInstance() noexcept {

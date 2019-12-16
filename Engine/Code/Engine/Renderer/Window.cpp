@@ -1,12 +1,14 @@
 #include "Engine/Renderer/Window.hpp"
 
 #include "Engine/Core/EngineBase.hpp"
+#include "Engine/Core/ErrorWarningAssert.hpp"
+#include "Engine/Core/StringUtils.hpp"
 
 #include "Engine/Math/IntVector2.hpp"
 
 #include "Engine/RHI/RHITypes.hpp"
 
-std::size_t Window::_refCount{};
+#include <algorithm>
 
 Window::Window() noexcept {
     if(_refCount == 0) {
@@ -20,8 +22,6 @@ Window::Window() noexcept {
     ::GetClientRect(desktopHwnd, &desktopRect);
 
     ::AdjustWindowRectEx(&desktopRect, _styleFlags, _hasMenu, _styleFlagsEx);
-    ::GetClipCursor(&_initialClippingArea);
-
 }
 
 Window::Window(const IntVector2& position, const IntVector2& dimensions) noexcept {
@@ -41,12 +41,9 @@ Window::Window(const IntVector2& position, const IntVector2& dimensions) noexcep
     r.right = r.left + dimensions.x;
     r.bottom = r.top + dimensions.y;
     ::AdjustWindowRectEx(&r, _styleFlags, _hasMenu, _styleFlagsEx);
-
-    ::GetClipCursor(&_initialClippingArea);
 }
 
 Window::~Window() noexcept {
-    ::ClipCursor(&_initialClippingArea);
     Close();
     if(_refCount != 0) {
         --_refCount;
@@ -92,11 +89,11 @@ bool Window::IsClosed() const noexcept {
 }
 
 bool Window::IsWindowed() const noexcept {
-    return true;
+    return _currentDisplayMode == RHIOutputMode::Windowed;
 }
 
 bool Window::IsFullscreen() const noexcept {
-    return !IsWindowed();
+    return _currentDisplayMode == RHIOutputMode::Borderless_Fullscreen;
 }
 
 IntVector2 Window::GetDimensions() const noexcept {
@@ -107,17 +104,40 @@ IntVector2 Window::GetPosition() const noexcept {
     return IntVector2(_positionX, _positionY);
 }
 
+
+IntVector2 Window::GetDesktopResolution() noexcept {
+    const auto desktop = ::GetDesktopWindow();
+    RECT desktop_rect{};
+    if(::GetClientRect(desktop, &desktop_rect)) {
+        return IntVector2{desktop_rect.right - desktop_rect.left, desktop_rect.bottom - desktop_rect.top};
+    } else {
+        const auto err = ::GetLastError();
+        const auto err_str = StringUtils::FormatWindowsMessage(err);
+        ERROR_AND_DIE(err_str.c_str());
+    }
+}
+
 void Window::SetDimensionsAndPosition(const IntVector2& new_position, const IntVector2& new_size) noexcept {
+    const auto desktop = ::GetDesktopWindow();
+    RECT desktop_rect{};
+    ::GetClientRect(desktop, &desktop_rect);
+    const auto max_width = desktop_rect.right - desktop_rect.left;
+    const auto max_height = desktop_rect.bottom - desktop_rect.top;
+    auto w = static_cast<long>(new_size.x);
+    auto h = static_cast<long>(new_size.y);
     RECT r;
-    r.top = new_position.y;
-    r.left = new_position.x;
-    r.bottom = r.top + new_size.y;
-    r.right = r.left + new_size.x;
+    r.top = static_cast<long>(new_position.y);
+    r.left = static_cast<long>(new_position.x);
+    r.bottom = r.top + std::clamp(h, 0L, max_height);
+    r.right = r.left + std::clamp(w, 0L, max_width);
+    if(IntVector2(_positionX, _positionY) != new_position) {
+        ::SetWindowPos(_hWnd, HWND_TOPMOST, 0, 0, r.right - r.left, r.bottom - r.top, SWP_SHOWWINDOW);
+        _positionX = r.left;
+        _positionY = r.top;
+    }
     ::AdjustWindowRectEx(&r, _styleFlags, _hasMenu, _styleFlagsEx);
     _width = r.right - r.left;
     _height = r.bottom - r.top;
-    _positionX = r.left;
-    _positionY = r.top;
 }
 
 void Window::SetPosition(const IntVector2& new_position) noexcept {
@@ -144,6 +164,11 @@ void Window::SetWindowHandle(HWND hWnd) noexcept {
     _hWnd = hWnd;
 }
 
+
+HDC Window::GetWindowDeviceContext() const noexcept {
+    return _hdc;
+}
+
 const RHIOutputMode& Window::GetDisplayMode() const noexcept {
     return _currentDisplayMode;
 }
@@ -159,25 +184,12 @@ void Window::SetDisplayMode(const RHIOutputMode& display_mode) noexcept {
     r.bottom = r.top + _height;
     r.right = r.left + _width;
     switch(_currentDisplayMode) {
-        case RHIOutputMode::Borderless:
+        case RHIOutputMode::Windowed:
         {
-            _styleFlags = WS_POPUP;
-            _hasMenu = false;
-
-            ::GetClientRect(_hWnd, &r);
-
-            long width = r.right - r.left;
-            long height = r.bottom - r.top;
-            ::SetWindowLongPtr(_hWnd, GWL_STYLE, _styleFlags);
-            ::SetWindowPos(_hWnd, nullptr, 0, 0, width, height, SWP_SHOWWINDOW);
-            SetDimensionsAndPosition(IntVector2::ZERO, IntVector2(width, height));
-            ::AdjustWindowRectEx(&r, _styleFlags, _hasMenu, _styleFlagsEx);
-            return;
-        } case RHIOutputMode::Windowed:
-        {
-            _styleFlags = WS_CAPTION | WS_BORDER | WS_SYSMENU | WS_OVERLAPPED;
+            _styleFlags = defaultWindowedStyleFlags;
             break;
-        } case RHIOutputMode::Fullscreen_Window:
+        }
+        case RHIOutputMode::Borderless_Fullscreen:
         {
 
             _styleFlags = WS_POPUP;
@@ -188,18 +200,14 @@ void Window::SetDisplayMode(const RHIOutputMode& display_mode) noexcept {
 
             long width = desktopRect.right - desktopRect.left;
             long height = desktopRect.bottom - desktopRect.top;
-            ::SetWindowLongPtr(_hWnd, GWL_STYLE, _styleFlags);
-            ::SetWindowPos(_hWnd, nullptr, 0, 0, width, height, SWP_SHOWWINDOW);
             SetDimensionsAndPosition(IntVector2::ZERO, IntVector2(width, height));
-            ::AdjustWindowRectEx(&r, _styleFlags, _hasMenu, _styleFlagsEx);
-            return;
         }
         default:
             /* DO NOTHING */;
     }
     ::SetWindowLongPtr(_hWnd, GWL_STYLE, _styleFlags);
     ::AdjustWindowRectEx(&r, _styleFlags, _hasMenu, _styleFlagsEx);
-
+    Show();
 }
 
 void Window::SetTitle(const std::string& title) noexcept {
@@ -231,12 +239,12 @@ bool Window::Unregister() noexcept {
 }
 
 bool Window::Create() noexcept {
-    _styleFlags = WS_CAPTION | WS_BORDER | WS_SYSMENU | WS_OVERLAPPED;
-    _styleFlagsEx = WS_EX_APPWINDOW;
+    _styleFlags = defaultWindowedStyleFlags;
+    _styleFlagsEx = WS_EX_APPWINDOW | WS_EX_ACCEPTFILES;
     _hWnd = ::CreateWindowEx(
         _styleFlagsEx,                              // Optional window styles.
         _wc.lpszClassName,              // Window class
-        "Learn to Program Windows",     // Window text
+        "Created with Abrams 2019 (c) Casey Ugone",     // Window text
         _styleFlags,            // Window style
         _positionX, _positionY,                           //Position XY
         _width, _height,    //Size WH
@@ -245,6 +253,9 @@ bool Window::Create() noexcept {
         _hInstance,     // Instance handle
         this        // Additional application data
     );
+    
+    _hdc = ::GetDCEx(_hWnd, nullptr, 0);
+
     return _hWnd != nullptr;
 }
 

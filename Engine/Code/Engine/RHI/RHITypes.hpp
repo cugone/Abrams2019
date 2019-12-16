@@ -49,8 +49,7 @@ struct GraphicsCardDesc {
 enum class RHIOutputMode : uint8_t {
     First_
     , Windowed = First_
-    , Borderless
-    , Fullscreen_Window
+    , Borderless_Fullscreen
     , Last_
 };
 

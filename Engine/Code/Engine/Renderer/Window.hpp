@@ -29,6 +29,8 @@ public:
     IntVector2 GetDimensions() const noexcept;
     IntVector2 GetPosition() const noexcept;
 
+    static IntVector2 GetDesktopResolution() noexcept;
+
     void SetDimensionsAndPosition(const IntVector2& new_position, const IntVector2& new_size) noexcept;
     void SetPosition(const IntVector2& new_position) noexcept;
     void SetDimensions(const IntVector2& new_dimensions) noexcept;
@@ -37,6 +39,8 @@ public:
     
     HWND GetWindowHandle() const noexcept;
     void SetWindowHandle(HWND hWnd) noexcept;
+
+    HDC GetWindowDeviceContext() const noexcept;
 
     const RHIOutputMode& GetDisplayMode() const noexcept;
     void SetDisplayMode(const RHIOutputMode& display_mode) noexcept;
@@ -52,17 +56,18 @@ protected:
 private:
     RHIOutputMode _currentDisplayMode = RHIOutputMode::Windowed;
     HWND _hWnd{};
+    HDC _hdc{};
     HINSTANCE _hInstance{};
     std::string _title{ "DEFAULT WINDOW" };
     INT _cmdShow{};
     WNDCLASSEX _wc{};
-    RECT _initialClippingArea{};
     int _positionX{};
     int _positionY{};
-    unsigned int _width{800};
-    unsigned int _height{600};
+    unsigned int _width{1600u};
+    unsigned int _height{900u};
     unsigned long _styleFlags{};
     unsigned long _styleFlagsEx{};
     bool _hasMenu{};
-    static std::size_t _refCount;
+    static inline std::size_t _refCount{0u};
+    static inline constexpr unsigned long defaultWindowedStyleFlags{WS_CAPTION | WS_SIZEBOX | WS_MINIMIZEBOX | WS_BORDER | WS_SYSMENU | WS_OVERLAPPED};
 };

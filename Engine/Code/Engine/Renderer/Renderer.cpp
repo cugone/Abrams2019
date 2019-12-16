@@ -88,7 +88,7 @@ ComputeJob::~ComputeJob() noexcept {
 }
 
 Renderer::Renderer(FileLogger& fileLogger, unsigned int width, unsigned int height) noexcept
-    : _fileLogger(&fileLogger)
+    : _fileLogger(fileLogger)
     , _window_dimensions(width, height)
 {
     /* DO NOTHING */
@@ -133,9 +133,13 @@ Renderer::~Renderer() noexcept {
 
 }
 
+FileLogger& Renderer::GetFileLogger() noexcept {
+    return _fileLogger;
+}
+
 void Renderer::Initialize(bool headless /*= false*/) {
     _rhi_instance = RHIInstance::CreateInstance();
-    _rhi_device = _rhi_instance->CreateDevice();
+    _rhi_device = _rhi_instance->CreateDevice(*this);
     if(headless) {
         return;
     }
@@ -187,7 +191,7 @@ void Renderer::LogAvailableDisplays() noexcept {
         ss << display.width << 'x' << display.height << 'x' << display.refreshRateHz << '\n';
     }
     ss << std::setw(60) << std::setfill('-') << '\n';
-    _fileLogger->LogLineAndFlush(ss.str());
+    _fileLogger.LogLineAndFlush(ss.str());
 }
 
 void Renderer::CreateAndRegisterDefaultDepthStencil() noexcept {
@@ -374,7 +378,7 @@ void Renderer::DrawWorldGridXZ(float radius /*= 500.0f*/, float major_gridsize /
     ibo.resize(vbo.size());
     std::iota(std::begin(ibo), std::end(ibo), 0);
 
-    SetModelMatrix(Matrix4::GetIdentity());
+    SetModelMatrix(Matrix4::I);
     SetMaterial(GetMaterial("__unlit"));
     std::size_t major_count = ibo.empty() ? 0 : static_cast<std::size_t>(major_gridsize);
     std::size_t major_start = 0;
@@ -427,7 +431,7 @@ void Renderer::DrawWorldGridXY(float radius /*= 500.0f*/, float major_gridsize /
     std::iota(std::begin(ibo), std::begin(ibo) + major_vbo.size(), 0u);
     std::iota(std::begin(ibo) + major_vbo.size(), std::begin(ibo) + major_vbo.size() + minor_vbo.size(), static_cast<unsigned int>(major_vbo.size()));
 
-    SetModelMatrix(Matrix4::GetIdentity());
+    SetModelMatrix(Matrix4::I);
     SetMaterial(GetMaterial("__unlit"));
     std::size_t major_start = 0;
     std::size_t major_count = major_vbo.size();
@@ -493,7 +497,7 @@ void Renderer::DrawAxes(float maxlength /*= 1000.0f*/, bool disable_unit_depth /
         0, 3, 1, 4, 2, 5,
         0, 6, 1, 7, 2, 8
     };
-    SetModelMatrix(Matrix4::GetIdentity());
+    SetModelMatrix(Matrix4::I);
     SetMaterial(GetMaterial("__unlit"));
     DrawIndexed(PrimitiveType::Lines, vbo, ibo, 6, 0);
     if(disable_unit_depth) {
@@ -1330,6 +1334,20 @@ void Renderer::CopyTexture(Texture* src, Texture* dst) noexcept {
     }
 }
 
+void Renderer::ResizeBuffers(const int width, const int height) noexcept {
+    UnbindAllShaderResources();
+    UnbindAllConstantBuffers();
+    ClearState();
+    GetOutput()->SetDimensions(IntVector2(width, height));
+    GetOutput()->ResetBackbuffer();
+}
+
+void Renderer::ClearState() noexcept {
+    _rhi_context->GetDxContext()->OMSetRenderTargets(0, nullptr, nullptr);
+    _rhi_context->SetShader(nullptr);
+    _rhi_context->ClearState();
+}
+
 void Renderer::DispatchComputeJob(const ComputeJob& job) noexcept {
     SetComputeShader(job.computeShader);
     auto dc = GetDeviceContext();
@@ -1352,21 +1370,10 @@ void Renderer::SetFullscreen(bool isFullscreen) noexcept {
     }
 }
 
-void Renderer::SetBorderless(bool isBorderless) noexcept {
-    if(_current_outputMode == RHIOutputMode::Fullscreen_Window) {
-        return;
-    }
-    if(isBorderless) {
-        SetBorderlessWindowedMode();
-    } else {
-        SetWindowedMode();
-    }
-}
-
 void Renderer::SetFullscreenMode() noexcept {
     if(auto output = GetOutput()) {
         if(auto window = output->GetWindow()) {
-            window->SetDisplayMode(RHIOutputMode::Fullscreen_Window);
+            window->SetDisplayMode(RHIOutputMode::Borderless_Fullscreen);
         }
     }
 }
@@ -1375,14 +1382,6 @@ void Renderer::SetWindowedMode() noexcept {
     if(auto output = GetOutput()) {
         if(auto window = output->GetWindow()) {
             window->SetDisplayMode(RHIOutputMode::Windowed);
-        }
-    }
-}
-
-void Renderer::SetBorderlessWindowedMode() noexcept {
-    if(auto output = GetOutput()) {
-        if(auto window = output->GetWindow()) {
-            window->SetDisplayMode(RHIOutputMode::Borderless);
         }
     }
 }
@@ -3402,7 +3401,7 @@ void Renderer::ResetModelViewProjection() noexcept {
 
 
 void Renderer::AppendModelMatrix(const Matrix4& modelMatrix) noexcept {
-    _matrix_data.model = _matrix_data.model * modelMatrix;
+    _matrix_data.model = Matrix4::MakeRT(modelMatrix, _matrix_data.model);
     _matrix_cb->Update(_rhi_context.get(), &_matrix_data);
     SetConstantBuffer(MATRIX_BUFFER_INDEX, _matrix_cb.get());
 }

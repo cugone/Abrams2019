@@ -134,6 +134,8 @@ public:
     Renderer(FileLogger& fileLogger, unsigned int width, unsigned int height) noexcept;
     ~Renderer() noexcept;
 
+    FileLogger& GetFileLogger() noexcept;
+
     void Initialize(bool headless = false);
     void BeginFrame();
     void Update(TimeUtils::FPSeconds deltaSeconds);
@@ -146,10 +148,8 @@ public:
     TimeUtils::FPSeconds GetSystemTime() const noexcept;
 
     void SetFullscreen(bool isFullscreen) noexcept;
-    void SetBorderless(bool isBorderless) noexcept;
     void SetFullscreenMode() noexcept;
     void SetWindowedMode() noexcept;
-    void SetBorderlessWindowedMode() noexcept;
     void SetWindowTitle(const std::string& newTitle) noexcept;
 
     std::unique_ptr<VertexBuffer> CreateVertexBuffer(const VertexBuffer::buffer_t& vbo) const noexcept;
@@ -373,6 +373,8 @@ public:
     void SetWinProc(const std::function<bool(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) >& windowProcedure) noexcept;
 
     void CopyTexture(Texture* src, Texture* dst) noexcept;
+    void ResizeBuffers(const  int width, const  int height) noexcept;
+    void ClearState() noexcept;
 protected:
 private:
     struct DrawInstruction {
@@ -509,7 +511,7 @@ private:
     RasterState* _current_raster_state = nullptr;
     Sampler* _current_sampler = nullptr;
     Material* _current_material = nullptr;
-    FileLogger* _fileLogger = nullptr;
+    FileLogger& _fileLogger;
     IntVector2 _window_dimensions = IntVector2::ZERO;
     RHIOutputMode _current_outputMode = RHIOutputMode::Windowed;
     std::unique_ptr<VertexBuffer> _temp_vbo = nullptr;
