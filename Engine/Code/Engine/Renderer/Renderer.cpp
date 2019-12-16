@@ -3784,6 +3784,7 @@ void Renderer::EnableScissorTest() {
         }
     }
     state->Release();
+    state = nullptr;
 }
 
 void Renderer::DisableScissorTest() {
@@ -3800,6 +3801,7 @@ void Renderer::DisableScissorTest() {
         dx_dc->RSSetState(state);
     }
     state->Release();
+    state = nullptr;
 }
 
 void Renderer::ClearColor(const Rgba& color) noexcept {

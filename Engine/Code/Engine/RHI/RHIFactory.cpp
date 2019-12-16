@@ -35,10 +35,10 @@ void RHIFactory::RestrictAltEnterToggle(const RHIDevice& device) noexcept {
     GUARANTEE_OR_DIE(SUCCEEDED(hr_mwa), "Failed to restrict Alt+Enter usage.");
 }
 
-IDXGISwapChain4* RHIFactory::CreateSwapChainForHwnd(RHIDevice* device, const Window& window, const DXGI_SWAP_CHAIN_DESC1& swapchain_desc) noexcept {
+IDXGISwapChain4* RHIFactory::CreateSwapChainForHwnd(const RHIDevice& device, const Window& window, const DXGI_SWAP_CHAIN_DESC1& swapchain_desc) noexcept {
     IDXGISwapChain4* dxgi_swap_chain{};
     IDXGISwapChain1* temp_swap_chain{};
-    auto hr_createsc4hwnd = _dxgi_factory->CreateSwapChainForHwnd(device->GetDxDevice()
+    auto hr_createsc4hwnd = _dxgi_factory->CreateSwapChainForHwnd(device.GetDxDevice()
         , window.GetWindowHandle()
         , &swapchain_desc
         , nullptr
@@ -58,9 +58,12 @@ IDXGIFactory6* RHIFactory::GetDxFactory() const noexcept {
     return _dxgi_factory;
 }
 
-bool RHIFactory::QueryForAllowTearingSupport() const noexcept {
+bool RHIFactory::QueryForAllowTearingSupport(const RHIDevice& device) const noexcept {
     BOOL allow_tearing = {};
-    HRESULT hr_cfs = _dxgi_factory->CheckFeatureSupport(DXGI_FEATURE_PRESENT_ALLOW_TEARING, &allow_tearing, sizeof(allow_tearing));
+    IDXGIFactory6* factory{};
+    auto got_parent = device.GetDxSwapChain()->GetParent(__uuidof(IDXGIFactory6), (void**)&factory);
+    GUARANTEE_OR_DIE(SUCCEEDED(got_parent), "Failed to get parent factory when querying for AllowTearingSupport.");
+    HRESULT hr_cfs = factory->CheckFeatureSupport(DXGI_FEATURE_PRESENT_ALLOW_TEARING, &allow_tearing, sizeof(allow_tearing));
     bool cfs_call_succeeded = SUCCEEDED(hr_cfs);
     if(cfs_call_succeeded) {
         return allow_tearing == TRUE;

@@ -10,7 +10,10 @@
 
 #include <algorithm>
 
-Window::Window() noexcept {
+Window::Window() noexcept
+    : _styleFlags{_defaultBorderlessStyleFlags}
+    , _styleFlagsEx{_defaultStyleFlagsEx}
+{
     if(_refCount == 0) {
         if(Register()) {
             ++_refCount;
@@ -20,27 +23,19 @@ Window::Window() noexcept {
     RECT desktopRect;
     HWND desktopHwnd = ::GetDesktopWindow();
     ::GetClientRect(desktopHwnd, &desktopRect);
-
     ::AdjustWindowRectEx(&desktopRect, _styleFlags, _hasMenu, _styleFlagsEx);
 }
 
-Window::Window(const IntVector2& position, const IntVector2& dimensions) noexcept {
+Window::Window(const IntVector2& position, const IntVector2& dimensions) noexcept
+    : _styleFlags{_defaultWindowedStyleFlags}
+    , _styleFlagsEx{_defaultStyleFlagsEx}
+{
     if(_refCount == 0) {
         if(Register()) {
             ++_refCount;
         }
     }
-
-    RECT desktopRect;
-    HWND desktopHwnd = ::GetDesktopWindow();
-    ::GetClientRect(desktopHwnd, &desktopRect);
-
-    RECT r;
-    r.left = position.x;
-    r.top = position.y;
-    r.right = r.left + dimensions.x;
-    r.bottom = r.top + dimensions.y;
-    ::AdjustWindowRectEx(&r, _styleFlags, _hasMenu, _styleFlagsEx);
+    SetDimensionsAndPosition(position, dimensions);
 }
 
 Window::~Window() noexcept {
@@ -54,6 +49,9 @@ Window::~Window() noexcept {
 }
 
 void Window::Open() noexcept {
+    if(IsOpen()) {
+        return;
+    }
     if(Create()) {
         Show();
         SetForegroundWindow();
@@ -100,10 +98,13 @@ IntVector2 Window::GetDimensions() const noexcept {
     return IntVector2(_width, _height);
 }
 
+IntVector2 Window::GetClientDimensions() const noexcept {
+    return IntVector2(_clientWidth, _clientHeight);
+}
+
 IntVector2 Window::GetPosition() const noexcept {
     return IntVector2(_positionX, _positionY);
 }
-
 
 IntVector2 Window::GetDesktopResolution() noexcept {
     const auto desktop = ::GetDesktopWindow();
@@ -118,26 +119,18 @@ IntVector2 Window::GetDesktopResolution() noexcept {
 }
 
 void Window::SetDimensionsAndPosition(const IntVector2& new_position, const IntVector2& new_size) noexcept {
-    const auto desktop = ::GetDesktopWindow();
-    RECT desktop_rect{};
-    ::GetClientRect(desktop, &desktop_rect);
-    const auto max_width = desktop_rect.right - desktop_rect.left;
-    const auto max_height = desktop_rect.bottom - desktop_rect.top;
-    auto w = static_cast<long>(new_size.x);
-    auto h = static_cast<long>(new_size.y);
-    RECT r;
+    RECT r{};
     r.top = static_cast<long>(new_position.y);
     r.left = static_cast<long>(new_position.x);
-    r.bottom = r.top + std::clamp(h, 0L, max_height);
-    r.right = r.left + std::clamp(w, 0L, max_width);
-    if(IntVector2(_positionX, _positionY) != new_position) {
-        ::SetWindowPos(_hWnd, HWND_TOPMOST, 0, 0, r.right - r.left, r.bottom - r.top, SWP_SHOWWINDOW);
-        _positionX = r.left;
-        _positionY = r.top;
-    }
-    ::AdjustWindowRectEx(&r, _styleFlags, _hasMenu, _styleFlagsEx);
+    r.bottom = r.top + new_size.y;
+    r.right = r.left + new_size.x;
+    ::SetWindowPos(_hWnd, HWND_TOP, r.left, r.top, r.right - r.left, r.bottom - r.top, SWP_SHOWWINDOW);
+    _positionX = r.left;
+    _positionY = r.top;
     _width = r.right - r.left;
     _height = r.bottom - r.top;
+    _clientWidth = new_size.x;
+    _clientHeight = new_size.y;
 }
 
 void Window::SetPosition(const IntVector2& new_position) noexcept {
@@ -178,22 +171,28 @@ void Window::SetDisplayMode(const RHIOutputMode& display_mode) noexcept {
         return;
     }
     _currentDisplayMode = display_mode;
-    RECT r;
-    r.top = _positionY;
-    r.left = _positionX;
-    r.bottom = r.top + _height;
-    r.right = r.left + _width;
     switch(_currentDisplayMode) {
         case RHIOutputMode::Windowed:
         {
-            _styleFlags = defaultWindowedStyleFlags;
+            _styleFlags = _defaultWindowedStyleFlags;
+            ::SetWindowLongPtr(_hWnd, GWL_STYLE, _styleFlags);
+            RECT r{_positionX, _positionY, static_cast<long>(_positionX + _clientWidth), static_cast<long>(_positionY + _clientHeight)};
+
+            RECT desktopRect;
+            HWND desktopWindowHandle = ::GetDesktopWindow();
+            ::GetClientRect(desktopWindowHandle, &desktopRect);
+            const int x = static_cast<int>(desktopRect.right - desktopRect.left) / 2 - static_cast<int>(_clientWidth) / 2;
+            const int y = static_cast<int>(desktopRect.bottom - desktopRect.top) / 2 + static_cast<int>(_clientHeight) / 2;
+            const int w = _clientWidth;
+            const int h = _clientHeight;
+            SetDimensionsAndPosition(IntVector2{x, y}, IntVector2{w, h});
             break;
         }
         case RHIOutputMode::Borderless_Fullscreen:
         {
 
             _styleFlags = WS_POPUP;
-
+            ::SetWindowLongPtr(_hWnd, GWL_STYLE, _styleFlags);
             RECT desktopRect;
             HWND desktopWindowHandle = GetDesktopWindow();
             ::GetClientRect(desktopWindowHandle, &desktopRect);
@@ -201,12 +200,11 @@ void Window::SetDisplayMode(const RHIOutputMode& display_mode) noexcept {
             long width = desktopRect.right - desktopRect.left;
             long height = desktopRect.bottom - desktopRect.top;
             SetDimensionsAndPosition(IntVector2::ZERO, IntVector2(width, height));
+            break;
         }
         default:
             /* DO NOTHING */;
     }
-    ::SetWindowLongPtr(_hWnd, GWL_STYLE, _styleFlags);
-    ::AdjustWindowRectEx(&r, _styleFlags, _hasMenu, _styleFlagsEx);
     Show();
 }
 
@@ -239,8 +237,6 @@ bool Window::Unregister() noexcept {
 }
 
 bool Window::Create() noexcept {
-    _styleFlags = defaultWindowedStyleFlags;
-    _styleFlagsEx = WS_EX_APPWINDOW | WS_EX_ACCEPTFILES;
     _hWnd = ::CreateWindowEx(
         _styleFlagsEx,                              // Optional window styles.
         _wc.lpszClassName,              // Window class
@@ -253,7 +249,6 @@ bool Window::Create() noexcept {
         _hInstance,     // Instance handle
         this        // Additional application data
     );
-    
     _hdc = ::GetDCEx(_hWnd, nullptr, 0);
 
     return _hWnd != nullptr;

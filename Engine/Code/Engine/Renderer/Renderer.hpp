@@ -214,8 +214,10 @@ public:
     void SetViewportAsPercent(float x = 0.0f, float y = 0.0f, float w = 1.0f, float h = 1.0f) noexcept;
     void SetViewportAndScissorAsPercent(float x = 0.0f, float y = 0.0f, float w = 1.0f, float h = 1.0f) noexcept;
 
+    //TODO: Currently not working.
     void EnableScissorTest();
     void DisableScissorTest();
+
     void SetScissor(unsigned int x, unsigned int y, unsigned int width, unsigned int height) noexcept;
     void SetScissor(const AABB2& scissor) noexcept;
     void SetScissorAsPercent(float x = 0.0f, float y = 0.0f, float w = 1.0f, float h = 1.0f) noexcept;

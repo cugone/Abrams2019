@@ -104,7 +104,7 @@ std::pair<std::unique_ptr<RHIOutput>, std::unique_ptr<RHIDeviceContext>> RHIDevi
     _dx_highestSupportedFeatureLevel = device_info.highest_supported_feature_level;
 
     _dxgi_swapchain = CreateSwapChain(*window, _rhi_factory);
-    _allow_tearing_supported = _rhi_factory.QueryForAllowTearingSupport();
+    _allow_tearing_supported = _rhi_factory.QueryForAllowTearingSupport(*this);
     _rhi_factory.RestrictAltEnterToggle(*this);
 
     SetupDebuggingInfo();
@@ -197,7 +197,7 @@ void RHIDevice::GetDisplayModes(const std::vector<AdapterInfo>& adapters) const 
 
 IDXGISwapChain4* RHIDevice::CreateSwapChain(const Window& window, RHIFactory& factory) noexcept {
     DXGI_SWAP_CHAIN_DESC1 swap_chain_desc{};
-    auto window_dims = window.GetDimensions();
+    auto window_dims = window.GetClientDimensions();
     auto width = static_cast<unsigned int>(window_dims.x);
     auto height = static_cast<unsigned int>(window_dims.y);
     swap_chain_desc.Width = width;
@@ -213,13 +213,13 @@ IDXGISwapChain4* RHIDevice::CreateSwapChain(const Window& window, RHIFactory& fa
     swap_chain_desc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
     swap_chain_desc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
 
-    IDXGISwapChain4* dxgi_swap_chain = factory.CreateSwapChainForHwnd(this, window, swap_chain_desc);
+    IDXGISwapChain4* dxgi_swap_chain = factory.CreateSwapChainForHwnd(*this, window, swap_chain_desc);
     return dxgi_swap_chain;
 }
 
 IDXGISwapChain4* RHIDevice::RecreateSwapChain(const Window& window) noexcept {
     DXGI_SWAP_CHAIN_DESC1 swap_chain_desc{};
-    auto window_dims = window.GetDimensions();
+    auto window_dims = window.GetClientDimensions();
     auto width = static_cast<unsigned int>(window_dims.x);
     auto height = static_cast<unsigned int>(window_dims.y);
     swap_chain_desc.Width = width;
@@ -235,7 +235,7 @@ IDXGISwapChain4* RHIDevice::RecreateSwapChain(const Window& window) noexcept {
     swap_chain_desc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
     swap_chain_desc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
 
-    IDXGISwapChain4* dxgi_swap_chain = _rhi_factory.CreateSwapChainForHwnd(this, window, swap_chain_desc);
+    IDXGISwapChain4* dxgi_swap_chain = _rhi_factory.CreateSwapChainForHwnd(*this, window, swap_chain_desc);
     return dxgi_swap_chain;
 }
 
@@ -346,7 +346,7 @@ std::vector<std::unique_ptr<ConstantBuffer>> RHIDevice::CreateConstantBuffersFro
 }
 
 void RHIDevice::ResetSwapChainForHWnd() noexcept {
-    _dxgi_swapchain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, _rhi_factory.QueryForAllowTearingSupport() ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0);
+    _dxgi_swapchain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, _rhi_factory.QueryForAllowTearingSupport(*this) ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0);
 }
 
 std::vector<std::unique_ptr<ConstantBuffer>> RHIDevice::CreateConstantBuffersUsingReflection(ID3D11ShaderReflection& cbufferReflection) const noexcept {

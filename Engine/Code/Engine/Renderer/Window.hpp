@@ -27,6 +27,7 @@ public:
     bool IsFullscreen() const noexcept;
 
     IntVector2 GetDimensions() const noexcept;
+    IntVector2 GetClientDimensions() const noexcept;
     IntVector2 GetPosition() const noexcept;
 
     static IntVector2 GetDesktopResolution() noexcept;
@@ -65,9 +66,13 @@ private:
     int _positionY{};
     unsigned int _width{1600u};
     unsigned int _height{900u};
+    unsigned int _clientWidth{1600u};
+    unsigned int _clientHeight{900u};
     unsigned long _styleFlags{};
     unsigned long _styleFlagsEx{};
     bool _hasMenu{};
     static inline std::size_t _refCount{0u};
-    static inline constexpr unsigned long defaultWindowedStyleFlags{WS_CAPTION | WS_SIZEBOX | WS_MINIMIZEBOX | WS_BORDER | WS_SYSMENU | WS_OVERLAPPED};
+    static inline constexpr unsigned long _defaultWindowedStyleFlags{WS_CAPTION | WS_SIZEBOX | WS_MINIMIZEBOX | WS_BORDER | WS_SYSMENU | WS_OVERLAPPED};
+    static inline constexpr unsigned long _defaultBorderlessStyleFlags{WS_POPUP};
+    static inline constexpr unsigned long _defaultStyleFlagsEx{WS_EX_APPWINDOW | WS_EX_ACCEPTFILES};
 };

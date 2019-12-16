@@ -13,10 +13,10 @@ public:
     ~RHIFactory() noexcept;
 
     void RestrictAltEnterToggle(const RHIDevice& device) noexcept;
-    IDXGISwapChain4* CreateSwapChainForHwnd(RHIDevice* device, const Window& window, const DXGI_SWAP_CHAIN_DESC1& swapchain_desc) noexcept;
+    IDXGISwapChain4* CreateSwapChainForHwnd(const RHIDevice& device, const Window& window, const DXGI_SWAP_CHAIN_DESC1& swapchain_desc) noexcept;
 
     IDXGIFactory6* GetDxFactory() const noexcept;
-    bool QueryForAllowTearingSupport() const noexcept;
+    bool QueryForAllowTearingSupport(const RHIDevice& device) const noexcept;
 
     std::vector<AdapterInfo> GetAdaptersByPreference(const AdapterPreference& preference) const noexcept;
     std::vector<AdapterInfo> GetAdaptersByHighPerformancePreference() const noexcept;

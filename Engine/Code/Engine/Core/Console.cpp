@@ -780,7 +780,7 @@ void Console::DrawOutput(const Vector2& view_half_extents) const noexcept {
     {
         auto draw_x = -view_half_extents.x;
         auto draw_y = view_half_extents.y;
-        auto draw_loc = Vector2(draw_x * 0.99f, draw_y);
+        auto draw_loc = Vector2(draw_x * 0.99f, draw_y * 0.99f);
         for(auto iter = _output_buffer.rbegin(); iter != _output_buffer.rend(); ++iter) {
             draw_loc.y -= font->CalculateTextHeight(iter->str);
             ss << '\n' << iter->str;
@@ -788,11 +788,12 @@ void Console::DrawOutput(const Vector2& view_half_extents) const noexcept {
         }
     }
     _renderer.SetMaterial(font->GetMaterial());
-    _renderer.EnableScissorTest();
-    _renderer.SetScissorAsPercent();
+    //TODO: Uncomment when fixed.
+    //_renderer.EnableScissorTest();
+    //_renderer.SetScissorAsPercent();
     _renderer.SetModelMatrix(Matrix4::I);
     _renderer.DrawIndexed(PrimitiveType::Triangles, vbo, ibo);
-    _renderer.DisableScissorTest();
+    //_renderer.DisableScissorTest();
 }
 
 void Console::OutputMsg(const std::string& msg, const Rgba& color) noexcept {
@@ -915,8 +916,6 @@ void Console::DrawEntryLine(const Vector2& view_half_extents) const noexcept {
 
     const auto entryline_t = Matrix4::CreateTranslationMatrix(Vector3(textline_left, textline_bottom, 0.0f));
     const auto model_entryline_mat = entryline_t;
-    _renderer.SetModelMatrix(model_entryline_mat);
-    _renderer.SetMaterial(font->GetMaterial());
 
     if(_cursor_position != _selection_position) {
 
