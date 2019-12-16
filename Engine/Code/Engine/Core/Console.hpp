@@ -39,7 +39,7 @@ public:
         std::vector<Command> _commands{};
     };
     Console() = delete;
-    explicit Console(FileLogger& fileLogger, Renderer* renderer) noexcept;
+    explicit Console(FileLogger& fileLogger, Renderer& renderer) noexcept;
     Console(const Console& other) = delete;
     Console(Console&& other) = delete;
     Console& operator=(const Console& other) = delete;
@@ -136,8 +136,8 @@ private:
 
     Vector2 SetupViewFromCamera() const noexcept;
 
-    FileLogger* _fileLogger = nullptr;
-    Renderer* _renderer = nullptr;
+    FileLogger& _fileLogger;
+    Renderer& _renderer;
     Camera2D* _camera = nullptr;
     std::map<std::string, Console::Command> _commands{};
     std::vector<std::string> _entryline_buffer{};

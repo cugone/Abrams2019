@@ -12,7 +12,7 @@
 #include <filesystem>
 #include <sstream>
 
-KerningFont::KerningFont(Renderer* renderer) noexcept
+KerningFont::KerningFont(Renderer& renderer) noexcept
     : _renderer(renderer)
 {
     /* DO NOTHING */

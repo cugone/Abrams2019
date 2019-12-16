@@ -41,9 +41,9 @@ void* Console::GetAcceleratorTable() const noexcept {
     return reinterpret_cast<void*>(hAcceleratorTable);
 }
 
-Console::Console(FileLogger& fileLogger, Renderer* renderer) noexcept
+Console::Console(FileLogger& fileLogger, Renderer& renderer) noexcept
     : EngineSubsystem()
-    , _fileLogger(&fileLogger)
+    , _fileLogger(fileLogger)
     , _renderer(renderer)
     , _show_cursor(false)
     , _is_open(false)
@@ -87,8 +87,6 @@ Console::~Console() noexcept {
     _camera = nullptr;
 
     _commands.clear();
-    _renderer = nullptr;
-    _fileLogger = nullptr;
 }
 
 bool Console::ProcessSystemMessage(const EngineMessage& msg) noexcept {
@@ -292,7 +290,7 @@ bool Console::ProcessSystemMessage(const EngineMessage& msg) noexcept {
 bool Console::HandleClipboardCopy() const noexcept {
     bool did_copy = false;
     if(Clipboard::HasText()) {
-        auto hwnd = _renderer->GetOutput()->GetWindow()->GetWindowHandle();
+        auto hwnd = _renderer.GetOutput()->GetWindow()->GetWindowHandle();
         Clipboard c{ hwnd };
         if(_cursor_position != _selection_position) {
             std::string copied_text = CopyText(_cursor_position, _selection_position);
@@ -306,7 +304,7 @@ bool Console::HandleClipboardCopy() const noexcept {
 
 void Console::HandleClipboardPaste() noexcept {
     if(Clipboard::HasText()) {
-        auto hwnd = _renderer->GetOutput()->GetWindow()->GetWindowHandle();
+        auto hwnd = _renderer.GetOutput()->GetWindow()->GetWindowHandle();
         Clipboard c{hwnd};
         auto string_to_paste = c.Paste();
         PasteText(string_to_paste, _cursor_position);
@@ -741,9 +739,9 @@ void Console::Render() const {
         return;
     }
 
-    _renderer->SetModelMatrix(Matrix4::I);
-    _renderer->SetViewMatrix(Matrix4::I);
-    _renderer->SetProjectionMatrix(Matrix4::I);
+    _renderer.SetModelMatrix(Matrix4::I);
+    _renderer.SetViewMatrix(Matrix4::I);
+    _renderer.SetProjectionMatrix(Matrix4::I);
 
     auto view_half_extents = SetupViewFromCamera();
     DrawBackground(view_half_extents);
@@ -759,16 +757,16 @@ void Console::DrawCursor(const Vector2& view_half_extents) const noexcept {
     }
     float textline_bottom = view_half_extents.y * 0.99f;
     float textline_left = -view_half_extents.x * 0.99f;
-    auto font = _renderer->GetFont("System32");
+    auto font = _renderer.GetFont("System32");
     auto first = _entryline.begin();
     auto has_text = !_entryline.empty();
     std::string text_left_of_cursor = has_text ? std::string(first, _cursor_position) : std::string("");
     float xPosOffsetToCaret = font->CalculateTextWidth(text_left_of_cursor);
     Matrix4 cursor_t = Matrix4::CreateTranslationMatrix(Vector3(textline_left + xPosOffsetToCaret, textline_bottom, 0.0f));
     Matrix4 model_cursor_mat = cursor_t;
-    _renderer->SetModelMatrix(model_cursor_mat);
-    _renderer->SetMaterial(font->GetMaterial());
-    _renderer->DrawTextLine(font, "|", Rgba::White);
+    _renderer.SetModelMatrix(model_cursor_mat);
+    _renderer.SetMaterial(font->GetMaterial());
+    _renderer.DrawTextLine(font, "|", Rgba::White);
 }
 
 void Console::DrawOutput(const Vector2& view_half_extents) const noexcept {
@@ -777,7 +775,7 @@ void Console::DrawOutput(const Vector2& view_half_extents) const noexcept {
     }
     std::vector<Vertex3D> vbo{};
     std::vector<unsigned int> ibo{};
-    auto font = _renderer->GetFont("System32");
+    auto font = _renderer.GetFont("System32");
     std::ostringstream ss;
     {
         auto draw_x = -view_half_extents.x;
@@ -786,15 +784,15 @@ void Console::DrawOutput(const Vector2& view_half_extents) const noexcept {
         for(auto iter = _output_buffer.rbegin(); iter != _output_buffer.rend(); ++iter) {
             draw_loc.y -= font->CalculateTextHeight(iter->str);
             ss << '\n' << iter->str;
-            _renderer->AppendMultiLineTextBuffer(font, iter->str, draw_loc, iter->color, vbo, ibo);
+            _renderer.AppendMultiLineTextBuffer(font, iter->str, draw_loc, iter->color, vbo, ibo);
         }
     }
-    _renderer->SetMaterial(font->GetMaterial());
-    _renderer->EnableScissorTest();
-    _renderer->SetScissorAsPercent();
-    _renderer->SetModelMatrix(Matrix4::I);
-    _renderer->DrawIndexed(PrimitiveType::Triangles, vbo, ibo);
-    _renderer->DisableScissorTest();
+    _renderer.SetMaterial(font->GetMaterial());
+    _renderer.EnableScissorTest();
+    _renderer.SetScissorAsPercent();
+    _renderer.SetModelMatrix(Matrix4::I);
+    _renderer.DrawIndexed(PrimitiveType::Triangles, vbo, ibo);
+    _renderer.DisableScissorTest();
 }
 
 void Console::OutputMsg(const std::string& msg, const Rgba& color) noexcept {
@@ -821,11 +819,11 @@ void Console::RegisterDefaultFont() noexcept {
             std::unique_ptr<Texture> tex;
             {
                 auto img = Image::CreateImageFromFileBuffer(raw_system32_image);
-                tex = _renderer->Create2DTextureFromMemory(img.GetData(), img.GetDimensions().x, img.GetDimensions().y);
+                tex = _renderer.Create2DTextureFromMemory(img.GetData(), img.GetDimensions().x, img.GetDimensions().y);
             }
             tex_name += font_system32->GetName();
             tex->SetDebugName(tex_name);
-            _renderer->RegisterTexture(tex_name, std::move(tex));
+            _renderer.RegisterTexture(tex_name, std::move(tex));
         }
         std::string name = font_system32->GetName();
         std::string shader = "__2D";
@@ -845,8 +843,8 @@ void Console::RegisterDefaultFont() noexcept {
         auto xml_root = doc.RootElement();
         auto mat = std::make_unique<Material>(_renderer, *xml_root);
         font_system32->SetMaterial(mat.get());
-        _renderer->RegisterMaterial(std::move(mat));
-        _renderer->RegisterFont(std::move(font_system32));
+        _renderer.RegisterMaterial(std::move(mat));
+        _renderer.RegisterFont(std::move(font_system32));
     }
 }
 
@@ -904,21 +902,21 @@ void Console::ErrorMsg(const std::string& msg) noexcept {
 }
 
 void Console::DrawBackground(const Vector2& view_half_extents) const noexcept {
-    _renderer->SetModelMatrix(Matrix4::CreateScaleMatrix(view_half_extents * 2.0f));
-    _renderer->SetMaterial(_renderer->GetMaterial("__2D"));
-    _renderer->DrawQuad2D(Rgba(0, 0, 0, 128));
+    _renderer.SetModelMatrix(Matrix4::CreateScaleMatrix(view_half_extents * 2.0f));
+    _renderer.SetMaterial(_renderer.GetMaterial("__2D"));
+    _renderer.DrawQuad2D(Rgba(0, 0, 0, 128));
 }
 
 void Console::DrawEntryLine(const Vector2& view_half_extents) const noexcept {
 
-    const auto font = _renderer->GetFont("System32");
+    const auto font = _renderer.GetFont("System32");
     const float textline_bottom = view_half_extents.y * 0.99f;
     const float textline_left = -view_half_extents.x * 0.99f;
 
     const auto entryline_t = Matrix4::CreateTranslationMatrix(Vector3(textline_left, textline_bottom, 0.0f));
     const auto model_entryline_mat = entryline_t;
-    _renderer->SetModelMatrix(model_entryline_mat);
-    _renderer->SetMaterial(font->GetMaterial());
+    _renderer.SetModelMatrix(model_entryline_mat);
+    _renderer.SetMaterial(font->GetMaterial());
 
     if(_cursor_position != _selection_position) {
 
@@ -931,34 +929,34 @@ void Console::DrawEntryLine(const Vector2& view_half_extents) const noexcept {
             std::swap(xPosOffsetToCaret, xPosOffsetToSelect);
         }
 
-        _renderer->SetModelMatrix(Matrix4::CreateScaleMatrix(Vector2(500.0f, 500.0f)));
-        _renderer->SetMaterial(_renderer->GetMaterial("__2D"));
-        _renderer->DrawQuad2D();
+        _renderer.SetModelMatrix(Matrix4::CreateScaleMatrix(Vector2(500.0f, 500.0f)));
+        _renderer.SetMaterial(_renderer.GetMaterial("__2D"));
+        _renderer.DrawQuad2D();
 
-        _renderer->SetModelMatrix(model_entryline_mat);
-        _renderer->SetMaterial(font->GetMaterial());
+        _renderer.SetModelMatrix(model_entryline_mat);
+        _renderer.SetMaterial(font->GetMaterial());
 
-        _renderer->DrawTextLine(font, std::string(_entryline, 0, std::distance(std::cbegin(_entryline), rangeStart)), Rgba::White);
+        _renderer.DrawTextLine(font, std::string(_entryline, 0, std::distance(std::cbegin(_entryline), rangeStart)), Rgba::White);
         Matrix4 rightside_t = Matrix4::CreateTranslationMatrix(Vector3(xPosOffsetToSelect, 0.0f, 0.0f));
         rightside_t = Matrix4::MakeRT(model_entryline_mat, rightside_t);
-        _renderer->SetModelMatrix(rightside_t);
-        _renderer->DrawTextLine(font, std::string(_entryline, std::distance(std::cbegin(_entryline), rangeEnd), std::distance(rangeEnd, std::cend(_entryline))), Rgba::White);
+        _renderer.SetModelMatrix(rightside_t);
+        _renderer.DrawTextLine(font, std::string(_entryline, std::distance(std::cbegin(_entryline), rangeEnd), std::distance(rangeEnd, std::cend(_entryline))), Rgba::White);
 
         float xPosOffsetToStart = font->CalculateTextWidth(std::string(std::begin(_entryline), rangeStart));
         Matrix4 blacktext_t = Matrix4::CreateTranslationMatrix(Vector3(xPosOffsetToStart, 0.0f, 0.0f));
         Matrix4 model_mat_blacktext = Matrix4::MakeRT(model_entryline_mat, blacktext_t);
-        _renderer->SetModelMatrix(model_mat_blacktext);
-        _renderer->DrawTextLine(font, std::string(rangeStart, rangeEnd), Rgba::Black);
+        _renderer.SetModelMatrix(model_mat_blacktext);
+        _renderer.DrawTextLine(font, std::string(rangeStart, rangeEnd), Rgba::Black);
 
     } else {
-        _renderer->SetModelMatrix(model_entryline_mat);
-        _renderer->SetMaterial(font->GetMaterial());
-        _renderer->DrawTextLine(font, _entryline, Rgba::White);
+        _renderer.SetModelMatrix(model_entryline_mat);
+        _renderer.SetMaterial(font->GetMaterial());
+        _renderer.DrawTextLine(font, _entryline, Rgba::White);
     }
 }
 
 Vector2 Console::SetupViewFromCamera() const noexcept {
-    const auto& window = _renderer->GetOutput();
+    const auto& window = _renderer.GetOutput();
     const auto& window_dimensions = window->GetDimensions();
     const auto& aspect = window->GetAspectRatio();
     float window_width = static_cast<float>(window_dimensions.x);
@@ -970,8 +968,8 @@ Vector2 Console::SetupViewFromCamera() const noexcept {
     Vector2 nearFar = Vector2(0.0f, 1.0f);
     _camera->SetupView(leftBottom, rightTop, nearFar, aspect);
 
-    _renderer->SetViewMatrix(_camera->GetViewMatrix());
-    _renderer->SetProjectionMatrix(_camera->GetProjectionMatrix());
+    _renderer.SetViewMatrix(_camera->GetViewMatrix());
+    _renderer.SetProjectionMatrix(_camera->GetProjectionMatrix());
 
     return Vector2(view_half_width, view_half_height);
 }

@@ -803,7 +803,7 @@ std::unique_ptr<AnimatedSprite> Renderer::CreateAnimatedSpriteFromGif(std::files
     std::ostringstream ss;
     ss << R"("<material name="__Gif_)" << filepath.stem().string() << R"("><shader src="__2D" /><textures><diffuse src=")" << filepath.string() << R"(" /></textures></material>)";
     doc.Parse(ss.str().c_str());
-    auto anim_mat = std::make_unique<Material>(this, *doc.RootElement());
+    auto anim_mat = std::make_unique<Material>(*this, *doc.RootElement());
     anim->SetMaterial(anim_mat.get());
     RegisterMaterial(std::move(anim_mat));
     tex = nullptr;
@@ -2101,7 +2101,7 @@ R"(
     if(parse_result != tinyxml2::XML_SUCCESS) {
         return nullptr;
     }
-    return std::make_unique<Material>(this, *doc.RootElement());
+    return std::make_unique<Material>(*this, *doc.RootElement());
 
 }
 
@@ -2118,7 +2118,7 @@ std::unique_ptr<Material> Renderer::CreateDefaultUnlitMaterial() noexcept {
     if(parse_result != tinyxml2::XML_SUCCESS) {
         return nullptr;
     }
-    return std::make_unique<Material>(this, *doc.RootElement());
+    return std::make_unique<Material>(*this, *doc.RootElement());
 
 }
 
@@ -2135,7 +2135,7 @@ std::unique_ptr<Material> Renderer::CreateDefault2DMaterial() noexcept {
     if(parse_result != tinyxml2::XML_SUCCESS) {
         return nullptr;
     }
-    return std::make_unique<Material>(this, *doc.RootElement());
+    return std::make_unique<Material>(*this, *doc.RootElement());
 
 }
 
@@ -2152,7 +2152,7 @@ std::unique_ptr<Material> Renderer::CreateDefaultNormalMaterial() noexcept {
     if(parse_result != tinyxml2::XML_SUCCESS) {
         return nullptr;
     }
-    return std::make_unique<Material>(this, *doc.RootElement());
+    return std::make_unique<Material>(*this, *doc.RootElement());
 
 }
 
@@ -2169,7 +2169,7 @@ std::unique_ptr<Material> Renderer::CreateDefaultNormalMapMaterial() noexcept {
     if(parse_result != tinyxml2::XML_SUCCESS) {
         return nullptr;
     }
-    return std::make_unique<Material>(this, *doc.RootElement());
+    return std::make_unique<Material>(*this, *doc.RootElement());
 
 }
 
@@ -2189,7 +2189,7 @@ std::unique_ptr<Material> Renderer::CreateDefaultInvalidMaterial() noexcept {
     if(parse_result != tinyxml2::XML_SUCCESS) {
         return nullptr;
     }
-    return std::make_unique<Material>(this, *doc.RootElement());
+    return std::make_unique<Material>(*this, *doc.RootElement());
 }
 
 std::unique_ptr<Material> Renderer::CreateMaterialFromFont(KerningFont* font) noexcept {
@@ -2238,7 +2238,7 @@ std::unique_ptr<Material> Renderer::CreateMaterialFromFont(KerningFont* font) no
     if(result != tinyxml2::XML_SUCCESS) {
         return nullptr;
     }
-    return std::make_unique<Material>(this, *doc.RootElement());
+    return std::make_unique<Material>(*this, *doc.RootElement());
 }
 
 void Renderer::CreateAndRegisterDefaultSamplers() noexcept {
@@ -2654,7 +2654,7 @@ void Renderer::RegisterFont(std::unique_ptr<KerningFont> font) noexcept {
 
 bool Renderer::RegisterFont(std::filesystem::path filepath) noexcept {
     namespace FS = std::filesystem;
-    auto font = std::make_unique<KerningFont>(this);
+    auto font = std::make_unique<KerningFont>(*this);
     filepath = FS::canonical(filepath);
     filepath.make_preferred();
     if(font->LoadFromFile(filepath.string())) {
@@ -3140,7 +3140,7 @@ bool Renderer::RegisterMaterial(std::filesystem::path filepath) noexcept {
         filepath.make_preferred();
         const auto p_str = filepath.string();
         if(doc.LoadFile(p_str.c_str()) == tinyxml2::XML_SUCCESS) {
-            auto mat = std::make_unique<Material>(this, *doc.RootElement());
+            auto mat = std::make_unique<Material>(*this, *doc.RootElement());
             auto name = mat->GetName();
             RegisterMaterial(name, std::move(mat));
             return true;

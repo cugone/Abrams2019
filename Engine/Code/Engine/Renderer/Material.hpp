@@ -77,8 +77,8 @@ public:
         ,Custom58
     };
 
-    explicit Material(Renderer* renderer) noexcept;
-    Material(Renderer* renderer, const XMLElement& element) noexcept;
+    explicit Material(Renderer& renderer) noexcept;
+    Material(Renderer& renderer, const XMLElement& element) noexcept;
     ~Material() = default;
 
     std::string GetName() const noexcept;
@@ -103,7 +103,7 @@ private:
     float _specularPower = 8.0f;
     float _emissiveFactor = 0.0f;
     std::string _name = "MATERIAL";
-    Renderer* _renderer = nullptr;
+    Renderer& _renderer;
     std::vector<Texture*> _textures = {};
     Shader* _shader = nullptr;
 };
