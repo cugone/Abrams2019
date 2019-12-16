@@ -2,6 +2,8 @@
 
 #include "Engine/Core/ErrorWarningAssert.hpp"
 
+#include "Engine/Profiling/ProfileLogScope.hpp"
+
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Vector2.hpp"
@@ -188,6 +190,7 @@ void QuadTree<T>::Add(std::add_pointer_t<T> new_element) {
     if(!IsElementIntersectingMe(new_element)) {
         return;
     }
+    PROFILE_LOG_SCOPE_FUNCTION();
     if(!IsLeaf(*this)) {
         for(auto& child : m_children) {
             if(child) {
@@ -339,6 +342,7 @@ QuadTree<T>::QuadTree(QuadTree<T>* parent, const AABB2& bounds, const std::vecto
 template<typename T>
 void QuadTree<T>::Subdivide() {
     if(NeedsSubdivide()) {
+        PROFILE_LOG_SCOPE("Subdivide after needs to.");
         MakeChildren();
         GiveElementsToChildren();
     }
@@ -347,6 +351,7 @@ void QuadTree<T>::Subdivide() {
 template<typename T>
 void QuadTree<T>::UnSubdivide() {
     if(NeedsUnSubdivide()) {
+        PROFILE_LOG_SCOPE("UnSubdivide after needs to.");
         TakeElementsFromChildren();
         ClearChildren();
     }
@@ -370,6 +375,7 @@ void QuadTree<T>::ClearChildren() {
 
 template<typename T>
 void QuadTree<T>::GiveElementsToChildren() {
+    PROFILE_LOG_SCOPE_FUNCTION();
     for(auto elem : m_elements) {
         for(auto& child : m_children) {
             if(child) {
@@ -391,6 +397,7 @@ void QuadTree<T>::GiveElementsToChildren() {
 
 template<typename T>
 void QuadTree<T>::TakeElementsFromChildren() {
+    PROFILE_LOG_SCOPE_FUNCTION();
     const auto max_elems = std::size_t{0};
     for(auto& child : m_children) {
         max_elems += child->m_elements.size();
