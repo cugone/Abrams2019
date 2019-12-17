@@ -31,7 +31,7 @@ class Renderer;
 
 class RHIDevice {
 public:
-    RHIDevice(Renderer& parent_renderer) noexcept;
+    explicit RHIDevice(Renderer& parent_renderer) noexcept;
     ~RHIDevice() = default;
 
     std::pair<std::unique_ptr<RHIOutput>, std::unique_ptr<RHIDeviceContext>> CreateOutputAndContext(const IntVector2& clientSize, const IntVector2& clientPosition = IntVector2::ZERO) noexcept;
