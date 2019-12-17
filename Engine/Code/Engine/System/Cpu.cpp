@@ -27,9 +27,9 @@ System::Cpu::CpuDesc System::Cpu::GetCpuDesc() noexcept {
 std::ostream& System::Cpu::operator<<(std::ostream& out, const System::Cpu::CpuDesc& cpu) noexcept {
     auto old_fmt = out.flags();
     auto old_w = out.width();
-    out << std::left << std::setw(25) << "Processor Type:"           << std::right << std::setw(25) << StringUtils::to_string(cpu.type) << '\n';
-    out << std::left << std::setw(25) << "Socket Count:"             << std::right << std::setw(25) << cpu.socketCount  << '\n';
-    out << std::left << std::setw(25) << "Logical Processor Count:"  << std::right << std::setw(25) << cpu.logicalCount << '\n';
+    out << std::left << std::setw(25) << "Processor Type:"           << std::right << std::setw(27) << StringUtils::to_string(cpu.type) << '\n';
+    out << std::left << std::setw(25) << "Socket Count:"             << std::right << std::setw(27) << cpu.socketCount  << '\n';
+    out << std::left << std::setw(25) << "Logical Processor Count:"  << std::right << std::setw(27) << cpu.logicalCount << '\n';
     out.flags(old_fmt);
     out.width(old_w);
     return out;

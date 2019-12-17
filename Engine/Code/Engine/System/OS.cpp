@@ -16,7 +16,7 @@
 std::ostream& System::OS::operator<<(std::ostream& out, const System::OS::OsDesc& os) noexcept {
     auto old_fmt = out.flags();
     auto old_w = out.width();
-    out << std::left << std::setw(25) << "Operating System:" << std::right << std::setw(25) << os.VersionFriendly << '\n';
+    out << std::left << std::setw(25) << "Operating System:" << std::right << std::setw(27) << os.VersionFriendly << '\n';
     out.flags(old_fmt);
     out.width(old_w);
     return out;
