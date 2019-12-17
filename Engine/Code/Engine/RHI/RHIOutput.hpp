@@ -2,26 +2,29 @@
 
 #include "Engine/RHI/RHITypes.hpp"
 
+#include "Engine/Renderer/Texture.hpp"
+
 #include <memory>
 
 class Window;
 class RHIDevice;
-class Texture;
 class IntVector2;
 class Rgba;
-struct IDXGISwapChain4;
 
 class RHIOutput {
 public:
-    RHIOutput(RHIDevice* parent, std::unique_ptr<Window> wnd) noexcept;
-    ~RHIOutput() noexcept;
+    RHIOutput(const RHIDevice& parent, std::unique_ptr<Window> wnd) noexcept;
+    ~RHIOutput() = default;
 
-    const RHIDevice* GetParentDevice() const noexcept;
+    const RHIDevice& GetParentDevice() const noexcept;
 
     const Window* GetWindow() const noexcept;
     Window* GetWindow() noexcept;
 
-    Texture* GetBackBuffer() noexcept;
+    Texture* GetBackBuffer() const noexcept;
+    Texture* GetDepthStencil() const noexcept;
+    Texture* GetFullscreenTexture() const noexcept;
+
     void ResetBackbuffer() noexcept;
 
     IntVector2 GetDimensions() const noexcept;
@@ -34,10 +37,17 @@ public:
     void Present(bool vsync) noexcept;
 
 protected:
-    void CreateBackbuffer() noexcept;
+    void CreateBuffers() noexcept;
+
+    std::unique_ptr<Texture> CreateBackbuffer() noexcept;
+    std::unique_ptr<Texture> CreateDepthStencil() noexcept;
+    std::unique_ptr<Texture> CreateFullscreenTexture() noexcept;
+
+    const RHIDevice& _parent_device;
     std::unique_ptr<Window> _window = nullptr;
-    RHIDevice* _parent_device = nullptr;
     std::unique_ptr<Texture> _back_buffer = nullptr;
+    std::unique_ptr<Texture> _depthstencil = nullptr;
+    std::unique_ptr<Texture> _fullscreen = nullptr;
 private:
 
 };
