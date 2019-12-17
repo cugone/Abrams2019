@@ -1,5 +1,9 @@
 #pragma once
 
+#include "Engine/Core/BuildConfig.hpp"
+
+#if defined(PLATFORM_WINDOWS)
+
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include <windows.h>
@@ -10,4 +14,6 @@
 #include <WS2tcpip.h>
 
 #pragma comment(lib, "ws2_32.lib")
+#endif
+
 #endif
