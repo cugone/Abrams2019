@@ -35,11 +35,11 @@ std::ostream& operator<<(std::ostream& out_stream, const GraphicsCardDesc& graph
     out_stream << std::left << std::setw(22) << "Revision:" << std::right << std::setw(30) << revision << '\n';
     out_stream << std::dec << std::nouppercase;
     auto ded_vid_mem = graphicsCardDesc.DedicatedVideoMemory;
-    out_stream << std::left << std::setw(22) << "Video Memory:" << std::right << std::setw(30) << std::fixed << std::setprecision(1) << ded_vid_mem * MathUtils::GIB_BYTES_RATIO << " GB\n";
+    out_stream << std::left << std::setw(22) << "Video Memory:" << std::right << std::setw(30) << std::fixed << std::setprecision(1) << static_cast<long double>(ded_vid_mem) * MathUtils::GIB_BYTES_RATIO.num / MathUtils::GIB_BYTES_RATIO.den << " GB\n";
     auto ded_sys_mem = graphicsCardDesc.DedicatedSystemMemory;
-    out_stream << std::left << std::setw(22) << "System Memory:" << std::right << std::setw(30) << std::fixed << std::setprecision(1) << ded_sys_mem * MathUtils::GIB_BYTES_RATIO << " GB\n";
+    out_stream << std::left << std::setw(22) << "System Memory:" << std::right << std::setw(30) << std::fixed << std::setprecision(1) << static_cast<long double>(ded_sys_mem) * MathUtils::GIB_BYTES_RATIO.num / MathUtils::GIB_BYTES_RATIO.den << " GB\n";
     auto shared_mem = graphicsCardDesc.SharedSystemMemory;
-    out_stream << std::left << std::setw(22) << "Shared System Memory:" << std::right << std::setw(30) << std::fixed << std::setprecision(1) << shared_mem * MathUtils::GIB_BYTES_RATIO << " GB\n";
+    out_stream << std::left << std::setw(22) << "Shared System Memory:" << std::right << std::setw(30) << std::fixed << std::setprecision(1) << static_cast<long double>(shared_mem) * MathUtils::GIB_BYTES_RATIO.num / MathUtils::GIB_BYTES_RATIO.den << " GB\n";
     bool is_software = graphicsCardDesc.is_software;
     bool is_unspecified = graphicsCardDesc.is_unspecified;
     out_stream << std::left << std::setw(22) << "Adapter Type:" << std::right << std::setw(30);
