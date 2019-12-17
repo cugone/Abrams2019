@@ -6,9 +6,9 @@
 #include "Engine/RHI/RHIDeviceContext.hpp"
 
 
-VertexBuffer::VertexBuffer(const RHIDevice* owner, const buffer_t& buffer, const BufferUsage& usage, const BufferBindUsage& bindUsage) noexcept
+VertexBuffer::VertexBuffer(const RHIDevice& owner, const buffer_t& buffer, const BufferUsage& usage, const BufferBindUsage& bindUsage) noexcept
     : ArrayBuffer<Vertex3D>() {
-    D3D11_BUFFER_DESC buffer_desc = {};
+    D3D11_BUFFER_DESC buffer_desc{};
     buffer_desc.Usage = BufferUsageToD3DUsage(usage);
     buffer_desc.BindFlags = BufferBindUsageToD3DBindFlags(bindUsage);
     buffer_desc.CPUAccessFlags = CPUAccessFlagFromUsage(usage);
@@ -20,27 +20,26 @@ VertexBuffer::VertexBuffer(const RHIDevice* owner, const buffer_t& buffer, const
     init_data.pSysMem = buffer.data();
 
     _dx_buffer = nullptr;
-    HRESULT hr = owner->GetDxDevice()->CreateBuffer(&buffer_desc, &init_data, &_dx_buffer);
-    bool succeeded = SUCCEEDED(hr);
-    if(!succeeded) {
+    HRESULT hr = owner.GetDxDevice()->CreateBuffer(&buffer_desc, &init_data, _dx_buffer.GetAddressOf());
+    if(FAILED(hr)) {
         ERROR_AND_DIE("VertexBuffer failed to create.");
     }
 }
 
 VertexBuffer::~VertexBuffer() noexcept {
     if(IsValid()) {
-        _dx_buffer->Release();
+        _dx_buffer.Reset();
         _dx_buffer = nullptr;
     }
 }
 
-void VertexBuffer::Update(RHIDeviceContext* context, const buffer_t& buffer) noexcept {
-    D3D11_MAPPED_SUBRESOURCE resource = {};
-    auto dx_context = context->GetDxContext();
-    HRESULT hr = dx_context->Map(_dx_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0U, &resource);
+void VertexBuffer::Update(RHIDeviceContext& context, const buffer_t& buffer) noexcept {
+    D3D11_MAPPED_SUBRESOURCE resource{};
+    auto dx_context = context.GetDxContext();
+    HRESULT hr = dx_context->Map(_dx_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0U, &resource);
     bool succeeded = SUCCEEDED(hr);
     if(succeeded) {
         std::memcpy(resource.pData, buffer.data(), sizeof(arraybuffer_t) * buffer.size());
-        dx_context->Unmap(_dx_buffer, 0);
+        dx_context->Unmap(_dx_buffer.Get(), 0);
     }
 }

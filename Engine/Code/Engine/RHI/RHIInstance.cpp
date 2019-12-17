@@ -9,9 +9,6 @@
 #include "Engine/RHI/RHIDevice.hpp"
 #include "Engine/RHI/RHIOutput.hpp"
 
-RHIInstance* RHIInstance::_instance = nullptr;
-IDXGIDebug* RHIInstance::_debuggerInstance = nullptr;
-
 RHIInstance* const RHIInstance::CreateInstance() noexcept {
     if(_instance) {
         return _instance;
@@ -30,7 +27,7 @@ RHIInstance* const RHIInstance::CreateInstance() noexcept {
     if(debug_module) {
         using GetDebugModuleCB = HRESULT(WINAPI *)(REFIID, void**);
         GetDebugModuleCB cb = (GetDebugModuleCB) ::GetProcAddress(debug_module, "DXGIGetDebugInterface");
-        HRESULT hr = cb(__uuidof(IDXGIDebug), (void**)&_instance->_debuggerInstance);
+        HRESULT hr = cb(__uuidof(IDXGIDebug), reinterpret_cast<void**>(_instance->_debuggerInstance.GetAddressOf()));
         bool succeeded = SUCCEEDED(hr);
         ASSERT_OR_DIE(succeeded, "DXGIDugger failed to initialize.");
         _instance->_debuggerInstance->ReportLiveObjects(DXGI_DEBUG_ALL, (DXGI_DEBUG_RLO_FLAGS)(DXGI_DEBUG_RLO_IGNORE_INTERNAL | DXGI_DEBUG_RLO_DETAIL));
@@ -50,11 +47,18 @@ std::unique_ptr<RHIDevice> RHIInstance::CreateDevice(Renderer& renderer) const n
     return std::move(std::make_unique<RHIDevice>(renderer));
 }
 
+void RHIInstance::ReportLiveObjects() noexcept {
+#ifdef RENDER_DEBUG
+    if(_instance && _instance->_debuggerInstance) {
+        _instance->_debuggerInstance->ReportLiveObjects(DXGI_DEBUG_ALL, (DXGI_DEBUG_RLO_FLAGS)(DXGI_DEBUG_RLO_IGNORE_INTERNAL | DXGI_DEBUG_RLO_DETAIL));
+    }
+#endif
+}
+
 RHIInstance::~RHIInstance() noexcept {
 #ifdef RENDER_DEBUG
     if(_instance && _instance->_debuggerInstance) {
         _instance->_debuggerInstance->ReportLiveObjects(DXGI_DEBUG_ALL, (DXGI_DEBUG_RLO_FLAGS)(DXGI_DEBUG_RLO_IGNORE_INTERNAL | DXGI_DEBUG_RLO_DETAIL));
-        _instance->_debuggerInstance->Release();
         _instance->_debuggerInstance = nullptr;
     }
 #endif

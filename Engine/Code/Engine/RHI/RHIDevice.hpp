@@ -32,7 +32,7 @@ class Renderer;
 class RHIDevice {
 public:
     RHIDevice(Renderer& parent_renderer) noexcept;
-    ~RHIDevice() noexcept;
+    ~RHIDevice() = default;
 
     std::pair<std::unique_ptr<RHIOutput>, std::unique_ptr<RHIDeviceContext>> CreateOutputAndContext(const IntVector2& clientSize, const IntVector2& clientPosition = IntVector2::ZERO) noexcept;
 
@@ -57,7 +57,7 @@ public:
 
     mutable std::set<DisplayDesc, DisplayDescGTComparator> displayModes{};
 
-    void ResetSwapChainForHWnd() noexcept;
+    void ResetSwapChainForHWnd() const noexcept;
 
 private:
     std::pair<std::unique_ptr<RHIOutput>, std::unique_ptr<RHIDeviceContext>> CreateOutputAndContextFromWindow(std::unique_ptr<Window> window) noexcept;
@@ -66,8 +66,8 @@ private:
     void OutputAdapterInfo(const std::vector<AdapterInfo>& adapters) const noexcept;
     void GetDisplayModes(const std::vector<AdapterInfo>& adapters) const noexcept;
 
-    IDXGISwapChain4* CreateSwapChain(const Window& window, RHIFactory& factory) noexcept;
-    IDXGISwapChain4* RecreateSwapChain(const Window& window) noexcept;
+    Microsoft::WRL::ComPtr<IDXGISwapChain4> CreateSwapChain(const Window& window) noexcept;
+    Microsoft::WRL::ComPtr<IDXGISwapChain4> RecreateSwapChain(const Window& window) noexcept;
 
     std::vector<std::unique_ptr<ConstantBuffer>> CreateConstantBuffersUsingReflection(ID3D11ShaderReflection& cbufferReflection) const noexcept;
     std::unique_ptr<InputLayout> CreateInputLayoutFromByteCode(ID3DBlob* bytecode) const noexcept;
@@ -78,12 +78,12 @@ private:
     DisplayDesc GetDisplayModeMatchingDimensions(const std::vector<DisplayDesc>& descriptions, unsigned int w, unsigned int h) noexcept;
 
     Renderer& _parent_renderer;
-    IDXGISwapChain4* _dxgi_swapchain = nullptr;
-    ID3D11Device5* _dx_device = nullptr;
     RHIFactory _rhi_factory{};
     D3D_FEATURE_LEVEL _dx_highestSupportedFeatureLevel{};
+    Microsoft::WRL::ComPtr<IDXGISwapChain4> _dxgi_swapchain{};
+    Microsoft::WRL::ComPtr<ID3D11Device5> _dx_device{};
     bool _allow_tearing_supported = false;
 
-    void SetupDebuggingInfo() noexcept;
+    void SetupDebuggingInfo([[maybe_unused]] bool breakOnWarningSeverityOrLower = true) noexcept;
 
 };

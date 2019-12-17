@@ -2,13 +2,13 @@
 
 #include "Engine/Renderer/Texture.hpp"
 
-class RHIDevice;
+#include "Engine/Renderer/DirectX/DX11.hpp"
 
-struct ID3D11Texture2D;
+class RHIDevice;
 
 class TextureArray2D : public Texture {
 public:
-    TextureArray2D(const RHIDevice* device, ID3D11Texture2D* dxTexture) noexcept;
+    TextureArray2D(const RHIDevice& device, Microsoft::WRL::ComPtr<ID3D11Texture2D> dxTexture) noexcept;
     TextureArray2D(TextureArray2D&& r_other) noexcept;
     TextureArray2D(const TextureArray2D& other) noexcept = delete;
     TextureArray2D& operator=(const TextureArray2D& rhs) noexcept = delete;
@@ -16,12 +16,12 @@ public:
 
     virtual void SetDebugName([[maybe_unused]] const std::string& name) const noexcept override;
 
-    virtual ~TextureArray2D() noexcept;
+    virtual ~TextureArray2D() noexcept = default;
 
     virtual ID3D11Resource* GetDxResource() const noexcept override;
 
 protected:
 private:
-    ID3D11Texture2D* _dx_tex = nullptr;
-    void SetDeviceAndTexture(const RHIDevice* device, ID3D11Texture2D* texture) noexcept;
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> _dx_tex{};
+    void SetTexture(Microsoft::WRL::ComPtr<ID3D11Texture2D> texture) noexcept;
 };

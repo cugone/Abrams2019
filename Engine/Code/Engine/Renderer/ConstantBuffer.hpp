@@ -11,10 +11,10 @@ class RHIDeviceContext;
 
 class ConstantBuffer : public Buffer<void*> {
 public:
-    ConstantBuffer(const RHIDevice* owner, const buffer_t& buffer, const std::size_t& buffer_size, const BufferUsage& usage, const BufferBindUsage& bindUsage) noexcept;
+    ConstantBuffer(const RHIDevice& owner, const buffer_t& buffer, const std::size_t& buffer_size, const BufferUsage& usage, const BufferBindUsage& bindUsage) noexcept;
     virtual ~ConstantBuffer() noexcept;
 
-    void Update(RHIDeviceContext* context, const buffer_t& buffer) noexcept;
+    void Update(RHIDeviceContext& context, const buffer_t& buffer) noexcept;
 
 protected:
 private:

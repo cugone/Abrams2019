@@ -2,9 +2,7 @@
 
 #include "Engine/Core/BuildConfig.hpp"
 
-#include "Engine/Renderer/DirectX/DX11.hpp"
-
-Texture1D::Texture1D(const RHIDevice* device, ID3D11Texture1D* dxTexture) noexcept
+Texture1D::Texture1D(const RHIDevice& device, Microsoft::WRL::ComPtr<ID3D11Texture1D> dxTexture) noexcept
     : Texture(device)
     , _dx_tex(dxTexture)
 {
@@ -17,16 +15,8 @@ void Texture1D::SetDebugName([[maybe_unused]] const std::string& name) const noe
 #endif
 }
 
-Texture1D::~Texture1D() noexcept {
-    _device = nullptr;
-    if(_dx_tex) {
-        _dx_tex->Release();
-        _dx_tex = nullptr;
-    }
-}
-
 ID3D11Resource* Texture1D::GetDxResource() const noexcept {
-    return _dx_tex;
+    return _dx_tex.Get();
 }
 
 Texture1D::Texture1D(Texture1D&& r_other) noexcept

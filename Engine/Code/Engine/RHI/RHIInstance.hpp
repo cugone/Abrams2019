@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Engine/Renderer/DirectX/DX11.hpp"
 #include "Engine/RHI/RHITypes.hpp"
 
 #include <memory>
@@ -7,7 +8,6 @@
 class RHIOutput;
 class IntVector2;
 class RHIDevice;
-struct IDXGIDebug;
 class Renderer;
 
 class RHIInstance {
@@ -16,12 +16,12 @@ public:
     static void DestroyInstance() noexcept;
 
     std::unique_ptr<RHIDevice> CreateDevice(Renderer& renderer) const noexcept;
-
+    static void ReportLiveObjects() noexcept;
 protected:
     RHIInstance() = default;
     ~RHIInstance() noexcept;
 
 private:
-    static RHIInstance* _instance;
-    static IDXGIDebug* _debuggerInstance;
+    static inline RHIInstance* _instance = nullptr;
+    static inline Microsoft::WRL::ComPtr<IDXGIDebug> _debuggerInstance = nullptr;
 };

@@ -31,17 +31,6 @@ RHIDevice::RHIDevice(Renderer& parent_renderer) noexcept
     /* DO NOTHING */
 }
 
-RHIDevice::~RHIDevice() {
-    if(_dxgi_swapchain) {
-        _dxgi_swapchain->Release();
-        _dxgi_swapchain = nullptr;
-    }
-    if(_dx_device) {
-        _dx_device->Release();
-        _dx_device = nullptr;
-    }
-}
-
 std::pair<std::unique_ptr<RHIOutput>, std::unique_ptr<RHIDeviceContext>> RHIDevice::CreateOutputAndContext(const IntVector2& clientSize, const IntVector2& clientPosition /*= IntVector2::ZERO*/) noexcept {
     auto window = std::make_unique<Window>(clientPosition, clientSize);
     return CreateOutputAndContextFromWindow(std::move(window));
@@ -52,11 +41,11 @@ D3D_FEATURE_LEVEL RHIDevice::GetFeatureLevel() const noexcept {
 }
 
 ID3D11Device5* RHIDevice::GetDxDevice() const noexcept {
-    return _dx_device;
+    return _dx_device.Get();
 }
 
 IDXGISwapChain4* RHIDevice::GetDxSwapChain() const noexcept {
-    return _dxgi_swapchain;
+    return _dxgi_swapchain.Get();
 }
 
 bool RHIDevice::IsAllowTearingSupported() const noexcept {
@@ -64,54 +53,54 @@ bool RHIDevice::IsAllowTearingSupported() const noexcept {
 }
 
 std::unique_ptr<VertexBuffer> RHIDevice::CreateVertexBuffer(const VertexBuffer::buffer_t& vbo, const BufferUsage& usage, const BufferBindUsage& bindusage) const noexcept {
-    return std::move(std::make_unique<VertexBuffer>(this, vbo, usage, bindusage));
+    return std::move(std::make_unique<VertexBuffer>(*this, vbo, usage, bindusage));
 }
 
 std::unique_ptr<IndexBuffer> RHIDevice::CreateIndexBuffer(const IndexBuffer::buffer_t& ibo, const BufferUsage& usage, const BufferBindUsage& bindusage) const noexcept {
-    return std::move(std::make_unique<IndexBuffer>(this, ibo, usage, bindusage));
+    return std::move(std::make_unique<IndexBuffer>(*this, ibo, usage, bindusage));
 }
 
 std::unique_ptr<InputLayout> RHIDevice::CreateInputLayout() const noexcept {
-    return std::move(std::make_unique<InputLayout>(this));
+    return std::move(std::make_unique<InputLayout>(*this));
 }
 
 std::unique_ptr<StructuredBuffer> RHIDevice::CreateStructuredBuffer(const StructuredBuffer::buffer_t& buffer, std::size_t element_size, std::size_t element_count, const BufferUsage& usage, const BufferBindUsage& bindUsage) const noexcept {
-    return std::move(std::make_unique<StructuredBuffer>(this, buffer, element_size, element_count, usage, bindUsage));
+    return std::move(std::make_unique<StructuredBuffer>(*this, buffer, element_size, element_count, usage, bindUsage));
 }
 
 std::unique_ptr<ConstantBuffer> RHIDevice::CreateConstantBuffer(const ConstantBuffer::buffer_t& buffer, std::size_t buffer_size, const BufferUsage& usage, const BufferBindUsage& bindUsage) const noexcept {
-    return std::move(std::make_unique<ConstantBuffer>(this, buffer, buffer_size, usage, bindUsage));
+    return std::move(std::make_unique<ConstantBuffer>(*this, buffer, buffer_size, usage, bindUsage));
 }
 
 std::pair<std::unique_ptr<RHIOutput>, std::unique_ptr<RHIDeviceContext>> RHIDevice::CreateOutputAndContextFromWindow(std::unique_ptr<Window> window) noexcept {
 
     window->Open();
 
-    std::vector<AdapterInfo> adapters = _rhi_factory.GetAdaptersByHighPerformancePreference();
-    if(adapters.empty()) {
-        window.reset();
-        ERROR_AND_DIE("RHIDevice: Graphics card not found.")
+    Microsoft::WRL::ComPtr<ID3D11DeviceContext> context{};
+    {
+        DeviceInfo device_info{};
+        std::vector<AdapterInfo> adapters = _rhi_factory.GetAdaptersByHighPerformancePreference();
+        if(adapters.empty()) {
+            window.reset();
+            ERROR_AND_DIE("RHIDevice: Graphics card not found.")
+        }
+        OutputAdapterInfo(adapters);
+        GetDisplayModes(adapters);
+        device_info = CreateDeviceFromFirstAdapter(adapters);
+        _dx_device = device_info.dx_device;
+        _dx_highestSupportedFeatureLevel = device_info.highest_supported_feature_level;
+        context = device_info.dx_context;
     }
-    OutputAdapterInfo(adapters);
 
-    GetDisplayModes(adapters);
-    for(auto& info : adapters) {
-        info.Release();
-    }
-
-    auto device_info = CreateDeviceFromFirstAdapter(adapters);
-    _dx_device = device_info.dx_device;
-    _dx_highestSupportedFeatureLevel = device_info.highest_supported_feature_level;
-
-    _dxgi_swapchain = CreateSwapChain(*window, _rhi_factory);
+    _dxgi_swapchain = CreateSwapChain(*window);
     _allow_tearing_supported = _rhi_factory.QueryForAllowTearingSupport(*this);
     _rhi_factory.RestrictAltEnterToggle(*this);
 
     SetupDebuggingInfo();
 
     return std::make_pair(
-        std::move(std::make_unique<RHIOutput>(this, std::move(window))),
-        std::move(std::make_unique<RHIDeviceContext>(this, device_info.dx_context)));
+        std::move(std::make_unique<RHIOutput>(*this, std::move(window))),
+        std::move(std::make_unique<RHIDeviceContext>(*this, context)));
 }
 
 DeviceInfo RHIDevice::CreateDeviceFromFirstAdapter(const std::vector<AdapterInfo>& adapters) noexcept {
@@ -141,31 +130,28 @@ DeviceInfo RHIDevice::CreateDeviceFromFirstAdapter(const std::vector<AdapterInfo
     ss << "Selected Adapter: " << AdapterInfoToGraphicsCardDesc(*first_adapter_info).Description << std::endl;
     DebuggerPrintf(ss.str().c_str());
 
-    auto first_adapter = first_adapter_info->adapter;
+    const auto& first_adapter = first_adapter_info->adapter;
     bool has_adapter = first_adapter != nullptr;
-    ID3D11Device* temp_device{};
-    auto hr_device = ::D3D11CreateDevice(has_adapter ? first_adapter : nullptr
+    Microsoft::WRL::ComPtr<ID3D11Device> temp_device{};
+    auto hr_device = ::D3D11CreateDevice(has_adapter ? first_adapter.Get() : nullptr
         , has_adapter ? D3D_DRIVER_TYPE_UNKNOWN : D3D_DRIVER_TYPE_HARDWARE
         , nullptr
         , device_flags
         , feature_levels.data()
         , static_cast<unsigned int>(feature_levels.size())
         , D3D11_SDK_VERSION
-        , &temp_device
+        , temp_device.GetAddressOf()
         , &info.highest_supported_feature_level
-        , &info.dx_context);
+        , info.dx_context.GetAddressOf());
 
     GUARANTEE_OR_DIE(info.highest_supported_feature_level >= D3D_FEATURE_LEVEL_11_0, "Your graphics card does not support at least DirectX 11.0. Please update your drivers or hardware.");
 
     const auto hr_fail_str = StringUtils::FormatWindowsMessage(hr_device);
     GUARANTEE_OR_DIE(SUCCEEDED(hr_device), hr_fail_str.c_str());
 
-    auto hr_dxdevice5i = temp_device->QueryInterface(__uuidof(ID3D11Device5), (void**)&info.dx_device);
+    auto hr_dxdevice5i = temp_device.As(&info.dx_device);
     const auto hrdx5i_fail_str = StringUtils::FormatWindowsMessage(hr_dxdevice5i);
     GUARANTEE_OR_DIE(SUCCEEDED(hr_dxdevice5i), hrdx5i_fail_str.c_str());
-
-    temp_device->Release();
-    temp_device = nullptr;
 
     return info;
 }
@@ -184,18 +170,14 @@ void RHIDevice::OutputAdapterInfo(const std::vector<AdapterInfo>& adapters) cons
 
 void RHIDevice::GetDisplayModes(const std::vector<AdapterInfo>& adapters) const noexcept {
     for(auto& a : adapters) {
-        auto&& outputs = GetOutputsFromAdapter(a);
+        auto outputs = GetOutputsFromAdapter(a);
         for(const auto& o : outputs) {
             GetDisplayModeDescriptions(a, o, displayModes);
-        }
-        for(auto& o : outputs) {
-            o.output->Release();
-            o.output = nullptr;
         }
     }
 }
 
-IDXGISwapChain4* RHIDevice::CreateSwapChain(const Window& window, RHIFactory& factory) noexcept {
+Microsoft::WRL::ComPtr<IDXGISwapChain4> RHIDevice::CreateSwapChain(const Window& window) noexcept {
     DXGI_SWAP_CHAIN_DESC1 swap_chain_desc{};
     auto window_dims = window.GetClientDimensions();
     auto width = static_cast<unsigned int>(window_dims.x);
@@ -213,11 +195,10 @@ IDXGISwapChain4* RHIDevice::CreateSwapChain(const Window& window, RHIFactory& fa
     swap_chain_desc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
     swap_chain_desc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
 
-    IDXGISwapChain4* dxgi_swap_chain = factory.CreateSwapChainForHwnd(*this, window, swap_chain_desc);
-    return dxgi_swap_chain;
+    return _rhi_factory.CreateSwapChainForHwnd(*this, window, swap_chain_desc);
 }
 
-IDXGISwapChain4* RHIDevice::RecreateSwapChain(const Window& window) noexcept {
+Microsoft::WRL::ComPtr<IDXGISwapChain4> RHIDevice::RecreateSwapChain(const Window& window) noexcept {
     DXGI_SWAP_CHAIN_DESC1 swap_chain_desc{};
     auto window_dims = window.GetClientDimensions();
     auto width = static_cast<unsigned int>(window_dims.x);
@@ -235,8 +216,7 @@ IDXGISwapChain4* RHIDevice::RecreateSwapChain(const Window& window) noexcept {
     swap_chain_desc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
     swap_chain_desc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
 
-    IDXGISwapChain4* dxgi_swap_chain = _rhi_factory.CreateSwapChainForHwnd(*this, window, swap_chain_desc);
-    return dxgi_swap_chain;
+    return _rhi_factory.CreateSwapChainForHwnd(*this, window, swap_chain_desc);
 }
 
 std::vector<OutputInfo> RHIDevice::GetOutputsFromAdapter(const AdapterInfo& a) const noexcept {
@@ -245,24 +225,22 @@ std::vector<OutputInfo> RHIDevice::GetOutputsFromAdapter(const AdapterInfo& a) c
     }
     std::vector<OutputInfo> outputs{};
     unsigned int i = 0u;
-    IDXGIOutput6* cur_output = nullptr;
-    while(a.adapter->EnumOutputs(i++, reinterpret_cast<IDXGIOutput**>(&cur_output)) != DXGI_ERROR_NOT_FOUND) {
+    Microsoft::WRL::ComPtr<IDXGIOutput6> cur_output{};
+    while(a.adapter->EnumOutputs(i++, reinterpret_cast<IDXGIOutput**>(cur_output.GetAddressOf())) != DXGI_ERROR_NOT_FOUND) {
         OutputInfo cur_info{};
-        cur_info.output = cur_output;
         cur_output->GetDesc1(&cur_info.desc);
+        cur_info.output.Swap(cur_output);
         outputs.push_back(cur_info);
     }
-    return std::move(outputs);
+    return outputs;
 }
 
 void RHIDevice::GetPrimaryDisplayModeDescriptions(const AdapterInfo& adapter, decltype(displayModes)& descriptions) const noexcept {
-    auto&& outputs = GetOutputsFromAdapter(adapter);
+    const auto& outputs = GetOutputsFromAdapter(adapter);
     if(outputs.empty()) {
         return;
     }
     GetDisplayModeDescriptions(adapter, outputs.front(), descriptions);
-    outputs.clear();
-    outputs.shrink_to_fit();
 }
 
 void RHIDevice::GetDisplayModeDescriptions(const AdapterInfo& adapter, const OutputInfo& output, decltype(displayModes)& descriptions) const noexcept {
@@ -303,18 +281,18 @@ DisplayDesc RHIDevice::GetDisplayModeMatchingDimensions(const std::vector<Displa
     return{};
 }
 
-void RHIDevice::SetupDebuggingInfo() noexcept {
+void RHIDevice::SetupDebuggingInfo([[maybe_unused]]bool breakOnWarningSeverityOrLower /*= true*/) noexcept {
 #ifdef RENDER_DEBUG
-    ID3D11Debug* _dx_debug = nullptr;
-    if(SUCCEEDED(_dx_device->QueryInterface(__uuidof(ID3D11Debug), (void**)&_dx_debug))) {
-        ID3D11InfoQueue* _dx_infoqueue = nullptr;
-        if(SUCCEEDED(_dx_debug->QueryInterface(__uuidof(ID3D11InfoQueue), (void**)&_dx_infoqueue))) {
+    Microsoft::WRL::ComPtr<ID3D11Debug> _dx_debug{};
+    if(SUCCEEDED(_dx_device.As(&_dx_debug))) {
+        Microsoft::WRL::ComPtr<ID3D11InfoQueue> _dx_infoqueue{};
+        if(SUCCEEDED(_dx_debug.As(&_dx_infoqueue))) {
             _dx_infoqueue->SetMuteDebugOutput(false);
             _dx_infoqueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY::D3D11_MESSAGE_SEVERITY_CORRUPTION, true);
             _dx_infoqueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY::D3D11_MESSAGE_SEVERITY_ERROR, true);
-            _dx_infoqueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY::D3D11_MESSAGE_SEVERITY_WARNING, true);
-            _dx_infoqueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY::D3D11_MESSAGE_SEVERITY_INFO, true);
-            _dx_infoqueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY::D3D11_MESSAGE_SEVERITY_MESSAGE, true);
+            _dx_infoqueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY::D3D11_MESSAGE_SEVERITY_WARNING, breakOnWarningSeverityOrLower);
+            _dx_infoqueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY::D3D11_MESSAGE_SEVERITY_INFO, breakOnWarningSeverityOrLower);
+            _dx_infoqueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY::D3D11_MESSAGE_SEVERITY_MESSAGE, breakOnWarningSeverityOrLower);
             std::vector<D3D11_MESSAGE_ID> hidden = {
                 D3D11_MESSAGE_ID_SETPRIVATEDATA_CHANGINGPARAMS,
             };
@@ -322,11 +300,7 @@ void RHIDevice::SetupDebuggingInfo() noexcept {
             filter.DenyList.NumIDs = static_cast<unsigned int>(hidden.size());
             filter.DenyList.pIDList = hidden.data();
             _dx_infoqueue->AddStorageFilterEntries(&filter);
-            _dx_infoqueue->Release();
-            _dx_infoqueue = nullptr;
         }
-        _dx_debug->Release();
-        _dx_debug = nullptr;
     }
 #endif
 }
@@ -335,18 +309,21 @@ std::vector<std::unique_ptr<ConstantBuffer>> RHIDevice::CreateConstantBuffersFro
     if(!bytecode) {
         return {};
     }
-    ID3D11ShaderReflection* cbufferReflection = nullptr;
+    ID3D11ShaderReflection* cbufferReflection{};
     if(FAILED(::D3DReflect(bytecode->GetBufferPointer(), bytecode->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&cbufferReflection))) {
         return {};
     }
     auto cbuffers = std::move(CreateConstantBuffersUsingReflection(*cbufferReflection));
-    cbufferReflection->Release();
-    cbufferReflection = nullptr;
     return std::move(cbuffers);
 }
 
-void RHIDevice::ResetSwapChainForHWnd() noexcept {
-    _dxgi_swapchain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, _rhi_factory.QueryForAllowTearingSupport(*this) ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0);
+void RHIDevice::ResetSwapChainForHWnd() const noexcept {
+    auto hr = _dxgi_swapchain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, _rhi_factory.QueryForAllowTearingSupport(*this) ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0);
+    if(FAILED(hr)) {
+        std::ostringstream ss;
+        ss << StringUtils::FormatWindowsMessage(hr);
+        ERROR_AND_DIE(ss.str().c_str());
+    }
 }
 
 std::vector<std::unique_ptr<ConstantBuffer>> RHIDevice::CreateConstantBuffersUsingReflection(ID3D11ShaderReflection& cbufferReflection) const noexcept {
@@ -423,7 +400,7 @@ std::unique_ptr<InputLayout> RHIDevice::CreateInputLayoutFromByteCode(ID3DBlob* 
     if(FAILED(::D3DReflect(bytecode->GetBufferPointer(), bytecode->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&vertexReflection))) {
         return nullptr;
     }
-    auto il = std::make_unique<InputLayout>(this);
+    auto il = std::make_unique<InputLayout>(*this);
     il->PopulateInputLayoutUsingReflection(*vertexReflection);
     il->CreateInputLayout(bytecode->GetBufferPointer(), bytecode->GetBufferSize());
     return std::move(il);

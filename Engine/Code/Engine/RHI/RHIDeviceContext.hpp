@@ -26,8 +26,8 @@ enum class PrimitiveType : uint32_t;
 
 class RHIDeviceContext {
 public:
-    RHIDeviceContext(const RHIDevice* parentDevice, ID3D11DeviceContext* deviceContext) noexcept;
-    ~RHIDeviceContext() noexcept;
+    RHIDeviceContext(const RHIDevice& parentDevice, const Microsoft::WRL::ComPtr<ID3D11DeviceContext>& deviceContext) noexcept;
+    ~RHIDeviceContext() = default;
 
     void ClearState() noexcept;
     void Flush() noexcept;
@@ -76,8 +76,8 @@ private:
 
     static constexpr unsigned int StructuredBufferSlotOffset = (D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT / 2);
 
-    const RHIDevice* _device = nullptr;
-    ID3D11DeviceContext* _dx_context = nullptr;
+    const RHIDevice& _device;
+    Microsoft::WRL::ComPtr<ID3D11DeviceContext> _dx_context{};
 
     friend class Renderer;
 };

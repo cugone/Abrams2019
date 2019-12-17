@@ -162,10 +162,11 @@ public:
     bool RegisterTexture(const std::string& name, std::unique_ptr<Texture> texture) noexcept;
     void SetTexture(Texture* texture, unsigned int registerIndex = 0) noexcept;
 
+    Texture* GetFullscreenTexture() const noexcept;
     Texture* GetTexture(const std::string& nameOrFile) noexcept;
 
-    std::unique_ptr<Texture> CreateDepthStencil(const RHIDevice* owner, const IntVector2& dimensions) noexcept;
-    std::unique_ptr<Texture> CreateRenderableDepthStencil(const RHIDevice* owner, const IntVector2& dimensions) noexcept;
+    std::unique_ptr<Texture> CreateDepthStencil(const RHIDevice& owner, const IntVector2& dimensions) noexcept;
+    std::unique_ptr<Texture> CreateRenderableDepthStencil(const RHIDevice& owner, const IntVector2& dimensions) noexcept;
 
     Texture* GetDefaultDepthStencil() const noexcept;
     void SetDepthStencilState(DepthStencilState* depthstencil) noexcept;
@@ -375,8 +376,9 @@ public:
     void SetWinProc(const std::function<bool(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) >& windowProcedure) noexcept;
 
     void CopyTexture(Texture* src, Texture* dst) noexcept;
-    void ResizeBuffers(const  int width, const  int height) noexcept;
+    void ResizeBuffers() noexcept;
     void ClearState() noexcept;
+
 protected:
 private:
     struct DrawInstruction {
@@ -435,8 +437,6 @@ private:
     void CreateDefaultColorTextures() noexcept;
     std::unique_ptr<Texture> CreateDefaultColorTexture(const Rgba& color) noexcept;
     
-    void CreateAndRegisterDefaultDepthStencil() noexcept;
-
     void CreateAndRegisterDefaultShaderPrograms() noexcept;
     std::unique_ptr<ShaderProgram> CreateDefaultShaderProgram() noexcept;
     std::unique_ptr<ShaderProgram> CreateDefaultUnlitShaderProgram() noexcept;
@@ -530,5 +530,6 @@ private:
     std::map<std::string, std::unique_ptr<DepthStencilState>> _depthstencils;
     std::map<std::string, std::unique_ptr<KerningFont>> _fonts;
     bool _vsync = false;
+    bool _materials_need_updating = true;
     friend class Shader;
 };

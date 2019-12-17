@@ -2,7 +2,7 @@
 
 #include "Engine/Renderer/DirectX/DX11.hpp"
 
-Texture::Texture(const RHIDevice* device) noexcept
+Texture::Texture(const RHIDevice& device) noexcept
     : _device(device)
 {
     /* DO NOTHING */
@@ -13,54 +13,42 @@ Texture::Texture(Texture&& r_other) noexcept
 ,_dimensions(r_other._dimensions)
 ,_isLoaded(r_other._isLoaded)
 ,_isArray(r_other._isArray)
-,_dsv(r_other._dsv)
-,_rtv(r_other._rtv)
+,_dsv(std::move(r_other._dsv))
+,_rtv(std::move(r_other._rtv))
+,_srv(std::move(r_other._srv))
+,_uav(std::move(r_other._uav))
 {
-    r_other._device = nullptr;
+    r_other._dsv = nullptr;
+    r_other._rtv = nullptr;
+    r_other._srv = nullptr;
+    r_other._uav = nullptr;
     r_other._dimensions = IntVector3::ZERO;
     r_other._isLoaded = false;
     r_other._isArray = false;
-    r_other._dsv = nullptr;
-    r_other._rtv = nullptr;
 }
 
 Texture& Texture::operator=(Texture&& rhs) noexcept {
-    _device = rhs._device;
+
     _dimensions = rhs._dimensions;
     _isLoaded = rhs._isLoaded;
     _isArray = rhs._isArray;
-    _dsv = rhs._dsv;
-    _rtv = rhs._rtv;
+    _dsv = std::move(rhs._dsv);
+    _rtv = std::move(rhs._rtv);
+    _srv = std::move(rhs._srv);
+    _uav = std::move(rhs._uav);
 
-    rhs._device = nullptr;
+    rhs._dsv = nullptr;
+    rhs._rtv = nullptr;
+    rhs._srv = nullptr;
+    rhs._uav = nullptr;
     rhs._dimensions = IntVector3::ZERO;
     rhs._isLoaded = false;
     rhs._isArray = false;
-    rhs._dsv = nullptr;
-    rhs._rtv = nullptr;
 
     return *this;
 }
 
-Texture::~Texture() noexcept {
-    _device = nullptr;
-    if(_dsv) {
-        _dsv->Release();
-        _dsv = nullptr;
-    }
-    if(_rtv) {
-        _rtv->Release();
-        _rtv = nullptr;
-    }
-    if(_srv) {
-        _srv->Release();
-        _srv = nullptr;
-    }
-    if(_uav) {
-        _uav->Release();
-        _uav = nullptr;
-    }
-}
+Texture::~Texture() = default;
 
 const IntVector3& Texture::GetDimensions() const noexcept {
     return _dimensions;
@@ -83,33 +71,33 @@ bool Texture::IsArray() const noexcept {
 }
 
 ID3D11DepthStencilView* Texture::GetDepthStencilView() const noexcept {
-    return _dsv;
+    return _dsv.Get();
 }
 
 ID3D11RenderTargetView* Texture::GetRenderTargetView() const noexcept {
-    return _rtv;
+    return _rtv.Get();
 }
 
 ID3D11ShaderResourceView* Texture::GetShaderResourceView() const noexcept {
-    return _srv;
+    return _srv.Get();
 }
 
 ID3D11UnorderedAccessView* Texture::GetUnorderedAccessView() const noexcept {
-    return _uav;
+    return _uav.Get();
 }
 
 ID3D11DepthStencilView* Texture::GetDepthStencilView() noexcept {
-    return _dsv;
+    return _dsv.Get();
 }
 
 ID3D11RenderTargetView* Texture::GetRenderTargetView() noexcept {
-    return _rtv;
+    return _rtv.Get();
 }
 
 ID3D11ShaderResourceView* Texture::GetShaderResourceView() noexcept {
-    return _srv;
+    return _srv.Get();
 }
 
 ID3D11UnorderedAccessView* Texture::GetUnorderedAccessView() noexcept {
-    return _uav;
+    return _uav.Get();
 }

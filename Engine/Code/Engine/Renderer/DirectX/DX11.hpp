@@ -26,15 +26,11 @@
 #include <string>
 #include <cstdint>
 
+#include <wrl/client.h>
+
 struct AdapterInfo {
-    IDXGIAdapter4* adapter = nullptr;
+    Microsoft::WRL::ComPtr<IDXGIAdapter4> adapter{};
     DXGI_ADAPTER_DESC3 desc{};
-    void Release() noexcept {
-        if(adapter) {
-            adapter->Release();
-            adapter = nullptr;
-        }
-    }
 };
 
 enum class AdapterPreference {
@@ -47,14 +43,14 @@ enum class AdapterPreference {
 GraphicsCardDesc AdapterInfoToGraphicsCardDesc(const AdapterInfo& adapterInfo) noexcept;
 
 struct OutputInfo {
-    IDXGIOutput6* output = nullptr;
+    Microsoft::WRL::ComPtr<IDXGIOutput6> output{};
     DXGI_OUTPUT_DESC1 desc{};
 };
 
 struct DeviceInfo {
     D3D_FEATURE_LEVEL highest_supported_feature_level{};
-    ID3D11DeviceContext* dx_context = nullptr;
-    ID3D11Device5* dx_device = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11DeviceContext> dx_context{};
+    Microsoft::WRL::ComPtr<ID3D11Device5> dx_device{};
 };
 
 using bitfield8_t = std::uint8_t;

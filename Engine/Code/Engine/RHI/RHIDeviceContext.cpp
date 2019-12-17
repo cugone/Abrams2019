@@ -18,19 +18,11 @@
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/VertexBuffer.hpp"
 
-RHIDeviceContext::RHIDeviceContext(const RHIDevice* parentDevice, ID3D11DeviceContext* deviceContext) noexcept
+RHIDeviceContext::RHIDeviceContext(const RHIDevice& parentDevice, const Microsoft::WRL::ComPtr<ID3D11DeviceContext>& deviceContext) noexcept
     : _device(parentDevice)
     , _dx_context(deviceContext)
 {
     /* DO NOTHING */
-}
-
-RHIDeviceContext::~RHIDeviceContext() noexcept {
-    _device = nullptr;
-    if(_dx_context) {
-        _dx_context->Release();
-        _dx_context = nullptr;
-    }
 }
 
 void RHIDeviceContext::ClearState() noexcept {
@@ -99,7 +91,7 @@ void RHIDeviceContext::SetVertexBuffer(unsigned int startIndex, VertexBuffer* bu
     unsigned int stride = sizeof(VertexBuffer::buffer_t);
     unsigned int offsets = 0;
     if(buffer) {
-        ID3D11Buffer* const dx_buffer = buffer->GetDxBuffer();
+        ID3D11Buffer* const dx_buffer = buffer->GetDxBuffer().Get();
         _dx_context->IASetVertexBuffers(startIndex, 1, &dx_buffer, &stride, &offsets);
     } else {
         ID3D11Buffer* nobuffer[1] = { nullptr };
@@ -109,7 +101,7 @@ void RHIDeviceContext::SetVertexBuffer(unsigned int startIndex, VertexBuffer* bu
 
 void RHIDeviceContext::SetIndexBuffer(IndexBuffer* buffer) noexcept {
     if(buffer) {
-        ID3D11Buffer* const dx_buffer = buffer->GetDxBuffer();
+        ID3D11Buffer* const dx_buffer = buffer->GetDxBuffer().Get();
         _dx_context->IASetIndexBuffer(dx_buffer, DXGI_FORMAT_R32_UINT, 0);
     } else {
         _dx_context->IASetIndexBuffer(nullptr, DXGI_FORMAT_R32_UINT, 0);
@@ -118,7 +110,7 @@ void RHIDeviceContext::SetIndexBuffer(IndexBuffer* buffer) noexcept {
 
 void RHIDeviceContext::SetConstantBuffer(unsigned int index, ConstantBuffer* buffer) noexcept {
     if(buffer) {
-        ID3D11Buffer* const dx_buffer = buffer->GetDxBuffer();
+        ID3D11Buffer* const dx_buffer = buffer->GetDxBuffer().Get();
         _dx_context->VSSetConstantBuffers(index, 1, &dx_buffer);
         _dx_context->PSSetConstantBuffers(index, 1, &dx_buffer);
         _dx_context->DSSetConstantBuffers(index, 1, &dx_buffer);
@@ -136,7 +128,7 @@ void RHIDeviceContext::SetConstantBuffer(unsigned int index, ConstantBuffer* buf
 
 void RHIDeviceContext::SetStructuredBuffer(unsigned int index, StructuredBuffer* buffer) noexcept {
     if(buffer) {
-        ID3D11ShaderResourceView* const dx_buffer = buffer->dx_srv;
+        ID3D11ShaderResourceView* const dx_buffer = buffer->dx_srv.Get();
         _dx_context->VSSetShaderResources(index + StructuredBufferSlotOffset, 1, &dx_buffer);
         _dx_context->PSSetShaderResources(index + StructuredBufferSlotOffset, 1, &dx_buffer);
         _dx_context->DSSetShaderResources(index + StructuredBufferSlotOffset, 1, &dx_buffer);
@@ -166,7 +158,7 @@ void RHIDeviceContext::SetComputeTexture(unsigned int index, Texture* texture) n
 
 void RHIDeviceContext::SetComputeConstantBuffer(unsigned int index, ConstantBuffer* buffer) noexcept {
     if(buffer) {
-        ID3D11Buffer * const dx_buffer = buffer->GetDxBuffer();
+        ID3D11Buffer * const dx_buffer = buffer->GetDxBuffer().Get();
         _dx_context->CSSetConstantBuffers(index, 1, &dx_buffer);
     } else {
         ID3D11Buffer* nobuffer[1] = { nullptr };
@@ -176,7 +168,7 @@ void RHIDeviceContext::SetComputeConstantBuffer(unsigned int index, ConstantBuff
 
 void RHIDeviceContext::SetComputeStructuredBuffer(unsigned int index, StructuredBuffer* buffer) noexcept {
     if(buffer) {
-        ID3D11ShaderResourceView* const dx_buffer = buffer->dx_srv;
+        ID3D11ShaderResourceView* const dx_buffer = buffer->dx_srv.Get();
         _dx_context->CSSetShaderResources(index + StructuredBufferSlotOffset, 1, &dx_buffer);
     } else {
         ID3D11ShaderResourceView* nobuffer[1] = { nullptr };
@@ -193,11 +185,11 @@ void RHIDeviceContext::DrawIndexed(std::size_t vertexCount, std::size_t startVer
 }
 
 const RHIDevice* RHIDeviceContext::GetParentDevice() const noexcept {
-    return _device;
+    return &_device;
 }
 
 ID3D11DeviceContext* RHIDeviceContext::GetDxContext() noexcept {
-    return _dx_context;
+    return _dx_context.Get();
 }
 
 void RHIDeviceContext::SetComputeShaderProgram(ShaderProgram* shaderProgram /*= nullptr*/) noexcept {

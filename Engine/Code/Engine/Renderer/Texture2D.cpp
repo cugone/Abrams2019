@@ -3,16 +3,17 @@
 
 #include "Engine/Core/BuildConfig.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
+#include "Engine/Core/StringUtils.hpp"
 
 #include "Engine/Renderer/DirectX/DX11.hpp"
 
 #include "Engine/RHI/RHIDevice.hpp"
 
-Texture2D::Texture2D(const RHIDevice* device, ID3D11Texture2D* dxTexture) noexcept
+Texture2D::Texture2D(const RHIDevice& device, Microsoft::WRL::ComPtr<ID3D11Texture2D> dxTexture) noexcept
     : Texture(device)
     , _dx_tex(dxTexture)
 {
-    SetDeviceAndTexture(device, _dx_tex);
+    SetTexture(_dx_tex);
 }
 
 void Texture2D::SetDebugName([[maybe_unused]] const std::string& name) const noexcept {
@@ -21,20 +22,12 @@ void Texture2D::SetDebugName([[maybe_unused]] const std::string& name) const noe
 #endif
 }
 
-Texture2D::~Texture2D() noexcept {
-    _device = nullptr;
-    if(_dx_tex) {
-        _dx_tex->Release();
-        _dx_tex = nullptr;
-    }
-}
-
 IntVector2 Texture2D::GetDimensions() const noexcept {
     return IntVector2(_dimensions);
 }
 
 ID3D11Resource* Texture2D::GetDxResource() const noexcept {
-    return _dx_tex;
+    return _dx_tex.Get();
 }
 
 ID3D11Texture2D* Texture2D::GetDxTexture() noexcept {
@@ -55,9 +48,7 @@ Texture2D& Texture2D::operator=(Texture2D&& rhs) noexcept {
     return *this;
 }
 
-void Texture2D::SetDeviceAndTexture(const RHIDevice* device, ID3D11Texture2D* texture) noexcept {
-
-    _device = device;
+void Texture2D::SetTexture(Microsoft::WRL::ComPtr<ID3D11Texture2D> texture) noexcept {
     _dx_tex = texture;
 
     D3D11_TEXTURE2D_DESC t_desc;
@@ -66,8 +57,13 @@ void Texture2D::SetDeviceAndTexture(const RHIDevice* device, ID3D11Texture2D* te
     _dimensions = IntVector3(t_desc.Width, t_desc.Height, depth == 1 ? 0 : depth);
 
     bool success = true;
+    std::string error_str{"Set device and texture failed. Reasons:\n"};
     if(t_desc.BindFlags & D3D11_BIND_RENDER_TARGET) {
-        success &= SUCCEEDED(_device->GetDxDevice()->CreateRenderTargetView(_dx_tex, nullptr, &_rtv)) == true;
+        auto hr = _device.GetDxDevice()->CreateRenderTargetView(_dx_tex.Get(), nullptr, &_rtv);
+        if(FAILED(hr)) {
+            success &= false;
+            error_str += StringUtils::FormatWindowsMessage(hr) + '\n';
+        }
     }
 
     if(bool is_depthstencil = (t_desc.BindFlags & D3D11_BIND_DEPTH_STENCIL)) {
@@ -77,7 +73,11 @@ void Texture2D::SetDeviceAndTexture(const RHIDevice* device, ID3D11Texture2D* te
         bool is_renderable_depthstencil = is_depthstencil && (t_desc.BindFlags & D3D11_BIND_SHADER_RESOURCE);
         desc.Format = is_renderable_depthstencil ? ImageFormatToDxgiFormat(ImageFormat::D32_Float)
                                                  : ImageFormatToDxgiFormat(ImageFormat::D24_UNorm_S8_UInt);
-        success &= SUCCEEDED(_device->GetDxDevice()->CreateDepthStencilView(_dx_tex, &desc, &_dsv)) == true;
+        auto hr = _device.GetDxDevice()->CreateDepthStencilView(_dx_tex.Get(), &desc, &_dsv);
+        if(FAILED(hr)) {
+            success &= false;
+            error_str += StringUtils::FormatWindowsMessage(hr) + '\n';
+        }
     }
 
     if(t_desc.BindFlags & D3D11_BIND_SHADER_RESOURCE) {
@@ -86,9 +86,17 @@ void Texture2D::SetDeviceAndTexture(const RHIDevice* device, ID3D11Texture2D* te
             desc.Format = DXGI_FORMAT_R32_FLOAT;
             desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
             desc.Texture2D.MipLevels = 1;
-            success &= SUCCEEDED(_device->GetDxDevice()->CreateShaderResourceView(_dx_tex, &desc, &_srv)) == true;
+            auto hr = _device.GetDxDevice()->CreateShaderResourceView(_dx_tex.Get(), &desc, &_srv);
+            if(FAILED(hr)) {
+                success &= false;
+                error_str += StringUtils::FormatWindowsMessage(hr) + '\n';
+            }
         } else {
-            success &= SUCCEEDED(_device->GetDxDevice()->CreateShaderResourceView(_dx_tex, nullptr, &_srv)) == true;
+            auto hr = _device.GetDxDevice()->CreateShaderResourceView(_dx_tex.Get(), nullptr, &_srv);
+            if(FAILED(hr)) {
+                success &= false;
+                error_str += StringUtils::FormatWindowsMessage(hr) + '\n';
+            }
         }
     }
 
@@ -98,7 +106,18 @@ void Texture2D::SetDeviceAndTexture(const RHIDevice* device, ID3D11Texture2D* te
         desc.Texture2D.MipSlice = 0;
         desc.Format = t_desc.Format;
 
-        success &= SUCCEEDED(_device->GetDxDevice()->CreateUnorderedAccessView(_dx_tex, &desc, &_uav)) == true;
+        auto hr = _device.GetDxDevice()->CreateUnorderedAccessView(_dx_tex.Get(), &desc, &_uav);
+        if(FAILED(hr)) {
+            success &= false;
+            error_str += StringUtils::FormatWindowsMessage(hr) + '\n';
+        }
     }
-    ASSERT_OR_DIE(success, "Set device and texture failed.");
+
+    if(!success) {
+        if(_dsv) { _dsv = nullptr; }
+        if(_rtv) { _rtv = nullptr; }
+        if(_srv) { _srv = nullptr; }
+        if(_uav) { _uav = nullptr; }
+        ERROR_AND_DIE(error_str.c_str());
+    }
 }

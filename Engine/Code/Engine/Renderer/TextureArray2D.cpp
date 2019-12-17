@@ -3,16 +3,17 @@
 
 #include "Engine/Core/BuildConfig.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
+#include "Engine/Core/StringUtils.hpp"
 
 #include "Engine/Renderer/DirectX/DX11.hpp"
 
 #include "Engine/RHI/RHIDevice.hpp"
 
-TextureArray2D::TextureArray2D(const RHIDevice* device, ID3D11Texture2D* dxTexture) noexcept
+TextureArray2D::TextureArray2D(const RHIDevice& device, Microsoft::WRL::ComPtr<ID3D11Texture2D> dxTexture) noexcept
     : Texture(device)
     , _dx_tex(dxTexture)
 {
-    SetDeviceAndTexture(device, _dx_tex);
+    SetTexture(_dx_tex);
 }
 
 void TextureArray2D::SetDebugName([[maybe_unused]] const std::string& name) const noexcept {
@@ -21,16 +22,8 @@ void TextureArray2D::SetDebugName([[maybe_unused]] const std::string& name) cons
 #endif
 }
 
-TextureArray2D::~TextureArray2D() noexcept {
-    _device = nullptr;
-    if(_dx_tex) {
-        _dx_tex->Release();
-        _dx_tex = nullptr;
-    }
-}
-
 ID3D11Resource* TextureArray2D::GetDxResource() const noexcept {
-    return _dx_tex;
+    return _dx_tex.Get();
 }
 
 TextureArray2D::TextureArray2D(TextureArray2D&& r_other) noexcept
@@ -47,9 +40,8 @@ TextureArray2D& TextureArray2D::operator=(TextureArray2D&& rhs) noexcept {
     return *this;
 }
 
-void TextureArray2D::SetDeviceAndTexture(const RHIDevice* device, ID3D11Texture2D* texture) noexcept {
+void TextureArray2D::SetTexture(Microsoft::WRL::ComPtr<ID3D11Texture2D> texture) noexcept {
 
-    _device = device;
     _dx_tex = texture;
 
     D3D11_TEXTURE2D_DESC t_desc;
@@ -59,6 +51,7 @@ void TextureArray2D::SetDeviceAndTexture(const RHIDevice* device, ID3D11Texture2
     _isArray = true;
 
     bool success = true;
+    std::string error_str{"SetTexture failed. Reasons:\n"};
     if(t_desc.BindFlags & D3D11_BIND_RENDER_TARGET) {
         D3D11_RENDER_TARGET_VIEW_DESC rtv_desc{};
         rtv_desc.Format = t_desc.Format;
@@ -66,7 +59,11 @@ void TextureArray2D::SetDeviceAndTexture(const RHIDevice* device, ID3D11Texture2
         rtv_desc.Texture2DArray.ArraySize = depth;
         rtv_desc.Texture2DArray.MipSlice = 0;
         rtv_desc.Texture2DArray.FirstArraySlice = 0;
-        success &= SUCCEEDED(_device->GetDxDevice()->CreateRenderTargetView(_dx_tex, &rtv_desc, &_rtv)) == true;
+        auto hr = _device.GetDxDevice()->CreateRenderTargetView(_dx_tex.Get(), &rtv_desc, &_rtv);
+        if(FAILED(hr)) {
+            success &= false;
+            error_str += StringUtils::FormatWindowsMessage(hr) + '\n';
+        }
     }
 
     if(t_desc.BindFlags & D3D11_BIND_SHADER_RESOURCE) {
@@ -77,7 +74,11 @@ void TextureArray2D::SetDeviceAndTexture(const RHIDevice* device, ID3D11Texture2
         srv_desc.Texture2DArray.MipLevels = t_desc.MipLevels;
         srv_desc.Texture2DArray.FirstArraySlice = 0;
         srv_desc.Texture2DArray.MostDetailedMip = 0;
-        success &= SUCCEEDED(_device->GetDxDevice()->CreateShaderResourceView(_dx_tex, &srv_desc, &_srv)) == true;
+        auto hr = _device.GetDxDevice()->CreateShaderResourceView(_dx_tex.Get(), &srv_desc, &_srv);
+        if(FAILED(hr)) {
+            success &= false;
+            error_str += StringUtils::FormatWindowsMessage(hr) + '\n';
+        }
     }
 
     if(t_desc.BindFlags & D3D11_BIND_DEPTH_STENCIL) {
@@ -87,7 +88,11 @@ void TextureArray2D::SetDeviceAndTexture(const RHIDevice* device, ID3D11Texture2
         ds_desc.Texture2DArray.ArraySize = depth;
         ds_desc.Texture2DArray.MipSlice = 0;
         ds_desc.Texture2DArray.FirstArraySlice = 0;
-        success &= SUCCEEDED(_device->GetDxDevice()->CreateDepthStencilView(_dx_tex, &ds_desc, &_dsv));
+        auto hr = _device.GetDxDevice()->CreateDepthStencilView(_dx_tex.Get(), &ds_desc, &_dsv);
+        if(FAILED(hr)) {
+            success &= false;
+            error_str += StringUtils::FormatWindowsMessage(hr) + '\n';
+        }
     }
 
     if(t_desc.BindFlags & D3D11_BIND_UNORDERED_ACCESS) {
@@ -97,13 +102,17 @@ void TextureArray2D::SetDeviceAndTexture(const RHIDevice* device, ID3D11Texture2
         uav_desc.Texture2DArray.MipSlice = 0;
         uav_desc.Texture2DArray.FirstArraySlice = 0;
         uav_desc.Texture2DArray.ArraySize = depth;
-        success &= SUCCEEDED(_device->GetDxDevice()->CreateUnorderedAccessView(_dx_tex, &uav_desc, &_uav));
+        auto hr = _device.GetDxDevice()->CreateUnorderedAccessView(_dx_tex.Get(), &uav_desc, &_uav);
+        if(FAILED(hr)) {
+            success &= false;
+            error_str += StringUtils::FormatWindowsMessage(hr) + '\n';
+        }
     }
     if(!success) {
-        if(_dsv) { _dsv->Release(); _dsv = nullptr; }
-        if(_rtv) { _rtv->Release(); _rtv = nullptr; }
-        if(_srv) { _srv->Release(); _srv = nullptr; }
-        if(_uav) { _uav->Release(); _uav = nullptr; }
-        ERROR_AND_DIE("Set device and texture failed.");
+        if(_dsv) { _dsv = nullptr; }
+        if(_rtv) { _rtv = nullptr; }
+        if(_srv) { _srv = nullptr; }
+        if(_uav) { _uav = nullptr; }
+        ERROR_AND_DIE(error_str.c_str());
     }
 }

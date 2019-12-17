@@ -6,25 +6,14 @@
 
 #include "Engine/RHI/RHIDevice.hpp"
 
-InputLayout::InputLayout(const RHIDevice* parent_device) noexcept
+InputLayout::InputLayout(const RHIDevice& parent_device) noexcept
 : _parent_device(parent_device)
 {
     /* DO NOTHING */
 }
 
-InputLayout::~InputLayout() noexcept {
-
-    _elements.clear();
-    _elements.shrink_to_fit();
-
-    if(_dx_input_layout) {
-        _dx_input_layout->Release();
-        _dx_input_layout = nullptr;
-    }
-}
-
 void InputLayout::AddElement(std::size_t memberByteOffset, const ImageFormat& format, const char* semantic, unsigned int inputSlot /*= 0*/, bool isVertexData /*= true*/, unsigned int instanceDataStepRate /*= 0*/) noexcept {
-    D3D11_INPUT_ELEMENT_DESC e_desc = {};
+    D3D11_INPUT_ELEMENT_DESC e_desc{};
     e_desc.Format = ImageFormatToDxgiFormat(format);
     e_desc.InputSlotClass = isVertexData ? D3D11_INPUT_PER_VERTEX_DATA : D3D11_INPUT_PER_INSTANCE_DATA;
     e_desc.InstanceDataStepRate = isVertexData ? 0 : instanceDataStepRate;
@@ -45,14 +34,14 @@ void InputLayout::CreateInputLayout(void* byte_code, std::size_t byte_code_lengt
         _dx_input_layout->Release();
         _dx_input_layout = nullptr;
     }
-    auto dx_device = _parent_device->GetDxDevice();
-    HRESULT hr = dx_device->CreateInputLayout(_elements.data(), static_cast<unsigned int>(_elements.size()), byte_code, byte_code_length, &_dx_input_layout);
+    auto dx_device = _parent_device.GetDxDevice();
+    HRESULT hr = dx_device->CreateInputLayout(_elements.data(), static_cast<unsigned int>(_elements.size()), byte_code, byte_code_length, _dx_input_layout.GetAddressOf());
     bool succeeded = SUCCEEDED(hr);
     GUARANTEE_OR_DIE(succeeded, "Create Input Layout failed.");
 }
 
 ID3D11InputLayout* InputLayout::GetDxInputLayout() const noexcept {
-    return _dx_input_layout;
+    return _dx_input_layout.Get();
 }
 
 void InputLayout::PopulateInputLayoutUsingReflection(ID3D11ShaderReflection& vertexReflection) noexcept {

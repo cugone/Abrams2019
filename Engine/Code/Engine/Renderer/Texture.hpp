@@ -2,19 +2,15 @@
 
 #include "Engine/Math/IntVector3.hpp"
 
+#include "Engine/Renderer/DirectX/DX11.hpp"
+
 #include <string>
 
 class RHIDevice;
 
-struct ID3D11DepthStencilView;
-struct ID3D11RenderTargetView;
-struct ID3D11ShaderResourceView;
-struct ID3D11UnorderedAccessView;
-struct ID3D11Resource;
-
 class Texture {
 public:
-    Texture(const RHIDevice* device) noexcept;
+    Texture(const RHIDevice& device) noexcept;
     Texture(Texture&& r_other) noexcept;
     Texture(const Texture& other) noexcept = delete;
     Texture& operator=(const Texture& rhs) noexcept = delete;
@@ -41,12 +37,12 @@ public:
     virtual ID3D11Resource* GetDxResource() const noexcept = 0;
 
 protected:
-    const RHIDevice* _device = nullptr;
+    const RHIDevice& _device;
     IntVector3 _dimensions = IntVector3::ZERO;
-    ID3D11DepthStencilView* _dsv = nullptr;
-    ID3D11RenderTargetView* _rtv = nullptr;
-    ID3D11ShaderResourceView* _srv = nullptr;
-    ID3D11UnorderedAccessView* _uav = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11DepthStencilView> _dsv{};
+    Microsoft::WRL::ComPtr<ID3D11RenderTargetView> _rtv{};
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> _srv{};
+    Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> _uav{};
     bool _isLoaded = false;
     bool _isArray = false;
 private:

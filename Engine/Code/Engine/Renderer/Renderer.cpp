@@ -46,6 +46,8 @@
 #include "Engine/Renderer/Texture3D.hpp"
 #include "Engine/Renderer/Window.hpp"
 
+#include "Engine/Renderer/DirectX/DX11.hpp"
+
 #include "Thirdparty/stb/stb_image.h"
 #include "Thirdparty/TinyXML2/tinyxml2.h"
 
@@ -156,7 +158,6 @@ void Renderer::Initialize(bool headless /*= false*/) {
     CreateAndRegisterDefaultShaderPrograms();
     CreateAndRegisterDefaultShaders();
     CreateAndRegisterDefaultMaterials();
-    CreateAndRegisterDefaultDepthStencil();
     CreateAndRegisterDefaultFonts();
 
     _target_stack = std::make_unique<RenderTargetStack>(this);
@@ -194,20 +195,8 @@ void Renderer::LogAvailableDisplays() noexcept {
     _fileLogger.LogLineAndFlush(ss.str());
 }
 
-void Renderer::CreateAndRegisterDefaultDepthStencil() noexcept {
-    auto default_depthstencil = CreateDepthStencil(_rhi_device.get(), _window_dimensions);
-    if(default_depthstencil) {
-        default_depthstencil->SetDebugName("__default_depthstencil");
-        if(RegisterTexture("__default_depthstencil", std::move(default_depthstencil))) {
-            _default_depthstencil = GetTexture("__default_depthstencil");
-        }
-    } else {
-        ERROR_AND_DIE("Default depthstencil failed to create.");
-    }
-}
-
 void Renderer::BeginFrame() {
-    /* DO NOTHING */
+    UnbindAllShaderResources();
 }
 
 void Renderer::Update(TimeUtils::FPSeconds deltaSeconds) {
@@ -217,14 +206,14 @@ void Renderer::Update(TimeUtils::FPSeconds deltaSeconds) {
 void Renderer::UpdateGameTime(TimeUtils::FPSeconds deltaSeconds) noexcept {
     _time_data.game_time += deltaSeconds.count();
     _time_data.game_frame_time = deltaSeconds.count();
-    _time_cb->Update(_rhi_context.get(), &_time_data);
+    _time_cb->Update(*_rhi_context, &_time_data);
     SetConstantBuffer(TIME_BUFFER_INDEX, _time_cb.get());
 }
 
 void Renderer::UpdateSystemTime(TimeUtils::FPSeconds deltaSeconds) noexcept {
     _time_data.system_time += deltaSeconds.count();
     _time_data.system_frame_time = deltaSeconds.count();
-    _time_cb->Update(_rhi_context.get(), &_time_data);
+    _time_cb->Update(*_rhi_context, &_time_data);
     SetConstantBuffer(TIME_BUFFER_INDEX, _time_cb.get());
 }
 
@@ -296,6 +285,9 @@ Texture* Renderer::GetTexture(const std::string& nameOrFile) noexcept {
         p = FS::canonical(p);
     }
     p.make_preferred();
+    if(p.string() == "__fullscreen") {
+        return GetFullscreenTexture();
+    }
     auto found_iter = _textures.find(p.string());
     if(found_iter == _textures.end()) {
         return nullptr;
@@ -602,7 +594,7 @@ void Renderer::DrawIndexed(const PrimitiveType& topology, const std::vector<Vert
 
 void Renderer::SetLightingEyePosition(const Vector3& position) noexcept {
     _lighting_data.eye_position = Vector4(position, 1.0f);
-    _lighting_cb->Update(_rhi_context.get(), &_lighting_data);
+    _lighting_cb->Update(*_rhi_context, &_lighting_data);
     SetConstantBuffer(Renderer::LIGHTING_BUFFER_INDEX, _lighting_cb.get());
 }
 
@@ -613,7 +605,7 @@ void Renderer::SetAmbientLight(const Rgba& ambient) noexcept {
 
 void Renderer::SetAmbientLight(const Rgba& color, float intensity) noexcept {
     _lighting_data.ambient = Vector4(color.GetRgbAsFloats(), intensity);
-    _lighting_cb->Update(_rhi_context.get(), &_lighting_data);
+    _lighting_cb->Update(*_rhi_context, &_lighting_data);
     SetConstantBuffer(LIGHTING_BUFFER_INDEX, _lighting_cb.get());
 }
 
@@ -622,7 +614,7 @@ void Renderer::SetSpecGlossEmitFactors(Material* mat) noexcept {
     float gloss = mat ? mat->GetGlossyFactor() : 8.0f;
     float emit = mat ? mat->GetEmissiveFactor() : 0.0f;
     _lighting_data.specular_glossy_emissive_factors = Vector4(spec, gloss, emit, 1.0f);
-    _lighting_cb->Update(_rhi_context.get(), &_lighting_data);
+    _lighting_cb->Update(*_rhi_context, &_lighting_data);
     SetConstantBuffer(LIGHTING_BUFFER_INDEX, _lighting_cb.get());
 }
 
@@ -632,7 +624,7 @@ void Renderer::SetUseVertexNormalsForLighting(bool value) noexcept {
     } else {
         _lighting_data.useVertexNormals = 0;
     }
-    _lighting_cb->Update(_rhi_context.get(), &_lighting_data);
+    _lighting_cb->Update(*_rhi_context, &_lighting_data);
     SetConstantBuffer(LIGHTING_BUFFER_INDEX, _lighting_cb.get());
 }
 
@@ -683,7 +675,7 @@ void Renderer::SetSpotlight(unsigned int index, const SpotLightDesc& desc) noexc
 
 void Renderer::SetLightAtIndex(unsigned int index, const light_t& light) noexcept {
     _lighting_data.lights[index] = light;
-    _lighting_cb->Update(_rhi_context.get(), &_lighting_data);
+    _lighting_cb->Update(*_rhi_context, &_lighting_data);
     SetConstantBuffer(LIGHTING_BUFFER_INDEX, _lighting_cb.get());
 }
 
@@ -816,8 +808,8 @@ void Renderer::Draw(const PrimitiveType& topology, VertexBuffer* vbo, std::size_
     _rhi_context->GetDxContext()->IASetPrimitiveTopology(d3d_prim);
     unsigned int stride = sizeof(VertexBuffer::arraybuffer_t);
     unsigned int offsets = 0;
-    ID3D11Buffer* dx_vbo_buffer = vbo->GetDxBuffer();
-    _rhi_context->GetDxContext()->IASetVertexBuffers(0, 1, &dx_vbo_buffer, &stride, &offsets);
+    const auto dx_vbo_buffer = vbo->GetDxBuffer();
+    _rhi_context->GetDxContext()->IASetVertexBuffers(0, 1, dx_vbo_buffer.GetAddressOf(), &stride, &offsets);
     _rhi_context->Draw(vertex_count);
 }
 
@@ -827,10 +819,10 @@ void Renderer::DrawIndexed(const PrimitiveType& topology, VertexBuffer* vbo, Ind
     _rhi_context->GetDxContext()->IASetPrimitiveTopology(d3d_prim);
     unsigned int stride = sizeof(VertexBuffer::arraybuffer_t);
     unsigned int offsets = 0;
-    ID3D11Buffer* dx_vbo_buffer = vbo->GetDxBuffer();
-    ID3D11Buffer* dx_ibo_buffer = ibo->GetDxBuffer();
-    _rhi_context->GetDxContext()->IASetVertexBuffers(0, 1, &dx_vbo_buffer, &stride, &offsets);
-    _rhi_context->GetDxContext()->IASetIndexBuffer(dx_ibo_buffer, DXGI_FORMAT_R32_UINT, offsets);
+    const auto dx_vbo_buffer = vbo->GetDxBuffer();
+    auto dx_ibo_buffer = ibo->GetDxBuffer();
+    _rhi_context->GetDxContext()->IASetVertexBuffers(0, 1, dx_vbo_buffer.GetAddressOf(), &stride, &offsets);
+    _rhi_context->GetDxContext()->IASetIndexBuffer(dx_ibo_buffer.Get(), DXGI_FORMAT_R32_UINT, offsets);
     _rhi_context->DrawIndexed(index_count, startVertex, baseVertexLocation);
 }
 
@@ -1207,7 +1199,7 @@ void Renderer::DrawTextLine(const KerningFont* font, const std::string& text, co
     if(has_constant_buffers) {
         auto& font_cb = cbs[0].get();
         Vector4 channel{ 1.0f, 1.0f, 1.0f, 1.0f };
-        font_cb.Update(this->GetDeviceContext(), &channel);
+        font_cb.Update(*_rhi_context, &channel);
     }
     SetMaterial(font->GetMaterial());
     DrawIndexed(PrimitiveType::Triangles, vbo, ibo);
@@ -1231,7 +1223,7 @@ void Renderer::DrawMultilineText(KerningFont* font, const std::string& text, con
     if (has_constant_buffers) {
         auto& font_cb = cbs[0].get();
         Vector4 channel{ 1.0f, 1.0f, 1.0f, 1.0f };
-        font_cb.Update(this->GetDeviceContext(), &channel);
+        font_cb.Update(*_rhi_context, &channel);
     }
     SetMaterial(font->GetMaterial());
     DrawIndexed(PrimitiveType::Triangles, vbo, ibo);
@@ -1334,18 +1326,23 @@ void Renderer::CopyTexture(Texture* src, Texture* dst) noexcept {
     }
 }
 
-void Renderer::ResizeBuffers(const int width, const int height) noexcept {
+void Renderer::ResizeBuffers() noexcept {
+    _materials_need_updating = true;
     UnbindAllShaderResources();
     UnbindAllConstantBuffers();
     ClearState();
-    GetOutput()->SetDimensions(IntVector2(width, height));
     GetOutput()->ResetBackbuffer();
 }
 
 void Renderer::ClearState() noexcept {
+    _current_material = nullptr;
     _rhi_context->GetDxContext()->OMSetRenderTargets(0, nullptr, nullptr);
-    _rhi_context->SetShader(nullptr);
     _rhi_context->ClearState();
+    _rhi_context->Flush();
+}
+
+Texture* Renderer::GetFullscreenTexture() const noexcept {
+    return _rhi_output->GetFullscreenTexture();
 }
 
 void Renderer::DispatchComputeJob(const ComputeJob& job) noexcept {
@@ -2473,12 +2470,14 @@ std::unique_ptr<DepthStencilState> Renderer::CreateEnabledStencil() noexcept {
 
 void Renderer::UnbindAllShaderResources() noexcept {
     if(_rhi_context) {
+        _materials_need_updating = true;
         _rhi_context->UnbindAllShaderResources();
     }
 }
 
 void Renderer::UnbindAllConstantBuffers() noexcept {
     if(_rhi_context) {
+        _materials_need_updating = true;
         _rhi_context->UnbindAllConstantBuffers();
     }
 }
@@ -2739,11 +2738,6 @@ void Renderer::CreateAndRegisterDefaultTextures() noexcept {
     emissive_texture->SetDebugName(name);
     RegisterTexture(name, std::move(emissive_texture));
 
-    auto fullscreen_texture = CreateDefaultFullscreenTexture();
-    name = "__fullscreen";
-    fullscreen_texture->SetDebugName(name);
-    RegisterTexture(name, std::move(fullscreen_texture));
-
     CreateDefaultColorTextures();
 }
 
@@ -2805,7 +2799,7 @@ std::unique_ptr<Texture> Renderer::CreateDefaultEmissiveTexture() noexcept {
 }
 
 std::unique_ptr<Texture> Renderer::CreateDefaultFullscreenTexture() noexcept {
-    auto dims = GetOutput()->GetDimensions();
+    auto dims = GetOutput()->GetBackBuffer()->GetDimensions();
     auto data = std::vector<Rgba>(static_cast<std::size_t>(dims.x) * static_cast<std::size_t>(dims.y), Rgba::Magenta);
     return Create2DTextureFromMemory(data, dims.x, dims.y, BufferUsage::Gpu, BufferBindUsage::Render_Target | BufferBindUsage::Shader_Resource);
 }
@@ -3184,7 +3178,7 @@ void Renderer::UpdateVbo(const VertexBuffer::buffer_t& vbo) noexcept {
         _temp_vbo = std::move(_rhi_device->CreateVertexBuffer(vbo, BufferUsage::Dynamic, BufferBindUsage::Vertex_Buffer));
         _current_vbo_size = vbo.size();
     }
-    _temp_vbo->Update(_rhi_context.get(), vbo);
+    _temp_vbo->Update(*_rhi_context, vbo);
 }
 
 void Renderer::UpdateIbo(const IndexBuffer::buffer_t& ibo) noexcept {
@@ -3192,7 +3186,7 @@ void Renderer::UpdateIbo(const IndexBuffer::buffer_t& ibo) noexcept {
         _temp_ibo = std::move(_rhi_device->CreateIndexBuffer(ibo, BufferUsage::Dynamic, BufferBindUsage::Index_Buffer));
         _current_ibo_size = ibo.size();
     }
-    _temp_ibo->Update(_rhi_context.get(), ibo);
+    _temp_ibo->Update(*_rhi_context, ibo);
 }
 
 RHIDeviceContext* Renderer::GetDeviceContext() const noexcept {
@@ -3303,7 +3297,7 @@ void Renderer::SetMaterial(Material* material) noexcept {
     if(material == nullptr) {
         material = GetMaterial("__invalid");
     }
-    if(_current_material == material) {
+    if(!_materials_need_updating && _current_material == material) {
         return;
     }
     _rhi_context->SetMaterial(material);
@@ -3311,6 +3305,7 @@ void Renderer::SetMaterial(Material* material) noexcept {
     _current_raster_state = material->GetShader()->GetRasterState();
     _current_depthstencil_state = material->GetShader()->GetDepthStencilState();
     _current_sampler = material->GetShader()->GetSampler();
+    _materials_need_updating = false;
 }
 
 bool Renderer::IsTextureLoaded(const std::string& nameOrFile) const noexcept {
@@ -3323,7 +3318,12 @@ bool Renderer::IsTextureLoaded(const std::string& nameOrFile) const noexcept {
             return false;
         }
     }
-    return _textures.find(nameOrFile) != _textures.end();
+    const auto is_fullscreen = p.string() == "__fullscreen";
+    if(is_fullscreen) {
+        return GetFullscreenTexture() != nullptr;
+    }
+    const auto is_found = _textures.find(p.string()) != _textures.end();
+    return is_found;
 }
 
 bool Renderer::IsTextureNotLoaded(const std::string& nameOrFile) const noexcept {
@@ -3377,19 +3377,19 @@ KerningFont* Renderer::GetFont(const std::string& nameOrFile) noexcept {
 
 void Renderer::SetModelMatrix(const Matrix4& mat /*= Matrix4::I*/) noexcept {
     _matrix_data.model = mat;
-    _matrix_cb->Update(_rhi_context.get(), &_matrix_data);
+    _matrix_cb->Update(*_rhi_context, &_matrix_data);
     SetConstantBuffer(MATRIX_BUFFER_INDEX, _matrix_cb.get());
 }
 
 void Renderer::SetViewMatrix(const Matrix4& mat /*= Matrix4::I*/) noexcept {
     _matrix_data.view = mat;
-    _matrix_cb->Update(_rhi_context.get(), &_matrix_data);
+    _matrix_cb->Update(*_rhi_context, &_matrix_data);
     SetConstantBuffer(MATRIX_BUFFER_INDEX, _matrix_cb.get());
 }
 
 void Renderer::SetProjectionMatrix(const Matrix4& mat /*= Matrix4::I*/) noexcept {
     _matrix_data.projection = mat;
-    _matrix_cb->Update(_rhi_context.get(), &_matrix_data);
+    _matrix_cb->Update(*_rhi_context, &_matrix_data);
     SetConstantBuffer(MATRIX_BUFFER_INDEX, _matrix_cb.get());
 }
 
@@ -3402,7 +3402,7 @@ void Renderer::ResetModelViewProjection() noexcept {
 
 void Renderer::AppendModelMatrix(const Matrix4& modelMatrix) noexcept {
     _matrix_data.model = Matrix4::MakeRT(modelMatrix, _matrix_data.model);
-    _matrix_cb->Update(_rhi_context.get(), &_matrix_data);
+    _matrix_cb->Update(*_rhi_context, &_matrix_data);
     SetConstantBuffer(MATRIX_BUFFER_INDEX, _matrix_cb.get());
 }
 
@@ -3628,7 +3628,7 @@ void Renderer::SetRenderTarget(Texture* color_target /*= nullptr*/, Texture* dep
     if(depthstencil_target != nullptr) {
         _current_depthstencil = depthstencil_target;
     } else {
-        _current_depthstencil = _default_depthstencil;
+        _current_depthstencil = _rhi_output->GetDepthStencil();
     }
     ID3D11DepthStencilView* dsv = _current_depthstencil->GetDepthStencilView();
     ID3D11RenderTargetView* rtv = _current_target->GetRenderTargetView();
@@ -3887,9 +3887,9 @@ void Renderer::SetTexture(Texture* texture, unsigned int registerIndex /*= 0*/) 
     _rhi_context->SetTexture(registerIndex, _current_target);
 }
 
-std::unique_ptr<Texture> Renderer::CreateDepthStencil(const RHIDevice* owner, const IntVector2& dimensions) noexcept {
+std::unique_ptr<Texture> Renderer::CreateDepthStencil(const RHIDevice& owner, const IntVector2& dimensions) noexcept {
 
-    ID3D11Texture2D* dx_resource = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> dx_resource{};
 
     D3D11_TEXTURE2D_DESC descDepth;
     descDepth.Width = dimensions.x;
@@ -3903,14 +3903,14 @@ std::unique_ptr<Texture> Renderer::CreateDepthStencil(const RHIDevice* owner, co
     descDepth.BindFlags = BufferBindUsageToD3DBindFlags(BufferBindUsage::Depth_Stencil);
     descDepth.CPUAccessFlags = 0;
     descDepth.MiscFlags = 0;
-    auto hr_texture = owner->GetDxDevice()->CreateTexture2D(&descDepth, nullptr, &dx_resource);
+    auto hr_texture = owner.GetDxDevice()->CreateTexture2D(&descDepth, nullptr, &dx_resource);
     if(SUCCEEDED(hr_texture)) {
         return std::make_unique<Texture2D>(owner, dx_resource);
     }
     return nullptr;
 }
 
-std::unique_ptr<Texture> Renderer::CreateRenderableDepthStencil(const RHIDevice* owner, const IntVector2& dimensions) noexcept {
+std::unique_ptr<Texture> Renderer::CreateRenderableDepthStencil(const RHIDevice& owner, const IntVector2& dimensions) noexcept {
 
     ID3D11Texture2D* dx_resource = nullptr;
 
@@ -3926,7 +3926,7 @@ std::unique_ptr<Texture> Renderer::CreateRenderableDepthStencil(const RHIDevice*
     descDepth.BindFlags = BufferBindUsageToD3DBindFlags(BufferBindUsage::Depth_Stencil | BufferBindUsage::Shader_Resource);
     descDepth.CPUAccessFlags = 0;
     descDepth.MiscFlags = 0;
-    HRESULT texture_hr = owner->GetDxDevice()->CreateTexture2D(&descDepth, nullptr, &dx_resource);
+    HRESULT texture_hr = owner.GetDxDevice()->CreateTexture2D(&descDepth, nullptr, &dx_resource);
     bool texture_creation_succeeded = SUCCEEDED(texture_hr);
     if(texture_creation_succeeded) {
         return std::make_unique<Texture2D>(owner, dx_resource);
@@ -3991,9 +3991,7 @@ Texture* Renderer::Create1DTexture(std::filesystem::path filepath, const BufferU
     filepath.make_preferred();
     Image img = Image(filepath);
 
-    D3D11_TEXTURE1D_DESC tex_desc;
-    memset(&tex_desc, 0, sizeof(tex_desc));
-
+    D3D11_TEXTURE1D_DESC tex_desc{};
     tex_desc.Width = img.GetDimensions().x;     // width... 
     tex_desc.MipLevels = 1;    // setting to 0 means there's a full chain (or can generate a full chain) - we're immutable, so not allowed
     tex_desc.ArraySize = 1;    // only one texture (
@@ -4004,9 +4002,7 @@ Texture* Renderer::Create1DTexture(std::filesystem::path filepath, const BufferU
     tex_desc.MiscFlags = 0;                            // Extra Flags, of note is;
 
                                                        // Setup Initial Data
-    D3D11_SUBRESOURCE_DATA subresource_data;
-    memset(&subresource_data, 0, sizeof(subresource_data));
-
+    D3D11_SUBRESOURCE_DATA subresource_data{};
     auto width = img.GetDimensions().x;
     auto height = img.GetDimensions().y;
     subresource_data.pSysMem = img.GetData();
@@ -4017,7 +4013,7 @@ Texture* Renderer::Create1DTexture(std::filesystem::path filepath, const BufferU
         tex_desc.Usage = BufferUsageToD3DUsage(BufferUsage::Gpu);
         tex_desc.CPUAccessFlags = CPUAccessFlagFromUsage(BufferUsage::Staging);
     }
-    ID3D11Texture1D* dx_tex = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11Texture1D> dx_tex{};
 
     bool isImmutable = bufferUsage == BufferUsage::Static;
     bool mustUseInitialData = isImmutable;
@@ -4025,7 +4021,7 @@ Texture* Renderer::Create1DTexture(std::filesystem::path filepath, const BufferU
     HRESULT hr = _rhi_device->GetDxDevice()->CreateTexture1D(&tex_desc, (mustUseInitialData ? &subresource_data : nullptr), &dx_tex);
     bool succeeded = SUCCEEDED(hr);
     if(succeeded) {
-        auto tex = std::make_unique<Texture1D>(_rhi_device.get(), dx_tex);
+        auto tex = std::make_unique<Texture1D>(*_rhi_device, dx_tex);
         tex->SetDebugName(filepath.string().c_str());
         tex->IsLoaded(true);
         auto tex_ptr = tex.get();
@@ -4040,8 +4036,7 @@ Texture* Renderer::Create1DTexture(std::filesystem::path filepath, const BufferU
 }
 
 std::unique_ptr<Texture> Renderer::Create1DTextureFromMemory(const unsigned char* data, unsigned int width /*= 1*/, const BufferUsage& bufferUsage /*= BufferUsage::STATIC*/, const BufferBindUsage& bindUsage /*= BufferBindUsage::SHADER_RESOURCE*/, const ImageFormat& imageFormat /*= ImageFormat::R8G8B8A8_UNORM*/) noexcept {
-    D3D11_TEXTURE1D_DESC tex_desc = {};
-
+    D3D11_TEXTURE1D_DESC tex_desc{};
     tex_desc.Width = width;
     tex_desc.MipLevels = 1;
     tex_desc.ArraySize = 1;
@@ -4059,13 +4054,12 @@ std::unique_ptr<Texture> Renderer::Create1DTextureFromMemory(const unsigned char
     tex_desc.MiscFlags = 0;
 
     // Setup Initial Data
-    D3D11_SUBRESOURCE_DATA subresource_data = {};
-
+    D3D11_SUBRESOURCE_DATA subresource_data{};
     subresource_data.pSysMem = data;
     subresource_data.SysMemPitch = width * sizeof(unsigned int);
     subresource_data.SysMemSlicePitch = width * sizeof(unsigned int);
 
-    ID3D11Texture1D* dx_tex = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11Texture1D> dx_tex{};
 
     //If IMMUTABLE or not multi-sampled, must use initial data.
     bool isMultiSampled = false;
@@ -4075,14 +4069,14 @@ std::unique_ptr<Texture> Renderer::Create1DTextureFromMemory(const unsigned char
     HRESULT hr = _rhi_device->GetDxDevice()->CreateTexture1D(&tex_desc, (mustUseInitialData ? &subresource_data : nullptr), &dx_tex);
     bool succeeded = SUCCEEDED(hr);
     if(succeeded) {
-        return std::make_unique<Texture1D>(_rhi_device.get(), dx_tex);
+        return std::make_unique<Texture1D>(*_rhi_device, dx_tex);
     } else {
         return nullptr;
     }
 }
 
 std::unique_ptr<Texture> Renderer::Create1DTextureFromMemory(const std::vector<Rgba>& data, unsigned int width /*= 1*/, const BufferUsage& bufferUsage /*= BufferUsage::STATIC*/, const BufferBindUsage& bindUsage /*= BufferBindUsage::SHADER_RESOURCE*/, const ImageFormat& imageFormat /*= ImageFormat::R8G8B8A8_UNORM*/) noexcept {
-    D3D11_TEXTURE1D_DESC tex_desc = {};
+    D3D11_TEXTURE1D_DESC tex_desc{};
 
     tex_desc.Width = width;
     tex_desc.MipLevels = 1;
@@ -4101,13 +4095,13 @@ std::unique_ptr<Texture> Renderer::Create1DTextureFromMemory(const std::vector<R
     tex_desc.MiscFlags = 0;
 
     // Setup Initial Data
-    D3D11_SUBRESOURCE_DATA subresource_data = {};
+    D3D11_SUBRESOURCE_DATA subresource_data{};
 
     subresource_data.pSysMem = data.data();
     subresource_data.SysMemPitch = width * sizeof(Rgba);
     subresource_data.SysMemSlicePitch = width * sizeof(Rgba);
 
-    ID3D11Texture1D* dx_tex = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11Texture1D> dx_tex{};
 
     //If IMMUTABLE or not multi-sampled, must use initial data.
     bool isMultiSampled = false;
@@ -4117,7 +4111,7 @@ std::unique_ptr<Texture> Renderer::Create1DTextureFromMemory(const std::vector<R
     HRESULT hr = _rhi_device->GetDxDevice()->CreateTexture1D(&tex_desc, (mustUseInitialData ? &subresource_data : nullptr), &dx_tex);
     bool succeeded = SUCCEEDED(hr);
     if(succeeded) {
-        return std::make_unique<Texture1D>(_rhi_device.get(), dx_tex);
+        return std::make_unique<Texture1D>(*_rhi_device, dx_tex);
     } else {
         return nullptr;
     }
@@ -4132,8 +4126,7 @@ Texture* Renderer::Create2DTexture(std::filesystem::path filepath, const BufferU
     filepath.make_preferred();
     Image img = Image(filepath.string());
 
-    D3D11_TEXTURE2D_DESC tex_desc;
-    memset(&tex_desc, 0, sizeof(tex_desc));
+    D3D11_TEXTURE2D_DESC tex_desc{};
 
     tex_desc.Width = img.GetDimensions().x;     // width... 
     tex_desc.Height = img.GetDimensions().y;    // ...and height of image in pixels.
@@ -4167,7 +4160,7 @@ Texture* Renderer::Create2DTexture(std::filesystem::path filepath, const BufferU
         tex_desc.Usage = BufferUsageToD3DUsage(BufferUsage::Gpu);
         tex_desc.CPUAccessFlags = CPUAccessFlagFromUsage(BufferUsage::Staging);
     }
-    ID3D11Texture2D* dx_tex = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> dx_tex{};
 
     //If IMMUTABLE or not multi-sampled, must use initial data.
     bool isMultiSampled = tex_desc.SampleDesc.Count != 1 || tex_desc.SampleDesc.Quality != 0;
@@ -4177,7 +4170,7 @@ Texture* Renderer::Create2DTexture(std::filesystem::path filepath, const BufferU
     HRESULT hr = _rhi_device->GetDxDevice()->CreateTexture2D(&tex_desc, (mustUseInitialData ? &subresource_data : nullptr), &dx_tex);
     bool succeeded = SUCCEEDED(hr);
     if(succeeded) {
-        auto tex = std::make_unique<Texture2D>(_rhi_device.get(), dx_tex);
+        auto tex = std::make_unique<Texture2D>(*_rhi_device, dx_tex);
         tex->SetDebugName(filepath.string().c_str());
         tex->IsLoaded(true);
         auto tex_ptr = tex.get();
@@ -4192,7 +4185,7 @@ Texture* Renderer::Create2DTexture(std::filesystem::path filepath, const BufferU
 }
 
 std::unique_ptr<Texture> Renderer::Create2DTextureFromMemory(const unsigned char* data, unsigned int width /*= 1*/, unsigned int height /*= 1*/, const BufferUsage& bufferUsage /*= BufferUsage::STATIC*/, const BufferBindUsage& bindUsage /*= BufferBindUsage::SHADER_RESOURCE*/, const ImageFormat& imageFormat /*= ImageFormat::R8G8B8A8_UNORM*/) noexcept {
-    D3D11_TEXTURE2D_DESC tex_desc = {};
+    D3D11_TEXTURE2D_DESC tex_desc{};
 
     tex_desc.Width = width;
     tex_desc.Height = height;
@@ -4220,7 +4213,7 @@ std::unique_ptr<Texture> Renderer::Create2DTextureFromMemory(const unsigned char
     subresource_data.SysMemPitch = width * sizeof(unsigned int);
     subresource_data.SysMemSlicePitch = width * height * sizeof(unsigned int);
 
-    ID3D11Texture2D* dx_tex = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> dx_tex{};
 
     //If IMMUTABLE or not multi-sampled, must use initial data.
     bool isMultiSampled = tex_desc.SampleDesc.Count != 1 || tex_desc.SampleDesc.Quality != 0;
@@ -4230,14 +4223,14 @@ std::unique_ptr<Texture> Renderer::Create2DTextureFromMemory(const unsigned char
     HRESULT hr = _rhi_device->GetDxDevice()->CreateTexture2D(&tex_desc, (mustUseInitialData ? &subresource_data : nullptr), &dx_tex);
     bool succeeded = SUCCEEDED(hr);
     if(succeeded) {
-        return std::make_unique<Texture2D>(_rhi_device.get(), dx_tex);
+        return std::make_unique<Texture2D>(*_rhi_device, dx_tex);
     } else {
         return nullptr;
     }
 }
 
 std::unique_ptr<Texture> Renderer::Create2DTextureFromMemory(const std::vector<Rgba>& data, unsigned int width /*= 1*/, unsigned int height /*= 1*/, const BufferUsage& bufferUsage /*= BufferUsage::STATIC*/, const BufferBindUsage& bindUsage /*= BufferBindUsage::SHADER_RESOURCE*/, const ImageFormat& imageFormat /*= ImageFormat::R8G8B8A8_UNORM*/) noexcept {
-    D3D11_TEXTURE2D_DESC tex_desc = {};
+    D3D11_TEXTURE2D_DESC tex_desc{};
 
     tex_desc.Width = width;
     tex_desc.Height = height;
@@ -4268,7 +4261,7 @@ std::unique_ptr<Texture> Renderer::Create2DTextureFromMemory(const std::vector<R
     subresource_data.SysMemPitch = width * sizeof(Rgba);
     subresource_data.SysMemSlicePitch = width * height * sizeof(Rgba);
 
-    ID3D11Texture2D* dx_tex = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> dx_tex{};
 
     //If IMMUTABLE or not multi-sampled, must use initial data.
     bool isMultiSampled = tex_desc.SampleDesc.Count != 1 || tex_desc.SampleDesc.Quality != 0;
@@ -4278,14 +4271,14 @@ std::unique_ptr<Texture> Renderer::Create2DTextureFromMemory(const std::vector<R
     HRESULT hr = _rhi_device->GetDxDevice()->CreateTexture2D(&tex_desc, (mustUseInitialData ? &subresource_data : nullptr), &dx_tex);
     bool succeeded = SUCCEEDED(hr);
     if(succeeded) {
-        return std::make_unique<Texture2D>(_rhi_device.get(), dx_tex);
+        return std::make_unique<Texture2D>(*_rhi_device, dx_tex);
     } else {
         return nullptr;
     }
 }
 
 std::unique_ptr<Texture> Renderer::Create2DTextureArrayFromMemory(const unsigned char* data, unsigned int width /*= 1*/, unsigned int height /*= 1*/, unsigned int depth /*= 1*/, const BufferUsage& bufferUsage /*= BufferUsage::STATIC*/, const BufferBindUsage& bindUsage /*= BufferBindUsage::SHADER_RESOURCE*/, const ImageFormat& imageFormat /*= ImageFormat::R8G8B8A8_UNORM*/) noexcept {
-    D3D11_TEXTURE2D_DESC tex_desc = {};
+    D3D11_TEXTURE2D_DESC tex_desc{};
 
     tex_desc.Width = width;
     tex_desc.Height = height;
@@ -4313,7 +4306,7 @@ std::unique_ptr<Texture> Renderer::Create2DTextureArrayFromMemory(const unsigned
         subresource_data[i].SysMemPitch = width * sizeof(unsigned int);
         subresource_data[i].SysMemSlicePitch = width * height * sizeof(unsigned int);
     }
-    ID3D11Texture2D* dx_tex = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> dx_tex{};
 
     //If IMMUTABLE or not multi-sampled, must use initial data.
     bool isMultiSampled = tex_desc.SampleDesc.Count != 1 || tex_desc.SampleDesc.Quality != 0;
@@ -4325,14 +4318,14 @@ std::unique_ptr<Texture> Renderer::Create2DTextureArrayFromMemory(const unsigned
     subresource_data = nullptr;
     bool succeeded = SUCCEEDED(hr);
     if(succeeded) {
-        return std::make_unique<TextureArray2D>(_rhi_device.get(), dx_tex);
+        return std::make_unique<TextureArray2D>(*_rhi_device, dx_tex);
     } else {
         return nullptr;
     }
 }
 
 std::unique_ptr<Texture> Renderer::Create2DTextureFromGifBuffer(const unsigned char* data, unsigned int width /*= 1*/, unsigned int height /*= 1*/, unsigned int depth /*= 1*/, const BufferUsage& bufferUsage /*= BufferUsage::STATIC*/, const BufferBindUsage& bindUsage /*= BufferBindUsage::SHADER_RESOURCE*/, const ImageFormat& imageFormat /*= ImageFormat::R8G8B8A8_UNORM*/) noexcept {
-    D3D11_TEXTURE2D_DESC tex_desc = {};
+    D3D11_TEXTURE2D_DESC tex_desc{};
 
     tex_desc.Width = width;
     tex_desc.Height = height;
@@ -4360,7 +4353,7 @@ std::unique_ptr<Texture> Renderer::Create2DTextureFromGifBuffer(const unsigned c
         subresource_data[i].SysMemPitch = width * sizeof(unsigned int);
         subresource_data[i].SysMemSlicePitch = width * height * sizeof(unsigned int);
     }
-    ID3D11Texture2D* dx_tex = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> dx_tex{};
 
     //If IMMUTABLE or not multi-sampled, must use initial data.
     bool isMultiSampled = tex_desc.SampleDesc.Count != 1 || tex_desc.SampleDesc.Quality != 0;
@@ -4372,14 +4365,14 @@ std::unique_ptr<Texture> Renderer::Create2DTextureFromGifBuffer(const unsigned c
     subresource_data = nullptr;
     bool succeeded = SUCCEEDED(hr);
     if(succeeded) {
-        return std::make_unique<Texture2D>(_rhi_device.get(), dx_tex);
+        return std::make_unique<Texture2D>(*_rhi_device, dx_tex);
     } else {
         return nullptr;
     }
 }
 
 std::unique_ptr<Texture> Renderer::Create2DTextureArrayFromGifBuffer(const unsigned char* data, unsigned int width /*= 1*/, unsigned int height /*= 1*/, unsigned int depth /*= 1*/, const BufferUsage& bufferUsage /*= BufferUsage::STATIC*/, const BufferBindUsage& bindUsage /*= BufferBindUsage::SHADER_RESOURCE*/, const ImageFormat& imageFormat /*= ImageFormat::R8G8B8A8_UNORM*/) noexcept {
-    D3D11_TEXTURE2D_DESC tex_desc = {};
+    D3D11_TEXTURE2D_DESC tex_desc{};
 
     tex_desc.Width = width;
     tex_desc.Height = height;
@@ -4407,7 +4400,7 @@ std::unique_ptr<Texture> Renderer::Create2DTextureArrayFromGifBuffer(const unsig
         subresource_data[i].SysMemPitch = width * sizeof(unsigned int);
         subresource_data[i].SysMemSlicePitch = width * height * sizeof(unsigned int);
     }
-    ID3D11Texture2D* dx_tex = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> dx_tex{};
 
     //If IMMUTABLE or not multi-sampled, must use initial data.
     bool isMultiSampled = tex_desc.SampleDesc.Count != 1 || tex_desc.SampleDesc.Quality != 0;
@@ -4419,7 +4412,7 @@ std::unique_ptr<Texture> Renderer::Create2DTextureArrayFromGifBuffer(const unsig
     subresource_data = nullptr;
     bool succeeded = SUCCEEDED(hr);
     if(succeeded) {
-        return std::make_unique<TextureArray2D>(_rhi_device.get(), dx_tex);
+        return std::make_unique<TextureArray2D>(*_rhi_device, dx_tex);
     } else {
         return nullptr;
     }
@@ -4433,8 +4426,7 @@ Texture* Renderer::Create3DTexture(std::filesystem::path filepath, const IntVect
     filepath = FS::canonical(filepath);
     filepath.make_preferred();
 
-    D3D11_TEXTURE3D_DESC tex_desc;
-    memset(&tex_desc, 0, sizeof(tex_desc));
+    D3D11_TEXTURE3D_DESC tex_desc{};
 
     tex_desc.Width = dimensions.x;     // width... 
     tex_desc.Height = dimensions.y;    // ...and height of image in pixels.
@@ -4453,8 +4445,7 @@ Texture* Renderer::Create3DTexture(std::filesystem::path filepath, const IntVect
                                                        // (MSAA as far as I know only makes sense for Render Targets, not shader resource textures)
 
                                                        // Setup Initial Data
-    D3D11_SUBRESOURCE_DATA subresource_data;
-    memset(&subresource_data, 0, sizeof(subresource_data));
+    D3D11_SUBRESOURCE_DATA subresource_data{};
 
     std::vector<unsigned char> data;
     FileUtils::ReadBufferFromFile(data, filepath);
@@ -4468,7 +4459,7 @@ Texture* Renderer::Create3DTexture(std::filesystem::path filepath, const IntVect
         tex_desc.Usage = BufferUsageToD3DUsage(BufferUsage::Gpu);
         tex_desc.CPUAccessFlags = CPUAccessFlagFromUsage(BufferUsage::Staging);
     }
-    ID3D11Texture3D* dx_tex = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11Texture3D> dx_tex{};
 
     //If IMMUTABLE or not multi-sampled, must use initial data.
     bool isMultiSampled = false;
@@ -4478,7 +4469,7 @@ Texture* Renderer::Create3DTexture(std::filesystem::path filepath, const IntVect
     HRESULT hr = _rhi_device->GetDxDevice()->CreateTexture3D(&tex_desc, (mustUseInitialData ? &subresource_data : nullptr), &dx_tex);
     bool succeeded = SUCCEEDED(hr);
     if(succeeded) {
-        auto tex = std::make_unique<Texture3D>(_rhi_device.get(), dx_tex);
+        auto tex = std::make_unique<Texture3D>(*_rhi_device, dx_tex);
         tex->SetDebugName(filepath.string().c_str());
         tex->IsLoaded(true);
         auto tex_ptr = tex.get();
@@ -4493,7 +4484,7 @@ Texture* Renderer::Create3DTexture(std::filesystem::path filepath, const IntVect
 }
 
 std::unique_ptr<Texture> Renderer::Create3DTextureFromMemory(const unsigned char* data, unsigned int width /*= 1*/, unsigned int height /*= 1*/, unsigned int depth /*= 1*/, const BufferUsage& bufferUsage /*= BufferUsage::STATIC*/, const BufferBindUsage& bindUsage /*= BufferBindUsage::SHADER_RESOURCE*/, const ImageFormat& imageFormat /*= ImageFormat::R8G8B8A8_UNORM*/) noexcept {
-    D3D11_TEXTURE3D_DESC tex_desc = {};
+    D3D11_TEXTURE3D_DESC tex_desc{};
 
     tex_desc.Width = width;
     tex_desc.Height = height;
@@ -4513,13 +4504,13 @@ std::unique_ptr<Texture> Renderer::Create3DTextureFromMemory(const unsigned char
     tex_desc.MiscFlags = 0;
 
     // Setup Initial Data
-    D3D11_SUBRESOURCE_DATA subresource_data = {};
+    D3D11_SUBRESOURCE_DATA subresource_data{};
 
     subresource_data.pSysMem = data;
     subresource_data.SysMemPitch = width * sizeof(unsigned int);
     subresource_data.SysMemSlicePitch = width * height * sizeof(unsigned int);
 
-    ID3D11Texture3D* dx_tex = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11Texture3D> dx_tex{};
 
     //If IMMUTABLE or not multi-sampled, must use initial data.
     bool isMultiSampled = false;
@@ -4529,14 +4520,14 @@ std::unique_ptr<Texture> Renderer::Create3DTextureFromMemory(const unsigned char
     HRESULT hr = _rhi_device->GetDxDevice()->CreateTexture3D(&tex_desc, (mustUseInitialData ? &subresource_data : nullptr), &dx_tex);
     bool succeeded = SUCCEEDED(hr);
     if(succeeded) {
-        return std::make_unique<Texture3D>(_rhi_device.get(), dx_tex);
+        return std::make_unique<Texture3D>(*_rhi_device, dx_tex);
     } else {
         return nullptr;
     }
 }
 
 std::unique_ptr<Texture> Renderer::Create3DTextureFromMemory(const std::vector<Rgba>& data, unsigned int width /*= 1*/, unsigned int height /*= 1*/, unsigned int depth /*= 1*/, const BufferUsage& bufferUsage /*= BufferUsage::STATIC*/, const BufferBindUsage& bindUsage /*= BufferBindUsage::SHADER_RESOURCE*/, const ImageFormat& imageFormat /*= ImageFormat::R8G8B8A8_UNORM*/) noexcept {
-    D3D11_TEXTURE3D_DESC tex_desc = {};
+    D3D11_TEXTURE3D_DESC tex_desc{};
 
     tex_desc.Width = width;
     tex_desc.Height = height;
@@ -4556,13 +4547,13 @@ std::unique_ptr<Texture> Renderer::Create3DTextureFromMemory(const std::vector<R
     tex_desc.MiscFlags = 0;
 
     // Setup Initial Data
-    D3D11_SUBRESOURCE_DATA subresource_data = {};
+    D3D11_SUBRESOURCE_DATA subresource_data{};
 
     subresource_data.pSysMem = data.data();
     subresource_data.SysMemPitch = width * sizeof(Rgba);
     subresource_data.SysMemSlicePitch = width * height * sizeof(Rgba);
 
-    ID3D11Texture3D* dx_tex = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11Texture3D> dx_tex{};
 
     //If IMMUTABLE or not multi-sampled, must use initial data.
     bool isMultiSampled = false;
@@ -4572,7 +4563,7 @@ std::unique_ptr<Texture> Renderer::Create3DTextureFromMemory(const std::vector<R
     HRESULT hr = _rhi_device->GetDxDevice()->CreateTexture3D(&tex_desc, (mustUseInitialData ? &subresource_data : nullptr), &dx_tex);
     bool succeeded = SUCCEEDED(hr);
     if(succeeded) {
-        return std::make_unique<Texture3D>(_rhi_device.get(), dx_tex);
+        return std::make_unique<Texture3D>(*_rhi_device, dx_tex);
     } else {
         return nullptr;
     }
