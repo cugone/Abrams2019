@@ -66,6 +66,8 @@ private:
     int _positionY{};
     unsigned int _width{1600u};
     unsigned int _height{900u};
+    unsigned int _oldclientWidth{1600u};
+    unsigned int _oldclientHeight{900u};
     unsigned int _clientWidth{1600u};
     unsigned int _clientHeight{900u};
     unsigned long _styleFlags{};

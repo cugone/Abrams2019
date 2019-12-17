@@ -129,6 +129,8 @@ void Window::SetDimensionsAndPosition(const IntVector2& new_position, const IntV
     _positionY = r.top;
     _width = r.right - r.left;
     _height = r.bottom - r.top;
+    _oldclientWidth  = _clientWidth;
+    _oldclientHeight = _clientHeight;
     _clientWidth = new_size.x;
     _clientHeight = new_size.y;
 }
