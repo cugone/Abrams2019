@@ -13,7 +13,7 @@ Texture3D::Texture3D(const RHIDevice& device, Microsoft::WRL::ComPtr<ID3D11Textu
     : Texture(device)
     , _dx_tex(dxTexture)
 {
-    SetTexture(_dx_tex);
+    SetTexture();
 }
 
 void Texture3D::SetDebugName([[maybe_unused]] const std::string& name) const noexcept {
@@ -27,11 +27,8 @@ ID3D11Resource* Texture3D::GetDxResource() const noexcept {
 }
 
 
-void Texture3D::SetTexture(Microsoft::WRL::ComPtr<ID3D11Texture3D> texture) {
-
-    _dx_tex = texture;
-
-    D3D11_TEXTURE3D_DESC t_desc;
+void Texture3D::SetTexture() {
+    D3D11_TEXTURE3D_DESC t_desc{};
     _dx_tex->GetDesc(&t_desc);
     _dimensions = IntVector3(t_desc.Width, t_desc.Height, t_desc.Depth);
     _isArray = false;

@@ -13,7 +13,7 @@ TextureArray2D::TextureArray2D(const RHIDevice& device, Microsoft::WRL::ComPtr<I
     : Texture(device)
     , _dx_tex(dxTexture)
 {
-    SetTexture(_dx_tex);
+    SetTexture();
 }
 
 void TextureArray2D::SetDebugName([[maybe_unused]] const std::string& name) const noexcept {
@@ -40,11 +40,8 @@ TextureArray2D& TextureArray2D::operator=(TextureArray2D&& rhs) noexcept {
     return *this;
 }
 
-void TextureArray2D::SetTexture(Microsoft::WRL::ComPtr<ID3D11Texture2D> texture) noexcept {
-
-    _dx_tex = texture;
-
-    D3D11_TEXTURE2D_DESC t_desc;
+void TextureArray2D::SetTexture() noexcept {
+    D3D11_TEXTURE2D_DESC t_desc{};
     _dx_tex->GetDesc(&t_desc);
     auto depth = t_desc.ArraySize;
     _dimensions = IntVector3(t_desc.Width, t_desc.Height, depth);
