@@ -22,5 +22,7 @@ public:
 
 protected:
 private:
+    void SetTexture() noexcept;
+
     Microsoft::WRL::ComPtr<ID3D11Texture1D> _dx_tex{};
 };
