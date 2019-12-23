@@ -51,7 +51,7 @@ void Mesh::Builder::SetNormal(const Vector3& normal) noexcept {
 }
 
 void Mesh::Builder::SetColor(const Rgba& color) noexcept {
-    _vertex_prototype.color = color.GetRgbaAsFloats();
+    SetColor(color.GetRgbaAsFloats());
 }
 
 void Mesh::Builder::SetColor(const Vector4& color) noexcept {
