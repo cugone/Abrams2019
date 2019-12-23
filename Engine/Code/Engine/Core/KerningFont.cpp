@@ -120,20 +120,20 @@ bool KerningFont::LoadFromFile(std::filesystem::path filepath) noexcept {
         }
         _filepath = filepath;
     }
-    std::vector<unsigned char> out_buffer{};
-    if(!FileUtils::ReadBufferFromFile(out_buffer, _filepath.string())) {
+    if(auto buffer = FileUtils::ReadBinaryBufferFromFile(_filepath.string())) {
+        if(buffer->size() < 4) {
+            std::ostringstream ss;
+            ss << _filepath << " is not a BMFont file.\n";
+            DebuggerPrintf(ss.str().c_str());
+            return false;
+        }
+        return LoadFromBuffer(buffer.value());
+    } else {
         std::ostringstream ss;
         ss << "Failed to read file: " << _filepath << "\n";
         DebuggerPrintf(ss.str().c_str());
         return false;
     }
-    if(out_buffer.size() < 4) {
-        std::ostringstream ss;
-        ss << _filepath << " is not a BMFont file.\n";
-        DebuggerPrintf(ss.str().c_str());
-        return false;
-    }
-    return LoadFromBuffer(out_buffer);
 }
 
 bool KerningFont::LoadFromBuffer(const std::vector<unsigned char>& buffer) noexcept {

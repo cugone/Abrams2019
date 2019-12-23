@@ -153,11 +153,10 @@ Riff::RiffChunk* Riff::GetNextChunk() noexcept {
 }
 
 unsigned int Riff::Load(std::filesystem::path filename) noexcept {
-    std::vector<unsigned char> buffer{};
-    if(!FileUtils::ReadBufferFromFile(buffer, filename)) {
-        return RIFF_ERROR_INVALID_ARGUMENT;
+    if(auto buffer = FileUtils::ReadBinaryBufferFromFile(filename)) {
+        Load(buffer.value());
     }
-    return Load(buffer);
+    return RIFF_ERROR_INVALID_ARGUMENT;
 }
 
 unsigned int Riff::Load(const std::vector<unsigned char>& data) noexcept {

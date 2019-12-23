@@ -6,9 +6,10 @@
 #include <cstdlib>
 #include <filesystem>
 #include <functional>
+#include <optional>
 #include <string>
-#include <vector>
 #include <type_traits>
+#include <vector>
 
 namespace FileUtils {
 
@@ -69,8 +70,8 @@ enum class KnownPathID {
 
 bool WriteBufferToFile(void* buffer, std::size_t size, std::filesystem::path filepath) noexcept;
 bool WriteBufferToFile(const std::string& buffer, std::filesystem::path filepath) noexcept;
-bool ReadBufferFromFile(std::vector<unsigned char>& out_buffer, std::filesystem::path filepath) noexcept;
-bool ReadBufferFromFile(std::string& out_buffer, std::filesystem::path filepath) noexcept;
+std::optional<std::vector<uint8_t>> ReadBinaryBufferFromFile(std::filesystem::path filepath) noexcept;
+std::optional<std::string> ReadStringBufferFromFile(std::filesystem::path filepath) noexcept;
 bool CreateFolders(const std::filesystem::path& filepath) noexcept;
 bool IsSystemPathId(const KnownPathID& pathid) noexcept;
 bool IsContentPathId(const KnownPathID& pathid) noexcept;

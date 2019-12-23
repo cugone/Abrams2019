@@ -10,9 +10,8 @@
 KeyValueParser::KeyValueParser(const std::filesystem::path& filepath) noexcept {
     namespace FS = std::filesystem;
     if(FS::exists(filepath)) {
-        std::string contents{};
-        if(FileUtils::ReadBufferFromFile(contents, filepath.string())) {
-            Parse(contents);
+        if(auto contents = FileUtils::ReadStringBufferFromFile(filepath.string())) {
+            Parse(contents.value_or(std::string{}));
         }
     }
 }

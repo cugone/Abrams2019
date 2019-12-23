@@ -511,9 +511,8 @@ std::unique_ptr<ShaderProgram> RHIDevice::CreateShaderProgramFromHlslString(cons
 std::unique_ptr<ShaderProgram> RHIDevice::CreateShaderProgramFromHlslFile(std::filesystem::path filepath, const std::string& entryPoint, const PipelineStage& target) const noexcept {
     bool retry_requested = false;
     do {
-        std::string source{};
-        if(FileUtils::ReadBufferFromFile(source, filepath)) {
-            auto sp = CreateShaderProgramFromHlslString(filepath.string(), source, entryPoint, nullptr, target);
+        if(auto source = FileUtils::ReadStringBufferFromFile(filepath)) {
+            auto sp = CreateShaderProgramFromHlslString(filepath.string(), source.value(), entryPoint, nullptr, target);
             if(sp) {
                 return sp;
             }

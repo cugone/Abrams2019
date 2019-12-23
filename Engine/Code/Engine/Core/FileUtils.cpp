@@ -27,9 +27,10 @@ bool WriteBufferToFile(void* buffer, std::size_t size, std::filesystem::path fil
     }
 
     std::ofstream ofs{filepath, std::ios_base::binary};
-    ofs.write(reinterpret_cast<const char*>(buffer), size);
-    ofs.close();
-    return true;
+    if(ofs.write(reinterpret_cast<const char*>(buffer), size)) {
+        return true;
+    }
+    return false;
 }
 
 bool WriteBufferToFile(const std::string& buffer, std::filesystem::path filepath) noexcept {
@@ -43,13 +44,13 @@ bool WriteBufferToFile(const std::string& buffer, std::filesystem::path filepath
     }
 
     std::ofstream ofs{ filepath };
-    ofs.write(reinterpret_cast<const char*>(buffer.data()), buffer.size());
-    ofs.close();
-    return true;
-
+    if(ofs.write(reinterpret_cast<const char*>(buffer.data()), buffer.size())) {
+        return true;
+    }
+    return false;
 }
 
-bool ReadBufferFromFile(std::vector<unsigned char>& out_buffer, std::filesystem::path filepath) noexcept {
+std::optional<std::vector<uint8_t>> ReadBinaryBufferFromFile(std::filesystem::path filepath) noexcept {
     namespace FS = std::filesystem;
     filepath = FS::canonical(filepath);
     filepath.make_preferred();
@@ -57,19 +58,20 @@ bool ReadBufferFromFile(std::vector<unsigned char>& out_buffer, std::filesystem:
     bool path_not_exist = !FS::exists(filepath);
     bool not_valid_path = path_is_directory || path_not_exist;
     if(not_valid_path) {
-        return false;
+        return {};
     }
 
     std::size_t byte_size = FS::file_size(filepath);
+    std::vector<uint8_t> out_buffer{};
     out_buffer.resize(byte_size);
     std::ifstream ifs{ filepath, std::ios_base::binary };
-    ifs.read(reinterpret_cast<char*>(out_buffer.data()), out_buffer.size());
-    ifs.close();
-    out_buffer.shrink_to_fit();
-    return true;
+    if(ifs.read(reinterpret_cast<char*>(out_buffer.data()), out_buffer.size())) {
+        return out_buffer;
+    }
+    return {};
 }
 
-bool ReadBufferFromFile(std::string& out_buffer, std::filesystem::path filepath) noexcept {
+std::optional<std::string> ReadStringBufferFromFile(std::filesystem::path filepath) noexcept {
 
     namespace FS = std::filesystem;
     filepath = FS::canonical(filepath);
@@ -78,12 +80,14 @@ bool ReadBufferFromFile(std::string& out_buffer, std::filesystem::path filepath)
     bool path_not_exist = !FS::exists(filepath);
     bool not_valid_path = path_is_directory || path_not_exist;
     if(not_valid_path) {
-        return false;
+        return {};
     }
 
     std::ifstream ifs{filepath};
-    out_buffer = std::string(static_cast<const std::stringstream&>(std::stringstream() << ifs.rdbuf()).str());
-    return true;
+    if(ifs) {
+        return std::string(static_cast<const std::stringstream&>(std::stringstream() << ifs.rdbuf()).str());
+    }
+    return {};
 }
 
 bool CreateFolders(const std::filesystem::path& filepath) noexcept {

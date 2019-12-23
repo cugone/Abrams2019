@@ -25,28 +25,29 @@ Image::Image(std::filesystem::path filepath) noexcept
     }
     filepath = FS::canonical(filepath);
     filepath.make_preferred();
-    std::vector<unsigned char> buf = {};
-    if(FileUtils::ReadBufferFromFile(buf, filepath)) {
-        m_isGif = (buf[0] == 'G' && buf[1] == 'I' && buf[2] == 'F' && buf[3] == '8' && (buf[4] == '9' || buf[4] == '7') && buf[5] == 'a');
-        if(!m_isGif) {
-            int comp = 0;
-            int req_comp = 4;
-            auto texel_bytes = stbi_load_from_memory(buf.data(), static_cast<int>(buf.size()), &m_dimensions.x, &m_dimensions.y, &comp, req_comp);
-            m_bytesPerTexel = req_comp;
-            m_texelBytes = std::vector<unsigned char>(texel_bytes, texel_bytes + (static_cast<std::size_t>(m_dimensions.x) * m_dimensions.y * m_bytesPerTexel));
-            stbi_image_free(texel_bytes);
-        } else {
+    if(auto buf = FileUtils::ReadBinaryBufferFromFile(filepath)) {
+        const std::string bufSig{buf->begin(), buf->begin() + 6};
+        const std::string gifSig89a{"GIF89a"};
+        const std::string gifSig87a{"GIF87a"};
+        if(m_isGif = false; m_isGif = (bufSig == gifSig89a) || (bufSig == gifSig87a)) {
             int depth = 0;
             int* delays = nullptr;
             int comp = 0;
             int req_comp = 4;
-            auto texel_bytes = stbi_load_gif_from_memory(buf.data(), static_cast<int>(buf.size()), &delays, &m_dimensions.x, &m_dimensions.y, &depth, &comp, req_comp);
+            auto texel_bytes = stbi_load_gif_from_memory(buf->data(), static_cast<int>(buf->size()), &delays, &m_dimensions.x, &m_dimensions.y, &depth, &comp, req_comp);
             m_bytesPerTexel = req_comp;
             m_gifDelays.resize(depth);
             for(int i = 0; i < depth; ++i) {
                 m_gifDelays[i] = delays[i];
             }
             m_dimensions.y *= depth;
+            m_texelBytes = std::vector<unsigned char>(texel_bytes, texel_bytes + (static_cast<std::size_t>(m_dimensions.x)* m_dimensions.y* m_bytesPerTexel));
+            stbi_image_free(texel_bytes);
+        } else {
+            int comp = 0;
+            int req_comp = 4;
+            auto texel_bytes = stbi_load_from_memory(buf->data(), static_cast<int>(buf->size()), &m_dimensions.x, &m_dimensions.y, &comp, req_comp);
+            m_bytesPerTexel = req_comp;
             m_texelBytes = std::vector<unsigned char>(texel_bytes, texel_bytes + (static_cast<std::size_t>(m_dimensions.x) * m_dimensions.y * m_bytesPerTexel));
             stbi_image_free(texel_bytes);
         }

@@ -185,12 +185,10 @@ bool Obj::Parse(const std::filesystem::path& filepath) noexcept {
     _is_saving = false;
     _is_saved = false;
     _is_loading = true;
-    std::vector<unsigned char> buffer{};
-    if(FileUtils::ReadBufferFromFile(buffer, filepath)) {
-        std::stringstream ss{};
-        if(ss.write(reinterpret_cast<const char*>(buffer.data()), buffer.size())) {
-            buffer.clear();
-            buffer.shrink_to_fit();
+    if(auto buffer = FileUtils::ReadBinaryBufferFromFile(filepath)) {
+        if(std::stringstream ss{}; ss.write(reinterpret_cast<const char*>(buffer->data()), buffer->size())) {
+            buffer->clear();
+            buffer->shrink_to_fit();
             ss.clear();
             ss.seekg(ss.beg);
             ss.seekp(ss.beg);

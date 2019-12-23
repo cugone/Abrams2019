@@ -3079,16 +3079,15 @@ std::unique_ptr<Shader> Renderer::CreateDefaultFontShader() noexcept {
 }
 
 std::unique_ptr<Shader> Renderer::CreateShaderFromFile(std::filesystem::path filepath) noexcept {
-    std::string buffer{};
-    if(!FileUtils::ReadBufferFromFile(buffer, filepath)) {
-        return nullptr;
+    if(auto buffer = FileUtils::ReadStringBufferFromFile(filepath)) {
+        tinyxml2::XMLDocument doc;
+        auto parse_result = doc.Parse(buffer->c_str(), buffer->size());
+        if(parse_result != tinyxml2::XML_SUCCESS) {
+            return nullptr;
+        }
+        return std::make_unique<Shader>(this, *doc.RootElement());
     }
-    tinyxml2::XMLDocument doc;
-    auto parse_result = doc.Parse(buffer.c_str(), buffer.size());
-    if(parse_result != tinyxml2::XML_SUCCESS) {
-        return nullptr;
-    }
-    return std::make_unique<Shader>(this, *doc.RootElement());
+    return nullptr;
 }
 
 std::size_t Renderer::GetMaterialCount() noexcept {
@@ -3223,9 +3222,8 @@ std::unique_ptr<ShaderProgram> Renderer::CreateShaderProgramFromHlslFile(std::fi
     bool requested_retry = false;
     std::unique_ptr<ShaderProgram> sp = nullptr;
     do {
-        std::string contents{};
-        if(FileUtils::ReadBufferFromFile(contents, filepath)) {
-            sp = std::move(_rhi_device->CreateShaderProgramFromHlslString(filepath.string(), contents, entryPointList, nullptr, target));
+        if(auto contents = FileUtils::ReadStringBufferFromFile(filepath)) {
+            sp = std::move(_rhi_device->CreateShaderProgramFromHlslString(filepath.string(), contents.value(), entryPointList, nullptr, target));
                 requested_retry = false;
 #ifdef RENDER_DEBUG
                 if(sp == nullptr) {
@@ -4447,17 +4445,17 @@ Texture* Renderer::Create3DTexture(std::filesystem::path filepath, const IntVect
                                                        // Setup Initial Data
     D3D11_SUBRESOURCE_DATA subresource_data{};
 
-    std::vector<unsigned char> data;
-    FileUtils::ReadBufferFromFile(data, filepath);
-    auto width = dimensions.x;
-    auto height = dimensions.y;
-    subresource_data.pSysMem = data.data();
-    subresource_data.SysMemPitch = width * sizeof(unsigned int); // pitch is byte size of a single row)
-    subresource_data.SysMemSlicePitch = width * height * sizeof(unsigned int);
-    //Force specific usages for unordered access
-    if((bindUsage & BufferBindUsage::Unordered_Access) == BufferBindUsage::Unordered_Access) {
-        tex_desc.Usage = BufferUsageToD3DUsage(BufferUsage::Gpu);
-        tex_desc.CPUAccessFlags = CPUAccessFlagFromUsage(BufferUsage::Staging);
+    if(const auto data = FileUtils::ReadBinaryBufferFromFile(filepath)) {
+        auto width = dimensions.x;
+        auto height = dimensions.y;
+        subresource_data.pSysMem = data->data();
+        subresource_data.SysMemPitch = width * sizeof(unsigned int); // pitch is byte size of a single row)
+        subresource_data.SysMemSlicePitch = width * height * sizeof(unsigned int);
+        //Force specific usages for unordered access
+        if((bindUsage & BufferBindUsage::Unordered_Access) == BufferBindUsage::Unordered_Access) {
+            tex_desc.Usage = BufferUsageToD3DUsage(BufferUsage::Gpu);
+            tex_desc.CPUAccessFlags = CPUAccessFlagFromUsage(BufferUsage::Staging);
+        }
     }
     Microsoft::WRL::ComPtr<ID3D11Texture3D> dx_tex{};
 
