@@ -137,8 +137,7 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
                 bool empty_path = p.empty();
                 bool texture_not_loaded = _renderer.IsTextureNotLoaded(p_str);
                 if(texture_not_loaded) {
-                    _renderer.CreateTexture(p.string(), IntVector3::XY_AXIS);
-                    texture_not_loaded = _renderer.IsTextureNotLoaded(p_str);
+                    texture_not_loaded = _renderer.CreateTexture(p.string(), IntVector3::XY_AXIS) ? false : true;
                 }
                 bool texture_not_exist = !empty_path && texture_not_loaded;
                 bool invalid_src = empty_path || texture_not_exist;
@@ -169,8 +168,7 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
                 bool empty_path = p.empty();
                 bool texture_not_loaded = _renderer.IsTextureNotLoaded(p_str);
                 if(texture_not_loaded) {
-                    _renderer.CreateTexture(p.string(), IntVector3::XY_AXIS);
-                    texture_not_loaded = _renderer.IsTextureNotLoaded(p_str);
+                    texture_not_loaded = _renderer.CreateTexture(p.string(), IntVector3::XY_AXIS) ? false : true;
                 }
                 bool texture_not_exist = !empty_path && texture_not_loaded;
                 bool invalid_src = empty_path || texture_not_exist;
@@ -201,8 +199,7 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
                 bool empty_path = p.empty();
                 bool texture_not_loaded = _renderer.IsTextureNotLoaded(p_str);
                 if(texture_not_loaded) {
-                    _renderer.CreateTexture(p.string(), IntVector3::XY_AXIS);
-                    texture_not_loaded = _renderer.IsTextureNotLoaded(p_str);
+                    texture_not_loaded = _renderer.CreateTexture(p.string(), IntVector3::XY_AXIS) ? false : true;
                 }
                 bool texture_not_exist = !empty_path && texture_not_loaded;
                 bool invalid_src = empty_path || texture_not_exist;
@@ -233,8 +230,7 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
                 bool empty_path = p.empty();
                 bool texture_not_loaded = _renderer.IsTextureNotLoaded(p_str);
                 if(texture_not_loaded) {
-                    _renderer.CreateTexture(p.string(), IntVector3::XY_AXIS);
-                    texture_not_loaded = _renderer.IsTextureNotLoaded(p_str);
+                    texture_not_loaded = _renderer.CreateTexture(p.string(), IntVector3::XY_AXIS) ? false : true;
                 }
                 bool texture_not_exist = !empty_path && texture_not_loaded;
                 bool invalid_src = empty_path || texture_not_exist;
@@ -265,8 +261,7 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
                 bool empty_path = p.empty();
                 bool texture_not_loaded = _renderer.IsTextureNotLoaded(p_str);
                 if(texture_not_loaded) {
-                    _renderer.CreateTexture(p.string(), IntVector3::XY_AXIS);
-                    texture_not_loaded = _renderer.IsTextureNotLoaded(p_str);
+                    texture_not_loaded = _renderer.CreateTexture(p.string(), IntVector3::XY_AXIS) ? false : true;
                 }
                 bool texture_not_exist = !empty_path && texture_not_loaded;
                 bool invalid_src = empty_path || texture_not_exist;
@@ -297,8 +292,7 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
                 bool empty_path = p.empty();
                 bool texture_not_loaded = _renderer.IsTextureNotLoaded(p_str);
                 if(texture_not_loaded) {
-                    _renderer.CreateTexture(p.string(), IntVector3::XY_AXIS);
-                    texture_not_loaded = _renderer.IsTextureNotLoaded(p_str);
+                    texture_not_loaded = _renderer.CreateTexture(p.string(), IntVector3::XY_AXIS) ? false : true;
                 }
                 bool texture_not_exist = !empty_path && texture_not_loaded;
                 bool invalid_src = empty_path || texture_not_exist;
@@ -342,8 +336,7 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
                 bool empty_path = p.empty();
                 bool texture_not_loaded = _renderer.IsTextureNotLoaded(p_str);
                 if(texture_not_loaded) {
-                    _renderer.CreateTexture(p.string(), IntVector3::XY_AXIS);
-                    texture_not_loaded = _renderer.IsTextureNotLoaded(p_str);
+                    texture_not_loaded = _renderer.CreateTexture(p.string(), IntVector3::XY_AXIS) ? false : true;
                 }
                 bool texture_not_exist = !empty_path && texture_not_loaded;
                 bool invalid_src = empty_path || texture_not_exist;
