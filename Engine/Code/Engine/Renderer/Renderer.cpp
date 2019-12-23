@@ -4426,30 +4426,25 @@ Texture* Renderer::Create3DTexture(std::filesystem::path filepath, const IntVect
 
     D3D11_TEXTURE3D_DESC tex_desc{};
 
-    tex_desc.Width = dimensions.x;     // width... 
-    tex_desc.Height = dimensions.y;    // ...and height of image in pixels.
+    tex_desc.Width = dimensions.x;
+    tex_desc.Height = dimensions.y;
     tex_desc.Depth = dimensions.z;
-    tex_desc.MipLevels = 1;    // setting to 0 means there's a full chain (or can generate a full chain) - we're immutable, so not allowed
-    tex_desc.Usage = BufferUsageToD3DUsage(bufferUsage);            // data is set at creation time and won't change
-    tex_desc.Format = ImageFormatToDxgiFormat(imageFormat);      // R8G8B8A8 texture
-    tex_desc.BindFlags = BufferBindUsageToD3DBindFlags(bindUsage);   // we're going to be using this texture as a shader resource
-                                                                     //Make every texture a shader resource
+    tex_desc.MipLevels = 1;
+    tex_desc.Usage = BufferUsageToD3DUsage(bufferUsage);
+    tex_desc.Format = ImageFormatToDxgiFormat(imageFormat);
+    tex_desc.BindFlags = BufferBindUsageToD3DBindFlags(bindUsage);
+    //Make every texture a shader resource
     tex_desc.BindFlags |= BufferBindUsageToD3DBindFlags(BufferBindUsage::Shader_Resource);
-    tex_desc.CPUAccessFlags = CPUAccessFlagFromUsage(bufferUsage);                      // Determines how I can access this resource CPU side (IMMUTABLE, So none)
-    tex_desc.MiscFlags = 0;                            // Extra Flags, of note is;
-                                                       // D3D11_RESOURCE_MISC_GENERATE_MIPS - if we want to use this to be able to generate mips (not compatible with IMMUTABLE)
+    tex_desc.CPUAccessFlags = CPUAccessFlagFromUsage(bufferUsage);
+    tex_desc.MiscFlags = 0;
 
-                                                       // If Multisampling - set this up - we're not multisampling, so 1 and 0
-                                                       // (MSAA as far as I know only makes sense for Render Targets, not shader resource textures)
-
-                                                       // Setup Initial Data
     D3D11_SUBRESOURCE_DATA subresource_data{};
 
     if(const auto data = FileUtils::ReadBinaryBufferFromFile(filepath)) {
         auto width = dimensions.x;
         auto height = dimensions.y;
         subresource_data.pSysMem = data->data();
-        subresource_data.SysMemPitch = width * sizeof(unsigned int); // pitch is byte size of a single row)
+        subresource_data.SysMemPitch = width * sizeof(unsigned int);
         subresource_data.SysMemSlicePitch = width * height * sizeof(unsigned int);
         //Force specific usages for unordered access
         if((bindUsage & BufferBindUsage::Unordered_Access) == BufferBindUsage::Unordered_Access) {
