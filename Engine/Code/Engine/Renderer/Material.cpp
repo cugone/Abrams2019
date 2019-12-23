@@ -135,7 +135,12 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
                 p.make_preferred();
                 const auto& p_str = p.string();
                 bool empty_path = p.empty();
-                bool texture_not_exist = !empty_path && _renderer.IsTextureNotLoaded(p_str);
+                bool texture_not_loaded = _renderer.IsTextureNotLoaded(p_str);
+                if(texture_not_loaded) {
+                    _renderer.CreateTexture(p.string(), IntVector3::XY_AXIS);
+                    texture_not_loaded = _renderer.IsTextureNotLoaded(p_str);
+                }
+                bool texture_not_exist = !empty_path && texture_not_loaded;
                 bool invalid_src = empty_path || texture_not_exist;
                 auto tex = invalid_src ? invalid_tex : (_renderer.GetTexture(p_str));
                 _textures[0] = tex;
@@ -162,7 +167,12 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
                 p.make_preferred();
                 const auto& p_str = p.string();
                 bool empty_path = p.empty();
-                bool texture_not_exist = !empty_path && _renderer.IsTextureNotLoaded(p_str);
+                bool texture_not_loaded = _renderer.IsTextureNotLoaded(p_str);
+                if(texture_not_loaded) {
+                    _renderer.CreateTexture(p.string(), IntVector3::XY_AXIS);
+                    texture_not_loaded = _renderer.IsTextureNotLoaded(p_str);
+                }
+                bool texture_not_exist = !empty_path && texture_not_loaded;
                 bool invalid_src = empty_path || texture_not_exist;
                 auto tex = invalid_src ? invalid_tex : (_renderer.GetTexture(p_str));
                 _textures[1] = tex;
@@ -189,7 +199,12 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
                 p.make_preferred();
                 const auto& p_str = p.string();
                 bool empty_path = p.empty();
-                bool texture_not_exist = !empty_path && _renderer.IsTextureNotLoaded(p_str);
+                bool texture_not_loaded = _renderer.IsTextureNotLoaded(p_str);
+                if(texture_not_loaded) {
+                    _renderer.CreateTexture(p.string(), IntVector3::XY_AXIS);
+                    texture_not_loaded = _renderer.IsTextureNotLoaded(p_str);
+                }
+                bool texture_not_exist = !empty_path && texture_not_loaded;
                 bool invalid_src = empty_path || texture_not_exist;
                 auto tex = invalid_src ? invalid_tex : (_renderer.GetTexture(p_str));
                 _textures[2] = tex;
@@ -216,7 +231,12 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
                 p.make_preferred();
                 const auto& p_str = p.string();
                 bool empty_path = p.empty();
-                bool texture_not_exist = !empty_path && _renderer.IsTextureNotLoaded(p_str);
+                bool texture_not_loaded = _renderer.IsTextureNotLoaded(p_str);
+                if(texture_not_loaded) {
+                    _renderer.CreateTexture(p.string(), IntVector3::XY_AXIS);
+                    texture_not_loaded = _renderer.IsTextureNotLoaded(p_str);
+                }
+                bool texture_not_exist = !empty_path && texture_not_loaded;
                 bool invalid_src = empty_path || texture_not_exist;
                 auto tex = invalid_src ? invalid_tex : (_renderer.GetTexture(p_str));
                 _textures[3] = tex;
@@ -243,7 +263,12 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
                 p.make_preferred();
                 const auto& p_str = p.string();
                 bool empty_path = p.empty();
-                bool texture_not_exist = !empty_path && _renderer.IsTextureNotLoaded(p_str);
+                bool texture_not_loaded = _renderer.IsTextureNotLoaded(p_str);
+                if(texture_not_loaded) {
+                    _renderer.CreateTexture(p.string(), IntVector3::XY_AXIS);
+                    texture_not_loaded = _renderer.IsTextureNotLoaded(p_str);
+                }
+                bool texture_not_exist = !empty_path && texture_not_loaded;
                 bool invalid_src = empty_path || texture_not_exist;
                 auto tex = invalid_src ? invalid_tex : (_renderer.GetTexture(p_str));
                 _textures[4] = tex;
@@ -270,7 +295,12 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
                 p.make_preferred();
                 const auto& p_str = p.string();
                 bool empty_path = p.empty();
-                bool texture_not_exist = !empty_path && _renderer.IsTextureNotLoaded(p_str);
+                bool texture_not_loaded = _renderer.IsTextureNotLoaded(p_str);
+                if(texture_not_loaded) {
+                    _renderer.CreateTexture(p.string(), IntVector3::XY_AXIS);
+                    texture_not_loaded = _renderer.IsTextureNotLoaded(p_str);
+                }
+                bool texture_not_exist = !empty_path && texture_not_loaded;
                 bool invalid_src = empty_path || texture_not_exist;
                 auto tex = invalid_src ? invalid_tex : (_renderer.GetTexture(p_str));
                 _textures[5] = tex;
@@ -310,7 +340,12 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
                 p.make_preferred();
                 const auto& p_str = p.string();
                 bool empty_path = p.empty();
-                bool texture_not_exist = !empty_path && _renderer.IsTextureNotLoaded(p_str);
+                bool texture_not_loaded = _renderer.IsTextureNotLoaded(p_str);
+                if(texture_not_loaded) {
+                    _renderer.CreateTexture(p.string(), IntVector3::XY_AXIS);
+                    texture_not_loaded = _renderer.IsTextureNotLoaded(p_str);
+                }
+                bool texture_not_exist = !empty_path && texture_not_loaded;
                 bool invalid_src = empty_path || texture_not_exist;
                 auto tex = invalid_src ? invalid_tex : (_renderer.GetTexture(p_str));
                 _textures[index] = tex;
