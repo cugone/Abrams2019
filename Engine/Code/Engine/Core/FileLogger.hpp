@@ -16,7 +16,12 @@ class JobSystem;
 
 class FileLogger {
 public:
+    FileLogger() = delete;
     FileLogger(JobSystem& jobSystem, const std::string& logName) noexcept;
+    FileLogger(const FileLogger& rhs) = delete;
+    FileLogger(FileLogger&& rhs) = delete;
+    FileLogger& operator=(const FileLogger& rhs) = delete;
+    FileLogger& operator=(FileLogger&& rhs) = delete;
     ~FileLogger() noexcept;
 
     void Shutdown() noexcept;
@@ -39,7 +44,7 @@ public:
 
 protected:
 private:
-    void Initialize(JobSystem& jobSystem, const std::string& log_name) noexcept;
+    void Initialize(const std::string& log_name) noexcept;
 
     void InsertTimeStamp(std::stringstream& msg) noexcept;
     void InsertTag(std::stringstream& msg, const std::string& tag) noexcept;
@@ -59,7 +64,7 @@ private:
     std::thread _worker{};
     std::condition_variable _signal{};
     ThreadSafeQueue<std::string> _queue;
-    JobSystem* _job_system = nullptr;
+    JobSystem& _job_system;
     std::atomic_bool _is_running = false;
     std::atomic_bool _requesting_flush = false;
 };

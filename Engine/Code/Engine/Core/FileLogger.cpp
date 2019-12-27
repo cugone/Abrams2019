@@ -19,19 +19,20 @@
 
 namespace FS = std::filesystem;
 
-FileLogger::FileLogger(JobSystem& jobSystem, const std::string& logName) noexcept {
-    Initialize(jobSystem, logName);
+FileLogger::FileLogger(JobSystem& jobSystem, const std::string& logName) noexcept
+    : _job_system(jobSystem)
+{
+    Initialize(logName);
 }
 
 FileLogger::~FileLogger() noexcept {
     Shutdown();
-    _job_system = nullptr;
 }
 
 void FileLogger::Log_worker() noexcept {
     JobConsumer jc;
     jc.AddCategory(JobType::Logging);
-    _job_system->SetCategorySignal(JobType::Logging, &_signal);
+    _job_system.SetCategorySignal(JobType::Logging, &_signal);
 
     while(IsRunning()) {
         std::unique_lock<std::mutex> lock(_cs);
@@ -80,7 +81,7 @@ void FileLogger::DoCopyLog() noexcept {
         to_p.make_preferred();
         job_data->to = to_p;
         job_data->from = from_p;
-        _job_system->Run(JobType::Generic, [this](void* user_data) { CopyLog(user_data); }, job_data);
+        _job_system.Run(JobType::Generic, [this](void* user_data) { CopyLog(user_data); }, job_data);
     }
 }
 
@@ -118,12 +119,11 @@ void FileLogger::FinalizeLog() noexcept {
     std::filesystem::copy_file(from_p, to_p, std::filesystem::copy_options::overwrite_existing);
 }
 
-void FileLogger::Initialize(JobSystem& jobSystem, const std::string& log_name) noexcept {
+void FileLogger::Initialize(const std::string& log_name) noexcept {
     if(IsRunning()) {
         LogLine("FileLogger already running.");
         return;
     }
-    _job_system = &jobSystem;
     namespace FS = std::filesystem;
     std::string folder_str = "Data/Logs/";
     std::string log_str = folder_str + log_name + ".log";
@@ -174,7 +174,7 @@ void FileLogger::Shutdown() noexcept {
             _worker.join();
         }
         FinalizeLog();
-        _job_system->SetCategorySignal(JobType::Logging, nullptr);
+        _job_system.SetCategorySignal(JobType::Logging, nullptr);
     }
 }
 
