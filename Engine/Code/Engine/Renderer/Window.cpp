@@ -168,36 +168,6 @@ const RHIOutputMode& Window::GetDisplayMode() const noexcept {
     return _currentDisplayMode;
 }
 
-void OnLButtonUp(HWND hwnd, int x, int y, UINT keyFlags)
-{
-    UNUSED(x);
-    UNUSED(y);
-    UNUSED(keyFlags);
-
-    static WINDOWPLACEMENT g_wpPrev = {sizeof(g_wpPrev)};
-    auto dwStyle = ::GetWindowLongPtr(hwnd, GWL_STYLE);
-    if(dwStyle & WS_OVERLAPPEDWINDOW) {
-        MONITORINFO mi = {sizeof(mi)};
-        if(::GetWindowPlacement(hwnd, &g_wpPrev) &&
-            ::GetMonitorInfo(::MonitorFromWindow(hwnd,
-                MONITOR_DEFAULTTOPRIMARY), &mi)) {
-            ::SetWindowLongPtr(hwnd, GWL_STYLE,
-                dwStyle & ~WS_OVERLAPPEDWINDOW);
-            ::SetWindowPos(hwnd, HWND_TOP,
-                mi.rcMonitor.left, mi.rcMonitor.top,
-                mi.rcMonitor.right - mi.rcMonitor.left,
-                mi.rcMonitor.bottom - mi.rcMonitor.top,
-                SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
-        }
-    } else {
-        ::SetWindowLongPtr(hwnd, GWL_STYLE, dwStyle | WS_OVERLAPPEDWINDOW);
-        ::SetWindowPlacement(hwnd, &g_wpPrev);
-        ::SetWindowPos(hwnd, nullptr, 0, 0, 0, 0,
-            SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER |
-            SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
-    }
-}
-
 void Window::SetDisplayMode(const RHIOutputMode& display_mode) noexcept {
     if(display_mode == _currentDisplayMode) {
         return;
@@ -215,19 +185,6 @@ void Window::SetDisplayMode(const RHIOutputMode& display_mode) noexcept {
             ::SetWindowPos(_hWnd, nullptr, 0, 0, 0, 0,
                 SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER |
                 SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
-
-            //_styleFlags |= _defaultWindowedStyleFlags;
-            //::SetWindowLongPtr(_hWnd, GWL_STYLE, _styleFlags);
-            //RECT r{_positionX, _positionY, static_cast<long>(_positionX + _clientWidth), static_cast<long>(_positionY + _clientHeight)};
-
-            //RECT desktopRect;
-            //HWND desktopWindowHandle = ::GetDesktopWindow();
-            //::GetClientRect(desktopWindowHandle, &desktopRect);
-            //const int x = static_cast<int>(desktopRect.right - desktopRect.left) / 2 - static_cast<int>(_clientWidth) / 2;
-            //const int y = static_cast<int>(desktopRect.bottom - desktopRect.top) / 2 + static_cast<int>(_clientHeight) / 2;
-            //const int w = _clientWidth;
-            //const int h = _clientHeight;
-            //SetDimensionsAndPosition(IntVector2{x, y}, IntVector2{w, h});
             break;
         }
         case RHIOutputMode::Borderless_Fullscreen:
@@ -244,20 +201,10 @@ void Window::SetDisplayMode(const RHIOutputMode& display_mode) noexcept {
                     mi.rcMonitor.bottom - mi.rcMonitor.top,
                     SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
             }
-
-            //_styleFlags = WS_POPUP;
-            //::SetWindowLongPtr(_hWnd, GWL_STYLE, _styleFlags);
-            //RECT desktopRect;
-            //HWND desktopWindowHandle = GetDesktopWindow();
-            //::GetClientRect(desktopWindowHandle, &desktopRect);
-
-            //long width = desktopRect.right - desktopRect.left;
-            //long height = desktopRect.bottom - desktopRect.top;
-            //SetDimensionsAndPosition(IntVector2::ZERO, IntVector2(width, height));
             break;
         }
         default:
-            /* DO NOTHING */;
+            break;
     }
     Show();
 }
