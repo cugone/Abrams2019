@@ -97,3 +97,7 @@ protected:
 private:
     void SetValueFromName(std::string name) noexcept;
 };
+
+namespace StringUtils {
+    std::string to_string(const Rgba& clr) noexcept;
+}

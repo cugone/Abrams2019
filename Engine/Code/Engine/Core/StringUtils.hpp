@@ -21,13 +21,6 @@ namespace System::Cpu {
 
 namespace StringUtils {
 
-std::string to_string(const Vector2& v) noexcept;
-std::string to_string(const Vector3& v) noexcept;
-std::string to_string(const Vector4& v) noexcept;
-std::string to_string(const Matrix4& m) noexcept;
-std::string to_string(const Rgba& clr) noexcept;
-std::string to_string(const System::Cpu::ProcessorArchitecture& architecture) noexcept;
-std::string to_string(const System::SystemDesc& system) noexcept;
 std::string FormatWindowsMessage(unsigned long messageId) noexcept;
 std::string FormatWindowsLastErrorMessage() noexcept;
 

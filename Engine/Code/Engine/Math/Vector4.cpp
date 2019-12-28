@@ -323,3 +323,10 @@ void swap(Vector4& a, Vector4& b) noexcept {
     std::swap(a.z, b.z);
     std::swap(a.w, b.w);
 }
+
+
+std::string StringUtils::to_string(const Vector4& v) noexcept {
+    std::ostringstream ss;
+    ss << '[' << v.x << ',' << v.y << ',' << v.z << ',' << v.w << ']';
+    return ss.str();
+}

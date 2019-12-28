@@ -5,6 +5,7 @@
 #include "Engine/Math/MathUtils.hpp"
 
 #include <iomanip>
+#include <sstream>
 
 const Rgba Rgba::White(255, 255, 255, 255);
 const Rgba Rgba::Black(0, 0, 0, 255);
@@ -33,6 +34,15 @@ const Rgba Rgba::Turquoise(64, 224, 208, 255);
 const Rgba Rgba::Periwinkle(204, 204, 255, 255);
 const Rgba Rgba::NormalZ(128, 128, 255, 255);
 const Rgba Rgba::NoAlpha(0, 0, 0, 0);
+
+namespace StringUtils {
+    std::string to_string(const Rgba& clr) noexcept {
+        std::ostringstream ss;
+        ss << std::hex << clr;
+        return ss.str();
+    }
+}
+
 
 Rgba Rgba::Random() noexcept {
     return Rgba(static_cast<unsigned char>(MathUtils::GetRandomIntLessThan(256))

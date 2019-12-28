@@ -98,3 +98,7 @@ public:
 protected:
 private:
 };
+
+namespace StringUtils {
+    std::string to_string(const Vector4& v) noexcept;
+}

@@ -1136,3 +1136,19 @@ std::istream& operator>>(std::istream& in_stream, Matrix4& m) noexcept {
 
     return in_stream;
 }
+
+
+std::string StringUtils::to_string(const Matrix4& m) noexcept {
+    std::ostringstream ss;
+    const auto& x = m.GetXComponents();
+    const auto& y = m.GetYComponents();
+    const auto& z = m.GetZComponents();
+    const auto& w = m.GetWComponents();
+    ss << '[';
+    ss << x.x << ',' << x.y << ',' << x.z << ',' << x.w;
+    ss << y.x << ',' << y.y << ',' << y.z << ',' << y.w;
+    ss << z.x << ',' << z.y << ',' << z.z << ',' << z.w;
+    ss << w.x << ',' << w.y << ',' << w.z << ',' << w.w;
+    ss << ']';
+    return ss.str();
+}

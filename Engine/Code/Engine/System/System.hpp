@@ -5,6 +5,7 @@
 #include "Engine/System/OS.hpp"
 
 #include <ostream>
+#include <string>
 
 namespace System {
 
@@ -17,4 +18,8 @@ struct SystemDesc {
 
 SystemDesc GetSystemDesc() noexcept;
 
+}
+
+namespace StringUtils {
+    std::string to_string(const System::SystemDesc& system) noexcept;
 }

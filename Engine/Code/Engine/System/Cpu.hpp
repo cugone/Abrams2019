@@ -35,3 +35,7 @@ struct CpuDesc {
 CpuDesc GetCpuDesc() noexcept;
 
 }
+
+namespace StringUtils {
+    std::string to_string(const System::Cpu::ProcessorArchitecture& architecture) noexcept;
+}

@@ -1,5 +1,15 @@
 #include "Engine/System/System.hpp"
 
+#include <sstream>
+
+std::string StringUtils::to_string(const System::SystemDesc& system) noexcept {
+    std::stringstream ss;
+    ss << system.os;
+    ss << system.cpu;
+    ss << system.ram;
+    return ss.str();
+}
+
 std::ostream& System::operator<<(std::ostream& out, const System::SystemDesc& desc) noexcept {
     auto old_fmt = out.flags();
     auto old_w = out.width();

@@ -222,3 +222,7 @@ private:
     friend class Quaternion;
 
 };
+
+namespace StringUtils {
+    std::string to_string(const Matrix4& m) noexcept;
+}
