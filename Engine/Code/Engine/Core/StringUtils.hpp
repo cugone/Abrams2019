@@ -6,19 +6,6 @@
 #include <utility>
 #include <vector>
 
-
-class Vector2;
-class Vector3;
-class Vector4;
-class Matrix4;
-class Rgba;
-namespace System {
-    struct SystemDesc;
-}
-namespace System::Cpu {
-    enum class ProcessorArchitecture;
-}
-
 namespace StringUtils {
 
 std::string FormatWindowsMessage(unsigned long messageId) noexcept;
