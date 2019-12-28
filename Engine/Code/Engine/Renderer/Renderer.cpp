@@ -3990,16 +3990,15 @@ Texture* Renderer::Create1DTexture(std::filesystem::path filepath, const BufferU
     Image img = Image(filepath);
 
     D3D11_TEXTURE1D_DESC tex_desc{};
-    tex_desc.Width = img.GetDimensions().x;     // width... 
-    tex_desc.MipLevels = 1;    // setting to 0 means there's a full chain (or can generate a full chain) - we're immutable, so not allowed
-    tex_desc.ArraySize = 1;    // only one texture (
-    tex_desc.Usage = BufferUsageToD3DUsage(bufferUsage);            // data is set at creation time and won't change
-    tex_desc.Format = ImageFormatToDxgiFormat(imageFormat);      // R8G8B8A8 texture
-    tex_desc.BindFlags = BufferBindUsageToD3DBindFlags(bindUsage);   // we're going to be using this texture as a shader resource
-    tex_desc.CPUAccessFlags = CPUAccessFlagFromUsage(bufferUsage);                      // Determines how I can access this resource CPU side (IMMUTABLE, So none)
-    tex_desc.MiscFlags = 0;                            // Extra Flags, of note is;
+    tex_desc.Width = img.GetDimensions().x;
+    tex_desc.MipLevels = 1;
+    tex_desc.ArraySize = 1;
+    tex_desc.Usage = BufferUsageToD3DUsage(bufferUsage);
+    tex_desc.Format = ImageFormatToDxgiFormat(imageFormat);
+    tex_desc.BindFlags = BufferBindUsageToD3DBindFlags(bindUsage);
+    tex_desc.CPUAccessFlags = CPUAccessFlagFromUsage(bufferUsage);
+    tex_desc.MiscFlags = 0;
 
-                                                       // Setup Initial Data
     D3D11_SUBRESOURCE_DATA subresource_data{};
     auto width = img.GetDimensions().x;
     auto height = img.GetDimensions().y;
