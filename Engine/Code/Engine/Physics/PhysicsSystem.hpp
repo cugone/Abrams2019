@@ -234,12 +234,6 @@ struct CollisionData {
     }
 };
 
-struct CollisionDataComparator {
-    bool operator()(const CollisionData& a, const CollisionData& b) const noexcept {
-        return a == b;
-    }
-};
-
 struct PhysicsSystemDesc {
     AABB2 world_bounds = AABB2(Vector2::ZERO, 500.0f, 500.0f);
 	float gravity = 980.665f;
@@ -276,7 +270,7 @@ private:
 	void Update_Worker() noexcept;
     void UpdateBodiesInBounds(TimeUtils::FPSeconds deltaSeconds) noexcept;
     std::vector<RigidBody*> BroadPhaseCollision(const AABB2& query_area) noexcept;
-    std::set<CollisionData, CollisionDataComparator> NarrowPhaseCollision(const std::vector<RigidBody*>& potential_collisions) noexcept;
+    std::set<CollisionData, std::equal_to<CollisionData>> NarrowPhaseCollision(const std::vector<RigidBody*>& potential_collisions) noexcept;
 
     Renderer* _renderer = nullptr;
     PhysicsSystemDesc _desc{};

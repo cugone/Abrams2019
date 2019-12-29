@@ -132,9 +132,9 @@ std::vector<RigidBody*> PhysicsSystem::BroadPhaseCollision(const AABB2& query_ar
     return potential_collisions;
 }
 
-std::set<CollisionData, CollisionDataComparator> PhysicsSystem::NarrowPhaseCollision(const std::vector<RigidBody*>& potential_collisions) noexcept {
+std::set<CollisionData, std::equal_to<CollisionData>> PhysicsSystem::NarrowPhaseCollision(const std::vector<RigidBody*>& potential_collisions) noexcept {
     PROFILE_LOG_SCOPE_FUNCTION();
-    std::set<CollisionData, CollisionDataComparator> result{};
+    std::set<CollisionData, std::equal_to<CollisionData>> result{};
     if(potential_collisions.size() < 2) {
         return {};
     }
