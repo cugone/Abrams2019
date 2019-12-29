@@ -272,7 +272,7 @@ private:
     std::vector<RigidBody*> BroadPhaseCollision(const AABB2& query_area) noexcept;
     std::set<CollisionData, std::equal_to<CollisionData>> NarrowPhaseCollision(const std::vector<RigidBody*>& potential_collisions) noexcept;
 
-    Renderer* _renderer = nullptr;
+    Renderer& _renderer;
     PhysicsSystemDesc _desc{};
     std::thread _update_thread{};
     std::condition_variable _signal{};
