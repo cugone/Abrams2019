@@ -12,7 +12,7 @@ bool operator!=(const RenderTargetStack::Node& lhs, const RenderTargetStack::Nod
     return !(lhs == rhs);
 }
 
-RenderTargetStack::RenderTargetStack(Renderer* renderer) noexcept
+RenderTargetStack::RenderTargetStack(Renderer& renderer) noexcept
     : _renderer(renderer)
 {
     /* DO NOTHING */
@@ -31,37 +31,37 @@ RenderTargetStack::RenderTargetStack(Renderer* renderer) noexcept
 void RenderTargetStack::push(const RenderTargetStack::Node& node) noexcept {
     _stack.push(node);
     const auto& top = _stack.top();
-    _renderer->SetRenderTarget(top.color_target, top.depthstencil_target);
+    _renderer.SetRenderTarget(top.color_target, top.depthstencil_target);
     auto x = static_cast<unsigned int>(top.view_desc.x);
     auto y = static_cast<unsigned int>(top.view_desc.y);
     auto w = static_cast<unsigned int>(top.view_desc.width);
     auto h = static_cast<unsigned int>(top.view_desc.height);
-    _renderer->SetViewport(x, y, w, h);
+    _renderer.SetViewport(x, y, w, h);
 }
 
 
 void RenderTargetStack::push(RenderTargetStack::Node&& node) noexcept {
     _stack.push(node);
     const auto& top = _stack.top();
-    _renderer->SetRenderTarget(top.color_target, top.depthstencil_target);
+    _renderer.SetRenderTarget(top.color_target, top.depthstencil_target);
     auto x = static_cast<unsigned int>(top.view_desc.x);
     auto y = static_cast<unsigned int>(top.view_desc.y);
     auto w = static_cast<unsigned int>(top.view_desc.width);
     auto h = static_cast<unsigned int>(top.view_desc.height);
-    _renderer->SetViewport(x, y, w, h);
+    _renderer.SetViewport(x, y, w, h);
 }
 
 void RenderTargetStack::pop() noexcept {
     _stack.pop();
     const auto& top = _stack.top();
-    _renderer->SetRenderTarget(top.color_target, top.depthstencil_target);
-    _renderer->ClearColor(Rgba::Black);
-    _renderer->ClearDepthStencilBuffer();
+    _renderer.SetRenderTarget(top.color_target, top.depthstencil_target);
+    _renderer.ClearColor(Rgba::Black);
+    _renderer.ClearDepthStencilBuffer();
     auto x = static_cast<unsigned int>(top.view_desc.x);
     auto y = static_cast<unsigned int>(top.view_desc.y);
     auto w = static_cast<unsigned int>(top.view_desc.width);
     auto h = static_cast<unsigned int>(top.view_desc.height);
-    _renderer->SetViewport(x, y, w, h);
+    _renderer.SetViewport(x, y, w, h);
 }
 
 [[nodiscard]] RenderTargetStack::Node& RenderTargetStack::top() noexcept {
