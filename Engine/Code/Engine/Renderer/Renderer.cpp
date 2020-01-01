@@ -160,7 +160,7 @@ void Renderer::Initialize(bool headless /*= false*/) {
     CreateAndRegisterDefaultMaterials();
     CreateAndRegisterDefaultFonts();
 
-    _target_stack = std::make_unique<RenderTargetStack>(this);
+    _target_stack = std::make_unique<RenderTargetStack>(*this);
 
     SetDepthStencilState(GetDepthStencilState("__default"));
     SetRasterState(GetRasterState("__solid"));
