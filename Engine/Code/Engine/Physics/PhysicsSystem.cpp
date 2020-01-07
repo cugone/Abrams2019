@@ -144,7 +144,7 @@ std::set<CollisionData, std::equal_to<CollisionData>> PhysicsSystem::NarrowPhase
             auto* const next_body = *iter_b;
             const auto [collides, distance, normal] = GJKDistance(*cur_body->GetCollider(), *next_body->GetCollider());
             if(collides) {
-                const auto [where_inserted, was_inserted] = result.insert({cur_body, next_body, distance, normal});
+                const auto [where_inserted, was_inserted] = result.insert(CollisionData{cur_body, next_body, distance, normal});
                 if(was_inserted) {
                     DebuggerPrintf("Physics System: Attempting to insert already existing element.");
                 }
@@ -166,7 +166,7 @@ void PhysicsSystem::Render() const noexcept {
 }
 
 void PhysicsSystem::EndFrame() noexcept {
-    std::scoped_lock<std::mutex> lock(_cs);
+    //std::scoped_lock<std::mutex> lock(_cs);
     for(auto& body : _rigidBodies) {
         body->Endframe();
     }
