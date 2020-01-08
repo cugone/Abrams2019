@@ -34,6 +34,11 @@ public:
     static const Rgba Lime;
     static const Rgba Teal;
     static const Rgba Turquoise;
+    static const Rgba Taupe;
+    static const Rgba Umber;
+    static const Rgba BurntUmber;
+    static const Rgba Sienna;
+    static const Rgba RawSienna;
     static const Rgba Periwinkle;
     static const Rgba NormalZ;
     static const Rgba NoAlpha;
