@@ -54,6 +54,7 @@ public:
     explicit Rgba(const Vector4& fromFloats) noexcept;
     explicit Rgba(std::string name) noexcept;
     explicit Rgba(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha = 0xFF) noexcept;
+    explicit Rgba(uint32_t rawValue);
 
     void SetAsBytes(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha) noexcept;
     void SetAsFloats(float normalized_red, float normalized_green, float normalized_blue, float normalized_alpha) noexcept;

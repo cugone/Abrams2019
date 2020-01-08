@@ -141,6 +141,11 @@ Rgba::Rgba(unsigned char red, unsigned char green, unsigned char blue, unsigned 
     /* DO NOTHING */
 }
 
+
+Rgba::Rgba(const uint32_t rawValue) {
+    SetFromRawValue(rawValue);
+}
+
 void Rgba::SetAsBytes(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha) noexcept {
     r = red;
     g = green;
