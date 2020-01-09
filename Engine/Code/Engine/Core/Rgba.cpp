@@ -286,8 +286,21 @@ void Rgba::SetValueFromName(std::string name) noexcept {
         SetFromRawValue(Rgba::NoAlpha.GetAsRawValue());
     } else if(name == "PINK") {
         SetFromRawValue(Rgba::Pink.GetAsRawValue());
+    } else if(name == "BLUE") {
+        SetFromRawValue(Rgba::Blue.GetAsRawValue());
+    } else if(name == "VIOLET") {
+        SetFromRawValue(Rgba::Violet.GetAsRawValue());
+    } else if(name == "TAUPE") {
+        SetFromRawValue(Rgba::Taupe.GetAsRawValue());
+    } else if(name == "UMBER") {
+        SetFromRawValue(Rgba::Umber.GetAsRawValue());
+    } else if(name == "BURNTUMBER") {
+        SetFromRawValue(Rgba::BurntUmber.GetAsRawValue());
+    } else if(name == "SIENNA") {
+        SetFromRawValue(Rgba::Sienna.GetAsRawValue());
+    } else if(name == "RAWSIENNA") {
+        SetFromRawValue(Rgba::RawSienna.GetAsRawValue());
     }
-
 }
 
 bool Rgba::IsRgbEqual(const Rgba& rhs) const noexcept {
