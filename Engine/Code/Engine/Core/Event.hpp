@@ -69,6 +69,12 @@ public:
         }
     }
 
+    void Trigger(ARGS ...args) noexcept {
+        for(auto& sub : subscriptions) {
+            sub.cb(&sub, args...);
+        }
+    }
+
 private:
     std::vector<event_sub_t> subscriptions;
 
