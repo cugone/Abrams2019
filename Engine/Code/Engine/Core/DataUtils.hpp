@@ -193,6 +193,17 @@ Matrix4 ParseXmlElementText(const XMLElement& element, const Matrix4& defaultVal
 std::string ParseXmlElementText(const XMLElement& element, const char* defaultValue) noexcept;
 std::string ParseXmlElementText(const XMLElement& element, const std::string& defaultValue) noexcept;
 
+
+//************************************
+// Method:    ForEachChildElement
+// FullName:  DataUtils::ForEachChildElement
+// Access:    public 
+// Returns:   UnaryFunction: A copy of the UnaryFunction Callable argument.
+// Qualifier: noexcept
+// Parameter: const XMLElement& element: The parent element.
+// Parameter: const std::string& childname: The name of the child element to iterate. Provide an empty string to iterate over all children.
+// Parameter: UnaryFunction&& f: UnaryFunction Callable to invoke for each child element of the parent. Must be of the signature void f(XMLElement&). cv-qualified is optional.
+//************************************
 template<typename UnaryFunction>
 UnaryFunction ForEachChildElement(const XMLElement& element, const std::string& childname, UnaryFunction&& f) noexcept {
     auto childNameAsCStr = childname.empty() ? nullptr : childname.c_str();
@@ -202,6 +213,15 @@ UnaryFunction ForEachChildElement(const XMLElement& element, const std::string& 
     return f;
 }
 
+//************************************
+// Method:    ForEachAttribute
+// FullName:  DataUtils::ForEachAttribute
+// Access:    public 
+// Returns:   UnaryFunction: A copy of the UnaryFunction Callable argument.
+// Qualifier: noexcept
+// Parameter: const XMLElement& element: The parent element.
+// Parameter: UnaryFunction&& f: UnaryFunction Callable to invoke for each attribute of the parent element. Must be of the signature void f(XMLAttribute&). cv-qualified is optional.
+//************************************
 template<typename UnaryFunction>
 UnaryFunction ForEachAttribute(const XMLElement& element, UnaryFunction&& f) noexcept {
     for(auto attribute = element.FirstAttribute(); attribute != nullptr; attribute = attribute->Next()) {
