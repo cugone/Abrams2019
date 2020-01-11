@@ -106,11 +106,11 @@ void ValidateXmlElement(const XMLElement& element,
                         const std::string& name,
                         const std::string& requiredChildElements,
                         const std::string& requiredAttributes,
-                        const std::string& optionalChildElements = std::string(""),
-                        const std::string& optionalAttributes = std::string("")) noexcept;
+                        const std::string& optionalChildElements = std::string{},
+                        const std::string& optionalAttributes = std::string{}) noexcept;
 
 unsigned int GetAttributeCount(const XMLElement &element) noexcept;
-unsigned int GetChildElementCount(const XMLElement &element, const std::string& elementName = std::string("")) noexcept;
+unsigned int GetChildElementCount(const XMLElement& element, const std::string& elementName = std::string{}) noexcept;
 
 std::string GetElementName(const XMLElement& elem) noexcept;
 std::vector<std::string> GetChildElementNames(const XMLElement& element) noexcept;
