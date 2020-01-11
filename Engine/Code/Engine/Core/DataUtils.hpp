@@ -13,6 +13,7 @@
 
 #include <functional>
 #include <string>
+
 #include <intrin.h>
 
 using XMLElement = tinyxml2::XMLElement;
@@ -192,7 +193,22 @@ Matrix4 ParseXmlElementText(const XMLElement& element, const Matrix4& defaultVal
 std::string ParseXmlElementText(const XMLElement& element, const char* defaultValue) noexcept;
 std::string ParseXmlElementText(const XMLElement& element, const std::string& defaultValue) noexcept;
 
-void ForEachChildElement(const XMLElement& element, const std::string& childname = std::string{}, const std::function<void(const XMLElement&)>& callback = [](const XMLElement&) { /* DO NOTHING */ }) noexcept;
-void ForEachAttribute(const XMLElement& element, const std::function<void(const XMLAttribute&)>& callback = [](const XMLAttribute&) { /* DO NOTHING */ }) noexcept;
+template<typename Callable, typename ...Args>
+void ForEachChildElement(const XMLElement& element, const std::string& childname, Callable&& callback, Args&& ...args) noexcept {
+    auto childNameAsCStr = childname.empty() ? nullptr : childname.c_str();
+    for(auto xml_iter = element.FirstChildElement(childNameAsCStr);
+        xml_iter != nullptr;
+        xml_iter = xml_iter->NextSiblingElement(childNameAsCStr)) {
+        std::invoke(callback, *xml_iter, std::forward<Args>(args)...);
+    }
+}
+
+template<typename Callable, typename ...Args>
+void ForEachAttribute(const XMLElement& element, Callable&& callback, Args&& ...args) noexcept {
+    for(auto attribute = element.FirstAttribute(); attribute != nullptr; attribute = attribute->Next()) {
+        std::invoke(callback, *attribute, std::forward<Args>(args)...);
+    }
+}
+
 
 }
