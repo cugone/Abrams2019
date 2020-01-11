@@ -22,8 +22,8 @@ public:
     virtual ~Element() = 0;
 
     virtual void Update(TimeUtils::FPSeconds deltaSeconds);
-    virtual void Render(Renderer* renderer) const;
-    virtual void DebugRender(Renderer* renderer, bool showSortOrder = false) const;
+    virtual void Render(Renderer& renderer) const;
+    virtual void DebugRender(Renderer& renderer, bool showSortOrder = false) const;
 
     template<typename T>
     T* CreateChild();
@@ -142,17 +142,17 @@ protected:
 
     void ReorderAllChildren();
 
-    void DebugRenderBottomUp(Renderer* renderer, bool showSortOrder = false) const;
-    void DebugRenderTopDown(Renderer* renderer, bool showSortOrder = false) const;
-    void DebugRenderChildren(Renderer* renderer, bool showSortOrder = false) const;
-    void DebugRenderBoundsAndPivot(Renderer* renderer) const;
-    void DebugRenderPivot(Renderer* renderer) const;
-    void DebugRenderBounds(Renderer* renderer) const;
-    void DebugRenderOrder(Renderer* renderer) const;
+    void DebugRenderBottomUp(Renderer& renderer, bool showSortOrder = false) const;
+    void DebugRenderTopDown(Renderer& renderer, bool showSortOrder = false) const;
+    void DebugRenderChildren(Renderer& renderer, bool showSortOrder = false) const;
+    void DebugRenderBoundsAndPivot(Renderer& renderer) const;
+    void DebugRenderPivot(Renderer& renderer) const;
+    void DebugRenderBounds(Renderer& renderer) const;
+    void DebugRenderOrder(Renderer& renderer) const;
     AABB2 GetParentLocalBounds() const;
     AABB2 GetParentRelativeBounds() const;
     void UpdateChildren(TimeUtils::FPSeconds deltaSeconds);
-    void RenderChildren(Renderer* renderer) const;
+    void RenderChildren(Renderer& renderer) const;
 
     AABB2 GetBounds(const AABB2& parent, const Vector4& anchors, const Vector4& offsets) const noexcept;
     Vector2 GetSmallestOffset(AABB2 a, AABB2 b) const noexcept;

@@ -19,8 +19,8 @@ enum class PipelineStage : uint8_t;
 
 class Shader {
 public:
-    explicit Shader(Renderer* renderer, ShaderProgram* shaderProgram = nullptr, DepthStencilState* depthStencil = nullptr, RasterState* rasterState = nullptr, BlendState* blendState = nullptr, Sampler* sampler = nullptr) noexcept;
-    Shader(Renderer* renderer, const XMLElement& element) noexcept;
+    explicit Shader(Renderer& renderer, ShaderProgram* shaderProgram = nullptr, DepthStencilState* depthStencil = nullptr, RasterState* rasterState = nullptr, BlendState* blendState = nullptr, Sampler* sampler = nullptr) noexcept;
+    Shader(Renderer& renderer, const XMLElement& element) noexcept;
     ~Shader() = default;
 
     const std::string& GetName() const noexcept;
@@ -33,7 +33,7 @@ public:
 
 protected:
 private:
-    bool LoadFromXml(Renderer* renderer, const XMLElement& element) noexcept;
+    bool LoadFromXml(const XMLElement& element) noexcept;
 
     PipelineStage ParseTargets(const XMLElement& element) noexcept;
     std::string ParseEntrypointList(const XMLElement& element) noexcept;
@@ -44,7 +44,7 @@ private:
     void CreateAndRegisterNewRasterFromXml(const XMLElement& element) noexcept;
 
     std::string _name = "SHADER";
-    Renderer* _renderer = nullptr;
+    Renderer& _renderer;
     ShaderProgram* _shader_program = nullptr;
     std::unique_ptr<DepthStencilState> _depth_stencil_state;
     RasterState* _raster_state = nullptr;

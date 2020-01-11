@@ -207,11 +207,11 @@ void Element::Update(TimeUtils::FPSeconds /*deltaSeconds*/) {
     /* DO NOTHING */
 }
 
-void Element::Render(Renderer* /*renderer*/) const {
+void Element::Render(Renderer& /*renderer*/) const {
     /* DO NOTHING */
 }
 
-void Element::DebugRender(Renderer* renderer, bool showSortOrder /*= false*/) const {
+void Element::DebugRender(Renderer& renderer, bool showSortOrder /*= false*/) const {
     DebugRenderBoundsAndPivot(renderer);
     if(showSortOrder) {
         DebugRenderOrder(renderer);
@@ -250,12 +250,12 @@ void Element::DirtyElement() {
     _dirty_bounds = true;
 }
 
-void Element::DebugRenderBoundsAndPivot(Renderer* renderer) const {
+void Element::DebugRenderBoundsAndPivot(Renderer& renderer) const {
     DebugRenderBounds(renderer);
     DebugRenderPivot(renderer);
 }
 
-void Element::DebugRenderPivot(Renderer* renderer) const {
+void Element::DebugRenderPivot(Renderer& renderer) const {
     const auto world_transform = GetWorldTransform();
     const auto scale = world_transform.GetScale();
     const auto inv_scale_matrix = Matrix4::CalculateInverse(Matrix4::CreateScaleMatrix(Vector3(scale.x * 0.10f, scale.y * 0.10f, 1.0f)));
@@ -263,19 +263,19 @@ void Element::DebugRenderPivot(Renderer* renderer) const {
     const auto pivot_pos = MathUtils::CalcPointFromNormalizedPoint(_pivot, _bounds);
     const auto pivot_pos_matrix = Matrix4::CreateTranslationMatrix(pivot_pos);
     const auto transform = Matrix4::MakeSRT(inv_scale_matrix, world_transform, pivot_pos_matrix);
-    renderer->SetMaterial(renderer->GetMaterial("__2D"));
-    renderer->SetModelMatrix(transform);
-    renderer->DrawX2D(_pivot_color);
+    renderer.SetMaterial(renderer.GetMaterial("__2D"));
+    renderer.SetModelMatrix(transform);
+    renderer.DrawX2D(_pivot_color);
 }
 
-void Element::DebugRenderBounds(Renderer* renderer) const {
+void Element::DebugRenderBounds(Renderer& renderer) const {
     auto world_transform = GetWorldTransform();
-    renderer->SetModelMatrix(world_transform);
-    renderer->SetMaterial(renderer->GetMaterial("__2D"));
-    renderer->DrawAABB2(_edge_color, _fill_color);
+    renderer.SetModelMatrix(world_transform);
+    renderer.SetMaterial(renderer.GetMaterial("__2D"));
+    renderer.DrawAABB2(_edge_color, _fill_color);
 }
 
-void Element::DebugRenderOrder(Renderer* renderer) const {
+void Element::DebugRenderOrder(Renderer& renderer) const {
     const auto world_transform = GetWorldTransform();
     const auto world_transform_scale = world_transform.GetScale();
     const auto inv_scale_x = 1.0f / world_transform_scale.x;
@@ -286,15 +286,15 @@ void Element::DebugRenderOrder(Renderer* renderer) const {
     const Vector2 extents = GetSize();
     const Vector2 half_extents = extents * 0.5f;
     const auto inv_half_extents = Vector2(half_extents.x, -half_extents.y);
-    const auto font = renderer->GetFont("System32");
+    const auto font = renderer.GetFont("System32");
     const auto text_height_matrix = Matrix4::CreateTranslationMatrix(Vector2(-16.0f, 32.0f));
     const auto inv_half_extents_matrix = Matrix4::CreateTranslationMatrix(inv_half_extents);
     std::ostringstream ss;
     ss << _order;
     const auto text = ss.str();
-    renderer->SetModelMatrix(Matrix4::MakeRT(Matrix4::MakeSRT(text_height_matrix, inv_half_extents_matrix, inv_scale_matrix), world_transform));
-    renderer->SetMaterial(font->GetMaterial());
-    renderer->DrawTextLine(font, text);
+    renderer.SetModelMatrix(Matrix4::MakeRT(Matrix4::MakeSRT(text_height_matrix, inv_half_extents_matrix, inv_scale_matrix), world_transform));
+    renderer.SetMaterial(font->GetMaterial());
+    renderer.DrawTextLine(font, text);
 }
 
 AABB2 Element::GetParentBounds() const noexcept {
@@ -473,7 +473,7 @@ void Element::ReorderAllChildren() {
     }
 }
 
-void Element::DebugRenderBottomUp(Renderer* renderer, bool showSortOrder /*= false*/) const {
+void Element::DebugRenderBottomUp(Renderer& renderer, bool showSortOrder /*= false*/) const {
     DebugRenderBoundsAndPivot(renderer);
     if(showSortOrder) {
         DebugRenderOrder(renderer);
@@ -481,7 +481,7 @@ void Element::DebugRenderBottomUp(Renderer* renderer, bool showSortOrder /*= fal
     DebugRenderChildren(renderer, showSortOrder);
 }
 
-void Element::DebugRenderTopDown(Renderer* renderer, bool showSortOrder /*= false*/) const {
+void Element::DebugRenderTopDown(Renderer& renderer, bool showSortOrder /*= false*/) const {
     DebugRenderChildren(renderer);
     DebugRenderBoundsAndPivot(renderer);
     if(showSortOrder) {
@@ -489,7 +489,7 @@ void Element::DebugRenderTopDown(Renderer* renderer, bool showSortOrder /*= fals
     }
 }
 
-void Element::DebugRenderChildren(Renderer* renderer, bool showSortOrder /*= false*/) const {
+void Element::DebugRenderChildren(Renderer& renderer, bool showSortOrder /*= false*/) const {
     for(auto& child : _children) {
         if(child) {
             child->DebugRender(renderer, showSortOrder);
@@ -513,7 +513,7 @@ void Element::UpdateChildren(TimeUtils::FPSeconds deltaSeconds) {
     }
 }
 
-void Element::RenderChildren(Renderer* renderer) const {
+void Element::RenderChildren(Renderer& renderer) const {
     for(auto& child : _children) {
         if(child) {
             child->Render(renderer);

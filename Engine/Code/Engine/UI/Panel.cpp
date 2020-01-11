@@ -17,7 +17,7 @@ void Panel::Update(TimeUtils::FPSeconds deltaSeconds) {
     UpdateChildren(deltaSeconds);
 }
 
-void Panel::Render(Renderer* renderer) const {
+void Panel::Render(Renderer& renderer) const {
     if(IsHidden()) {
         return;
     }
@@ -27,7 +27,7 @@ void Panel::Render(Renderer* renderer) const {
     RenderChildren(renderer);
 }
 
-void Panel::DebugRender(Renderer* renderer, bool showSortOrder /*= false*/) const {
+void Panel::DebugRender(Renderer& renderer, bool showSortOrder /*= false*/) const {
     DebugRenderBottomUp(renderer, showSortOrder);
 }
 

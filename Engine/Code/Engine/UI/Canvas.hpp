@@ -14,9 +14,9 @@ public:
     explicit Canvas(Renderer& renderer, float reference_resolution, Texture* target_texture = nullptr, Texture* target_depthStencil = nullptr);
     virtual ~Canvas() = default;
     virtual void Update(TimeUtils::FPSeconds deltaSeconds) override;
-    virtual void Render(Renderer* renderer) const override;
-    void SetupMVPFromTargetAndCamera(Renderer* renderer) const;
-    virtual void DebugRender(Renderer* renderer, bool showSortOrder = false) const override;
+    virtual void Render(Renderer& renderer) const override;
+    void SetupMVPFromTargetAndCamera(Renderer& renderer) const;
+    virtual void DebugRender(Renderer& renderer, bool showSortOrder = false) const override;
     const Camera2D& GetUICamera() const;
 
     template<typename T>
@@ -35,10 +35,10 @@ public:
 protected:
 private:
     void CalcDimensionsAndAspectRatio(Vector2& dimensions, float& aspectRatio);
-    void SetTargetTexture(Renderer& renderer, Texture* target, Texture* depthstencil);
+    void SetTargetTexture(Texture* target, Texture* depthstencil);
 
     mutable Camera2D _camera{};
-    Renderer* _renderer = nullptr;
+    Renderer& _renderer;
     Texture* _target_texture = nullptr;
     Texture* _target_depthstencil = nullptr;
     float _reference_resolution = 0.0f;

@@ -61,7 +61,7 @@
 #include <sstream>
 #include <tuple>
 
-ComputeJob::ComputeJob(Renderer* renderer,
+ComputeJob::ComputeJob(Renderer& renderer,
                        std::size_t uavCount,
                        const std::vector<Texture*>& uavTextures,
                        Shader* computeShader,
@@ -80,13 +80,11 @@ ComputeJob::ComputeJob(Renderer* renderer,
 }
 
 ComputeJob::~ComputeJob() noexcept {
-    if(renderer) {
-        auto dc = renderer->GetDeviceContext();
-        dc->UnbindAllComputeConstantBuffers();
-        dc->UnbindComputeShaderResources();
-        dc->UnbindAllComputeUAVs();
-        renderer->SetComputeShader(nullptr);
-    }
+    auto dc = renderer.GetDeviceContext();
+    dc->UnbindAllComputeConstantBuffers();
+    dc->UnbindComputeShaderResources();
+    dc->UnbindAllComputeUAVs();
+    renderer.SetComputeShader(nullptr);
 }
 
 Renderer::Renderer(FileLogger& fileLogger, unsigned int width, unsigned int height) noexcept
@@ -2604,7 +2602,7 @@ bool Renderer::RegisterShader(std::filesystem::path filepath) noexcept {
     }
     filepath.make_preferred();
     if(doc.LoadFile(filepath.string().c_str()) == tinyxml2::XML_SUCCESS) {
-        RegisterShader(filepath.string(), std::make_unique<Shader>(this, *doc.RootElement()));
+        RegisterShader(filepath.string(), std::make_unique<Shader>(*this, *doc.RootElement()));
         return true;
     }
     return false;
@@ -2928,7 +2926,7 @@ R"(
         return nullptr;
     }
 
-    return std::make_unique<Shader>(this, *doc.RootElement());
+    return std::make_unique<Shader>(*this, *doc.RootElement());
 }
 
 std::unique_ptr<Shader> Renderer::CreateDefaultUnlitShader() noexcept {
@@ -2951,7 +2949,7 @@ std::unique_ptr<Shader> Renderer::CreateDefaultUnlitShader() noexcept {
         return nullptr;
     }
 
-    return std::make_unique<Shader>(this, *doc.RootElement());
+    return std::make_unique<Shader>(*this, *doc.RootElement());
 }
 
 std::unique_ptr<Shader> Renderer::CreateDefault2DShader() noexcept {
@@ -2979,7 +2977,7 @@ R"(
         return nullptr;
     }
 
-    return std::make_unique<Shader>(this, *doc.RootElement());
+    return std::make_unique<Shader>(*this, *doc.RootElement());
 }
 
 std::unique_ptr<Shader> Renderer::CreateDefaultNormalShader() noexcept {
@@ -3002,7 +3000,7 @@ std::unique_ptr<Shader> Renderer::CreateDefaultNormalShader() noexcept {
         return nullptr;
     }
 
-    return std::make_unique<Shader>(this, *doc.RootElement());
+    return std::make_unique<Shader>(*this, *doc.RootElement());
 }
 
 std::unique_ptr<Shader> Renderer::CreateDefaultNormalMapShader() noexcept {
@@ -3024,7 +3022,7 @@ std::unique_ptr<Shader> Renderer::CreateDefaultNormalMapShader() noexcept {
     if(parse_result != tinyxml2::XML_SUCCESS) {
         return nullptr;
     }
-    return std::make_unique<Shader>(this, *doc.RootElement());
+    return std::make_unique<Shader>(*this, *doc.RootElement());
 }
 
 std::unique_ptr<Shader> Renderer::CreateDefaultInvalidShader() noexcept {
@@ -3047,7 +3045,7 @@ std::unique_ptr<Shader> Renderer::CreateDefaultInvalidShader() noexcept {
         return nullptr;
     }
 
-    return std::make_unique<Shader>(this, *doc.RootElement());
+    return std::make_unique<Shader>(*this, *doc.RootElement());
 }
 
 std::unique_ptr<Shader> Renderer::CreateDefaultFontShader() noexcept {
@@ -3075,7 +3073,7 @@ std::unique_ptr<Shader> Renderer::CreateDefaultFontShader() noexcept {
         return nullptr;
     }
 
-    return std::make_unique<Shader>(this, *doc.RootElement());
+    return std::make_unique<Shader>(*this, *doc.RootElement());
 }
 
 std::unique_ptr<Shader> Renderer::CreateShaderFromFile(std::filesystem::path filepath) noexcept {
@@ -3085,7 +3083,7 @@ std::unique_ptr<Shader> Renderer::CreateShaderFromFile(std::filesystem::path fil
         if(parse_result != tinyxml2::XML_SUCCESS) {
             return nullptr;
         }
-        return std::make_unique<Shader>(this, *doc.RootElement());
+        return std::make_unique<Shader>(*this, *doc.RootElement());
     }
     return nullptr;
 }

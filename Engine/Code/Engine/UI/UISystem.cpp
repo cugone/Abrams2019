@@ -70,9 +70,9 @@ namespace ImGui {
 
 }
 
-UISystem::UISystem(FileLogger& fileLogger, Renderer* renderer) noexcept
+UISystem::UISystem(FileLogger& fileLogger, Renderer& renderer) noexcept
     : EngineSubsystem()
-    , _fileLogger(&fileLogger)
+    , _fileLogger(fileLogger)
     , _renderer(renderer)
     , _context(ImGui::CreateContext())
     , _io(&ImGui::GetIO())
@@ -89,18 +89,15 @@ UISystem::~UISystem() noexcept {
     ImGui::DestroyContext(_context);
     _context = nullptr;
     _io = nullptr;
-
-    _renderer = nullptr;
-    _fileLogger = nullptr;
 }
 
 void UISystem::Initialize() {
     _io->IniFilename = nullptr;
     _io->LogFilename = nullptr;
 
-    auto hwnd = _renderer->GetOutput()->GetWindow()->GetWindowHandle();
-    auto dx_device = _renderer->GetDevice()->GetDxDevice();
-    auto dx_context = _renderer->GetDeviceContext()->GetDxContext();
+    auto hwnd = _renderer.GetOutput()->GetWindow()->GetWindowHandle();
+    auto dx_device = _renderer.GetDevice()->GetDxDevice();
+    auto dx_context = _renderer.GetDeviceContext()->GetDxContext();
     ImGui_ImplWin32_Init(hwnd);
     ImGui_ImplDX11_Init(dx_device, dx_context);
 

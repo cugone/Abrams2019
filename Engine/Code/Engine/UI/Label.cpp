@@ -25,7 +25,7 @@ Label::Label(UI::Canvas* parent_canvas, KerningFont* font, const std::string& te
     CalcBoundsFromFont(_font);
 }
 
-void Label::Render(Renderer* renderer) const {
+void Label::Render(Renderer& renderer) const {
     if(IsHidden()) {
         return;
     }
@@ -33,9 +33,9 @@ void Label::Render(Renderer* renderer) const {
     const auto inv_scale = 1.0f / world_transform.GetScale();
     const auto inv_scale_matrix = Matrix4::CreateScaleMatrix(inv_scale);
     const auto model = Matrix4::MakeRT(inv_scale_matrix, world_transform);
-    renderer->SetModelMatrix(model);
-    renderer->SetMaterial(_font->GetMaterial());
-    renderer->DrawMultilineText(_font, _text, _color);
+    renderer.SetModelMatrix(model);
+    renderer.SetMaterial(_font->GetMaterial());
+    renderer.DrawMultilineText(_font, _text, _color);
 }
 
 const KerningFont* const Label::GetFont() const {

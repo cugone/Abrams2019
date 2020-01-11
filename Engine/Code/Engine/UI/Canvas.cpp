@@ -15,16 +15,16 @@ namespace UI {
 
 Canvas::Canvas(Renderer& renderer, float reference_resolution, Texture* target_texture /*= nullptr*/, Texture* target_depthStencil /*= nullptr*/)
     : Element()
-    , _renderer(&renderer)
+    , _renderer(renderer)
     , _target_texture(target_texture)
     , _target_depthstencil(target_depthStencil)
     , _reference_resolution(reference_resolution)
 {
     if(!_target_texture) {
-        _target_texture = _renderer->GetOutput()->GetBackBuffer();
+        _target_texture = _renderer.GetOutput()->GetBackBuffer();
     }
     if(!_target_depthstencil) {
-        _target_depthstencil = _renderer->GetDefaultDepthStencil();
+        _target_depthstencil = _renderer.GetDefaultDepthStencil();
     }
     {
         std::ostringstream ss;
@@ -39,7 +39,7 @@ Canvas::Canvas(Renderer& renderer, float reference_resolution, Texture* target_t
     auto desc = DepthStencilDesc{};
     desc.stencil_enabled = true;
     desc.stencil_testFront = ComparisonFunction::Equal;
-    _renderer->CreateAndRegisterDepthStencilStateFromDepthStencilDescription("UIDepthStencil", desc);
+    _renderer.CreateAndRegisterDepthStencilStateFromDepthStencilDescription("UIDepthStencil", desc);
 }
 
 void Canvas::Update(TimeUtils::FPSeconds deltaSeconds) {
@@ -49,35 +49,35 @@ void Canvas::Update(TimeUtils::FPSeconds deltaSeconds) {
     UpdateChildren(deltaSeconds);
 }
 
-void Canvas::Render(Renderer* renderer) const {
+void Canvas::Render(Renderer& renderer) const {
     if(IsHidden()) {
         return;
     }
-    auto old_camera = renderer->GetCamera();
+    auto old_camera = renderer.GetCamera();
     SetupMVPFromTargetAndCamera(renderer);
-    renderer->SetRenderTarget(_target_texture, _target_depthstencil);
+    renderer.SetRenderTarget(_target_texture, _target_depthstencil);
     RenderChildren(renderer);
-    renderer->SetCamera(old_camera);
+    renderer.SetCamera(old_camera);
 }
 
-void Canvas::SetupMVPFromTargetAndCamera(Renderer* renderer) const {
+void Canvas::SetupMVPFromTargetAndCamera(Renderer& renderer) const {
     auto texture_dims = _target_texture->GetDimensions();
     auto target_dims = Vector2((float)texture_dims.x, (float)texture_dims.y);
     Vector2 leftBottom = Vector2(0.0f, 1.0f) * target_dims;
     Vector2 rightTop = Vector2(1.0f, 0.0f) * target_dims;
     Vector2 nearFar{ 0.0f, 1.0f };
     _camera.SetupView(leftBottom, rightTop, nearFar, _aspect_ratio);
-    renderer->SetCamera(_camera);
-    renderer->SetModelMatrix(GetWorldTransform());
+    renderer.SetCamera(_camera);
+    renderer.SetModelMatrix(GetWorldTransform());
 }
 
-void Canvas::DebugRender(Renderer* renderer, bool showSortOrder /*= false*/) const {
-    renderer->SetRenderTarget(_target_texture, _target_depthstencil);
-    renderer->DisableDepth();
+void Canvas::DebugRender(Renderer& renderer, bool showSortOrder /*= false*/) const {
+    renderer.SetRenderTarget(_target_texture, _target_depthstencil);
+    renderer.DisableDepth();
     DebugRenderBottomUp(renderer, showSortOrder);
-    renderer->EnableDepth();
-    renderer->SetRenderTarget();
-    renderer->SetMaterial(nullptr);
+    renderer.EnableDepth();
+    renderer.SetRenderTarget();
+    renderer.SetMaterial(nullptr);
 }
 
 const Camera2D& Canvas::GetUICamera() const {
@@ -86,7 +86,7 @@ const Camera2D& Canvas::GetUICamera() const {
 
 void Canvas::CalcDimensionsAndAspectRatio(Vector2& dimensions, float& aspectRatio) {
     if(!_target_texture) {
-        _target_texture = _renderer->GetOutput()->GetBackBuffer();
+        _target_texture = _renderer.GetOutput()->GetBackBuffer();
     }
     auto texture_dims = _target_texture->GetDimensions();
     Vector2 target_dims = Vector2((float)texture_dims.x, (float)texture_dims.y);
@@ -105,13 +105,12 @@ void Canvas::CalcDimensionsAndAspectRatio(Vector2& dimensions, float& aspectRati
 }
 
 
-void Canvas::SetTargetTexture(Renderer& renderer, Texture* target, Texture* depthstencil) {
-    _renderer = &renderer;
+void Canvas::SetTargetTexture(Texture* target, Texture* depthstencil) {
     if(!target) {
-        target = _renderer->GetOutput()->GetBackBuffer();
+        target = _renderer.GetOutput()->GetBackBuffer();
     }
     if(!depthstencil) {
-        depthstencil = _renderer->GetDefaultDepthStencil();
+        depthstencil = _renderer.GetDefaultDepthStencil();
     }
     _target_texture = target;
     _target_depthstencil = depthstencil;

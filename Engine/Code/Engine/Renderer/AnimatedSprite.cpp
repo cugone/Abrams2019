@@ -15,7 +15,7 @@ AnimatedSprite::AnimatedSprite(Renderer& renderer,
                                int startSpriteIndex,
                                int frameLength,
                                SpriteAnimMode playbackMode /*= SpriteAnimMode::LOOPING*/) noexcept
-    : _renderer(&renderer)
+    : _renderer(renderer)
     , _sheet(spriteSheet)
     , _duration_seconds(durationSeconds)
     , _playback_mode(playbackMode)
@@ -27,7 +27,7 @@ AnimatedSprite::AnimatedSprite(Renderer& renderer,
 }
 
 AnimatedSprite::AnimatedSprite(Renderer& renderer, std::weak_ptr<SpriteSheet> spriteSheet, TimeUtils::FPSeconds durationSeconds, const IntVector2& startSpriteCoords, int frameLength, SpriteAnimMode playbackMode /*= SpriteAnimMode::Looping*/) noexcept
-    : _renderer(&renderer)
+    : _renderer(renderer)
     , _sheet(spriteSheet)
     , _duration_seconds(durationSeconds)
     , _playback_mode(playbackMode)
@@ -39,16 +39,16 @@ AnimatedSprite::AnimatedSprite(Renderer& renderer, std::weak_ptr<SpriteSheet> sp
 }
 
 AnimatedSprite::AnimatedSprite(Renderer& renderer, const XMLElement& elem) noexcept
-    : _renderer(&renderer)
+    : _renderer(renderer)
 {
-    LoadFromXml(*_renderer, elem);
+    LoadFromXml(_renderer, elem);
 }
 
 AnimatedSprite::AnimatedSprite(Renderer& renderer, std::weak_ptr<SpriteSheet> sheet, const XMLElement& elem) noexcept
-    : _renderer(&renderer)
+    : _renderer(renderer)
     , _sheet(sheet)
 {
-    LoadFromXml(*_renderer, elem);
+    LoadFromXml(_renderer, elem);
 }
 
 AnimatedSprite::AnimatedSprite(Renderer& renderer, std::weak_ptr<SpriteSheet> sheet, const IntVector2& startSpriteCoords /* = IntVector2::ZERO*/) noexcept
@@ -57,7 +57,6 @@ AnimatedSprite::AnimatedSprite(Renderer& renderer, std::weak_ptr<SpriteSheet> sh
 }
 
 AnimatedSprite::~AnimatedSprite() noexcept {
-    _renderer = nullptr;
     _sheet.reset();
 }
 

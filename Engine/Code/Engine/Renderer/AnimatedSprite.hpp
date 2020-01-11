@@ -57,7 +57,7 @@ private:
     SpriteAnimMode GetAnimModeFromOptions(bool looping, bool backwards, bool ping_pong /*= false*/) noexcept;
     int GetIndexFromCoords(const IntVector2& coords) noexcept;
 
-    Renderer* _renderer = nullptr;
+    Renderer& _renderer;
     Material* _material = nullptr;
     std::weak_ptr<SpriteSheet> _sheet{};
     TimeUtils::FPSeconds _duration_seconds = TimeUtils::FPFrames{1};

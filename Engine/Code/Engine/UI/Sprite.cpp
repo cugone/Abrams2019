@@ -27,18 +27,18 @@ void Sprite::Update(TimeUtils::FPSeconds deltaSeconds) {
     _sprite->Update(deltaSeconds);
 }
 
-void Sprite::Render(Renderer* renderer) const {
+void Sprite::Render(Renderer& renderer) const {
     if(IsHidden()) {
         return;
     }
-    renderer->SetModelMatrix(GetWorldTransform());
-    renderer->SetMaterial(_sprite->GetMaterial());
+    renderer.SetModelMatrix(GetWorldTransform());
+    renderer.SetMaterial(_sprite->GetMaterial());
     auto cur_tc = _sprite->GetCurrentTexCoords();
     Vector4 tex_coords(cur_tc.mins, cur_tc.maxs);
-    renderer->DrawQuad2D(tex_coords);
+    renderer.DrawQuad2D(tex_coords);
 }
 
-void Sprite::DebugRender(Renderer* renderer, bool showSortOrder /*= false*/) const {
+void Sprite::DebugRender(Renderer& renderer, bool showSortOrder /*= false*/) const {
     Element::DebugRender(renderer, showSortOrder);
 }
 

@@ -18,7 +18,7 @@ public:
     explicit Label(UI::Canvas* parent_canvas, KerningFont* font, const std::string& text = "Label");
     virtual ~Label() = default;
 
-    virtual void Render(Renderer* renderer) const override;
+    virtual void Render(Renderer& renderer) const override;
 
     const KerningFont* const GetFont() const;
     void SetFont(KerningFont* font);

@@ -12,8 +12,8 @@ public:
     virtual ~Sprite();
 
     virtual void Update(TimeUtils::FPSeconds deltaSeconds) override;
-    virtual void Render(Renderer* renderer) const override;
-    virtual void DebugRender(Renderer* renderer, bool showSortOrder = false) const override;
+    virtual void Render(Renderer& renderer) const override;
+    virtual void DebugRender(Renderer& renderer, bool showSortOrder = false) const override;
 protected:
 private:
     AnimatedSprite* _sprite = nullptr;

@@ -111,7 +111,7 @@ struct lighting_buffer_t {
 };
 
 struct ComputeJob {
-    Renderer* renderer = nullptr;
+    Renderer& renderer;
     std::size_t uavCount = 0;
     std::vector<Texture*> uavTextures{};
     Shader* computeShader = nullptr;
@@ -119,7 +119,7 @@ struct ComputeJob {
     unsigned int threadGroupCountY = 1;
     unsigned int threadGroupCountZ = 1;
     ComputeJob() = default;
-    ComputeJob(Renderer* renderer,
+    ComputeJob(Renderer& renderer,
                std::size_t uavCount,
                const std::vector<Texture*>& uavTextures,
                Shader* computeShader,
