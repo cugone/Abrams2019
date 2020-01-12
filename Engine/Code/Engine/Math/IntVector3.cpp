@@ -71,14 +71,102 @@ IntVector3::IntVector3(const std::string& value) noexcept
     }
 }
 
-void IntVector3::SetXYZ(int newX, int newY, int newZ) noexcept {
-    x = newX;
-    y = newY;
-    z = newZ;
+IntVector3 IntVector3::operator+(const IntVector3& rhs) const noexcept {
+    return IntVector3(x + rhs.x, y + rhs.y, z + rhs.z);
 }
 
-std::tuple<int, int, int> IntVector3::GetXYZ() const noexcept {
-    return std::make_tuple(x, y, z);
+IntVector3& IntVector3::operator+=(const IntVector3& rhs) noexcept {
+    x += rhs.x;
+    y += rhs.y;
+    z += rhs.z;
+    return *this;
+}
+
+IntVector3 IntVector3::operator-() const noexcept {
+    return IntVector3(-x, -y, -z);
+}
+
+IntVector3 IntVector3::operator-(const IntVector3& rhs) const noexcept {
+    return IntVector3(x - rhs.x, y - rhs.y, z - rhs.z);
+}
+
+IntVector3& IntVector3::operator-=(const IntVector3& rhs) noexcept {
+    x -= rhs.x;
+    y -= rhs.y;
+    z -= rhs.z;
+    return *this;
+}
+
+IntVector3 IntVector3::operator*(const IntVector3& rhs) const noexcept {
+    return IntVector3(x * rhs.x, y * rhs.y, z * rhs.z);
+}
+
+IntVector3& IntVector3::operator*=(const IntVector3& rhs) noexcept {
+    x *= rhs.x;
+    y *= rhs.y;
+    z *= rhs.z;
+    return *this;
+}
+
+IntVector3 IntVector3::operator*(int scalar) const noexcept {
+    return IntVector3(x * scalar, y * scalar, z * scalar);
+}
+
+IntVector3& IntVector3::operator*=(int scalar) noexcept {
+    x *= scalar;
+    y *= scalar;
+    z *= scalar;
+    return *this;
+}
+
+IntVector3 IntVector3::operator*(float scalar) const noexcept {
+    int nx = static_cast<int>(std::floor(static_cast<float>(x) * scalar));
+    int ny = static_cast<int>(std::floor(static_cast<float>(y) * scalar));
+    int nz = static_cast<int>(std::floor(static_cast<float>(z) * scalar));
+    return IntVector3(nx, ny, nz);
+}
+
+IntVector3& IntVector3::operator*=(float scalar) noexcept {
+    x = static_cast<int>(std::floor(static_cast<float>(x) * scalar));
+    y = static_cast<int>(std::floor(static_cast<float>(y) * scalar));
+    z = static_cast<int>(std::floor(static_cast<float>(z) * scalar));
+    return *this;
+}
+
+IntVector3 IntVector3::operator/(const IntVector3& rhs) const noexcept {
+    return IntVector3(x / rhs.x, y / rhs.y, z / rhs.z);
+}
+
+IntVector3& IntVector3::operator/=(const IntVector3& rhs) noexcept {
+    x /= rhs.x;
+    y /= rhs.y;
+    z /= rhs.z;
+    return *this;
+}
+
+IntVector3 IntVector3::operator/(int scalar) const noexcept {
+    return IntVector3(x / scalar, y / scalar, z / scalar);
+}
+
+IntVector3& IntVector3::operator/=(int scalar) noexcept {
+    x /= scalar;
+    y /= scalar;
+    z /= scalar;
+    return *this;
+}
+
+IntVector3 IntVector3::operator/(float scalar) const noexcept {
+    int nx = static_cast<int>(std::floor(static_cast<float>(x) / scalar));
+    int ny = static_cast<int>(std::floor(static_cast<float>(y) / scalar));
+    int nz = static_cast<int>(std::floor(static_cast<float>(z) / scalar));
+    return IntVector3(nx, ny, nz);
+}
+
+IntVector3& IntVector3::operator/=(float scalar) noexcept {
+    x = static_cast<int>(std::floor(static_cast<float>(x) / scalar));
+    y = static_cast<int>(std::floor(static_cast<float>(y) / scalar));
+    z = static_cast<int>(std::floor(static_cast<float>(z) / scalar));
+    return *this;
 }
 
 bool IntVector3::operator!=(const IntVector3& rhs) const noexcept {
@@ -87,4 +175,60 @@ bool IntVector3::operator!=(const IntVector3& rhs) const noexcept {
 
 bool IntVector3::operator==(const IntVector3& rhs) const noexcept {
     return x == rhs.x && y == rhs.y && z == rhs.z;
+}
+
+bool IntVector3::operator<(const IntVector3& rhs) const noexcept {
+    if(x < rhs.x) return true;
+    if(rhs.x < x) return false;
+    if(y < rhs.y) return true;
+    if(rhs.y < y) return false;
+    if(z < rhs.z) return true;
+    return false;
+}
+
+bool IntVector3::operator>=(const IntVector3& rhs) const noexcept {
+    return !(*this < rhs);
+}
+
+bool IntVector3::operator>(const IntVector3& rhs) const noexcept {
+    return rhs < *this;
+}
+
+bool IntVector3::operator<=(const IntVector3& rhs) const noexcept {
+    return !(*this > rhs);
+}
+
+std::ostream& operator<<(std::ostream& out_stream, const IntVector3& v) noexcept {
+    out_stream << '[' << v.x << ',' << v.y << ',' << v.z << ']';
+    return out_stream;
+}
+
+std::istream& operator>>(std::istream& in_stream, IntVector3& v) noexcept {
+    int x = 0;
+    int y = 0;
+    int z = 0;
+
+    in_stream.ignore(); //[
+    in_stream >> x;
+    in_stream.ignore(); //,
+    in_stream >> y;
+    in_stream.ignore(); //,
+    in_stream >> z;
+    in_stream.ignore(); //]
+
+    v.x = x;
+    v.y = y;
+    v.z = z;
+
+    return in_stream;
+}
+
+void IntVector3::SetXYZ(int newX, int newY, int newZ) noexcept {
+    x = newX;
+    y = newY;
+    z = newZ;
+}
+
+std::tuple<int, int, int> IntVector3::GetXYZ() const noexcept {
+    return std::make_tuple(x, y, z);
 }
