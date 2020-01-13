@@ -497,7 +497,6 @@ std::vector<std::filesystem::path> GetAllPathsInFolders(const std::filesystem::p
 }
 
 void FileUtils::RemoveExceptMostRecentFiles(const std::filesystem::path& folderpath, int mostRecentCountToKeep, const std::string& validExtensionList /*= std::string{}*/) noexcept {
-    auto working_dir = std::filesystem::current_path();
     if(!IsSafeWritePath(folderpath)) {
         return;
     }
