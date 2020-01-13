@@ -20,8 +20,8 @@ bool WriteBufferToFile(void* buffer, std::size_t size, std::filesystem::path fil
     namespace FS = std::filesystem;
     filepath = FS::absolute(filepath);
     filepath.make_preferred();
-    bool not_valid_path = FS::is_directory(filepath);
-    bool invalid = not_valid_path;
+    const auto not_valid_path = FS::is_directory(filepath);
+    const auto invalid = not_valid_path;
     if(invalid) {
         return false;
     }
@@ -37,8 +37,8 @@ bool WriteBufferToFile(const std::string& buffer, std::filesystem::path filepath
     namespace FS = std::filesystem;
     filepath = FS::absolute(filepath);
     filepath.make_preferred();
-    bool not_valid_path = FS::is_directory(filepath);
-    bool invalid = not_valid_path;
+    const auto not_valid_path = FS::is_directory(filepath);
+    const auto invalid = not_valid_path;
     if(invalid) {
         return false;
     }
@@ -54,14 +54,14 @@ std::optional<std::vector<uint8_t>> ReadBinaryBufferFromFile(std::filesystem::pa
     namespace FS = std::filesystem;
     filepath = FS::canonical(filepath);
     filepath.make_preferred();
-    bool path_is_directory = FS::is_directory(filepath);
-    bool path_not_exist = !FS::exists(filepath);
-    bool not_valid_path = path_is_directory || path_not_exist;
+    const auto path_is_directory = FS::is_directory(filepath);
+    const auto path_not_exist = !FS::exists(filepath);
+    const auto not_valid_path = path_is_directory || path_not_exist;
     if(not_valid_path) {
         return {};
     }
 
-    std::size_t byte_size = FS::file_size(filepath);
+    const auto byte_size = FS::file_size(filepath);
     std::vector<uint8_t> out_buffer{};
     out_buffer.resize(byte_size);
     std::ifstream ifs{ filepath, std::ios_base::binary };
@@ -76,9 +76,9 @@ std::optional<std::string> ReadStringBufferFromFile(std::filesystem::path filepa
     namespace FS = std::filesystem;
     filepath = FS::canonical(filepath);
     filepath.make_preferred();
-    bool path_is_directory = FS::is_directory(filepath);
-    bool path_not_exist = !FS::exists(filepath);
-    bool not_valid_path = path_is_directory || path_not_exist;
+    const auto path_is_directory = FS::is_directory(filepath);
+    const auto path_not_exist = !FS::exists(filepath);
+    const auto not_valid_path = path_is_directory || path_not_exist;
     if(not_valid_path) {
         return {};
     }
@@ -188,8 +188,8 @@ std::filesystem::path GetKnownFolderPath(const KnownPathID& pathid) noexcept {
     } else {
         {
             PWSTR ppszPath = nullptr;
-            auto hr_path = ::SHGetKnownFolderPath(GetKnownPathIdForOS(pathid), KF_FLAG_DEFAULT, nullptr, &ppszPath);
-            bool success = SUCCEEDED(hr_path);
+            const auto hr_path = ::SHGetKnownFolderPath(GetKnownPathIdForOS(pathid), KF_FLAG_DEFAULT, nullptr, &ppszPath);
+            const auto success = SUCCEEDED(hr_path);
             if(success) {
                 p = FS::path(ppszPath);
                 ::CoTaskMemFree(ppszPath);
@@ -281,9 +281,9 @@ std::filesystem::path GetTempDirectory() noexcept {
 
 bool HasDeletePermissions(const std::filesystem::path& p) noexcept {
     namespace FS = std::filesystem;
-    auto parent_path = p.parent_path();
-    auto parent_status = FS::status(parent_path);
-    auto parent_perms = parent_status.permissions();
+    const auto parent_path = p.parent_path();
+    const auto parent_status = FS::status(parent_path);
+    const auto parent_perms = parent_status.permissions();
     if(FS::perms::none == (parent_perms & (FS::perms::owner_write | FS::perms::group_write | FS::perms::others_write))) {
         return false;
     }
@@ -304,8 +304,8 @@ bool HasExecutePermissions(const std::filesystem::path& p) noexcept {
     if(FS::is_directory(p)) {
         return false;
     }
-    auto status = FS::status(p);
-    auto perms = status.permissions();
+    const auto status = FS::status(p);
+    const auto perms = status.permissions();
     if(FS::perms::none == (perms & (FS::perms::owner_exec | FS::perms::group_exec | FS::perms::others_exec))) {
         return false;
     }
@@ -317,9 +317,9 @@ bool HasSearchPermissions(const std::filesystem::path& p) noexcept {
     if(!FS::is_directory(p)) {
         return false;
     }
-    auto parent_path = p.parent_path();
-    auto parent_status = FS::status(parent_path);
-    auto parent_perms = parent_status.permissions();
+    const auto parent_path = p.parent_path();
+    const auto parent_status = FS::status(parent_path);
+    const auto parent_perms = parent_status.permissions();
     if(FS::perms::none == (parent_perms & (FS::perms::owner_exec | FS::perms::group_exec | FS::perms::others_exec))) {
         return false;
     }
@@ -328,8 +328,8 @@ bool HasSearchPermissions(const std::filesystem::path& p) noexcept {
 
 bool HasWritePermissions(const std::filesystem::path& p) noexcept {
     namespace FS = std::filesystem;
-    auto my_status = FS::status(p);
-    auto my_perms = my_status.permissions();
+    const auto my_status = FS::status(p);
+    const auto my_perms = my_status.permissions();
     if(FS::perms::none == (my_perms & (FS::perms::owner_write | FS::perms::group_write | FS::perms::others_write))) {
         return false;
     }
@@ -338,8 +338,8 @@ bool HasWritePermissions(const std::filesystem::path& p) noexcept {
 
 bool HasReadPermissions(const std::filesystem::path& p) noexcept {
     namespace FS = std::filesystem;
-    auto my_status = FS::status(p);
-    auto my_perms = my_status.permissions();
+    const auto my_status = FS::status(p);
+    const auto my_perms = my_status.permissions();
     if(FS::perms::none == (my_perms & (FS::perms::owner_read | FS::perms::group_read | FS::perms::others_read))) {
         return false;
     }
@@ -354,8 +354,7 @@ bool IsSafeWritePath(const std::filesystem::path& p) noexcept {
     }
 
     try {
-        auto working_dir = GetWorkingDirectory();
-        if(bool is_in_working_dir = IsChildOf(p, working_dir)) {
+        if(bool is_in_working_dir = IsChildOf(p, GetWorkingDirectory())) {
             return true;
         }
         if(bool is_in_data_dir = IsChildOf(p, FS::path{ "Data/" })) {
@@ -402,14 +401,13 @@ bool IsSafeReadPath(const std::filesystem::path& p) noexcept {
     }
 
     try {
-        auto working_dir = GetWorkingDirectory();
-        bool is_in_working_dir = IsChildOf(p, working_dir);
-        bool is_in_gamedata_dir = IsChildOf(p, GetKnownFolderPath(KnownPathID::GameData));
-        bool is_in_enginedata_dir = IsChildOf(p, GetKnownFolderPath(KnownPathID::EngineData));
-        bool is_known_OS_dir = false;
+        const auto is_in_working_dir = IsChildOf(p, GetWorkingDirectory());
+        const auto is_in_gamedata_dir = IsChildOf(p, GetKnownFolderPath(KnownPathID::GameData));
+        const auto is_in_enginedata_dir = IsChildOf(p, GetKnownFolderPath(KnownPathID::EngineData));
+        const auto is_known_OS_dir = false;
 
-        bool is_next_to_exe = IsSiblingOf(p, GetExePath());
-        bool safe = is_in_working_dir || is_in_gamedata_dir || is_in_enginedata_dir || is_next_to_exe || is_known_OS_dir;
+        const auto is_next_to_exe = IsSiblingOf(p, GetExePath());
+        const auto safe = is_in_working_dir || is_in_gamedata_dir || is_in_enginedata_dir || is_next_to_exe || is_known_OS_dir;
         return safe;
     } catch(const std::filesystem::filesystem_error& e) {
         std::ostringstream ss{};
@@ -429,8 +427,8 @@ bool IsSafeReadPath(const std::filesystem::path& p) noexcept {
 
 bool IsParentOf(const std::filesystem::path& p, const std::filesystem::path& child) noexcept {
     namespace FS = std::filesystem;
-    auto p_canon = FS::canonical(p);
-    auto child_canon = FS::canonical(child);
+    const auto p_canon = FS::canonical(p);
+    const auto child_canon = FS::canonical(child);
     for(auto iter = FS::recursive_directory_iterator{ p_canon }; iter != FS::recursive_directory_iterator{}; ++iter) {
         auto entry = *iter;
         auto sub_p = entry.path();
@@ -443,18 +441,18 @@ bool IsParentOf(const std::filesystem::path& p, const std::filesystem::path& chi
 
 bool IsSiblingOf(const std::filesystem::path& p, const std::filesystem::path& sibling) noexcept {
     namespace FS = std::filesystem;
-    auto my_parent_path = FS::canonical(p.parent_path());
-    auto sibling_parent_path = FS::canonical(sibling.parent_path());
+    const auto my_parent_path = FS::canonical(p.parent_path());
+    const auto sibling_parent_path = FS::canonical(sibling.parent_path());
     return my_parent_path == sibling_parent_path;
 }
 
 bool IsChildOf(const std::filesystem::path& p, const std::filesystem::path& parent) noexcept {
     namespace FS = std::filesystem;
-    auto parent_canon = FS::canonical(parent);
-    auto p_canon = FS::canonical(p);
+    const auto parent_canon = FS::canonical(parent);
+    const auto p_canon = FS::canonical(p);
     for(auto iter = FS::recursive_directory_iterator{ parent_canon }; iter != FS::recursive_directory_iterator{}; ++iter) {
-        auto entry = *iter;
-        auto sub_p = entry.path();
+        const auto entry = *iter;
+        const auto sub_p = entry.path();
         if(sub_p == p_canon) {
             return true;
         }
@@ -466,9 +464,9 @@ void ForEachFileInFolder(const std::filesystem::path& folderpath, const std::str
     namespace FS = std::filesystem;
     auto preferred_folderpath = FS::canonical(folderpath);
     preferred_folderpath.make_preferred();
-    bool exists = FS::exists(preferred_folderpath);
-    bool is_directory = FS::is_directory(preferred_folderpath);
-    bool is_folder = exists && is_directory;
+    const auto exists = FS::exists(preferred_folderpath);
+    const auto is_directory = FS::is_directory(preferred_folderpath);
+    const auto is_folder = exists && is_directory;
     if(!is_folder) {
         return;
     }
@@ -480,10 +478,10 @@ void ForEachFileInFolder(const std::filesystem::path& folderpath, const std::str
     }
 }
 
-int CountFilesInFolders(const std::filesystem::path& folderpath, const std::string& validExtensionList /*= std::string{}*/, bool recursive /*= false*/) noexcept {
+std::size_t CountFilesInFolders(const std::filesystem::path& folderpath, const std::string& validExtensionList /*= std::string{}*/, bool recursive /*= false*/) noexcept {
     namespace FS = std::filesystem;
-    int count = 0;
-    auto cb = [&count](const FS::path& /*p*/)->void { ++count; };
+    auto count = std::size_t{0u};
+    const auto cb = [&count](const FS::path&)->void { ++count; };
     ForEachFileInFolder(folderpath, validExtensionList, cb, recursive);
     return count;
 }
@@ -491,22 +489,22 @@ int CountFilesInFolders(const std::filesystem::path& folderpath, const std::stri
 std::vector<std::filesystem::path> GetAllPathsInFolders(const std::filesystem::path& folderpath, const std::string& validExtensionList /*= std::string{}*/, bool recursive /*= false*/) noexcept {
     namespace FS = std::filesystem;
     std::vector<FS::path> paths{};
-    auto add_path_cb = [&paths](const FS::path& p) { paths.push_back(p); };
+    const auto add_path_cb = [&paths](const FS::path& p) { paths.push_back(p); };
     ForEachFileInFolder(folderpath, validExtensionList, add_path_cb, recursive);
     return paths;
 }
 
-void FileUtils::RemoveExceptMostRecentFiles(const std::filesystem::path& folderpath, int mostRecentCountToKeep, const std::string& validExtensionList /*= std::string{}*/) noexcept {
+void FileUtils::RemoveExceptMostRecentFiles(const std::filesystem::path& folderpath, std::size_t mostRecentCountToKeep, const std::string& validExtensionList /*= std::string{}*/) noexcept {
     if(!IsSafeWritePath(folderpath)) {
         return;
     }
     namespace FS = std::filesystem;
     if(mostRecentCountToKeep < CountFilesInFolders(folderpath, validExtensionList)) {
         std::vector<FS::path> paths = GetAllPathsInFolders(folderpath);
-        auto sort_pred = [](const FS::path& a, const FS::path& b) { return FS::last_write_time(a) > FS::last_write_time(b); };
+        const auto sort_pred = [](const FS::path& a, const FS::path& b) { return FS::last_write_time(a) > FS::last_write_time(b); };
         std::sort(std::begin(paths), std::end(paths), sort_pred);
         if(mostRecentCountToKeep > 0) {
-            auto erase_end = std::begin(paths) + mostRecentCountToKeep;
+            const auto erase_end = std::begin(paths) + mostRecentCountToKeep;
             paths.erase(std::begin(paths), erase_end);
         }
         for(auto& p : paths) {

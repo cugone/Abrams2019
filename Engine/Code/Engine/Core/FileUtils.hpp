@@ -91,8 +91,8 @@ bool IsParentOf(const std::filesystem::path& p, const std::filesystem::path& chi
 bool IsSiblingOf(const std::filesystem::path& p, const std::filesystem::path& sibling) noexcept;
 bool IsChildOf(const std::filesystem::path& p, const std::filesystem::path& parent) noexcept;
 void ForEachFileInFolder(const std::filesystem::path& folderpath, const std::string& validExtensionList = std::string{}, const std::function<void(const std::filesystem::path&)>& callback = [](const std::filesystem::path& /*p*/) { /* DO NOTHING */ }, bool recursive = false) noexcept;
-int CountFilesInFolders(const std::filesystem::path& folderpath, const std::string& validExtensionList = std::string{}, bool recursive = false) noexcept;
-void RemoveExceptMostRecentFiles(const std::filesystem::path& folderpath, int mostRecentCountToKeep, const std::string& validExtensionList = std::string{}) noexcept;
+std::size_t CountFilesInFolders(const std::filesystem::path& folderpath, const std::string& validExtensionList = std::string{}, bool recursive = false) noexcept;
+void RemoveExceptMostRecentFiles(const std::filesystem::path& folderpath, std::size_t mostRecentCountToKeep, const std::string& validExtensionList = std::string{}) noexcept;
 std::vector<std::filesystem::path> GetAllPathsInFolders(const std::filesystem::path& folderpath, const std::string& validExtensionList = std::string{}, bool recursive = false) noexcept;
 
 //Unconditional byte order swap.
