@@ -106,7 +106,7 @@ void PhysicsSystem::UpdateBodiesInBounds(TimeUtils::FPSeconds deltaSeconds) noex
         if (!body) {
             continue;
         }
-        if (MathUtils::DoOBBsOverlap(_desc.world_bounds, body->GetBounds())) {
+        if (MathUtils::DoOBBsOverlap(OBB2(_desc.world_bounds), body->GetBounds())) {
             body->Update(deltaSeconds);
         }
     }
@@ -119,10 +119,10 @@ std::vector<RigidBody*> PhysicsSystem::BroadPhaseCollision(const AABB2& query_ar
         if (!body) {
             continue;
         }
-        if(!MathUtils::DoOBBsOverlap(query_area, body->GetBounds())) {
+        if(!MathUtils::DoOBBsOverlap(OBB2(query_area), body->GetBounds())) {
             continue;
         }
-        if(MathUtils::DoOBBsOverlap(_desc.world_bounds, body->GetBounds())) {
+        if(MathUtils::DoOBBsOverlap(OBB2(_desc.world_bounds), body->GetBounds())) {
             const auto queried_bodies = _world_partition.Query(query_area);
             for (auto* query : queried_bodies) {
                 potential_collisions.push_back(query);

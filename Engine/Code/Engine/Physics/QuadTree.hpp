@@ -95,7 +95,7 @@ std::vector<std::add_pointer_t<T>> QuadTree<T>::Query(const AABB2& area) noexcep
             }
         } else {
             for(auto* elem : m_elements) {
-                if(MathUtils::DoOBBsOverlap(area, elem->GetBounds())) {
+                if(MathUtils::DoOBBsOverlap(OBB2(area), elem->GetBounds())) {
                     result.push_back(elem);
                 }
             }
@@ -431,7 +431,7 @@ bool QuadTree<T>::NeedsUnSubdivide() const {
 template<typename T>
 bool QuadTree<T>::IsElementIntersectingMe(std::add_pointer_t<T> new_element) const {
     if (new_element) {
-        return MathUtils::DoOBBsOverlap(GetBounds(), new_element->GetBounds());
+        return MathUtils::DoOBBsOverlap(OBB2(GetBounds()), OBB2(new_element->GetBounds()));
     }
     return false;
 }

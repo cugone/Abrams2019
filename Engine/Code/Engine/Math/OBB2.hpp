@@ -20,7 +20,7 @@ public:
     OBB2(float initialX, float initialY, float initialOrientationDegrees) noexcept;
     OBB2(const Vector2& center, const Vector2& halfExtents, float orientationDegrees) noexcept;
     OBB2(const Vector2& center, float halfExtentX, float halfExtentY, float orientationDegrees) noexcept;
-    OBB2(const AABB2& aabb) noexcept;
+    explicit OBB2(const AABB2& aabb) noexcept;
     ~OBB2() = default;
 
     AABB2 AsAABB2() const;
