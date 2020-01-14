@@ -555,6 +555,18 @@ bool Contains(const AABB2& a, const AABB2& b) noexcept {
     return IsPointInside(a, tl) && IsPointInside(a, tr) && IsPointInside(a, bl) && IsPointInside(a, br);
 }
 
+bool Contains(const AABB2& a, const OBB2& b) noexcept {
+    return Contains(a, AABB2(b));
+}
+
+bool Contains(const OBB2& a, const AABB2& b) noexcept {
+    return Contains(AABB2(a), b);
+}
+
+bool Contains(const OBB2& a, const OBB2& b) noexcept {
+    return Contains(AABB2(a), AABB2(b));
+}
+
 bool IsPointInside(const AABB2& aabb, const Vector2& point) noexcept {
     if(aabb.maxs.x < point.x) return false;
     if(point.x < aabb.mins.x) return false;
