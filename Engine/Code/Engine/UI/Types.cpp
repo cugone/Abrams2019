@@ -13,7 +13,7 @@ PivotPosition& operator++(PivotPosition& mode) {
 
 PivotPosition operator++(PivotPosition& mode, int) {
     PivotPosition result = mode;
-    ++result;
+    ++mode;
     return result;
 }
 
@@ -28,7 +28,7 @@ PivotPosition& operator--(PivotPosition& mode) {
 
 PivotPosition operator--(PivotPosition& mode, int) {
     PivotPosition result = mode;
-    --result;
+    --mode;
     return result;
 }
 

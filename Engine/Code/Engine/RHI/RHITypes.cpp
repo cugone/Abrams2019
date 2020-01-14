@@ -88,7 +88,7 @@ RHIOutputMode& operator++(RHIOutputMode& mode) noexcept {
 
 RHIOutputMode operator++(RHIOutputMode& mode, int) noexcept {
     RHIOutputMode result = mode;
-    ++result;
+    ++mode;
     return result;
 }
 
