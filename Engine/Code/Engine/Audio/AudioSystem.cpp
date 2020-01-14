@@ -26,7 +26,7 @@ AudioSystem::AudioSystem(FileLogger& fileLogger, std::size_t max_channels /*= 10
 AudioSystem::~AudioSystem() noexcept {
 
     {
-    std::scoped_lock<std::mutex> _lock(_cs);
+    std::scoped_lock<std::mutex> lock(_cs);
     for(auto& channel : _active_channels) {
         channel->Stop();
     }
@@ -35,7 +35,7 @@ AudioSystem::~AudioSystem() noexcept {
         bool done_cleanup = false;
         do {
             std::this_thread::yield();
-            std::scoped_lock<std::mutex> _lock(_cs);
+            std::scoped_lock<std::mutex> lock(_cs);
             done_cleanup = _active_channels.empty();
         } while(!done_cleanup);
     }
@@ -170,7 +170,7 @@ void AudioSystem::Render() const {
 }
 
 void AudioSystem::EndFrame() {
-    std::scoped_lock<std::mutex> _lock(_cs);
+    std::scoped_lock<std::mutex> lock(_cs);
     _idle_channels.erase(std::remove_if(std::begin(_idle_channels), std::end(_idle_channels), [](const std::unique_ptr<Channel>& c) { return c == nullptr; }), std::end(_idle_channels));
 }
 
@@ -209,7 +209,7 @@ void AudioSystem::RegisterWavFilesFromFolder(std::filesystem::path folderpath, b
 }
 
 void AudioSystem::DeactivateChannel(Channel& channel) noexcept {
-    std::scoped_lock<std::mutex> _lock(_cs);
+    std::scoped_lock<std::mutex> lock(_cs);
     auto found_iter = std::find_if(std::begin(_active_channels), std::end(_active_channels),
                                    [&channel](const std::unique_ptr<Channel>& c) { return c.get() == &channel; });
     _idle_channels.push_back(std::move(*found_iter));
@@ -217,7 +217,7 @@ void AudioSystem::DeactivateChannel(Channel& channel) noexcept {
 }
 
 void AudioSystem::Play(Sound& snd) noexcept {
-    std::scoped_lock<std::mutex> _lock(_cs);
+    std::scoped_lock<std::mutex> lock(_cs);
     if(_max_channels <= _idle_channels.size()) {
         return;
     }
@@ -332,7 +332,7 @@ AudioSystem::Channel::~Channel() noexcept {
     if(_voice) {
         Stop();
         {
-            std::scoped_lock<std::mutex> _lock(_cs);
+            std::scoped_lock<std::mutex> lock(_cs);
             _voice->DestroyVoice();
             _voice = nullptr;
         }
@@ -346,7 +346,7 @@ void AudioSystem::Channel::Play(Sound& snd) noexcept {
         _buffer.pAudioData = wav->GetDataBuffer();
         _buffer.AudioBytes = wav->GetDataBufferSize();
         {
-            std::scoped_lock<std::mutex> _lock(_cs);
+            std::scoped_lock<std::mutex> lock(_cs);
             _voice->SubmitSourceBuffer(&_buffer, nullptr);
             _voice->Start();
         }
@@ -355,7 +355,7 @@ void AudioSystem::Channel::Play(Sound& snd) noexcept {
 
 void AudioSystem::Channel::Stop() noexcept {
     if(_voice && _sound) {
-        std::scoped_lock<std::mutex> _lock(_cs);
+        std::scoped_lock<std::mutex> lock(_cs);
         _voice->Stop();
         _voice->FlushSourceBuffers();
     }
@@ -363,7 +363,7 @@ void AudioSystem::Channel::Stop() noexcept {
 
 void AudioSystem::Channel::SetVolume(float newVolume) noexcept {
     if(_voice) {
-        std::scoped_lock<std::mutex> _lock(_cs);
+        std::scoped_lock<std::mutex> lock(_cs);
         _voice->SetVolume(newVolume);
     }
 }
@@ -388,12 +388,12 @@ AudioSystem::Sound::Sound(AudioSystem& audiosystem, std::filesystem::path filepa
 }
 
 void AudioSystem::Sound::AddChannel(Channel* channel) noexcept {
-    std::scoped_lock<std::mutex> _lock(_cs);
+    std::scoped_lock<std::mutex> lock(_cs);
     _channels.push_back(channel);
 }
 
 void AudioSystem::Sound::RemoveChannel(Channel* channel) noexcept {
-    std::scoped_lock<std::mutex> _lock(_cs);
+    std::scoped_lock<std::mutex> lock(_cs);
     _channels.erase(std::remove_if(std::begin(_channels), std::end(_channels),
                                    [channel](Channel* c)->bool { return c == channel; })
                     , std::end(_channels));

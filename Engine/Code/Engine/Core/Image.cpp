@@ -105,13 +105,13 @@ Image::Image(Image&& img) noexcept
     , m_filepath(std::move(img.m_filepath))
     , m_isGif(std::move(m_isGif))
 {
-    std::scoped_lock<std::mutex, std::mutex>(_cs, img._cs);
+    std::scoped_lock<std::mutex, std::mutex> lock(_cs, img._cs);
     m_texelBytes = std::move(img.m_texelBytes);
 }
 
 
 Image& Image::operator=(Image&& rhs) noexcept {
-    std::scoped_lock<std::mutex, std::mutex> _lock(_cs, rhs._cs);
+    std::scoped_lock<std::mutex, std::mutex> lock(_cs, rhs._cs);
     m_bytesPerTexel = std::move(rhs.m_bytesPerTexel);
     m_dimensions = std::move(rhs.m_dimensions);
     m_filepath = std::move(rhs.m_filepath);
@@ -285,7 +285,7 @@ std::string Image::GetSupportedExtensionsList() noexcept {
 }
 
 void swap(Image& a, Image& b) noexcept {
-    std::scoped_lock<std::mutex, std::mutex> _lock(a._cs, b._cs);
+    std::scoped_lock<std::mutex, std::mutex> lock(a._cs, b._cs);
     std::swap(a.m_bytesPerTexel, b.m_bytesPerTexel);
     std::swap(a.m_dimensions, b.m_dimensions);
     std::swap(a.m_filepath, b.m_filepath);

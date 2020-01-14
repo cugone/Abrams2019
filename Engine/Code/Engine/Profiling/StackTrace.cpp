@@ -94,12 +94,12 @@ void StackTrace::Initialize() noexcept {
     LSymCleanup = reinterpret_cast<SymCleanup_t>(::GetProcAddress(debugHelpModule, "SymCleanup"));
 
     {
-        std::scoped_lock<std::shared_mutex> _lock(_cs);
+        std::scoped_lock<std::shared_mutex> lock(_cs);
         LSymSetOptions(SYMOPT_UNDNAME | SYMOPT_DEFERRED_LOADS);
     }
     process = ::GetCurrentProcess();
     {
-        std::scoped_lock<std::shared_mutex> _lock(_cs);
+        std::scoped_lock<std::shared_mutex> lock(_cs);
         if(!_did_init) {
             _did_init = LSymInitialize(process, nullptr, true);
         }
@@ -135,7 +135,7 @@ void StackTrace::GetLines([[maybe_unused]]StackTrace* st,
         auto ptr = reinterpret_cast<DWORD64>(st->_frames[i]);
         bool got_addr = false;
         {
-            std::scoped_lock<std::shared_mutex> _lock(_cs);
+            std::scoped_lock<std::shared_mutex> lock(_cs);
             got_addr = LSymFromAddr(process, ptr, nullptr, symbol);
         }
         if(!got_addr) {
@@ -144,7 +144,7 @@ void StackTrace::GetLines([[maybe_unused]]StackTrace* st,
         }
         bool got_line = false;
         {
-            std::scoped_lock<std::shared_mutex> _lock(_cs);
+            std::scoped_lock<std::shared_mutex> lock(_cs);
             got_line = LSymGetLineFromAddr64(process, ptr, &line_offset, &line_info);
         }
         if(got_line) {
@@ -178,7 +178,7 @@ void StackTrace::Shutdown() noexcept {
     }
 
     {
-        std::scoped_lock<std::shared_mutex> _lock(_cs);
+        std::scoped_lock<std::shared_mutex> lock(_cs);
         LSymCleanup(process);
     }
 

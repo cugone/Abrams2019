@@ -90,7 +90,7 @@ void FileLogger::CopyLog(void* user_data) noexcept {
         auto job_data = reinterpret_cast<copy_log_job_t*>(user_data);
         auto from = job_data->from;
         auto to = job_data->to;
-        std::scoped_lock<std::mutex> _lock(_cs);
+        std::scoped_lock<std::mutex> lock(_cs);
         _stream.flush();
         _stream.close();
         std::cout.rdbuf(_old_cout);
@@ -180,7 +180,7 @@ void FileLogger::Shutdown() noexcept {
 
 void FileLogger::Log(const std::string& msg) noexcept {
     {
-        std::scoped_lock<std::mutex> _lock(_cs);
+        std::scoped_lock<std::mutex> lock(_cs);
         _queue.push(msg);
     }
     _signal.notify_all();
