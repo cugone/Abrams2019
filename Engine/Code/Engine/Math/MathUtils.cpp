@@ -31,23 +31,20 @@ void SetRandomEngineSeed(unsigned int seed) noexcept {
 }
 
 std::pair<float, float> SplitFloatingPointValue(float value) noexcept {
-    float frac = 0.0f;
     float int_part = 0.0f;
-    frac = std::modf(value, &int_part);
+    float frac = std::modf(value, &int_part);
     return std::make_pair(int_part, frac);
 }
 
 std::pair<double, double> SplitFloatingPointValue(double value) noexcept {
-    double frac = 0.0;
     double int_part = 0.0;
-    frac = std::modf(value, &int_part);
+    double frac = std::modf(value, &int_part);
     return std::make_pair(int_part, frac);
 }
 
 std::pair<long double, long double> SplitFloatingPointValue(long double value) noexcept {
-    long double frac = 0.0;
     long double int_part = 0.0;
-    frac = std::modf(value, &int_part);
+    long double frac = std::modf(value, &int_part);
     return std::make_pair(int_part, frac);
 }
 
