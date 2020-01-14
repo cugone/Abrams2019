@@ -127,6 +127,10 @@ bool IsEquivalentOrLessThan(float a, float b, float epsilon = 0.00001f) noexcept
 bool IsEquivalentOrLessThan(double a, double b, double epsilon = 0.0001) noexcept;
 bool IsEquivalentOrLessThan(long double a, long double b, long double epsilon = 0.0001L) noexcept;
 
+bool IsEquivalentOrLessThanZero(float a, float epsilon = 0.00001f) noexcept;
+bool IsEquivalentOrLessThanZero(double a, double epsilon = 0.0001) noexcept;
+bool IsEquivalentOrLessThanZero(long double a, long double epsilon = 0.0001L) noexcept;
+
 bool IsEquivalentToZero(float a, float epsilon = 0.00001f) noexcept;
 bool IsEquivalentToZero(double a, double epsilon = 0.0001) noexcept;
 bool IsEquivalentToZero(long double a, long double epsilon = 0.0001L) noexcept;
