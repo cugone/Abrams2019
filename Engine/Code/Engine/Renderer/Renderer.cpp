@@ -3229,7 +3229,7 @@ std::unique_ptr<ShaderProgram> Renderer::CreateShaderProgramFromHlslFile(std::fi
                     error_msg << "Shader \"" << filepath << "\" failed to compile.\n";
                     error_msg << "See Output window for details.\n";
                     error_msg << "Press Retry to re-compile.";
-                    auto button_id = ::MessageBoxA(GetOutput()->GetWindow()->GetWindowHandle(), error_msg.str().c_str(), "Shader compilation error.", MB_RETRYCANCEL | MB_ICONERROR);
+                    auto button_id = ::MessageBoxA(nullptr, error_msg.str().c_str(), "Shader compilation error.", MB_RETRYCANCEL | MB_ICONERROR);
                     requested_retry = button_id == IDRETRY;
                 }
 #endif

@@ -38,8 +38,8 @@ public:
     void SetForegroundWindow() noexcept;
     void SetFocus() noexcept;
     
-    HWND GetWindowHandle() const noexcept;
-    void SetWindowHandle(HWND hWnd) noexcept;
+    void* GetWindowHandle() const noexcept;
+    void SetWindowHandle(void* hWnd) noexcept;
 
     HDC GetWindowDeviceContext() const noexcept;
 

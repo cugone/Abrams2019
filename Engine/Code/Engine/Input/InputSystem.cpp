@@ -452,7 +452,7 @@ KeyCode InputSystem::ConvertWinVKToKeyCode(unsigned char winVK) noexcept {
 Vector2 InputSystem::GetCursorWindowPosition(const Window& window_ref) const noexcept {
     POINT p;
     if(::GetCursorPos(&p)) {
-        if(::ScreenToClient(window_ref.GetWindowHandle(), &p)) {
+        if(::ScreenToClient(reinterpret_cast<HWND>(window_ref.GetWindowHandle()), &p)) {
             return Vector2{ static_cast<float>(p.x), static_cast<float>(p.y) };
         }
     }
@@ -479,7 +479,7 @@ void InputSystem::SetCursorToScreenCenter() noexcept {
 
 void InputSystem::SetCursorToWindowCenter(const Window& window_ref) noexcept {
     RECT client_area;
-    if(::GetClientRect(window_ref.GetWindowHandle(), &client_area)) {
+    if(::GetClientRect(reinterpret_cast<HWND>(window_ref.GetWindowHandle()), &client_area)) {
         float center_x = (client_area.left + client_area.right) * 0.5f;
         float center_y = (client_area.top + client_area.bottom) * 0.5f;
         SetCursorWindowPosition(window_ref, Vector2{ center_x, center_y });
@@ -515,7 +515,7 @@ Vector2 InputSystem::GetScreenCenter() const noexcept {
 
 Vector2 InputSystem::GetWindowCenter(const Window& window) const noexcept {
     RECT rect;
-    HWND windowHandle = window.GetWindowHandle();
+    HWND windowHandle = reinterpret_cast<HWND>(window.GetWindowHandle());
     if(::GetClientRect(windowHandle, &rect)) {
         float center_x = (rect.right + rect.left) * 0.50f;
         float center_y = (rect.bottom + rect.top) * 0.50f;
@@ -542,7 +542,7 @@ void InputSystem::SetCursorWindowPosition(const Window& window, const Vector2& w
     POINT p;
     p.x = static_cast<long>(window_pos.x);
     p.y = static_cast<long>(window_pos.y);
-    if(::ClientToScreen(window.GetWindowHandle(), &p)) {
+    if(::ClientToScreen(reinterpret_cast<HWND>(window.GetWindowHandle()), &p)) {
         SetCursorScreenPosition(Vector2{ static_cast<float>(p.x), static_cast<float>(p.y) });
     }
 }

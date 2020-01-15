@@ -151,12 +151,12 @@ void Window::SetFocus() noexcept {
     ::SetFocus(_hWnd);
 }
 
-HWND Window::GetWindowHandle() const noexcept {
+void* Window::GetWindowHandle() const noexcept {
     return _hWnd;
 }
 
-void Window::SetWindowHandle(HWND hWnd) noexcept {
-    _hWnd = hWnd;
+void Window::SetWindowHandle(void* hWnd) noexcept {
+    _hWnd = reinterpret_cast<HWND>(hWnd);
 }
 
 
