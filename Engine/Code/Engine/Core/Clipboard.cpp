@@ -37,53 +37,11 @@ bool Clipboard::HasUnicodeText() noexcept {
 }
 
 bool Clipboard::Copy(const std::string& text) noexcept {
-    bool did_copy = false;
-    if(text.empty()) {
-        return did_copy;
-    }
-    if(!HasText()) {
-        return did_copy;
-    }
-    if(Open(_hwnd)) {
-        if(Empty()) {
-            if(auto hgblcopy = ::GlobalAlloc(GMEM_MOVEABLE, (text.size() + 1) * sizeof(std::string::value_type))) {
-                if(auto lpstrcopy = reinterpret_cast<LPTSTR>(::GlobalLock(hgblcopy))) {
-                    std::memcpy(lpstrcopy, text.data(), text.size() + 1);
-                    lpstrcopy[text.size() + 1] = '\0';
-                }
-                ::GlobalUnlock(hgblcopy);
-                ::SetClipboardData(CF_TEXT, hgblcopy);
-                did_copy = true;
-            }
-        }
-        Close();
-    }
-    return did_copy;
+    return Copy_helper(text);
 }
 
 bool Clipboard::Copy(const std::wstring& text) noexcept {
-    bool did_copy = false;
-    if(text.empty()) {
-        return did_copy;
-    }
-    if(!HasText()) {
-        return did_copy;
-    }
-    if(Open(_hwnd)) {
-        if(Empty()) {
-            if(auto hgblcopy = ::GlobalAlloc(GMEM_MOVEABLE, (text.size() + 1) * sizeof(std::wstring::value_type))) {
-                if(auto lpstrcopy = reinterpret_cast<LPTSTR>(::GlobalLock(hgblcopy))) {
-                    std::memcpy(lpstrcopy, text.data(), text.size() + 1);
-                    lpstrcopy[text.size() + 1] = '\0';
-                }
-                ::GlobalUnlock(hgblcopy);
-                ::SetClipboardData(CF_TEXT, hgblcopy);
-                did_copy = true;
-            }
-        }
-        Close();
-    }
-    return did_copy;
+    return Copy_helper(text);
 }
 
 bool Clipboard::Empty() noexcept {
