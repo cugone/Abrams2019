@@ -3481,7 +3481,7 @@ Vector2 Renderer::ConvertWorldToScreenCoords(const Camera2D& camera, const Vecto
 
 Vector2 Renderer::ConvertWorldToScreenCoords(const Camera3D& camera, const Vector3& worldCoords) const noexcept {
     auto WtoS = camera.GetViewProjectionMatrix();
-    auto screenCoords4 = WtoS * worldCoords;
+    auto screenCoords4 = WtoS * (worldCoords - camera.GetPosition());
     auto ndc = Vector2{screenCoords4.x, -screenCoords4.y};
     auto screenDims = Vector2{GetOutput()->GetDimensions()};
     auto mouseCoords = (ndc + Vector2::ONE) * screenDims * 0.5f;
