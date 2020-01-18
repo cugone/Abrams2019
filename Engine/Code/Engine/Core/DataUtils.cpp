@@ -139,8 +139,8 @@ namespace DataUtils {
 #endif //#if _DEBUG
     }
 
-    unsigned int GetAttributeCount(const XMLElement &element) noexcept {
-        unsigned int attributeCount = 0;
+    std::size_t GetAttributeCount(const XMLElement &element) noexcept {
+        std::size_t attributeCount = 0u;
         ForEachAttribute(element,
             [&](const XMLAttribute& /*attribute*/) {
             ++attributeCount;
@@ -158,8 +158,8 @@ namespace DataUtils {
         return attributeNames;
     }
 
-    unsigned int GetChildElementCount(const XMLElement &element, const std::string& elementName /*= std::string("")*/) noexcept {
-        unsigned int childCount = 0;
+    std::size_t GetChildElementCount(const XMLElement &element, const std::string& elementName /*= std::string("")*/) noexcept {
+        std::size_t childCount = 0u;
         ForEachChildElement(element, elementName,
             [&](const XMLElement& /*elem*/) {
             ++childCount;
