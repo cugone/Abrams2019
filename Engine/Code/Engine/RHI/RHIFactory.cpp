@@ -64,74 +64,34 @@ bool RHIFactory::QueryForAllowTearingSupport(const RHIDevice& device) const noex
 
 
 std::vector<AdapterInfo> RHIFactory::GetAdaptersByPreference(const AdapterPreference& preference) const noexcept {
-    switch(preference) {
-    case AdapterPreference::HighPerformance:
-        return GetAdaptersByHighPerformancePreference();
-    case AdapterPreference::MinimumPower:
-        return GetAdaptersByMinimumPowerPreference();
-    case AdapterPreference::Unspecified: [[fallthrough]];
-    /*case AdapterPreference::None: [[fallthrough]]; Also Unspecified */
-    default:
-        return GetAdaptersByUnspecifiedPreference();
+    const auto dx_preference = AdapterPreferenceToDxgiGpuPreference(preference);
+    std::vector<AdapterInfo> adapters{};
+    Microsoft::WRL::ComPtr<IDXGIAdapter4> cur_adapter{};
+    for(unsigned int i = 0u;
+        SUCCEEDED(_dxgi_factory->EnumAdapterByGpuPreference(
+            i,
+            dx_preference,
+            __uuidof(IDXGIAdapter4),
+            &cur_adapter
+        )
+        );
+        ++i) {
+        AdapterInfo cur_info{};
+        cur_info.adapter = cur_adapter;
+        cur_adapter->GetDesc3(&cur_info.desc);
+        adapters.push_back(cur_info);
     }
+    return adapters;
 }
 
 std::vector<AdapterInfo> RHIFactory::GetAdaptersByHighPerformancePreference() const noexcept {
-    std::vector<AdapterInfo> adapters{};
-    Microsoft::WRL::ComPtr<IDXGIAdapter4> cur_adapter{};
-    for(unsigned int i = 0u;
-        SUCCEEDED(_dxgi_factory->EnumAdapterByGpuPreference(
-            i,
-            DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE,
-            __uuidof(IDXGIAdapter4),
-            &cur_adapter
-        )
-        );
-        ++i) {
-        AdapterInfo cur_info{};
-        cur_info.adapter = cur_adapter;
-        cur_adapter->GetDesc3(&cur_info.desc);
-        adapters.push_back(cur_info);
-    }
-    return adapters;
+    return GetAdaptersByPreference(AdapterPreference::HighPerformance);
 }
 
 std::vector<AdapterInfo> RHIFactory::GetAdaptersByMinimumPowerPreference() const noexcept {
-    std::vector<AdapterInfo> adapters{};
-    Microsoft::WRL::ComPtr<IDXGIAdapter4> cur_adapter{};
-    for(unsigned int i = 0u;
-        SUCCEEDED(_dxgi_factory->EnumAdapterByGpuPreference(
-            i,
-            DXGI_GPU_PREFERENCE_MINIMUM_POWER,
-            __uuidof(IDXGIAdapter4),
-            &cur_adapter
-        )
-        );
-        ++i) {
-        AdapterInfo cur_info{};
-        cur_info.adapter = cur_adapter;
-        cur_adapter->GetDesc3(&cur_info.desc);
-        adapters.push_back(cur_info);
-    }
-    return adapters;
+    return GetAdaptersByPreference(AdapterPreference::MinimumPower);
 }
 
 std::vector<AdapterInfo> RHIFactory::GetAdaptersByUnspecifiedPreference() const noexcept {
-    std::vector<AdapterInfo> adapters{};
-    Microsoft::WRL::ComPtr<IDXGIAdapter4> cur_adapter{};
-    for(unsigned int i = 0u;
-        SUCCEEDED(_dxgi_factory->EnumAdapterByGpuPreference(
-            i,
-            DXGI_GPU_PREFERENCE_UNSPECIFIED,
-            __uuidof(IDXGIAdapter4),
-            &cur_adapter
-        )
-        );
-        ++i) {
-        AdapterInfo cur_info{};
-        cur_info.adapter = cur_adapter;
-        cur_adapter->GetDesc3(&cur_info.desc);
-        adapters.push_back(cur_info);
-    }
-    return adapters;
+    return GetAdaptersByPreference(AdapterPreference::Unspecified);
 }
