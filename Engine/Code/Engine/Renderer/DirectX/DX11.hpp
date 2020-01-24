@@ -40,6 +40,8 @@ enum class AdapterPreference {
     ,MinimumPower
 };
 
+DXGI_GPU_PREFERENCE AdapterPreferenceToDxgiGpuPreference(const AdapterPreference& preference);
+
 GraphicsCardDesc AdapterInfoToGraphicsCardDesc(const AdapterInfo& adapterInfo) noexcept;
 
 struct OutputInfo {
