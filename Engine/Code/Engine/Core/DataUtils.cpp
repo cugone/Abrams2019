@@ -670,7 +670,7 @@ namespace DataUtils {
                 return static_cast<char>(std::stoi(values[0]));
             }
             auto lower = static_cast<char>(std::stoi(values[0]));
-            auto upper = static_cast<char>(std::stol(values[1]));
+            auto upper = static_cast<char>(std::stoi(values[1]));
             retVal = static_cast<char>(MathUtils::GetRandomIntInRange(lower, upper));
         }
         return static_cast<char>(retVal);
