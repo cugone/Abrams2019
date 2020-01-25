@@ -652,6 +652,10 @@ namespace DataUtils {
             return *(value.begin());
         } else {
             auto values = StringUtils::Split(attr, '~');
+            //attr string isn't empty, but if Split returns empty vector, the only thing the string contained was a '~'.
+            if(values.empty()) {
+                return '~';
+            }
             if(values.size() == 1) {
                 return static_cast<char>(std::stoi(values[0]));
             }
