@@ -158,6 +158,18 @@ namespace DataUtils {
         return attributeNames;
     }
 
+    bool HasAttribute(const XMLElement& element) noexcept {
+        return GetAttributeCount(element) != 0;
+    }
+
+    bool HasAttribute(const XMLElement& element, const std::string& name) {
+        bool result = false;
+        ForEachAttribute(element, [&name, &result](const XMLAttribute& attribute) {
+            if(attribute.Name() == name) result = true;
+        });
+        return result;
+    }
+
     std::size_t GetChildElementCount(const XMLElement &element, const std::string& elementName /*= std::string("")*/) noexcept {
         std::size_t childCount = 0u;
         ForEachChildElement(element, elementName,
