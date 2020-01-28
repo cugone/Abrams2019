@@ -190,9 +190,22 @@ namespace DataUtils {
     }
 
     bool ParseXmlElementText(const XMLElement& element, bool defaultValue) noexcept {
-        bool retVal = defaultValue;
-        element.QueryBoolText(&retVal);
-        return retVal;
+        auto retVal = defaultValue;
+        auto txtAsCStr = element.GetText();
+        std::string txt(txtAsCStr ? txtAsCStr : "");
+        txt = StringUtils::ToLowerCase(txt);
+        if(txt == "true") {
+            return true;
+        } else if(txt == "false") {
+            return false;
+        } else {
+            try {
+                retVal = static_cast<decltype(retVal)>(std::stoi(txt));
+                return retVal;
+            } catch(...) {
+                return defaultValue;
+            }
+        }
     }
     unsigned char ParseXmlElementText(const XMLElement& element, unsigned char defaultValue) noexcept {
         auto retVal = defaultValue;
