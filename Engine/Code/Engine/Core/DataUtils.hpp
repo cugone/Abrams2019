@@ -116,6 +116,8 @@ std::string GetElementName(const XMLElement& elem) noexcept;
 std::vector<std::string> GetChildElementNames(const XMLElement& element) noexcept;
 std::string GetAttributeName(const XMLAttribute& attrib) noexcept;
 std::vector<std::string> GetAttributeNames(const XMLElement& element) noexcept;
+bool HasAttribute(const XMLElement& element) noexcept;
+bool HasAttribute(const XMLElement& element, const std::string& name);
 
 bool ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, bool defaultValue) noexcept;
 

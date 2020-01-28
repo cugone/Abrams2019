@@ -158,6 +158,18 @@ namespace DataUtils {
         return attributeNames;
     }
 
+    bool HasAttribute(const XMLElement& element) noexcept {
+        return GetAttributeCount(element) != 0;
+    }
+
+    bool HasAttribute(const XMLElement& element, const std::string& name) {
+        bool result = false;
+        ForEachAttribute(element, [&name, &result](const XMLAttribute& attribute) {
+            if(attribute.Name() == name) result = true;
+        });
+        return result;
+    }
+
     std::size_t GetChildElementCount(const XMLElement &element, const std::string& elementName /*= std::string("")*/) noexcept {
         std::size_t childCount = 0u;
         ForEachChildElement(element, elementName,
@@ -652,11 +664,25 @@ namespace DataUtils {
             return *(value.begin());
         } else {
             auto values = StringUtils::Split(attr, '~');
+            //attr string isn't empty, but if Split returns empty vector, the only thing the string contained was a '~'.
+            if(values.empty()) {
+                return '~';
+            }
             if(values.size() == 1) {
+                if(attr.front() == '~') {
+                    auto lower = static_cast<char>(-128);
+                    auto upper = static_cast<char>(std::stoi(values[1]));
+                    retVal = static_cast<char>(MathUtils::GetRandomIntInRange(lower, upper));
+                }
+                if(attr.back()  == '~') {
+                    auto lower = static_cast<char>(std::stoi(values[0]));
+                    auto upper = 128;
+                    retVal = static_cast<char>(MathUtils::GetRandomIntInRange(lower, upper));
+                }
                 return static_cast<char>(std::stoi(values[0]));
             }
             auto lower = static_cast<char>(std::stoi(values[0]));
-            auto upper = static_cast<char>(std::stol(values[1]));
+            auto upper = static_cast<char>(std::stoi(values[1]));
             retVal = static_cast<char>(MathUtils::GetRandomIntInRange(lower, upper));
         }
         return static_cast<char>(retVal);
