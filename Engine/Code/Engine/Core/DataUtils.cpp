@@ -683,13 +683,13 @@ namespace DataUtils {
             }
             if(values.size() == 1) {
                 if(attr.front() == '~') {
-                    auto lower = static_cast<char>(-128);
+                    constexpr auto lower = std::numeric_limits<char>::min();
                     auto upper = static_cast<char>(std::stoi(values[1]));
                     retVal = static_cast<char>(MathUtils::GetRandomIntInRange(lower, upper));
                 }
                 if(attr.back()  == '~') {
                     auto lower = static_cast<char>(std::stoi(values[0]));
-                    auto upper = 128;
+                    constexpr auto upper = std::numeric_limits<char>::max();
                     retVal = static_cast<char>(MathUtils::GetRandomIntInRange(lower, upper));
                 }
                 return static_cast<char>(std::stoi(values[0]));
