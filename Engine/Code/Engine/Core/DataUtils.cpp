@@ -190,9 +190,22 @@ namespace DataUtils {
     }
 
     bool ParseXmlElementText(const XMLElement& element, bool defaultValue) noexcept {
-        bool retVal = defaultValue;
-        element.QueryBoolText(&retVal);
-        return retVal;
+        auto retVal = defaultValue;
+        auto txtAsCStr = element.GetText();
+        std::string txt(txtAsCStr ? txtAsCStr : "");
+        txt = StringUtils::ToLowerCase(txt);
+        if(txt == "true") {
+            return true;
+        } else if(txt == "false") {
+            return false;
+        } else {
+            try {
+                retVal = static_cast<decltype(retVal)>(std::stoi(txt));
+                return retVal;
+            } catch(...) {
+                return defaultValue;
+            }
+        }
     }
     unsigned char ParseXmlElementText(const XMLElement& element, unsigned char defaultValue) noexcept {
         auto retVal = defaultValue;
@@ -670,13 +683,13 @@ namespace DataUtils {
             }
             if(values.size() == 1) {
                 if(attr.front() == '~') {
-                    auto lower = static_cast<char>(-128);
+                    constexpr auto lower = std::numeric_limits<char>::min();
                     auto upper = static_cast<char>(std::stoi(values[1]));
                     retVal = static_cast<char>(MathUtils::GetRandomIntInRange(lower, upper));
                 }
                 if(attr.back()  == '~') {
                     auto lower = static_cast<char>(std::stoi(values[0]));
-                    auto upper = 128;
+                    constexpr auto upper = std::numeric_limits<char>::max();
                     retVal = static_cast<char>(MathUtils::GetRandomIntInRange(lower, upper));
                 }
                 return static_cast<char>(std::stoi(values[0]));
