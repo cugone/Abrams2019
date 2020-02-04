@@ -47,12 +47,18 @@ void foo() {
 
     while(...) {
         if(...) {
+        } else if(...) {
+        } else {
         }
     }
 }
 ```
 
-**Rationale:** Readability and Style consistency.
+**Rationale:**
+
+Readability and Style consistency.
+
+Scope blocks defined in this way can easily be converted to functions.
 
 **Exceptions:**
  - Lambdas that are inline or very short **may** be on the same line:
