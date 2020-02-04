@@ -169,3 +169,66 @@ Parenthesis **may** be used to override order of operations even if the order is
 
 **Rationale:** Readability
 
+### Functions
+#### Rule 12
+All free functions **will** have a corresponding function declaration at the top of the enclosing file where possible.
+
+**Exceptions:**
+ - In cases where the rule cannot be followed, such as user-defined types not being declared yet, or as part of a user-defined type interface, a function declaration **shall** be declared after and as close to the user-defined type's declaration as possible.
+
+**Rationale:**
+ - Readability.
+ - Ease of finding the function.
+
+### User-defined types (Classes)
+#### Rule 13
+The keyword `class` **shall** be used for any user-defined type that contains member functions.
+
+**Rationale:** Style
+
+#### Rule 14
+Access modifiers for class **will** be declared in `public`, `protected`, `private` order.
+
+**Rationale:** Readability
+
+#### Rule 15
+There **will** only be one declaration of each access modifier.
+
+**Exceptions:**
+ - More than one **may** be declared when used in conjunction with `decltype(auto)`.
+
+### User-defined types (Structs)
+#### Rule 16
+The keyword `struct` **shall** be used for any user-defined type that contains only data members.
+
+**Rationale:** Style
+
+### Templates
+#### Rule 17
+Template parameter lists **shall not** contain the keyword `class`
+
+**Rationale:** `typename` is more clear and must be used in cases where scope is involved.
+
+#### Rule 18
+Templates **shall not** be used if the only rationale for their use is reducing code duplication.
+
+#### Rule 19
+Explicit specialization as a form of customization for function templates **shall not** be used.
+
+Use normal function overloading instead.
+
+**Rationale:**
+ - Does not play well with overloads.
+ - See Walter E. Brown's [talk](https://www.youtube.com/watch?v=NIDEjY5ywqU) on the subject of templates.
+
+### Miscellaneous
+### Rule 20
+The keyword `typedef` **shall not** be used.
+
+**Rationale:** It has been replaced by `using`
+
+### Rule 21
+The keyword `volatile` **shall not** be used as a thread-safe construct.
+
+**Rationale:** Replaced by `std::atomic` and the various critical section lock types.
+
