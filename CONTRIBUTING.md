@@ -153,8 +153,16 @@ All indentation levels **shall** be a multiple of four (4) spaces.
 
 **Rationale:** Style
 
-### Parenthesis
 #### Rule 10
+The contents of a namespace declaration **will not** be indented.
+
+**Rationale:** Readability and reduction of "arrow code"
+
+**Exceptions:**
+- Forward declaring a type that is part of a namespace **may** be indented.
+
+### Parenthesis
+#### Rule 11
 Control blocks **will not** contain a leading space between the control block keyword and the opening parenthesis:
 ```
 if(a) {
@@ -167,13 +175,13 @@ if(a) {
 **Exceptions:**
  - Code **should** try to remain consistent within a single file.
 
-#### Rule 11
+#### Rule 12
 Parenthesis **may** be used to override order of operations even if the order is unchanged.
 
 **Rationale:** Readability
 
 ### Functions
-#### Rule 12
+#### Rule 13
 All free functions **will** have a corresponding function declaration at the top of the enclosing file where possible.
 
 **Exceptions:**
@@ -183,7 +191,7 @@ All free functions **will** have a corresponding function declaration at the top
  - Readability.
  - Ease of finding the function.
 
-#### Rule 13
+#### Rule 14
 Default arguments ***shall** be declared in the function declaration and **will** be noted with a comment in the function definition.
 ```
 void foo(int a, int b = 0);
@@ -194,38 +202,38 @@ void foo(int a, int b /*= 0 */) {
 ```
 
 ### User-defined types (Classes)
-#### Rule 14
+#### Rule 15
 The keyword `class` **shall** be used for any user-defined type that contains member functions.
 
 **Rationale:** Style
 
-#### Rule 15
+#### Rule 16
 Access modifiers for class **will** be declared in `public`, `protected`, `private` order.
 
 **Rationale:** Readability
 
-#### Rule 16
+#### Rule 17
 There **will** only be one declaration of each access modifier.
 
 **Exceptions:**
  - More than one **may** be declared when used in conjunction with `decltype(auto)`.
 
 ### User-defined types (Structs)
-#### Rule 17
+#### Rule 18
 The keyword `struct` **shall** be used for any user-defined type that contains only data members.
 
 **Rationale:** Style
 
 ### Templates
-#### Rule 18
+#### Rule 19
 Template parameter lists **shall not** contain the keyword `class`
 
 **Rationale:** `typename` is more clear and must be used in cases where scope is involved.
 
-#### Rule 19
+#### Rule 20
 Templates **shall not** be used if the only rationale for their use is reducing code duplication.
 
-#### Rule 20
+#### Rule 21
 Explicit specialization as a form of customization for function templates **shall not** be used.
 
 Use normal function overloading instead.
@@ -235,25 +243,25 @@ Use normal function overloading instead.
  - See Walter E. Brown's [talk](https://www.youtube.com/watch?v=NIDEjY5ywqU) on the subject of templates.
 
 ### Preprocessor commands
-#### Rule 20
+#### Rule 22
 Multiple inclusion **shall** be prevented using `#pragma once`.
 
 **Rationale:** `#pragma once` is supported by every major compiler.
 
 ### Macros
-#### Rule 21
+#### Rule 23
 Macros **should not** be used.
 
 **Exceptions:**
 - Token pasting with `__LINE__` and `__FILE__` **may** be required.
 
 ### Miscellaneous
-#### Rule 22
+#### Rule 24
 The keyword `typedef` **shall not** be used.
 
 **Rationale:** It has been replaced by `using`
 
-#### Rule 23
+#### Rule 25
 The keyword `volatile` **shall not** be used as a thread-safe construct.
 
 **Rationale:** Replaced by `std::atomic` and the various critical section lock types.
