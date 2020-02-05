@@ -185,37 +185,48 @@ All free functions **will** have a corresponding function declaration at the top
 
 ### User-defined types (Classes)
 #### Rule 13
+Default arguments ***shall** be declared in the function declaration and **will** be noted with a comment in the function definition.
+```
+void foo(int a, int b = 0);
+//...
+void foo(int a, int b /*= 0 */) {
+    //...
+}
+```
+
+### User-defined types (Classes)
+#### Rule 14
 The keyword `class` **shall** be used for any user-defined type that contains member functions.
 
 **Rationale:** Style
 
-#### Rule 14
+#### Rule 15
 Access modifiers for class **will** be declared in `public`, `protected`, `private` order.
 
 **Rationale:** Readability
 
-#### Rule 15
+#### Rule 16
 There **will** only be one declaration of each access modifier.
 
 **Exceptions:**
  - More than one **may** be declared when used in conjunction with `decltype(auto)`.
 
 ### User-defined types (Structs)
-#### Rule 16
+#### Rule 17
 The keyword `struct` **shall** be used for any user-defined type that contains only data members.
 
 **Rationale:** Style
 
 ### Templates
-#### Rule 17
+#### Rule 18
 Template parameter lists **shall not** contain the keyword `class`
 
 **Rationale:** `typename` is more clear and must be used in cases where scope is involved.
 
-#### Rule 18
+#### Rule 19
 Templates **shall not** be used if the only rationale for their use is reducing code duplication.
 
-#### Rule 19
+#### Rule 20
 Explicit specialization as a form of customization for function templates **shall not** be used.
 
 Use normal function overloading instead.
