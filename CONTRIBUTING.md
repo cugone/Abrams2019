@@ -4,9 +4,9 @@ This is a living document and can change at any time.
 We welcome any contributions you may have to the project.
 
 Current areas lacking in features are:
- - Linux OS support
- - Physics Subsystem
- - OpenGL Renderer
+- Linux OS support
+- Physics Subsystem
+- OpenGL Renderer
 
 If you'd like to contribute, have a question, or would like to submit a feature request, please [open an Issue](https://github.com/cugone/Abrams2019/issues/new) first so it may be discussed before any major work is done. You don't want to spend a lot of time on a feature only to have it rejected.
 
@@ -15,10 +15,10 @@ Please consider and follow the S&P below when making contributions.
 ## Coding Standards and Practices with Style Guide
 
 This project follows a modified version of the [JSF-AV](http://www.stroustrup.com/JSF-AV-rules.pdf) rules and its descriptors:
- - Rules containing **may** are optional. They are not required and are a weak suggestion.
- - Rules containing **should** are advisory. They strongly suggest the way of doing things.
- - Rules containing **will** are intended to be mandatory. These rules are expected to have exceptions.
- - Rules containing **shall** are strictly mandatory. PRs breaking a **shall** rule are immediately rejected.
+- Rules containing **may** are optional. They are not required and are a weak suggestion.
+- Rules containing **should** are advisory. They strongly suggest the way of doing things.
+- Rules containing **will** are intended to be mandatory. These rules are expected to have exceptions.
+- Rules containing **shall** are strictly mandatory. PRs breaking a **shall** rule are immediately rejected.
 
 ### Tabs vs Spaces
 #### Rule 1
