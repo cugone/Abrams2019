@@ -149,7 +149,7 @@ C++-style comments **will not** contain a leading space between the comment desi
 
 ### Indentation
 #### Rule 9
-All indentation **shall** be 4 spaces.
+All indentation levels **shall** be a multiple of four (4) spaces.
 
 **Rationale:** Style
 
