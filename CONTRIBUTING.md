@@ -236,7 +236,7 @@ Use normal function overloading instead.
 
 ### Preprocessor commands
 #### Rule 20
-Multiple inclusion **shall** be preventing using `#pragma once`.
+Multiple inclusion **shall** be prevented using `#pragma once`.
 
 **Rationale:** `#pragma once` is supported by every major compiler.
 
