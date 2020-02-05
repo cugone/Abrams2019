@@ -183,7 +183,6 @@ All free functions **will** have a corresponding function declaration at the top
  - Readability.
  - Ease of finding the function.
 
-### User-defined types (Classes)
 #### Rule 13
 Default arguments ***shall** be declared in the function declaration and **will** be noted with a comment in the function definition.
 ```
