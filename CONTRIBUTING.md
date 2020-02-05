@@ -234,13 +234,26 @@ Use normal function overloading instead.
  - Does not play well with overloads.
  - See Walter E. Brown's [talk](https://www.youtube.com/watch?v=NIDEjY5ywqU) on the subject of templates.
 
+### Preprocessor commands
+#### Rule 20
+Multiple inclusion **shall** be preventing using `#pragma once`.
+
+**Rationale:** `#pragma once` is supported by every major compiler.
+
+### Macros
+#### Rule 21
+Macros **should not** be used.
+
+**Exceptions:**
+- Token pasting with `__LINE__` and `__FILE__` **may** be required.
+
 ### Miscellaneous
-### Rule 20
+#### Rule 22
 The keyword `typedef` **shall not** be used.
 
 **Rationale:** It has been replaced by `using`
 
-### Rule 21
+#### Rule 23
 The keyword `volatile` **shall not** be used as a thread-safe construct.
 
 **Rationale:** Replaced by `std::atomic` and the various critical section lock types.
