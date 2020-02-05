@@ -20,6 +20,9 @@ This project follows a modified version of the [JSF-AV](http://www.stroustrup.co
 - Rules containing **will** are intended to be mandatory. These rules are expected to have exceptions.
 - Rules containing **shall** are strictly mandatory. PRs breaking a **shall** rule are immediately rejected.
 
+#### Rule 0
+All efforts **should** be made to follow the [C++ Core Guidelines](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines).
+
 ### Tabs vs Spaces
 #### Rule 1
 Tabs **will not** be used as a whitespace separator.
