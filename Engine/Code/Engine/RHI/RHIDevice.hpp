@@ -25,7 +25,7 @@ class Window;
 class RHIOutput;
 class DepthStencilState;
 class InputLayout;
-class Vertex3D;
+struct Vertex3D;
 class ShaderProgram;
 class Renderer;
 
