@@ -511,7 +511,7 @@ std::unique_ptr<ShaderProgram> RHIDevice::CreateShaderProgramFromHlslFile(std::f
             if(sp) {
                 return sp;
             }
-            auto ss = std::string{"Shader program "} + filepath.string() + " failed to compile.\nSee Output window for errors.\nPress Retry to recompile.";
+            const auto ss = std::string{"Shader program "} + filepath.string() + " failed to compile.\nSee Output window for errors.\nPress Retry to recompile.";
             retry_requested = IDRETRY == ::MessageBoxA(nullptr, ss.c_str(), "ShaderProgram Compiler Error", MB_ICONERROR | MB_RETRYCANCEL);
         }
     } while(retry_requested);

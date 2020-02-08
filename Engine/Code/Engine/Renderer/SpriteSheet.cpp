@@ -89,7 +89,7 @@ void SpriteSheet::LoadFromXml(Renderer& renderer, const XMLElement& elem) noexce
         std::error_code ec{};
         p = FS::canonical(p, ec);
         if(ec) {
-            auto ss = std::string{"Error loading spritesheet at "} +texturePathAsString + ":\n" + ec.message();
+            const auto ss = std::string{"Error loading spritesheet at "} + texturePathAsString + ":\n" + ec.message();
             ERROR_AND_DIE(ss.c_str());
         }
     }

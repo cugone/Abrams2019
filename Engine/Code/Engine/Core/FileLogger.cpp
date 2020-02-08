@@ -153,8 +153,7 @@ void FileLogger::Initialize(const std::string& log_name) noexcept {
     _old_cout = std::cout.rdbuf(_stream.rdbuf());
     _worker = std::thread(&FileLogger::Log_worker, this);
     ThreadUtils::SetThreadDescription(_worker, L"FileLogger");
-    auto ss = std::string{"Initializing Logger: "};
-    ss += _current_log_path.string() + "...";
+    const auto ss = std::string{"Initializing Logger: "} + _current_log_path.string() + "...";
     LogLine(ss.c_str());
 }
 

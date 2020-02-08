@@ -100,13 +100,13 @@ bool Shader::LoadFromXml(const XMLElement& element) noexcept {
     p.make_preferred();
     if(nullptr == (_shader_program = _renderer.GetShaderProgram(p.string()))) {
         if(StringUtils::StartsWith(p.string(), "__")) {
-            auto ss = std::string{"Intrinsic ShaderProgram referenced in Shader file \""} + _name + "\" does not already exist.";
+            const auto ss = std::string{"Intrinsic ShaderProgram referenced in Shader file \""} + _name + "\" does not already exist.";
             ERROR_AND_DIE(ss.c_str());
         }
         else {
             const auto& children = DataUtils::GetChildElementNames(*xml_SP);
             if(std::find(std::begin(children), std::end(children), "pipelinestages") == std::end(children)) {
-                auto ss = std::string{"User-defined ShaderProgram referenced in Shader file \""} +_name + "\" must declare pipelinestages in use.";
+                const auto ss = std::string{"User-defined ShaderProgram referenced in Shader file \""} +_name + "\" must declare pipelinestages in use.";
                 ERROR_AND_DIE(ss.c_str());
             }
         }
@@ -236,7 +236,7 @@ void Shader::ValidatePipelineStages(const PipelineStage& targets) noexcept {
         result = valid_cs || valid_gs || valid_vsps || valid_hsds;
     }
     if(!result) {
-        auto ss = std::string{"Error in shader file: \""} + _name + "\": Pipeline stages must include at least compute stage, geometry stage, or both vertex and pixel stages, or both hull and domain stages.";
+        const auto ss = std::string{"Error in shader file: \""} + _name + "\": Pipeline stages must include at least compute stage, geometry stage, or both vertex and pixel stages, or both hull and domain stages.";
         ERROR_AND_DIE(ss.c_str());
     }
 }

@@ -19,8 +19,7 @@ Image::Image(std::filesystem::path filepath) noexcept
 
     namespace FS = std::filesystem;
     if(!FS::exists(filepath)) {
-        auto ss = std::string{"Failed to load image. Could not find file: "};
-        ss += filepath.string() + ".\n";
+        const auto ss = std::string{"Failed to load image. Could not find file: "} + filepath.string() + ".\n";
         ERROR_AND_DIE(ss.c_str());
     }
     filepath = FS::canonical(filepath);
@@ -52,9 +51,8 @@ Image::Image(std::filesystem::path filepath) noexcept
             stbi_image_free(texel_bytes);
         }
     } else {
-        auto ss = std::string{"Failed to load image. "};
-        ss += filepath.string() + " is not a supported image type.";
-        GUARANTEE_RECOVERABLE(!m_texelBytes.empty(), ss);
+        const auto ss = std::string{"Failed to load image. "} + filepath.string() + " is not a supported image type.";
+        GUARANTEE_RECOVERABLE(!m_texelBytes.empty(), ss.c_str());
     }
 }
 Image::Image(unsigned int width, unsigned int height) noexcept
@@ -213,8 +211,7 @@ bool Image::Export(std::filesystem::path filepath, int bytes_per_pixel /*= 4*/, 
         std::scoped_lock<std::mutex> lock(_cs);
         result = stbi_write_jpg(p_str.c_str(), w, h, bbp, m_texelBytes.data(), quality);
     } else if(extension == ".hdr") {
-        auto ss = std::string{"Attempting to export "};
-        ss += filepath.string() + " to an unsupported type: " + extension + "\nHigh Dynamic Range output is not supported.";
+        const auto ss = std::string{"Attempting to export "} + filepath.string() + " to an unsupported type: " + extension + "\nHigh Dynamic Range output is not supported.";
         ERROR_RECOVERABLE(ss.c_str());
     }
     return 0 != result;

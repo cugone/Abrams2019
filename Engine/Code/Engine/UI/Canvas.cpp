@@ -27,7 +27,7 @@ Canvas::Canvas(Renderer& renderer, float reference_resolution, Texture* target_t
         _target_depthstencil = _renderer.GetDefaultDepthStencil();
     }
     {
-        auto ss = std::string{__FUNCTION__} + ": reference resolution must not be zero.";
+        const auto ss = std::string{__FUNCTION__} + ": reference resolution must not be zero.";
         GUARANTEE_OR_DIE(!MathUtils::IsEquivalent(_reference_resolution, 0.0f), ss.c_str());
     }
 

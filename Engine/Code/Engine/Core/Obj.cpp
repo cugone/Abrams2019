@@ -20,8 +20,7 @@ Obj::Obj(std::filesystem::path filepath) noexcept {
     }
     filepath.make_preferred();
     if(!Load(filepath)) {
-        auto ss = std::string{"Obj: "};
-        ss += filepath.string() + " failed to load.";
+        const auto ss = std::string{"Obj: "} + filepath.string() + " failed to load.";
         ERROR_AND_DIE(ss.c_str());
     }
 }

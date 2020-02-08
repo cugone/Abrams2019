@@ -26,7 +26,7 @@ namespace DataUtils {
         auto xmlNameAsCStr = element.Name();
         std::string xml_name = xmlNameAsCStr ? xmlNameAsCStr : "";
         if(xml_name != name) {
-            auto err_ss = std::string{"Element validation failed. Element name \""} + xml_name + std::string{"\" does not match valid name \""} +name + "\"\n";
+            const auto err_ss = std::string{"Element validation failed. Element name \""} + xml_name + std::string{"\" does not match valid name \""} +name + "\"\n";
             ERROR_AND_DIE(err_ss.c_str());
         }
 

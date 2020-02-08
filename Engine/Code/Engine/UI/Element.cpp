@@ -192,7 +192,7 @@ void Element::SetPivot(const PivotPosition& pivotPosition) {
         SetPivot(Vector2(0.0f, 0.5f));
         break;
     default:
-        auto ss = std::string{__FUNCTION__} + ": Unhandled pivot mode.";
+        const auto ss = std::string{__FUNCTION__} + ": Unhandled pivot mode.";
         ERROR_AND_DIE(ss.c_str());
         break;
     }
@@ -361,7 +361,7 @@ void Element::CalcBounds() noexcept {
         break;
     default:
     {
-        auto ss = std::string{__FUNCTION__} + ": Unhandled positioning mode.";
+        const auto ss = std::string{__FUNCTION__} + ": Unhandled positioning mode.";
         ERROR_AND_DIE(ss.c_str());
         break;
     }
