@@ -160,12 +160,12 @@ void FileLogger::Initialize(const std::string& log_name) noexcept {
 void FileLogger::Shutdown() noexcept {
     if(IsRunning()) {
         {
-            auto ss = std::string{};
+            auto ss = std::ostringstream{};
             if(Memory::is_enabled()) {
-                ss += Memory::status() + "\n";
+                ss << Memory::status() << "\n";
             }
-            ss += std::string{"Shutting down Logger: "} + _current_log_path.string() + "...";
-            LogLine(ss);
+            ss << std::string{"Shutting down Logger: "} << _current_log_path.string() << "...";
+            LogLine(ss.str().c_str());
         }
         SetIsRunning(false);
         _signal.notify_all();
