@@ -63,14 +63,7 @@ unsigned int Wav::Load(std::filesystem::path filepath) noexcept {
                 default:
                 {
                     {
-                        std::ostringstream err_ss{};
-                        err_ss << "Unknown WAV Chunk ID: ";
-                        err_ss << cur_header.fourcc[0]
-                            << cur_header.fourcc[1]
-                            << cur_header.fourcc[2]
-                            << cur_header.fourcc[3];
-                        err_ss << " Length: " << cur_header.length << '\n';
-                        DebuggerPrintf(err_ss.str().c_str(), "%s");
+                        DebuggerPrintf("Unknown WAV Chunk ID: %c%c%c%c Length: %u\n", cur_header.fourcc[0], cur_header.fourcc[1], cur_header.fourcc[2], cur_header.fourcc[3], cur_header.length);
                     }
                     ss.seekp(cur_header.length, std::ios_base::cur);
                     ss.seekg(cur_header.length, std::ios_base::cur);

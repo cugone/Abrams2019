@@ -20,9 +20,9 @@ Obj::Obj(std::filesystem::path filepath) noexcept {
     }
     filepath.make_preferred();
     if(!Load(filepath)) {
-        std::ostringstream ss;
-        ss << "Obj: " << filepath << " failed to load.";
-        ERROR_AND_DIE(ss.str().c_str());
+        auto ss = std::string{"Obj: "};
+        ss += filepath.string() + " failed to load.";
+        ERROR_AND_DIE(ss.c_str());
     }
 }
 
@@ -35,9 +35,7 @@ bool Obj::Load(std::filesystem::path filepath) noexcept {
     bool not_obj = StringUtils::ToLowerCase(filepath.extension().string()) != valid_extension;
     bool invalid = not_exist || not_obj;
     if(invalid) {
-        std::ostringstream ss;
-        ss << filepath << " is not a .obj file";
-        DebuggerPrintf(ss.str().c_str());
+        DebuggerPrintf("%s is not a .obj file.\n", filepath.string().c_str());
         return false;
     }
     filepath = FS::canonical(filepath);
@@ -324,11 +322,9 @@ bool Obj::Parse(const std::filesystem::path& filepath) noexcept {
 
 void Obj::PrintErrorToDebugger(std::filesystem::path filepath, const std::string& elementType, unsigned long long line_index) const noexcept {
     namespace FS = std::filesystem;
-    std::ostringstream error_ss{};
     filepath = FS::canonical(filepath);
     filepath.make_preferred();
-    error_ss << filepath << '(' << line_index << "): Invalid " << elementType << '\n';
-    DebuggerPrintf(error_ss.str().c_str());
+    DebuggerPrintf("%s(%lld): Invalid %s\n", filepath.string().c_str(), line_index, elementType.c_str());
 }
 
 } //End FileUtils

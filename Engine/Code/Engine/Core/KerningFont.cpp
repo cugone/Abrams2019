@@ -107,31 +107,23 @@ bool KerningFont::LoadFromFile(std::filesystem::path filepath) noexcept {
         bool is_fnt = filepath.has_extension() && StringUtils::ToLowerCase(filepath.extension().string()) == ".fnt";
         bool is_valid = path_exists && is_not_directory && is_file && is_fnt;
         if(!is_valid) {
-            std::ostringstream ss;
-            ss << filepath << " is not a BMFont file.\n";
-            DebuggerPrintf(ss.str().c_str());
+            DebuggerPrintf("%s is not a BMFont file.\n", filepath.string().c_str());
             return false;
         }
         if(_is_loaded) {
-            std::ostringstream ss;
-            ss << filepath << " is already loaded.\n";
-            DebuggerPrintf(ss.str().c_str());
+            DebuggerPrintf("%s is already loaded.\n", filepath.string().c_str());
             return false;
         }
         _filepath = filepath;
     }
     if(auto buffer = FileUtils::ReadBinaryBufferFromFile(_filepath.string())) {
         if(buffer->size() < 4) {
-            std::ostringstream ss;
-            ss << _filepath << " is not a BMFont file.\n";
-            DebuggerPrintf(ss.str().c_str());
+            DebuggerPrintf("%s is not a BMFont file.\n", _filepath.string().c_str());
             return false;
         }
         return LoadFromBuffer(buffer.value());
     } else {
-        std::ostringstream ss;
-        ss << "Failed to read file: " << _filepath << "\n";
-        DebuggerPrintf(ss.str().c_str());
+        DebuggerPrintf("Failed to read file: %s \n", _filepath.string().c_str());
         return false;
     }
 }
@@ -225,9 +217,7 @@ bool KerningFont::LoadFromText(std::vector<unsigned char>& buffer) noexcept {
         }
     }
     if(!kerning_count) {
-        std::ostringstream ss;
-        ss << "No kerning pairs found in font \"" << _name << "\"\n";
-        DebuggerPrintf(ss.str().c_str());
+        DebuggerPrintf("No kerning pairs found in font \"%s\"\n", _name.c_str());
     }
     return true;
 }
@@ -317,9 +307,7 @@ bool KerningFont::ParseInfoLine(const std::string& infoLine) noexcept {
             return false;
         }
     }
-    std::ostringstream ss;
-    ss << _info.face << _info.em_size;
-    _name = ss.str();
+    _name = _info.face + std::to_string(_info.em_size);
     return true;
 }
 
@@ -565,9 +553,7 @@ bool KerningFont::LoadFromXml(std::vector<unsigned char>& buffer) noexcept {
         _info.is_smoothed = DataUtils::ParseXmlAttribute(*xml_info, "smooth", _info.is_smoothed);
         _info.is_aliased = DataUtils::ParseXmlAttribute(*xml_info, "aa", _info.is_aliased);
         {
-            std::ostringstream ss;
-            ss << StringUtils::ReplaceAll(_info.face, " ", "") << _info.em_size;
-            _name = ss.str();
+            _name = StringUtils::ReplaceAll(_info.face, " ", "") + std::to_string(_info.em_size);
         }
         {
             std::string padding_str{};
@@ -651,9 +637,7 @@ bool KerningFont::LoadFromXml(std::vector<unsigned char>& buffer) noexcept {
             _kernmap.insert_or_assign(std::make_pair(def.first, def.second), def.amount);
         });
     } else {
-        std::ostringstream ss;
-        ss << "No kerning pairs found in font \"" << _name << "\"\n";
-        DebuggerPrintf(ss.str().c_str());
+        DebuggerPrintf("No kerning pairs found in font \"%s\"\n", _name.c_str());
     }
     return true;
 }
@@ -737,9 +721,7 @@ bool KerningFont::LoadFromBinary(std::vector<unsigned char>& buffer) noexcept {
     constexpr const uint8_t CURRENT_BMF_VERSION = 3;
     if(bss.read(reinterpret_cast<char*>(&header), sizeof(header))) {
         if(!(header.id[0] == 'B' && header.id[1] == 'M' && header.id[2] == 'F')) {
-            std::ostringstream ss;
-            ss << _filepath << " is not a BMFont file.\n";
-            DebuggerPrintf(ss.str().c_str());
+            DebuggerPrintf("%s is not a BMFont file.\n", _filepath.string().c_str());
             return false;
         }
         if(header.version != CURRENT_BMF_VERSION) {
@@ -763,9 +745,7 @@ bool KerningFont::LoadFromBinary(std::vector<unsigned char>& buffer) noexcept {
                 std::string font_name(block_size - sizeof(info), '\0');
                 bss.read(font_name.data(), font_name.size());
                 if(info.font_size < 0) {
-                    std::ostringstream ss;
-                    ss << _filepath << " uses \"Match char height option which will result in negative font sizes.\"\n";
-                    DebuggerPrintf(ss.str().c_str());
+                    DebuggerPrintf("%s uses \"Match char height\" option which will result in negative font sizes.\n", _filepath.string().c_str());
                 }
                 _info.charset = info.char_set;
                 _info.em_size = info.font_size;
@@ -780,9 +760,7 @@ bool KerningFont::LoadFromBinary(std::vector<unsigned char>& buffer) noexcept {
                 _info.padding = IntVector4(info.padding_up, info.padding_right, info.padding_down, info.padding_left);
                 _info.spacing = IntVector2(info.spacing_h, info.spacing_v);
                 _info.stretch_height = info.stretch_height / 100.0f;
-                std::ostringstream ss;
-                ss << StringUtils::ReplaceAll(_info.face, " ", "") << _info.em_size;
-                _name = ss.str();
+                _name = StringUtils::ReplaceAll(_info.face, " ", "") + std::to_string(_info.em_size);
                 break;
             }
             case BLOCK_ID_COMMON:
@@ -821,9 +799,7 @@ bool KerningFont::LoadFromBinary(std::vector<unsigned char>& buffer) noexcept {
                 uint32_t char_count = block_size / chars_size;
                 for(uint32_t i = 0; i < char_count; ++i) {
                     if(!bss.read(reinterpret_cast<char*>(&chars), chars_size)) {
-                        std::ostringstream ss;
-                        ss << _filepath << " is not a BMFont file.\n";
-                        DebuggerPrintf(ss.str().c_str());
+                        DebuggerPrintf("%s is not a BMFont file.\n", _filepath.string().c_str());
                         return false;
                     }
                     CharDef d{};
@@ -863,9 +839,7 @@ bool KerningFont::LoadFromBinary(std::vector<unsigned char>& buffer) noexcept {
         }
     }
     if(successful_block_reads < BLOCK_ID_KERNINGS) {
-        std::ostringstream ss;
-        ss << "No kerning pairs found in font \"" << _name << "\"\n";
-        DebuggerPrintf(ss.str().c_str());
+        DebuggerPrintf("No kerning paris found in font \"%s\"\n", _name.c_str());
     }
     return true;
 }

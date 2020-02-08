@@ -190,9 +190,7 @@ void AudioSystem::SetFormat(const FileUtils::Wav::WavFormatChunk& format) noexce
 void AudioSystem::RegisterWavFilesFromFolder(std::filesystem::path folderpath, bool recursive /*= false*/) noexcept {
     namespace FS = std::filesystem;
     if(!FS::exists(folderpath)) {
-        std::ostringstream ss{};
-        ss << "Attempting to Register Wav Files from unknown path: " << FS::absolute(folderpath) << std::endl;
-        DebuggerPrintf(ss.str().c_str());
+        DebuggerPrintf("Attempting to Register Wav Files from unknown path: %s\n", FS::absolute(folderpath).string().c_str());
         return;
     }
     folderpath = FS::canonical(folderpath);
@@ -248,9 +246,7 @@ void AudioSystem::Play(std::filesystem::path filepath) noexcept {
 AudioSystem::Sound* AudioSystem::CreateSound(std::filesystem::path filepath) noexcept {
     namespace FS = std::filesystem;
     if(!FS::exists(filepath)) {
-        std::ostringstream msg;
-        msg << "Could not find file: " << filepath << ".\n";
-        DebuggerPrintf(msg.str().c_str());
+        DebuggerPrintf("Could not find file: %s\n", filepath.string().c_str());
         return nullptr;
     }
 
@@ -268,10 +264,7 @@ AudioSystem::Sound* AudioSystem::CreateSound(std::filesystem::path filepath) noe
 void AudioSystem::RegisterWavFile(std::filesystem::path filepath) noexcept {
     namespace FS = std::filesystem;
     if(!FS::exists(filepath)) {
-        std::ostringstream msg;
-        msg << "Attempting to register wav file that does not exist:";
-        msg << '\n' << filepath;
-        DebuggerPrintf(msg.str().c_str());
+        DebuggerPrintf("Attempting to register wav file that does not exist: %s\n", filepath.string().c_str());
         return;
     }
     filepath = FS::canonical(filepath);
@@ -292,20 +285,17 @@ void AudioSystem::RegisterWavFile(std::filesystem::path filepath) noexcept {
     switch(wav_result) {
         case FileUtils::Wav::WAV_ERROR_NOT_A_WAV:
         {
-            std::string e = filepath.string() + " is not a .wav file.\n";
-            DebuggerPrintf(e.c_str());
+            DebuggerPrintf("%s is not a .wav file.\n", filepath.string().c_str());
             break;
         }
         case FileUtils::Wav::WAV_ERROR_BAD_FILE:
         {
-            std::string e = filepath.string() + " is improperly formatted.\n";
-            DebuggerPrintf(e.c_str());
+            DebuggerPrintf("%s is improperly formatted.\n", filepath.string().c_str());
             break;
         }
         default:
         {
-            std::string e = "Unknown error attempting to load " + filepath.string() + "\n";
-            DebuggerPrintf(e.c_str());
+            DebuggerPrintf("Unknown error attempting to load %s\n", filepath.string().c_str());
             break;
         }
     }

@@ -21,16 +21,13 @@ namespace DataUtils {
         const std::string& optionalAttributes /*= std::string("")*/) noexcept {
 
         if(name.empty()) {
-            std::ostringstream err_ss;
-            err_ss << "Element validation failed. Element name is required.";
-            ERROR_AND_DIE(err_ss.str().c_str());
+            ERROR_AND_DIE("Element validation failed. Element name is required.");
         }
         auto xmlNameAsCStr = element.Name();
         std::string xml_name = xmlNameAsCStr ? xmlNameAsCStr : "";
         if(xml_name != name) {
-            std::ostringstream err_ss;
-            err_ss << "Element validation failed. Element name \"" << xml_name << "\" does not match valid name \"" << name << "\"\n";
-            ERROR_AND_DIE(err_ss.str().c_str());
+            auto err_ss = std::string{"Element validation failed. Element name \""} + xml_name + std::string{"\" does not match valid name \""} +name + "\"\n";
+            ERROR_AND_DIE(err_ss.c_str());
         }
 
         //Get list of required/optional attributes/children
@@ -85,11 +82,11 @@ namespace DataUtils {
             std::back_inserter(missingRequiredAttributes));
 
         if(!missingRequiredAttributes.empty()) {
-            std::ostringstream err_ss;
+            auto err_ss = std::string{};
             for(auto& c : missingRequiredAttributes) {
-                err_ss << "Attribute validation failed. Missing required attribute \"" << c << "\"\n";
+                err_ss += std::string{"Attribute validation failed. Missing required attribute \""} + c + "\"\n";
             }
-            ERROR_AND_DIE(err_ss.str().c_str());
+            ERROR_AND_DIE(err_ss.c_str());
         }
 
         //Find missing children
@@ -99,11 +96,11 @@ namespace DataUtils {
             std::back_inserter(missingRequiredChildren));
 
         if(!missingRequiredChildren.empty()) {
-            std::ostringstream err_ss;
+            auto err_ss = std::string{};
             for(auto& c : missingRequiredChildren) {
-                err_ss << "Child Element validation failed. Missing required child \"" << c << "\"\n";
+                err_ss += std::string{"Child Element validation failed. Missing required child \""} + c + "\"\n";
             }
-            ERROR_AND_DIE(err_ss.str().c_str());
+            ERROR_AND_DIE(err_ss.c_str());
         }
 
 #ifdef _DEBUG
@@ -114,12 +111,11 @@ namespace DataUtils {
             std::back_inserter(extraOptionalAttributes));
 
         if(!extraOptionalAttributes.empty()) {
-            std::ostringstream err_ss;
-            err_ss << "\n" << __FUNCTION__ << ": Optional Attribute validation failed. Verify attributes are correct. Found unknown attributes:\n";
+            std::string err_ss = "\nOptional Attribute validation failed. Verify attributes are correct. Found unknown attributes:\n";
             for(auto& c : extraOptionalAttributes) {
-                err_ss << "\t\"" << c << "\"\n";
+                err_ss += "\t\"" + c + "\"\n";
             }
-            DebuggerPrintf(err_ss.str().c_str());
+            DebuggerPrintf(err_ss.c_str());
         }
 
         //Find extra children
@@ -129,12 +125,11 @@ namespace DataUtils {
             std::back_inserter(extraOptionalChildren));
 
         if(!extraOptionalChildren.empty()) {
-            std::ostringstream err_ss;
-            err_ss << "\n" << __FUNCTION__ << ": Optional Child validation failed. Verify attributes are correct. Found unknown children:\n";
+            std::string err_ss = "Optional Child validation failed. Verify attributes are correct. Found unknown children:\n";
             for(auto& c : extraOptionalChildren) {
-                err_ss << "\t\"" << c << "\"\n";
+                err_ss += "\t\"" + c + "\"\n";
             }
-            DebuggerPrintf(err_ss.str().c_str());
+            DebuggerPrintf(err_ss.c_str());
         }
 #endif //#if _DEBUG
     }

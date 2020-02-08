@@ -121,9 +121,9 @@ void JobSystem::Initialize(int genericCount, std::size_t categoryCount) noexcept
     
     for(std::size_t i = 0; i < static_cast<std::size_t>(core_count); ++i) {
         auto t = std::thread(&JobSystem::GenericJobWorker, this, _signals[static_cast<std::underlying_type_t<JobType>>(JobType::Generic)]);
-        std::wostringstream wss;
-        wss << "Generic Job Thread " << i;
-        ThreadUtils::SetThreadDescription(t, wss.str());
+        std::wstring desc{L"Generic Job Thread "};
+        desc += std::to_wstring(i);
+        ThreadUtils::SetThreadDescription(t, desc);
         _threads[i] = std::move(t);
     }
 

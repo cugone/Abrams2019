@@ -2591,12 +2591,7 @@ bool Renderer::RegisterShader(std::filesystem::path filepath) noexcept {
         std::error_code ec{};
         filepath = FS::canonical(filepath, ec);
         if(ec) {
-            std::ostringstream oss;
-            oss << "Could not register Shader.\n";
-            oss << "Filesystem returned the following error: \n";
-            oss << ec.message();
-            oss << '\n';
-            DebuggerPrintf(oss.str().c_str());
+            DebuggerPrintf("Could not register Shader.\nFilesystem returned the following error:\n%s\n", ec.message().c_str());
             return false;
         }
     }
@@ -2615,9 +2610,7 @@ void Renderer::RegisterShader(std::unique_ptr<Shader> shader) noexcept {
     std::string name = shader->GetName();
     auto found_iter = _shaders.find(name);
     if(found_iter != _shaders.end()) {
-        std::ostringstream ss;
-        ss << __FUNCTION__ << ": Shader \"" << name << "\" already exists. Overwriting.\n";
-        DebuggerPrintf(ss.str().c_str());
+        DebuggerPrintf("Shader \"%s\" already exists. Overwriting.\n", name.c_str());
         found_iter->second.reset();
         _shaders.erase(found_iter);
     }
@@ -2681,9 +2674,7 @@ bool Renderer::RegisterFont(std::filesystem::path filepath) noexcept {
 void Renderer::RegisterFontsFromFolder(std::filesystem::path folderpath, bool recursive /*= false*/) noexcept {
     namespace FS = std::filesystem;
     if(!FS::exists(folderpath)) {
-        std::ostringstream ss{};
-        ss << "Attempting to Register Fonts from unknown path: " << FS::absolute(folderpath) << std::endl;
-        DebuggerPrintf(ss.str().c_str());
+        DebuggerPrintf("Attempting to Register Fonts from unknown path: %s\n", FS::absolute(folderpath).string().c_str());
         return;
     }
     folderpath = FS::canonical(folderpath);
@@ -3098,9 +3089,7 @@ void Renderer::RegisterMaterial(const std::string& name, std::unique_ptr<Materia
     }
     auto found_iter = _materials.find(name);
     if(found_iter != _materials.end()) {
-        std::ostringstream ss;
-        ss << __FUNCTION__ << ": Material \"" << name << "\" already exists. Overwriting.\n";
-        DebuggerPrintf(ss.str().c_str());
+        DebuggerPrintf("Material \"%s\" already exists. Overwriting.\n", name.c_str());
         found_iter->second.reset();
         _materials.erase(found_iter);
     }
@@ -3114,9 +3103,7 @@ void Renderer::RegisterMaterial(std::unique_ptr<Material> mat) noexcept {
     std::string name = mat->GetName();
     auto found_iter = _materials.find(name);
     if(found_iter != _materials.end()) {
-        std::ostringstream ss;
-        ss << __FUNCTION__ << ": Material \"" << name << "\" already exists. Overwriting.\n";
-        DebuggerPrintf(ss.str().c_str());
+        DebuggerPrintf("Material \"%s\" already exists. Overwriting.\n", name.c_str());
         found_iter->second.reset();
         _materials.erase(found_iter);
     }
@@ -3143,9 +3130,7 @@ bool Renderer::RegisterMaterial(std::filesystem::path filepath) noexcept {
 void Renderer::RegisterMaterialsFromFolder(std::filesystem::path folderpath, bool recursive /*= false*/) noexcept {
     namespace FS = std::filesystem;
     if(!FS::exists(folderpath)) {
-        std::ostringstream ss{};
-        ss << "Attempting to Register Materials from unknown path: " << FS::absolute(folderpath) << std::endl;
-        DebuggerPrintf(ss.str().c_str());
+        DebuggerPrintf("Attempting to Register Materials from unknown path: %s", FS::absolute(folderpath).string().c_str());
         return;
     }
     folderpath = FS::canonical(folderpath);
@@ -3241,9 +3226,8 @@ std::unique_ptr<ShaderProgram> Renderer::CreateShaderProgramFromHlslFile(std::fi
 void Renderer::CreateAndRegisterShaderProgramFromHlslFile(std::filesystem::path filepath, const std::string& entryPointList, const PipelineStage& target) noexcept {
     auto sp = CreateShaderProgramFromHlslFile(filepath, entryPointList, target);
     if(!sp) {
-        std::ostringstream oss;
-        oss << filepath << " failed to compile.\n";
-        ERROR_AND_DIE(oss.str().c_str());
+        auto s = filepath.string() + " failed to compile.\n";
+        ERROR_AND_DIE(s.c_str());
     }
     RegisterShaderProgram(filepath.string(), std::move(sp));
 }
@@ -3251,9 +3235,7 @@ void Renderer::CreateAndRegisterShaderProgramFromHlslFile(std::filesystem::path 
 void Renderer::RegisterShaderProgramsFromFolder(std::filesystem::path folderpath, const std::string& entrypoint, const PipelineStage& target, bool recursive /*= false*/) noexcept {
     namespace FS = std::filesystem;
     if(!FS::exists(folderpath)) {
-        std::ostringstream ss{};
-        ss << "Attempting to Register Shader Programs from unknown path: " << FS::absolute(folderpath) << std::endl;
-        DebuggerPrintf(ss.str().c_str());
+        DebuggerPrintf("Attempting to Register Shader Programs from unknown path: %s\n", FS::absolute(folderpath).string().c_str());
         return;
     }
     folderpath = FS::canonical(folderpath);
@@ -3337,9 +3319,7 @@ Shader* Renderer::GetShader(const std::string& nameOrFile) noexcept {
 void Renderer::RegisterShadersFromFolder(std::filesystem::path folderpath, bool recursive /*= false*/) noexcept {
     namespace FS = std::filesystem;
     if(!FS::exists(folderpath)) {
-        std::ostringstream ss{};
-        ss << "Attempting to Register Shaders from unknown path: " << FS::absolute(folderpath) << std::endl;
-        DebuggerPrintf(ss.str().c_str());
+        DebuggerPrintf("Attempting to Register Shaders from unknown path: %s\n", FS::absolute(folderpath).string().c_str());
         return;
     }
     folderpath = FS::canonical(folderpath);
@@ -3836,9 +3816,7 @@ Texture* Renderer::CreateOrGetTexture(const std::filesystem::path& filepath, con
 void Renderer::RegisterTexturesFromFolder(std::filesystem::path folderpath, bool recursive /*= false*/) noexcept {
     namespace FS = std::filesystem;
     if(!FS::exists(folderpath)) {
-        std::ostringstream ss{};
-        ss << "Attempting to Register Textures from unknown path: " << FS::absolute(folderpath) << std::endl;
-        DebuggerPrintf(ss.str().c_str());
+        DebuggerPrintf("Attempting to Register Textures from unknown path: %s\n", FS::absolute(folderpath).string().c_str());
         return;
     }
     folderpath = FS::canonical(folderpath);

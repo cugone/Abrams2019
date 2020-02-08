@@ -23,9 +23,7 @@ Material::Material(Renderer& renderer) noexcept
     _textures[5] = _renderer.GetTexture("__emissive");
 
     std::size_t count = _renderer.GetMaterialCount();
-    std::ostringstream ss;
-    ss << '_' << count;
-    _name += ss.str();
+    _name += "_" + std::to_string(count);
 }
 
 Material::Material(Renderer& renderer, const XMLElement& element) noexcept
@@ -40,9 +38,7 @@ Material::Material(Renderer& renderer, const XMLElement& element) noexcept
     _textures[5] = _renderer.GetTexture("__emissive");
 
     std::size_t count = _renderer.GetMaterialCount();
-    std::ostringstream ss;
-    ss << '_' << count;
-    _name += ss.str();
+    _name += "_" + std::to_string(count);
 
     LoadFromXml(element);
 }
@@ -76,17 +72,12 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
         if(auto shader = _renderer.GetShader(p.string())) {
             _shader = shader;
         } else {
-            std::ostringstream ss;
-            ss << "Shader: " << p.string() << "\n referenced in Material file \"" << _name << "\" did not already exist. Attempting to create from source...";
-            DebuggerPrintf(ss.str().c_str());
-            ss.str("");
+            DebuggerPrintf("Shader: %s\n referenced in Material file \"%s\" did not already exist. Attempting to create from source...", p.string().c_str(), _name.c_str());
             if(!_renderer.RegisterShader(p.string())) {
-                ss << "failed.\n";
-                DebuggerPrintf(ss.str().c_str());
+                DebuggerPrintf("failed.\n");
                 return false;
             }
-            ss << "done.\n";
-            DebuggerPrintf(ss.str().c_str());
+            DebuggerPrintf("done.\n");
             _shader = _renderer.GetShader(p.string());
         }
     }
@@ -123,12 +114,9 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
                 std::error_code ec{};
                 p = FS::canonical(p, ec);
                 if(ec) {
-                    std::ostringstream ss;
-                    ss << "Diffuse texture referenced in Material file \"" << _name << "\" could not be found.";
-                    ss << "The filesystem returned an error: " << ec.message() << '\n';
                     bad_path = true;
                     _textures[0] = invalid_tex;
-                    DebuggerPrintf(ss.str().c_str());
+                    DebuggerPrintf("Diffuse texture referenced in Material file \"%s\" could not be found. The filesystem returned an error: %s\n", _name.c_str(), ec.message().c_str());
                 }
             }
             if(!bad_path) {
@@ -154,12 +142,9 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
                 std::error_code ec{};
                 p = FS::canonical(p, ec);
                 if(ec) {
-                    std::ostringstream ss;
-                    ss << "Normal texture referenced in Material file \"" << _name << "\" could not be found.";
-                    ss << "The filesystem returned an error: " << ec.message() << '\n';
                     bad_path = true;
                     _textures[1] = invalid_tex;
-                    DebuggerPrintf(ss.str().c_str());
+                    DebuggerPrintf("Normal texture referenced in Material file \"%s\" could not be found. The filesystem returned an error: %s\n", _name.c_str(), ec.message().c_str());
                 }
             }
             if(!bad_path) {
@@ -185,12 +170,9 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
                 std::error_code ec{};
                 p = FS::canonical(p, ec);
                 if(ec) {
-                    std::ostringstream ss;
-                    ss << "Displacement texture referenced in Material file \"" << _name << "\" could not be found.";
-                    ss << "The filesystem returned an error: " << ec.message() << '\n';
-                    _textures[2] = invalid_tex;
                     bad_path = true;
-                    DebuggerPrintf(ss.str().c_str());
+                    _textures[2] = invalid_tex;
+                    DebuggerPrintf("Displacement texture referenced in Material file \"%s\" could not be found. The filesystem returned an error: %s\n", _name.c_str(), ec.message().c_str());
                 }
             }
             if(!bad_path) {
@@ -216,12 +198,9 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
                 std::error_code ec{};
                 p = FS::canonical(p, ec);
                 if(ec) {
-                    std::ostringstream ss;
-                    ss << "Specular texture referenced in Material file \"" << _name << "\" could not be found.";
-                    ss << "The filesystem returned an error: " << ec.message() << '\n';
-                    _textures[3] = invalid_tex;
                     bad_path = true;
-                    DebuggerPrintf(ss.str().c_str());
+                    _textures[3] = invalid_tex;
+                    DebuggerPrintf("Specular texture referenced in Material file \"%s\" could not be found. The filesystem returned an error: %s\n", _name.c_str(), ec.message().c_str());
                 }
             }
             if(!bad_path) {
@@ -247,12 +226,9 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
                 std::error_code ec{};
                 p = FS::canonical(p, ec);
                 if(ec) {
-                    std::ostringstream ss;
-                    ss << "Occlusion texture referenced in Material file \"" << _name << "\" could not be found.";
-                    ss << "The filesystem returned an error: " << ec.message() << '\n';
-                    _textures[4] = invalid_tex;
                     bad_path = true;
-                    DebuggerPrintf(ss.str().c_str());
+                    _textures[4] = invalid_tex;
+                    DebuggerPrintf("Occlusion texture referenced in Material file \"%s\" could not be found. The filesystem returned an error: %s\n", _name.c_str(), ec.message().c_str());
                 }
             }
             if(!bad_path) {
@@ -278,12 +254,9 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
                 std::error_code ec{};
                 p = FS::canonical(p, ec);
                 if(ec) {
-                    std::ostringstream ss;
-                    ss << "Emissive texture referenced in Material file \"" << _name << "\" could not be found.";
-                    ss << "The filesystem returned an error: " << ec.message() << '\n';
-                    _textures[5] = invalid_tex;
                     bad_path = true;
-                    DebuggerPrintf(ss.str().c_str());
+                    _textures[5] = invalid_tex;
+                    DebuggerPrintf("Emissive texture referenced in Material file \"%s\" could not be found. The filesystem returned an error: %s\n", _name.c_str(), ec.message().c_str());
                 }
             }
             if(!bad_path) {
@@ -322,12 +295,9 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
                 std::error_code ec{};
                 p = FS::canonical(p, ec);
                 if(ec) {
-                    std::ostringstream ss;
-                    ss << "Custom texture at index " << index << " referenced in Material file \"" << _name << "\" could not be found.";
-                    ss << "The filesystem returned an error: " << ec.message() << '\n';
                     bad_path = true;
                     _textures[index] = invalid_tex;
-                    DebuggerPrintf(ss.str().c_str());
+                    DebuggerPrintf("Custom texture at index %lu referenced in Material file \"%s\" could not be found. The filesystem returned an error: %s\n", index, _name.c_str(), ec.message().c_str());
                 }
             }
             if(!bad_path) {

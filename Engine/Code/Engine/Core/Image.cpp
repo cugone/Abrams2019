@@ -19,9 +19,9 @@ Image::Image(std::filesystem::path filepath) noexcept
 
     namespace FS = std::filesystem;
     if(!FS::exists(filepath)) {
-        std::ostringstream ss;
-        ss << "Failed to load image. Could not find file: " << filepath << ".\n";
-        ERROR_AND_DIE(ss.str().c_str());
+        auto ss = std::string{"Failed to load image. Could not find file: "};
+        ss += filepath.string() + ".\n";
+        ERROR_AND_DIE(ss.c_str());
     }
     filepath = FS::canonical(filepath);
     filepath.make_preferred();
@@ -52,10 +52,9 @@ Image::Image(std::filesystem::path filepath) noexcept
             stbi_image_free(texel_bytes);
         }
     } else {
-        std::ostringstream ss;
-        ss << "Failed to load image. " << filepath << " is not a supported image type.";
-        DebuggerPrintf(ss.str().c_str());
-        GUARANTEE_RECOVERABLE(!m_texelBytes.empty(), ss.str());
+        auto ss = std::string{"Failed to load image. "};
+        ss += filepath.string() + " is not a supported image type.";
+        GUARANTEE_RECOVERABLE(!m_texelBytes.empty(), ss);
     }
 }
 Image::Image(unsigned int width, unsigned int height) noexcept
@@ -186,9 +185,7 @@ const std::vector<int>& Image::GetDelaysIfGif() const noexcept {
 
 bool Image::Export(std::filesystem::path filepath, int bytes_per_pixel /*= 4*/, int jpg_quality /*= 100*/) noexcept {
     if(m_texelBytes.empty()) {
-        std::ostringstream ss;
-        ss << "Attempting to write empty Image: " << filepath;
-        DebuggerPrintf(ss.str().c_str());
+        DebuggerPrintf("Attempting to write empty Image: %s", filepath.string().c_str());
         return false;
     }
     namespace FS = std::filesystem;
@@ -216,19 +213,16 @@ bool Image::Export(std::filesystem::path filepath, int bytes_per_pixel /*= 4*/, 
         std::scoped_lock<std::mutex> lock(_cs);
         result = stbi_write_jpg(p_str.c_str(), w, h, bbp, m_texelBytes.data(), quality);
     } else if(extension == ".hdr") {
-        std::ostringstream ss;
-        ss << "Attempting to export " << filepath << " to an unsupported type: " << extension;
-        ss << "\nHigh Dynamic Range output is not supported.";
-        ERROR_RECOVERABLE(ss.str().c_str());
+        auto ss = std::string{"Attempting to export "};
+        ss += filepath.string() + " to an unsupported type: " + extension + "\nHigh Dynamic Range output is not supported.";
+        ERROR_RECOVERABLE(ss.c_str());
     }
     return 0 != result;
 }
 
 Image Image::CreateImageFromFileBuffer(const std::vector<unsigned char>& data) noexcept {
     if(data.empty()) {
-        std::ostringstream ss;
-        ss << "Attempting to create image from empty data buffer.\n";
-        DebuggerPrintf(ss.str().c_str());
+        DebuggerPrintf("Attempting to create image from empty data buffer.\n");
         return{};
     }
     int dim_x = 0;
@@ -239,9 +233,7 @@ Image Image::CreateImageFromFileBuffer(const std::vector<unsigned char>& data) n
         int req_comp = 4;
         auto* bytes = stbi_load_from_memory(data.data(), static_cast<int>(data.size()), &dim_x, &dim_y, &comp, req_comp);
         if(!bytes) {
-            std::ostringstream ss;
-            ss << "Data does not represent an image.\n";
-            DebuggerPrintf(ss.str().c_str());
+            DebuggerPrintf("Data does not represent an image.\n");
             return{};
         }
         std::size_t size = dim_x * dim_y * comp;

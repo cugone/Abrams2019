@@ -91,9 +91,7 @@ void RHIOutput::Present(bool vsync) noexcept {
     unsigned int present_flags = use_no_sync_interval ? DXGI_PRESENT_ALLOW_TEARING : 0;
     auto hr_present = _parent_device.GetDxSwapChain()->Present1(sync_interval, present_flags, &present_params);
     #ifdef RENDER_DEBUG
-    std::ostringstream ss;
-    ss << "Present call failed: " << StringUtils::FormatWindowsMessage(hr_present);
-    const auto err_str = ss.str();
+    const auto err_str = std::string{"Present call failed: "} + StringUtils::FormatWindowsMessage(hr_present);
     GUARANTEE_OR_DIE(SUCCEEDED(hr_present), err_str.c_str());
     #else
     GUARANTEE_OR_DIE(SUCCEEDED(hr_present), "Present call failed.");

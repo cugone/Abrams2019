@@ -368,24 +368,11 @@ bool IsSafeWritePath(const std::filesystem::path& p) noexcept {
         }
         return false;
     } catch(const std::filesystem::filesystem_error& e) {
-        std::ostringstream ss{};
-        ss << "\nFilesystem Error:"
-            << "\nWhat: " << e.what()
-            << "\nCode: " << e.code()
-            << "\nPath1: " << e.path1()
-            << "\nPath2: " << e.path2()
-            << '\n';
-        ss.flush();
-        DebuggerPrintf(ss.str().c_str());
+        DebuggerPrintf("\nFilesystem Error:\nWhat: %s\nCode: %i\nPath1: %s\nPath2: %s\n", e.what(), e.code().value(), e.path1().string().c_str(), e.path2().string().c_str());
         return false;
     }
     catch (...) {
-        std::ostringstream ss{};
-        ss << "\nUnspecified error trying to determine if path:\n"
-            << p << '\n'
-            << " is a safe write path.";
-        ss.flush();
-        DebuggerPrintf(ss.str().c_str());
+        DebuggerPrintf("\nUnspecified error trying to determine if path:\n%s\n is a safe write path.", p.string().c_str());
         return false;
     }
 }
@@ -410,16 +397,7 @@ bool IsSafeReadPath(const std::filesystem::path& p) noexcept {
         const auto safe = is_in_working_dir || is_in_gamedata_dir || is_in_enginedata_dir || is_next_to_exe || is_known_OS_dir;
         return safe;
     } catch(const std::filesystem::filesystem_error& e) {
-        std::ostringstream ss{};
-        ss << "\nFilesystem Error:"
-            << "\nWhat: " << e.what()
-            << "\nCode: " << e.code()
-            << "\nPath1: " << e.path1()
-            << "\nPath2: " << e.path2()
-            << '\n';
-        ss.flush();
-        const auto str = ss.str();
-        DebuggerPrintf(str.c_str());
+        DebuggerPrintf("\nFilesystem Error:\nWhat: %s\nCode: %i\nPath1: %s\nPath2: %s\n", e.what(), e.code().value(), e.path1().string().c_str(), e.path2().string().c_str());
         return false;
     }
 

@@ -776,14 +776,12 @@ void Console::DrawOutput(const Vector2& view_half_extents) const noexcept {
     std::vector<Vertex3D> vbo{};
     std::vector<unsigned int> ibo{};
     auto font = _renderer.GetFont("System32");
-    std::ostringstream ss;
     {
         auto draw_x = -view_half_extents.x;
         auto draw_y = view_half_extents.y;
         auto draw_loc = Vector2(draw_x * 0.99f, draw_y * 0.99f);
         for(auto iter = _output_buffer.rbegin(); iter != _output_buffer.rend(); ++iter) {
             draw_loc.y -= font->CalculateTextHeight(iter->str);
-            ss << '\n' << iter->str;
             _renderer.AppendMultiLineTextBuffer(font, iter->str, draw_loc, iter->color, vbo, ibo);
         }
     }

@@ -317,11 +317,7 @@ std::vector<std::unique_ptr<ConstantBuffer>> RHIDevice::CreateConstantBuffersFro
 
 void RHIDevice::ResetSwapChainForHWnd() const noexcept {
     auto hr = _dxgi_swapchain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, _rhi_factory.QueryForAllowTearingSupport(*this) ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0);
-    if(FAILED(hr)) {
-        std::ostringstream ss;
-        ss << StringUtils::FormatWindowsMessage(hr);
-        ERROR_AND_DIE(ss.str().c_str());
-    }
+    GUARANTEE_OR_DIE(SUCCEEDED(hr), StringUtils::FormatWindowsMessage(hr).c_str());
 }
 
 std::vector<std::unique_ptr<ConstantBuffer>> RHIDevice::CreateConstantBuffersUsingReflection(ID3D11ShaderReflection& cbufferReflection) const noexcept {
@@ -515,9 +511,8 @@ std::unique_ptr<ShaderProgram> RHIDevice::CreateShaderProgramFromHlslFile(std::f
             if(sp) {
                 return sp;
             }
-            std::ostringstream ss;
-            ss << "Shader program " << filepath << " failed to compile.\nSee Output window for errors.\nPress Retry to recompile.";
-            retry_requested = IDRETRY == ::MessageBoxA(nullptr, ss.str().c_str(), "ShaderProgram Compiler Error", MB_ICONERROR | MB_RETRYCANCEL);
+            auto ss = std::string{"Shader program "} + filepath.string() + " failed to compile.\nSee Output window for errors.\nPress Retry to recompile.";
+            retry_requested = IDRETRY == ::MessageBoxA(nullptr, ss.c_str(), "ShaderProgram Compiler Error", MB_ICONERROR | MB_RETRYCANCEL);
         }
     } while(retry_requested);
     ERROR_AND_DIE("Unrecoverable error. Cannot continue with malformed shader file.");

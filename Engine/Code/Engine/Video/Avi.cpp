@@ -107,37 +107,21 @@ namespace FileUtils {
                     }
                     case AviChunkID::JUNK:
                     {
-                        {
-                            std::ostringstream err_ss{};
-                            err_ss << "JUNK AVI Chunk.";
-                            err_ss << " Length: " << cur_riff_header.length << '\n';
-                            DebuggerPrintf(err_ss.str().c_str());
-                        }
+                        DebuggerPrintf("JUNK AVI Chunk. Length: %u\n", cur_riff_header.length);
                         ss.seekp(cur_riff_header.length, std::ios_base::cur);
                         ss.seekg(cur_riff_header.length, std::ios_base::cur);
                         break;
                     }
                     case AviChunkID::INFO:
                     {
-                        {
-                            std::ostringstream err_ss{};
-                            err_ss << "INFO AVI Chunk.";
-                            err_ss << " Length: " << cur_riff_header.length << '\n';
-                            DebuggerPrintf(err_ss.str().c_str());
-                        }
+                        DebuggerPrintf("INFO AVI Chunk. Length: %u\n", cur_riff_header.length);
                         ss.seekp(cur_riff_header.length, std::ios_base::cur);
                         ss.seekg(cur_riff_header.length, std::ios_base::cur);
                         break;
                     }
                     default:
                     {
-                        {
-                            std::ostringstream err_ss{};
-                            err_ss << "Unknown AVI Chunk ID: ";
-                            err_ss << StringUtils::FourCCToString(chunk->fourcc);
-                            err_ss << " Length: " << cur_riff_header.length << '\n';
-                            DebuggerPrintf(err_ss.str().c_str(), "%s");
-                        }
+                        DebuggerPrintf("Unknown AVI Chunk ID: %s Length: %u\n", StringUtils::FourCCToString(chunk->fourcc).c_str(), cur_riff_header.length);
                         ss.seekp(cur_riff_header.length, std::ios_base::cur);
                         ss.seekg(cur_riff_header.length, std::ios_base::cur);
                         break;

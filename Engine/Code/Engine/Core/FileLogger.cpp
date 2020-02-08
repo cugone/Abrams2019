@@ -153,20 +153,20 @@ void FileLogger::Initialize(const std::string& log_name) noexcept {
     _old_cout = std::cout.rdbuf(_stream.rdbuf());
     _worker = std::thread(&FileLogger::Log_worker, this);
     ThreadUtils::SetThreadDescription(_worker, L"FileLogger");
-    std::ostringstream ss;
-    ss << "Initializing Logger: " << _current_log_path << "...";
-    LogLine(ss.str().c_str());
+    auto ss = std::string{"Initializing Logger: "};
+    ss += _current_log_path.string() + "...";
+    LogLine(ss.c_str());
 }
 
 void FileLogger::Shutdown() noexcept {
     if(IsRunning()) {
         {
-            std::ostringstream ss;
+            auto ss = std::string{};
             if(Memory::is_enabled()) {
-                ss << Memory::status() << '\n';
+                ss += Memory::status() + "\n";
             }
-            ss << "Shutting down Logger: " << _current_log_path << "...";
-            LogLine(ss.str().c_str());
+            ss += std::string{"Shutting down Logger: "} + _current_log_path.string() + "...";
+            LogLine(ss);
         }
         SetIsRunning(false);
         _signal.notify_all();

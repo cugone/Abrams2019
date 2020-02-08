@@ -26,18 +26,14 @@ Shader::Shader(Renderer& renderer, ShaderProgram* shaderProgram /*= nullptr*/, D
 , _sampler(sampler)
 {
     std::size_t count = renderer.GetShaderCount();
-    std::ostringstream ss;
-    ss << '_' << count;
-    _name += ss.str();
+    _name += "_" + std::to_string(count);
 }
 
 Shader::Shader(Renderer& renderer, const XMLElement& element) noexcept
     : _renderer(renderer)
 {
     std::size_t count = renderer.GetShaderCount();
-    std::ostringstream ss;
-    ss << '_' << count;
-    _name += ss.str();
+    _name += "_" + std::to_string(count);
 
     LoadFromXml(element);
 
@@ -104,16 +100,14 @@ bool Shader::LoadFromXml(const XMLElement& element) noexcept {
     p.make_preferred();
     if(nullptr == (_shader_program = _renderer.GetShaderProgram(p.string()))) {
         if(StringUtils::StartsWith(p.string(), "__")) {
-            std::ostringstream ss;
-            ss << "Intrinsic ShaderProgram referenced in Shader file \"" << _name << "\" does not already exist.";
-            ERROR_AND_DIE(ss.str().c_str());
+            auto ss = std::string{"Intrinsic ShaderProgram referenced in Shader file \""} + _name + "\" does not already exist.";
+            ERROR_AND_DIE(ss.c_str());
         }
         else {
             const auto& children = DataUtils::GetChildElementNames(*xml_SP);
             if(std::find(std::begin(children), std::end(children), "pipelinestages") == std::end(children)) {
-                std::ostringstream ss;
-                ss << "User-defined ShaderProgram referenced in Shader file \"" << _name << "\" must declare pipelinestages in use.";
-                ERROR_AND_DIE(ss.str().c_str());
+                auto ss = std::string{"User-defined ShaderProgram referenced in Shader file \""} +_name + "\" must declare pipelinestages in use.";
+                ERROR_AND_DIE(ss.c_str());
             }
         }
         bool is_hlsl = p.has_extension() && StringUtils::ToLowerCase(p.extension().string()) == ".hlsl";
@@ -242,9 +236,8 @@ void Shader::ValidatePipelineStages(const PipelineStage& targets) noexcept {
         result = valid_cs || valid_gs || valid_vsps || valid_hsds;
     }
     if(!result) {
-        std::ostringstream ss;
-        ss << "Error in shader file: \"" << _name << "\": Pipeline stages must include at least compute stage, geometry stage, or both vertex and pixel stages, or both hull and domain stages.";
-        ERROR_AND_DIE(ss.str().c_str());
+        auto ss = std::string{"Error in shader file: \""} + _name + "\": Pipeline stages must include at least compute stage, geometry stage, or both vertex and pixel stages, or both hull and domain stages.";
+        ERROR_AND_DIE(ss.c_str());
     }
 }
 

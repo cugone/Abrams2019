@@ -192,9 +192,8 @@ void Element::SetPivot(const PivotPosition& pivotPosition) {
         SetPivot(Vector2(0.0f, 0.5f));
         break;
     default:
-        std::ostringstream ss;
-        ss << __FUNCTION__ << ": Unhandled pivot mode.";
-        ERROR_AND_DIE(ss.str().c_str());
+        auto ss = std::string{__FUNCTION__} + ": Unhandled pivot mode.";
+        ERROR_AND_DIE(ss.c_str());
         break;
     }
 }
@@ -289,9 +288,7 @@ void Element::DebugRenderOrder(Renderer& renderer) const {
     const auto font = renderer.GetFont("System32");
     const auto text_height_matrix = Matrix4::CreateTranslationMatrix(Vector2(-16.0f, 32.0f));
     const auto inv_half_extents_matrix = Matrix4::CreateTranslationMatrix(inv_half_extents);
-    std::ostringstream ss;
-    ss << _order;
-    const auto text = ss.str();
+    auto text = std::to_string(_order);
     renderer.SetModelMatrix(Matrix4::MakeRT(Matrix4::MakeSRT(text_height_matrix, inv_half_extents_matrix, inv_scale_matrix), world_transform));
     renderer.SetMaterial(font->GetMaterial());
     renderer.DrawTextLine(font, text);
@@ -364,9 +361,8 @@ void Element::CalcBounds() noexcept {
         break;
     default:
     {
-        std::ostringstream ss;
-        ss << __FUNCTION__ << ": Unhandled positioning mode.";
-        ERROR_AND_DIE(ss.str().c_str());
+        auto ss = std::string{__FUNCTION__} + ": Unhandled positioning mode.";
+        ERROR_AND_DIE(ss.c_str());
         break;
     }
     }

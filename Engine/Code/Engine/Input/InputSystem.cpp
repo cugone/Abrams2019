@@ -1357,9 +1357,8 @@ InputSystem::~InputSystem() noexcept {
 
 void InputSystem::Initialize() {
     UpdateXboxConnectedState();
-    std::ostringstream ss;
-    ss << _connected_controller_count << " Xbox controllers detected!";
-    _fileLogger->LogLineAndFlush(ss.str());
+    auto ss = std::to_string(_connected_controller_count) + " Xbox controllers detected!";
+    _fileLogger->LogLineAndFlush(ss);
 }
 
 void InputSystem::BeginFrame() {
