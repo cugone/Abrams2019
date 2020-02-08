@@ -82,9 +82,9 @@ namespace DataUtils {
             std::back_inserter(missingRequiredAttributes));
 
         if(!missingRequiredAttributes.empty()) {
-            auto err_ss = std::string{};
+            auto err_ss = std::string{"Attribute validation failed. Missing required attribute(s):"};
             for(auto& c : missingRequiredAttributes) {
-                err_ss += std::string{"Attribute validation failed. Missing required attribute \""} + c + "\"\n";
+                err_ss += '\t' + c + '\n';
             }
             ERROR_AND_DIE(err_ss.c_str());
         }
@@ -96,9 +96,9 @@ namespace DataUtils {
             std::back_inserter(missingRequiredChildren));
 
         if(!missingRequiredChildren.empty()) {
-            auto err_ss = std::string{};
+            auto err_ss = std::string{"Child Element validation failed. Missing required child element(s) "};
             for(auto& c : missingRequiredChildren) {
-                err_ss += std::string{"Child Element validation failed. Missing required child \""} + c + "\"\n";
+                err_ss += '\t' + c + '\n';
             }
             ERROR_AND_DIE(err_ss.c_str());
         }
