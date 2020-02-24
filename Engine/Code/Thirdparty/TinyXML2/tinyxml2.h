@@ -24,6 +24,9 @@ distribution.
 #ifndef TINYXML2_INCLUDED
 #define TINYXML2_INCLUDED
 
+#pragma warning(push)
+#pragma warning(disable : 26812 )
+
 #if defined(ANDROID_NDK) || defined(__BORLANDC__) || defined(__QNXNTO__)
 #   include <ctype.h>
 #   include <limits.h>
@@ -2346,5 +2349,7 @@ namespace tinyxml2
 #if defined(_MSC_VER)
 #   pragma warning(pop)
 #endif
+
+#pragma warning(pop)
 
 #endif // TINYXML2_INCLUDED

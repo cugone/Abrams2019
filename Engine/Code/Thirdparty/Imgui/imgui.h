@@ -26,6 +26,10 @@ Index of this file:
 
 #pragma once
 
+#pragma warning(push)
+#pragma warning(disable : 26495 )
+
+
 // Configuration file (edit imconfig.h or define IMGUI_USER_CONFIG to your own filename)
 #ifdef IMGUI_USER_CONFIG
 #include IMGUI_USER_CONFIG
@@ -2141,3 +2145,5 @@ struct ImFont
 #ifdef IMGUI_INCLUDE_IMGUI_USER_H
 #include "imgui_user.h"
 #endif
+
+#pragma warning(pop)

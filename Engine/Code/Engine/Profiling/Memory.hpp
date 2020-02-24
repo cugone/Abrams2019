@@ -196,9 +196,14 @@ private:
 
 #ifdef TRACK_MEMORY
 
+#pragma warning(push)
+#pragma warning(disable : 28251 )
+
 void* operator new(std::size_t size);
 void* operator new[](std::size_t size);
 void operator delete(void* ptr, std::size_t size) noexcept;
 void operator delete[](void* ptr, std::size_t size) noexcept;
+
+#pragma warning(pop)
 
 #endif
