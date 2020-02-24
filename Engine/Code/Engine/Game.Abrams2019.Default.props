@@ -12,19 +12,7 @@
       <Message>Copying $(TargetFileName) to Run_$(PlatformName)...</Message>
     </PostBuildEvent>
     <ClCompile>
-      <WarningLevel>Level4</WarningLevel>
-    </ClCompile>
-    <ClCompile>
-      <TreatWarningAsError>true</TreatWarningAsError>
-    </ClCompile>
-    <ClCompile>
-      <SDLCheck>true</SDLCheck>
-    </ClCompile>
-    <ClCompile>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir)Code;$(SolutionDir)..\..\Abrams2019\Engine\Code;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
-  <ItemGroup />
 </Project>
