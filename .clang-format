@@ -1,4 +1,5 @@
 Language: Cpp
+AccessModifierOffset: -4
 AlignOperands: true
 AlignTrailingComments: true
 AllowAllConstructorInitializersOnNextLine: false
