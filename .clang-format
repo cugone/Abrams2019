@@ -13,7 +13,6 @@ AlwaysBreakBeforeMultilineStrings: true
 AlwaysBreakTemplateDeclarations: Yes
 BinPackArguments: true
 BinPackParameters: false
-#BreakBeforeBraces: Allman
 BreakBeforeBraces: Attach
 BreakBeforeBinaryOperators: NonAssignment
 BreakBeforeTernaryOperators: true
