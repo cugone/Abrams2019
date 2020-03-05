@@ -2,7 +2,7 @@ Language: Cpp
 AlignOperands: true
 AlignTrailingComments: true
 AllowAllConstructorInitializersOnNextLine: false
-AllowShortBlocksOnASingleLine: Never
+# AllowShortBlocksOnASingleLine: Never
 AllowShortCaseLabelsOnASingleLine: true
 AllowShortFunctionsOnASingleLine: None
 AllowShortIfStatementsOnASingleLine: Never
@@ -47,9 +47,9 @@ IncludeCategories:
     - Regex: '\<[[:alnum:]_]+\.h(pp)?\>'
     - Priority: 1
 
-IndentCaseBlocks: false
+# IndentCaseBlocks: false
 IndentCaseLabels: false
-IndentGotoLabels: false
+# IndentGotoLabels: false
 IndentPPDirectives: BeforeHash
 IndentWidth: 4
 IndentWrappedFunctionNames: false
@@ -69,16 +69,16 @@ SpaceBeforeCtorInitializerColon: true
 SpaceBeforeInheritanceColon: true
 SpaceBeforeParens: Never
 SpaceBeforeRangeBasedForLoopColon: true
-SpaceBeforeSquareBrackets: false
-SpaceInEmptyBlock: false
+# SpaceBeforeSquareBrackets: false
+# SpaceInEmptyBlock: false
 SpaceInEmptyParentheses: false
 SpacesBeforeTrailingComments: 1
 SpacesInAngles: false
 SpacesInCStyleCastParentheses: false
-SpacesInConditionalStatement: false
+# SpacesInConditionalStatement: false
 SpacesInContainerLiterals: false
 SpacesInParentheses: false
 SpacesInSquareBrackets: false
-Standard: C++17
+# Standard: C++17
 TabWidth: 4
 UseTab: Never
