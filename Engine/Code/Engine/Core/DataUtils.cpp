@@ -160,7 +160,10 @@ namespace DataUtils {
     bool HasAttribute(const XMLElement& element, const std::string& name) {
         bool result = false;
         ForEachAttribute(element, [&name, &result](const XMLAttribute& attribute) {
-            if(attribute.Name() == name) result = true;
+            if(attribute.Name() == name) {
+                result = true;
+                return;
+            }
         });
         return result;
     }
