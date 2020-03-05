@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Engine/Core/DataUtils.hpp"
-
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/IntVector2.hpp"
 
@@ -26,6 +25,7 @@ public:
     const IntVector2& GetLayout() const noexcept;
     const Texture* GetTexture() const noexcept;
     Texture* GetTexture() noexcept;
+
 protected:
 private:
     SpriteSheet(Texture* texture, int tilesWide, int tilesHigh) noexcept;

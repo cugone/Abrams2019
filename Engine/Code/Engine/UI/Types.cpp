@@ -67,4 +67,4 @@ void Ratio::SetValue(const Vector2& newValue) {
     value = clamped_newValue;
 }
 
-} //End UI
+} // namespace UI

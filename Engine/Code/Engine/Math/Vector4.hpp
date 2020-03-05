@@ -8,7 +8,6 @@ class IntVector4;
 
 class Vector4 {
 public:
-
     static const Vector4 ZERO;
     static const Vector4 ONE;
     static const Vector4 ZERO_XYZ_ONE_W;
@@ -100,5 +99,5 @@ private:
 };
 
 namespace StringUtils {
-    std::string to_string(const Vector4& v) noexcept;
+std::string to_string(const Vector4& v) noexcept;
 }

@@ -9,7 +9,6 @@ class Vector3;
 
 class IntVector3 {
 public:
-
     static const IntVector3 ZERO;
     static const IntVector3 ONE;
     static const IntVector3 X_AXIS;
@@ -22,7 +21,6 @@ public:
     static const IntVector3 ZX_AXIS;
     static const IntVector3 ZY_AXIS;
     static const IntVector3 XYZ_AXIS;
-
 
     IntVector3() = default;
     ~IntVector3() = default;
@@ -38,7 +36,6 @@ public:
 
     IntVector3& operator=(const IntVector3& rhs) = default;
     IntVector3& operator=(IntVector3&& rhs) = default;
-
 
     IntVector3 operator+(const IntVector3& rhs) const noexcept;
     IntVector3& operator+=(const IntVector3& rhs) noexcept;
@@ -81,5 +78,4 @@ public:
 
 protected:
 private:
-
 };

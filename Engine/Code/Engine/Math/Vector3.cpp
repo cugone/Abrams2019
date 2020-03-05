@@ -1,16 +1,14 @@
 #include "Engine/Math/Vector3.hpp"
 
-#include <cmath>
-#include <sstream>
-
 #include "Engine/Core/StringUtils.hpp"
-
-#include "Engine/Math/MathUtils.hpp"
-
 #include "Engine/Math/IntVector3.hpp"
+#include "Engine/Math/MathUtils.hpp"
+#include "Engine/Math/Quaternion.hpp"
 #include "Engine/Math/Vector2.hpp"
 #include "Engine/Math/Vector4.hpp"
-#include "Engine/Math/Quaternion.hpp"
+
+#include <cmath>
+#include <sstream>
 
 const Vector3 Vector3::ZERO(0.0f, 0.0f, 0.0f);
 const Vector3 Vector3::X_AXIS(1.0f, 0.0f, 0.0f);
@@ -24,45 +22,42 @@ const Vector3 Vector3::ONE(1.0f, 1.0f, 1.0f);
 Vector3::Vector3(float initialX, float initialY, float initialZ) noexcept
 : x(initialX)
 , y(initialY)
-, z(initialZ)
-{
+, z(initialZ) {
     /* DO NOTHING */
 }
 
 Vector3::Vector3(const Vector2& xy, float initialZ) noexcept
-    : x(xy.x)
-    , y(xy.y)
-    , z(initialZ)
-{
+: x(xy.x)
+, y(xy.y)
+, z(initialZ) {
     /* DO NOTHING */
 }
 
 Vector3::Vector3(const Vector2& vec2) noexcept
-    : x(vec2.x)
-    , y(vec2.y)
-    , z(0.0f)
-{
+: x(vec2.x)
+, y(vec2.y)
+, z(0.0f) {
     /* DO NOTHING */
 }
 
 Vector3::Vector3(const Vector4& vec4) noexcept
-    : x(vec4.x)
-    , y(vec4.y)
-    , z(vec4.z) {
+: x(vec4.x)
+, y(vec4.y)
+, z(vec4.z) {
     /* DO NOTHING */
 }
 
 Vector3::Vector3(const Quaternion& q) noexcept
-    : x(q.axis.x)
-    , y(q.axis.y)
-    , z(q.axis.z) {
+: x(q.axis.x)
+, y(q.axis.y)
+, z(q.axis.z) {
     Normalize();
 }
 
 Vector3::Vector3(const std::string& value) noexcept
-    : x(0.0f)
-    , y(0.0f)
-    , z(0.0f) {
+: x(0.0f)
+, y(0.0f)
+, z(0.0f) {
     if(value[0] == '[') {
         if(value.back() == ']') {
             std::string contents_str = value.substr(1, value.size() - 1);
@@ -81,9 +76,9 @@ Vector3::Vector3(const std::string& value) noexcept
 }
 
 Vector3::Vector3(const IntVector3& intvec3) noexcept
-    : x(static_cast<float>(intvec3.x))
-    , y(static_cast<float>(intvec3.y))
-    , z(static_cast<float>(intvec3.z)) {
+: x(static_cast<float>(intvec3.x))
+, y(static_cast<float>(intvec3.y))
+, z(static_cast<float>(intvec3.z)) {
     /* DO NOTHING */
 }
 
@@ -204,13 +199,12 @@ void Vector3::GetXYZ(float& outX, float& outY, float& outZ) const noexcept {
     outZ = z;
 }
 
-
 Vector3 Vector3::GetXYZ() const noexcept {
-    return Vector3{ x, y, z };
+    return Vector3{x, y, z};
 }
 
 Vector2 Vector3::GetXY() const noexcept {
-    return Vector2{ x, y };
+    return Vector2{x, y};
 }
 
 float* Vector3::GetAsFloatArray() noexcept {
@@ -257,7 +251,6 @@ void swap(Vector3& a, Vector3& b) noexcept {
     std::swap(a.y, b.y);
     std::swap(a.z, b.z);
 }
-
 
 std::string StringUtils::to_string(const Vector3& v) noexcept {
     std::ostringstream ss;

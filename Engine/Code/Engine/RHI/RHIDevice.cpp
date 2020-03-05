@@ -1,20 +1,15 @@
 #include "Engine/RHI/RHIDevice.hpp"
 
 #include "Engine/Core/BuildConfig.hpp"
-
 #include "Engine/Core/EngineBase.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/FileLogger.hpp"
 #include "Engine/Core/FileUtils.hpp"
 #include "Engine/Core/StringUtils.hpp"
-
 #include "Engine/Math/MathUtils.hpp"
-
-#include "Engine/RHI/RHIOutput.hpp"
 #include "Engine/RHI/RHIDeviceContext.hpp"
 #include "Engine/RHI/RHIFactory.hpp"
-
-#include "Engine/Renderer/Renderer.hpp"
+#include "Engine/RHI/RHIOutput.hpp"
 #include "Engine/Renderer/DepthStencilState.hpp"
 #include "Engine/Renderer/InputLayout.hpp"
 #include "Engine/Renderer/Renderer.hpp"
@@ -24,10 +19,8 @@
 #include <array>
 #include <sstream>
 
-
 RHIDevice::RHIDevice(Renderer& parent_renderer) noexcept
-    : _parent_renderer(parent_renderer)
-{
+: _parent_renderer(parent_renderer) {
     /* DO NOTHING */
 }
 
@@ -73,7 +66,6 @@ std::unique_ptr<ConstantBuffer> RHIDevice::CreateConstantBuffer(const ConstantBu
 }
 
 std::pair<std::unique_ptr<RHIOutput>, std::unique_ptr<RHIDeviceContext>> RHIDevice::CreateOutputAndContextFromWindow(std::unique_ptr<Window> window) noexcept {
-
     window->Open();
 
     Microsoft::WRL::ComPtr<ID3D11DeviceContext> context{};
@@ -99,8 +91,8 @@ std::pair<std::unique_ptr<RHIOutput>, std::unique_ptr<RHIDeviceContext>> RHIDevi
     SetupDebuggingInfo();
 
     return std::make_pair(
-        std::move(std::make_unique<RHIOutput>(*this, std::move(window))),
-        std::move(std::make_unique<RHIDeviceContext>(*this, context)));
+    std::move(std::make_unique<RHIOutput>(*this, std::move(window))),
+    std::move(std::make_unique<RHIDeviceContext>(*this, context)));
 }
 
 DeviceInfo RHIDevice::CreateDeviceFromFirstAdapter(const std::vector<AdapterInfo>& adapters) noexcept {
@@ -131,16 +123,7 @@ DeviceInfo RHIDevice::CreateDeviceFromFirstAdapter(const std::vector<AdapterInfo
     const auto& first_adapter = first_adapter_info->adapter;
     bool has_adapter = first_adapter != nullptr;
     Microsoft::WRL::ComPtr<ID3D11Device> temp_device{};
-    auto hr_device = ::D3D11CreateDevice(has_adapter ? first_adapter.Get() : nullptr
-        , has_adapter ? D3D_DRIVER_TYPE_UNKNOWN : D3D_DRIVER_TYPE_HARDWARE
-        , nullptr
-        , device_flags
-        , feature_levels.data()
-        , static_cast<unsigned int>(feature_levels.size())
-        , D3D11_SDK_VERSION
-        , temp_device.GetAddressOf()
-        , &info.highest_supported_feature_level
-        , info.dx_context.GetAddressOf());
+    auto hr_device = ::D3D11CreateDevice(has_adapter ? first_adapter.Get() : nullptr, has_adapter ? D3D_DRIVER_TYPE_UNKNOWN : D3D_DRIVER_TYPE_HARDWARE, nullptr, device_flags, feature_levels.data(), static_cast<unsigned int>(feature_levels.size()), D3D11_SDK_VERSION, temp_device.GetAddressOf(), &info.highest_supported_feature_level, info.dx_context.GetAddressOf());
 
     GUARANTEE_OR_DIE(info.highest_supported_feature_level >= D3D_FEATURE_LEVEL_11_0, "Your graphics card does not support at least DirectX 11.0. Please update your drivers or hardware.");
 
@@ -158,7 +141,8 @@ void RHIDevice::OutputAdapterInfo(const std::vector<AdapterInfo>& adapters) cons
     std::ostringstream ss;
     ss << "ADAPTERS\n";
     for(const auto& adapter : adapters) {
-        ss << std::right << std::setw(60) << std::setfill('-') << '\n' << std::setfill(' ');
+        ss << std::right << std::setw(60) << std::setfill('-') << '\n'
+           << std::setfill(' ');
         ss << AdapterInfoToGraphicsCardDesc(adapter) << '\n';
     }
     ss << std::right << std::setw(60) << std::setfill('-') << '\n';
@@ -219,7 +203,7 @@ Microsoft::WRL::ComPtr<IDXGISwapChain4> RHIDevice::RecreateSwapChain(const Windo
 
 std::vector<OutputInfo> RHIDevice::GetOutputsFromAdapter(const AdapterInfo& a) const noexcept {
     if(!a.adapter) {
-        return{};
+        return {};
     }
     std::vector<OutputInfo> outputs{};
     unsigned int i = 0u;
@@ -276,10 +260,10 @@ DisplayDesc RHIDevice::GetDisplayModeMatchingDimensions(const std::vector<Displa
             return desc;
         }
     }
-    return{};
+    return {};
 }
 
-void RHIDevice::SetupDebuggingInfo([[maybe_unused]]bool breakOnWarningSeverityOrLower /*= true*/) noexcept {
+void RHIDevice::SetupDebuggingInfo([[maybe_unused]] bool breakOnWarningSeverityOrLower /*= true*/) noexcept {
 #ifdef RENDER_DEBUG
     Microsoft::WRL::ComPtr<ID3D11Debug> _dx_debug{};
     if(SUCCEEDED(_dx_device.As(&_dx_debug))) {
@@ -292,7 +276,7 @@ void RHIDevice::SetupDebuggingInfo([[maybe_unused]]bool breakOnWarningSeverityOr
             _dx_infoqueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY::D3D11_MESSAGE_SEVERITY_INFO, breakOnWarningSeverityOrLower);
             _dx_infoqueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY::D3D11_MESSAGE_SEVERITY_MESSAGE, breakOnWarningSeverityOrLower);
             std::vector<D3D11_MESSAGE_ID> hidden = {
-                D3D11_MESSAGE_ID_SETPRIVATEDATA_CHANGINGPARAMS,
+            D3D11_MESSAGE_ID_SETPRIVATEDATA_CHANGINGPARAMS,
             };
             D3D11_INFO_QUEUE_FILTER filter{};
             filter.DenyList.NumIDs = static_cast<unsigned int>(hidden.size());
@@ -326,7 +310,7 @@ std::vector<std::unique_ptr<ConstantBuffer>> RHIDevice::CreateConstantBuffersUsi
         return {};
     }
     if(!shader_desc.ConstantBuffers) {
-        return{};
+        return {};
     }
 
     std::vector<std::unique_ptr<ConstantBuffer>> result{};
@@ -354,8 +338,8 @@ std::vector<std::unique_ptr<ConstantBuffer>> RHIDevice::CreateConstantBuffersUsi
             if(buffer_desc.Type != D3D_CBUFFER_TYPE::D3D11_CT_CBUFFER) {
                 continue;
             }
-            std::string buffer_name{ buffer_desc.Name ? buffer_desc.Name : "" };
-            std::string input_name{ input_desc.Name ? input_desc.Name : "" };
+            std::string buffer_name{buffer_desc.Name ? buffer_desc.Name : ""};
+            std::string input_name{input_desc.Name ? input_desc.Name : ""};
             if(buffer_name != input_name) {
                 continue;
             }
@@ -518,7 +502,7 @@ std::unique_ptr<ShaderProgram> RHIDevice::CreateShaderProgramFromHlslFile(std::f
     ERROR_AND_DIE("Unrecoverable error. Cannot continue with malformed shader file.");
 }
 
-ID3DBlob* RHIDevice::CompileShader(const std::string& name, const void*  sourceCode, std::size_t sourceCodeSize, const std::string& entryPoint, const PipelineStage& target) const noexcept {
+ID3DBlob* RHIDevice::CompileShader(const std::string& name, const void* sourceCode, std::size_t sourceCodeSize, const std::string& entryPoint, const PipelineStage& target) const noexcept {
     unsigned int compile_options = 0;
 #ifdef RENDER_DEBUG
     compile_options |= D3DCOMPILE_DEBUG;
@@ -535,41 +519,31 @@ ID3DBlob* RHIDevice::CompileShader(const std::string& name, const void*  sourceC
     ID3DBlob* errors = nullptr;
     std::string target_string = {};
     switch(target) {
-        case PipelineStage::Vs:
-            target_string = "vs_5_0";
-            break;
-        case PipelineStage::Hs:
-            target_string = "hs_5_0";
-            break;
-        case PipelineStage::Ds:
-            target_string = "ds_5_0";
-            break;
-        case PipelineStage::Gs:
-            target_string = "gs_5_0";
-            break;
-        case PipelineStage::Ps:
-            target_string = "ps_5_0";
-            break;
-        case PipelineStage::Cs:
-            target_string = "cs_5_0";
-            break;
-        case PipelineStage::None:
-        case PipelineStage::All:
-        default:
-            DebuggerPrintf("Failed to compile [%s]. Invalid PipelineStage parameter.\n", name.c_str());
-            return nullptr;
+    case PipelineStage::Vs:
+        target_string = "vs_5_0";
+        break;
+    case PipelineStage::Hs:
+        target_string = "hs_5_0";
+        break;
+    case PipelineStage::Ds:
+        target_string = "ds_5_0";
+        break;
+    case PipelineStage::Gs:
+        target_string = "gs_5_0";
+        break;
+    case PipelineStage::Ps:
+        target_string = "ps_5_0";
+        break;
+    case PipelineStage::Cs:
+        target_string = "cs_5_0";
+        break;
+    case PipelineStage::None:
+    case PipelineStage::All:
+    default:
+        DebuggerPrintf("Failed to compile [%s]. Invalid PipelineStage parameter.\n", name.c_str());
+        return nullptr;
     }
-    HRESULT compile_hr = ::D3DCompile(  sourceCode
-                                      , sourceCodeSize
-                                      , name.c_str()
-                                      , nullptr
-                                      , D3D_COMPILE_STANDARD_FILE_INCLUDE
-                                      , entryPoint.c_str()
-                                      , target_string.c_str()
-                                      , compile_options
-                                      , 0
-                                      , &code_blob
-                                      , &errors);
+    HRESULT compile_hr = ::D3DCompile(sourceCode, sourceCodeSize, name.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, entryPoint.c_str(), target_string.c_str(), compile_options, 0, &code_blob, &errors);
     if(FAILED(compile_hr) || (errors != nullptr)) {
         if(errors != nullptr) {
             char* error_string = reinterpret_cast<char*>(errors->GetBufferPointer());

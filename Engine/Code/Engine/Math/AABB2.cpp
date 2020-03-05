@@ -8,37 +8,31 @@ const AABB2 AABB2::ZERO_TO_ONE(0.0f, 0.0f, 1.0f, 1.0f);
 const AABB2 AABB2::NEG_ONE_TO_ONE(-1.0f, -1.0f, 1.0f, 1.0f);
 
 AABB2::AABB2(float initialX, float initialY) noexcept
-    : mins(initialX, initialY)
-    , maxs(initialX, initialY)
-{
+: mins(initialX, initialY)
+, maxs(initialX, initialY) {
     /* DO NOTHING */
 }
 
 AABB2::AABB2(float minX, float minY, float maxX, float maxY) noexcept
-    : mins(minX, minY)
-    , maxs(maxX, maxY)
-{
+: mins(minX, minY)
+, maxs(maxX, maxY) {
     /* DO NOTHING */
 }
 
 AABB2::AABB2(const Vector2& mins, const Vector2& maxs) noexcept
-    : mins(mins)
-    , maxs(maxs)
-{
+: mins(mins)
+, maxs(maxs) {
     /* DO NOTHING */
 }
 
 AABB2::AABB2(const Vector2& center, float radiusX, float radiusY) noexcept
-    : mins(center.x - radiusX, center.y - radiusY)
-    , maxs(center.x + radiusX, center.y + radiusY)
-{
+: mins(center.x - radiusX, center.y - radiusY)
+, maxs(center.x + radiusX, center.y + radiusY) {
     /* DO NOTHING */
 }
 
-
 AABB2::AABB2(const OBB2& obb) noexcept
-    : AABB2(obb.position, obb.half_extents.x, obb.half_extents.y)
-{
+: AABB2(obb.position, obb.half_extents.x, obb.half_extents.y) {
     /* DO NOTHING */
 }
 
@@ -56,7 +50,6 @@ void AABB2::StretchToIncludePoint(const Vector2& point) noexcept {
         maxs.y = point.y;
     }
 }
-
 
 void AABB2::ScalePadding(float scaleX, float scaleY) noexcept {
     auto width = maxs.x - mins.x;
@@ -102,7 +95,6 @@ Vector2 AABB2::CalcDimensions() const noexcept {
 Vector2 AABB2::CalcCenter() const noexcept {
     return Vector2(mins.x + (maxs.x - mins.x) * 0.5f, mins.y + (maxs.y - mins.y) * 0.5f);
 }
-
 
 void AABB2::SetPosition(const Vector2& center) noexcept {
     const auto half_extents = CalcDimensions() * 0.5f;

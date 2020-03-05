@@ -45,7 +45,7 @@ void Camera2D::SetPosition(const Vector2& newPosition) noexcept {
 }
 
 void Camera2D::Translate(const Vector3& displacement) noexcept {
-    Translate(Vector2{ displacement.x, displacement.y });
+    Translate(Vector2{displacement.x, displacement.y});
 }
 
 void Camera2D::Translate(const Vector2& displacement) noexcept {

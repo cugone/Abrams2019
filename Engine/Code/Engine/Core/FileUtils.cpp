@@ -3,14 +3,13 @@
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/StringUtils.hpp"
 
+#include <ShlObj.h>
 #include <algorithm>
 #include <chrono>
 #include <cstdio>
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <sstream>
-#include <ShlObj.h>
-
 
 namespace FileUtils {
 
@@ -43,7 +42,7 @@ bool WriteBufferToFile(const std::string& buffer, std::filesystem::path filepath
         return false;
     }
 
-    std::ofstream ofs{ filepath };
+    std::ofstream ofs{filepath};
     if(ofs.write(reinterpret_cast<const char*>(buffer.data()), buffer.size())) {
         return true;
     }
@@ -64,7 +63,7 @@ std::optional<std::vector<uint8_t>> ReadBinaryBufferFromFile(std::filesystem::pa
     const auto byte_size = FS::file_size(filepath);
     std::vector<uint8_t> out_buffer{};
     out_buffer.resize(byte_size);
-    std::ifstream ifs{ filepath, std::ios_base::binary };
+    std::ifstream ifs{filepath, std::ios_base::binary};
     if(ifs.read(reinterpret_cast<char*>(out_buffer.data()), out_buffer.size())) {
         return out_buffer;
     }
@@ -72,7 +71,6 @@ std::optional<std::vector<uint8_t>> ReadBinaryBufferFromFile(std::filesystem::pa
 }
 
 std::optional<std::string> ReadStringBufferFromFile(std::filesystem::path filepath) noexcept {
-
     namespace FS = std::filesystem;
     filepath = FS::canonical(filepath);
     filepath.make_preferred();
@@ -100,10 +98,10 @@ bool CreateFolders(const std::filesystem::path& filepath) noexcept {
 bool IsContentPathId(const KnownPathID& pathid) noexcept {
     if(!IsSystemPathId(pathid)) {
         switch(pathid) {
-        case KnownPathID::GameData:                               return true;
-        case KnownPathID::EngineData:                             return true;
-        case KnownPathID::None:                                   return false;
-        case KnownPathID::Max:                                    return false;
+        case KnownPathID::GameData: return true;
+        case KnownPathID::EngineData: return true;
+        case KnownPathID::None: return false;
+        case KnownPathID::Max: return false;
         default:
             ERROR_AND_DIE("UNSUPPORTED KNOWNPATHID")
         }
@@ -113,56 +111,56 @@ bool IsContentPathId(const KnownPathID& pathid) noexcept {
 
 bool IsSystemPathId(const KnownPathID& pathid) noexcept {
     switch(pathid) {
-    case KnownPathID::None:                                   return false;
-    case KnownPathID::GameData:                               return false;
-    case KnownPathID::EngineData:                             return false;
-    case KnownPathID::Max:                                    return false;
+    case KnownPathID::None: return false;
+    case KnownPathID::GameData: return false;
+    case KnownPathID::EngineData: return false;
+    case KnownPathID::Max: return false;
 #if defined(PLATFORM_WINDOWS)
-    case KnownPathID::Windows_AppDataRoaming:                  return true;
-    case KnownPathID::Windows_AppDataLocal:                    return true;
-    case KnownPathID::Windows_AppDataLocalLow:                 return true;
-    case KnownPathID::Windows_ProgramFiles:                    return true;
-    case KnownPathID::Windows_ProgramFilesx86:                 return true;
-    case KnownPathID::Windows_ProgramFilesx64:                 return true;
-    case KnownPathID::Windows_Documents:                       return true;
-    case KnownPathID::Windows_CommonDocuments:                 return true;
-    case KnownPathID::Windows_SavedGames:                      return true;
-    case KnownPathID::Windows_UserProfile:                     return true;
-    case KnownPathID::Windows_CommonProfile:                   return true;
-    case KnownPathID::Windows_CurrentUserDesktop:              return true;
+    case KnownPathID::Windows_AppDataRoaming: return true;
+    case KnownPathID::Windows_AppDataLocal: return true;
+    case KnownPathID::Windows_AppDataLocalLow: return true;
+    case KnownPathID::Windows_ProgramFiles: return true;
+    case KnownPathID::Windows_ProgramFilesx86: return true;
+    case KnownPathID::Windows_ProgramFilesx64: return true;
+    case KnownPathID::Windows_Documents: return true;
+    case KnownPathID::Windows_CommonDocuments: return true;
+    case KnownPathID::Windows_SavedGames: return true;
+    case KnownPathID::Windows_UserProfile: return true;
+    case KnownPathID::Windows_CommonProfile: return true;
+    case KnownPathID::Windows_CurrentUserDesktop: return true;
 #elif PLATFORM_LINUX
-    case KnownPathID::Linux_RootUser:                          return true;
-    case KnownPathID::Linux_Home:                              return true;
-    case KnownPathID::Linux_Etc:                               return true;
-    case KnownPathID::Linux_ConfigurationFiles:                return true;
-    case KnownPathID::Linux_Bin:                               return true;
-    case KnownPathID::Linux_UserBinaries:                      return true;
-    case KnownPathID::Linux_SBin:                              return true;
-    case KnownPathID::Linux_SystemBinaries:                    return true;
-    case KnownPathID::Linux_Dev:                               return true;
-    case KnownPathID::Linux_DeviceFiles:                       return true;
-    case KnownPathID::Linux_Proc:                              return true;
-    case KnownPathID::Linux_ProcessInformation:                return true;
-    case KnownPathID::Linux_Var:                               return true;
-    case KnownPathID::Linux_VariableFiles:                     return true;
-    case KnownPathID::Linux_Usr:                               return true;
-    case KnownPathID::Linux_UserPrograms:                      return true;
-    case KnownPathID::Linux_UsrBin:                            return true;
-    case KnownPathID::Linux_UserProgramsBinaries:              return true;
-    case KnownPathID::Linux_UsrSBin:                           return true;
-    case KnownPathID::Linux_UserProgramsSystemBinaries:        return true;
-    case KnownPathID::Linux_Boot:                              return true;
-    case KnownPathID::Linux_BootLoader:                        return true;
-    case KnownPathID::Linux_Lib:                               return true;
-    case KnownPathID::Linux_SystemLibraries:                   return true;
-    case KnownPathID::Linux_Opt:                               return true;
-    case KnownPathID::Linux_OptionalAddOnApps:                 return true;
-    case KnownPathID::Linux_Mnt:                               return true;
-    case KnownPathID::Linux_MountDirectory:                    return true;
-    case KnownPathID::Linux_Media:                             return true;
-    case KnownPathID::Linux_RemovableDevices:                  return true;
-    case KnownPathID::Linux_Src:                               return true;
-    case KnownPathID::Linux_ServiceData:                       return true;
+    case KnownPathID::Linux_RootUser: return true;
+    case KnownPathID::Linux_Home: return true;
+    case KnownPathID::Linux_Etc: return true;
+    case KnownPathID::Linux_ConfigurationFiles: return true;
+    case KnownPathID::Linux_Bin: return true;
+    case KnownPathID::Linux_UserBinaries: return true;
+    case KnownPathID::Linux_SBin: return true;
+    case KnownPathID::Linux_SystemBinaries: return true;
+    case KnownPathID::Linux_Dev: return true;
+    case KnownPathID::Linux_DeviceFiles: return true;
+    case KnownPathID::Linux_Proc: return true;
+    case KnownPathID::Linux_ProcessInformation: return true;
+    case KnownPathID::Linux_Var: return true;
+    case KnownPathID::Linux_VariableFiles: return true;
+    case KnownPathID::Linux_Usr: return true;
+    case KnownPathID::Linux_UserPrograms: return true;
+    case KnownPathID::Linux_UsrBin: return true;
+    case KnownPathID::Linux_UserProgramsBinaries: return true;
+    case KnownPathID::Linux_UsrSBin: return true;
+    case KnownPathID::Linux_UserProgramsSystemBinaries: return true;
+    case KnownPathID::Linux_Boot: return true;
+    case KnownPathID::Linux_BootLoader: return true;
+    case KnownPathID::Linux_Lib: return true;
+    case KnownPathID::Linux_SystemLibraries: return true;
+    case KnownPathID::Linux_Opt: return true;
+    case KnownPathID::Linux_OptionalAddOnApps: return true;
+    case KnownPathID::Linux_Mnt: return true;
+    case KnownPathID::Linux_MountDirectory: return true;
+    case KnownPathID::Linux_Media: return true;
+    case KnownPathID::Linux_RemovableDevices: return true;
+    case KnownPathID::Linux_Src: return true;
+    case KnownPathID::Linux_ServiceData: return true;
 #endif
     default:
         ERROR_AND_DIE("UNSUPPORTED KNOWNPATHID")
@@ -220,8 +218,8 @@ GUID GetKnownPathIdForOS(const KnownPathID& pathid) noexcept {
     case KnownPathID::Windows_ProgramFilesx64:
         return FOLDERID_ProgramFiles;
 #else
-    ERROR_AND_DIE("Unknown known folder path id.");
-    break;
+        ERROR_AND_DIE("Unknown known folder path id.");
+        break;
 #endif
     case KnownPathID::Windows_SavedGames:
         return FOLDERID_SavedGames;
@@ -357,7 +355,7 @@ bool IsSafeWritePath(const std::filesystem::path& p) noexcept {
         if(bool is_in_working_dir = IsChildOf(p, GetWorkingDirectory())) {
             return true;
         }
-        if(bool is_in_data_dir = IsChildOf(p, FS::path{ "Data/" })) {
+        if(bool is_in_data_dir = IsChildOf(p, FS::path{"Data/"})) {
             return true;
         }
         if(bool is_next_to_exe = IsSiblingOf(p, GetExePath())) {
@@ -370,8 +368,7 @@ bool IsSafeWritePath(const std::filesystem::path& p) noexcept {
     } catch(const std::filesystem::filesystem_error& e) {
         DebuggerPrintf("\nFilesystem Error:\nWhat: %s\nCode: %i\nPath1: %s\nPath2: %s\n", e.what(), e.code().value(), e.path1().string().c_str(), e.path2().string().c_str());
         return false;
-    }
-    catch (...) {
+    } catch(...) {
         DebuggerPrintf("\nUnspecified error trying to determine if path:\n%s\n is a safe write path.", p.string().c_str());
         return false;
     }
@@ -400,14 +397,13 @@ bool IsSafeReadPath(const std::filesystem::path& p) noexcept {
         DebuggerPrintf("\nFilesystem Error:\nWhat: %s\nCode: %i\nPath1: %s\nPath2: %s\n", e.what(), e.code().value(), e.path1().string().c_str(), e.path2().string().c_str());
         return false;
     }
-
 }
 
 bool IsParentOf(const std::filesystem::path& p, const std::filesystem::path& child) noexcept {
     namespace FS = std::filesystem;
     const auto p_canon = FS::canonical(p);
     const auto child_canon = FS::canonical(child);
-    for(auto iter = FS::recursive_directory_iterator{ p_canon }; iter != FS::recursive_directory_iterator{}; ++iter) {
+    for(auto iter = FS::recursive_directory_iterator{p_canon}; iter != FS::recursive_directory_iterator{}; ++iter) {
         auto entry = *iter;
         auto sub_p = entry.path();
         if(sub_p == child_canon) {
@@ -428,7 +424,7 @@ bool IsChildOf(const std::filesystem::path& p, const std::filesystem::path& pare
     namespace FS = std::filesystem;
     const auto parent_canon = FS::canonical(parent);
     const auto p_canon = FS::canonical(p);
-    for(auto iter = FS::recursive_directory_iterator{ parent_canon }; iter != FS::recursive_directory_iterator{}; ++iter) {
+    for(auto iter = FS::recursive_directory_iterator{parent_canon}; iter != FS::recursive_directory_iterator{}; ++iter) {
         const auto entry = *iter;
         const auto sub_p = entry.path();
         if(sub_p == p_canon) {
@@ -459,7 +455,7 @@ void ForEachFileInFolder(const std::filesystem::path& folderpath, const std::str
 std::size_t CountFilesInFolders(const std::filesystem::path& folderpath, const std::string& validExtensionList /*= std::string{}*/, bool recursive /*= false*/) noexcept {
     namespace FS = std::filesystem;
     auto count = std::size_t{0u};
-    const auto cb = [&count](const FS::path&)->void { ++count; };
+    const auto cb = [&count](const FS::path&) -> void { ++count; };
     ForEachFileInFolder(folderpath, validExtensionList, cb, recursive);
     return count;
 }
@@ -491,7 +487,6 @@ void FileUtils::RemoveExceptMostRecentFiles(const std::filesystem::path& folderp
     }
 }
 
-
 uint16_t EndianSwap(uint16_t value) noexcept {
     return _byteswap_ushort(value);
 }
@@ -504,4 +499,4 @@ uint64_t EndianSwap(uint64_t value) noexcept {
     return _byteswap_uint64(value);
 }
 
-} //End FileUtils
+} // namespace FileUtils

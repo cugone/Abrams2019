@@ -10,23 +10,20 @@ const LineSegment3 LineSegment3::UNIT_CENTERED_VERTICAL(0.0f, -0.5f, 0.0f, 0.0f,
 const LineSegment3 LineSegment3::UNIT_CENTERED_DEPTH(0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.5f);
 
 LineSegment3::LineSegment3(float startX, float startY, float startZ, float endX, float endY, float endZ) noexcept
-    : start(startX, startY, startZ)
-    , end(endX, endY, endZ)
-{
+: start(startX, startY, startZ)
+, end(endX, endY, endZ) {
     /* DO NOTHING */
 }
 
 LineSegment3::LineSegment3(const Vector3& startPosition, const Vector3& endPosition) noexcept
-    : start(startPosition)
-    , end(endPosition)
-{
+: start(startPosition)
+, end(endPosition) {
     /* DO NOTHING */
 }
 
 LineSegment3::LineSegment3(const Vector3& startPosition, const Vector3& direction, float length) noexcept
-    : start(startPosition)
-    , end(startPosition + (direction.GetNormalize() * length))
-{
+: start(startPosition)
+, end(startPosition + (direction.GetNormalize() * length)) {
     /* DO NOTHING */
 }
 

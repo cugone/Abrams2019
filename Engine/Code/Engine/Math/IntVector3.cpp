@@ -1,7 +1,6 @@
 #include "Engine/Math/IntVector3.hpp"
 
 #include "Engine/Core/StringUtils.hpp"
-
 #include "Engine/Math/IntVector2.hpp"
 #include "Engine/Math/Vector2.hpp"
 #include "Engine/Math/Vector3.hpp"
@@ -23,37 +22,37 @@ const IntVector3 IntVector3::ZY_AXIS(0, 1, 1);
 const IntVector3 IntVector3::XYZ_AXIS(1, 1, 1);
 
 IntVector3::IntVector3(int initialX, int initialY, int initialZ) noexcept
-    : x(initialX)
-    , y(initialY)
-    , z(initialZ) {
+: x(initialX)
+, y(initialY)
+, z(initialZ) {
     /* DO NOTHING */
 }
 
 IntVector3::IntVector3(const IntVector2& iv2, int initialZ) noexcept
-    : x(iv2.x)
-    , y(iv2.y)
-    , z(initialZ) {
+: x(iv2.x)
+, y(iv2.y)
+, z(initialZ) {
     /* DO NOTHING */
 }
 
 IntVector3::IntVector3(const Vector2& v2, int initialZ) noexcept
-    : x(static_cast<int>(std::floor(v2.x)))
-    , y(static_cast<int>(std::floor(v2.y)))
-    , z(initialZ) {
+: x(static_cast<int>(std::floor(v2.x)))
+, y(static_cast<int>(std::floor(v2.y)))
+, z(initialZ) {
     /* DO NOTHING */
 }
 
 IntVector3::IntVector3(const Vector3& v3) noexcept
-    : x(static_cast<int>(std::floor(v3.x)))
-    , y(static_cast<int>(std::floor(v3.y)))
-    , z(static_cast<int>(std::floor(v3.z))) {
+: x(static_cast<int>(std::floor(v3.x)))
+, y(static_cast<int>(std::floor(v3.y)))
+, z(static_cast<int>(std::floor(v3.z))) {
     /* DO NOTHING */
 }
 
 IntVector3::IntVector3(const std::string& value) noexcept
-    : x(0)
-    , y(0)
-    , z(0) {
+: x(0)
+, y(0)
+, z(0) {
     if(value[0] == '[') {
         if(value.back() == ']') {
             std::string contents_str = value.substr(1, value.size() - 1);
@@ -178,11 +177,16 @@ bool IntVector3::operator==(const IntVector3& rhs) const noexcept {
 }
 
 bool IntVector3::operator<(const IntVector3& rhs) const noexcept {
-    if(x < rhs.x) return true;
-    if(rhs.x < x) return false;
-    if(y < rhs.y) return true;
-    if(rhs.y < y) return false;
-    if(z < rhs.z) return true;
+    if(x < rhs.x)
+        return true;
+    if(rhs.x < x)
+        return false;
+    if(y < rhs.y)
+        return true;
+    if(rhs.y < y)
+        return false;
+    if(z < rhs.z)
+        return true;
     return false;
 }
 

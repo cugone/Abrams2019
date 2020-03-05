@@ -1,8 +1,7 @@
 #pragma once
 
-#include "Engine/Renderer/Texture.hpp"
-
 #include "Engine/Renderer/DirectX/DX11.hpp"
+#include "Engine/Renderer/Texture.hpp"
 
 class RHIDevice;
 class IntVector2;
@@ -23,6 +22,7 @@ public:
 
     virtual ID3D11Resource* GetDxResource() const noexcept override;
     ID3D11Texture2D* GetDxTexture() noexcept;
+
 protected:
 private:
     void SetTexture() noexcept;

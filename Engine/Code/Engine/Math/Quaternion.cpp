@@ -1,16 +1,16 @@
 #include "Engine/Math/Quaternion.hpp"
 
-#include <cmath>
-#include <sstream>
-
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Matrix4.hpp"
+
+#include <cmath>
+#include <sstream>
 
 Quaternion Quaternion::I = Quaternion(1.0f, Vector3::ZERO);
 
 Quaternion::Quaternion(const Matrix4& mat) noexcept
-    : w(1.0f)
-    , axis(Vector3::ZERO) {
+: w(1.0f)
+, axis(Vector3::ZERO) {
     //From http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/
 
     Vector4 diag = mat.GetDiagonal();
@@ -22,22 +22,22 @@ Quaternion::Quaternion(const Matrix4& mat) noexcept
     Vector3 row_three = Vector3(mat.GetTBasis());
 
     if(trace > 0.0f) {
-
         float S = 0.5f / std::sqrt(trace);
 
         w = 0.25f / S;
 
-        axis.x = (row_two.y - row_one.z)  * S;
+        axis.x = (row_two.y - row_one.z) * S;
         axis.y = (row_zero.z - row_two.x) * S;
         axis.z = (row_one.x - row_zero.y) * S;
 
     } else {
-
         int i = 0;
-        if(row_one.y > row_zero.x) i = 1;
-        if(row_two.z > mat.GetIndex(i, i)) i = 2;
+        if(row_one.y > row_zero.x)
+            i = 1;
+        if(row_two.z > mat.GetIndex(i, i))
+            i = 2;
 
-        const int next[3] = { 1, 2, 0 };
+        const int next[3] = {1, 2, 0};
         int j = next[i];
         int k = next[j];
 
@@ -57,37 +57,37 @@ Quaternion::Quaternion(const Matrix4& mat) noexcept
         axisAsFloats[j] = (mat.GetIndex(j, i) + mat.GetIndex(i, j)) * t;
         axisAsFloats[k] = (mat.GetIndex(k, i) + mat.GetIndex(i, k)) * t;
         switch(i) {
-            case 0:
-                axis.x = axisAsFloats[i];
-                break;
-            case 1:
-                axis.y = axisAsFloats[i];
-                break;
-            case 2:
-                axis.z = axisAsFloats[i];
-                break;
+        case 0:
+            axis.x = axisAsFloats[i];
+            break;
+        case 1:
+            axis.y = axisAsFloats[i];
+            break;
+        case 2:
+            axis.z = axisAsFloats[i];
+            break;
         }
         switch(j) {
-            case 0:
-                axis.x = axisAsFloats[j];
-                break;
-            case 1:
-                axis.y = axisAsFloats[j];
-                break;
-            case 2:
-                axis.z = axisAsFloats[j];
-                break;
+        case 0:
+            axis.x = axisAsFloats[j];
+            break;
+        case 1:
+            axis.y = axisAsFloats[j];
+            break;
+        case 2:
+            axis.z = axisAsFloats[j];
+            break;
         }
         switch(k) {
-            case 0:
-                axis.x = axisAsFloats[k];
-                break;
-            case 1:
-                axis.y = axisAsFloats[k];
-                break;
-            case 2:
-                axis.z = axisAsFloats[k];
-                break;
+        case 0:
+            axis.x = axisAsFloats[k];
+            break;
+        case 1:
+            axis.y = axisAsFloats[k];
+            break;
+        case 2:
+            axis.z = axisAsFloats[k];
+            break;
         }
     }
     if(!MathUtils::IsEquivalent(CalcLengthSquared(), 1.0f)) {
@@ -96,42 +96,42 @@ Quaternion::Quaternion(const Matrix4& mat) noexcept
 }
 
 Quaternion::Quaternion(float initialScalar, const Vector3& initialAxis) noexcept
-    : w(initialScalar)
-    , axis(initialAxis) {
+: w(initialScalar)
+, axis(initialAxis) {
     if(!MathUtils::IsEquivalent(CalcLengthSquared(), 1.0f)) {
         Normalize();
     }
 }
 
 Quaternion::Quaternion(float initialW, float initialX, float initialY, float initialZ) noexcept
-    : w(initialW)
-    , axis(initialX, initialY, initialZ) {
+: w(initialW)
+, axis(initialX, initialY, initialZ) {
     if(!MathUtils::IsEquivalent(CalcLengthSquared(), 1.0f)) {
         Normalize();
     }
 }
 
 Quaternion::Quaternion(const Vector3& rotations) noexcept
-    : w(0.0f)
-    , axis(rotations) {
+: w(0.0f)
+, axis(rotations) {
     if(!MathUtils::IsEquivalent(CalcLengthSquared(), 1.0f)) {
         Normalize();
     }
 }
 
 Quaternion::Quaternion(const std::string& value) noexcept
-    : w(0.0f)
-    , axis() {
+: w(0.0f)
+, axis() {
     if(value[0] == '[') {
         if(value.back() == ']') {
             std::stringstream ss(value.substr(1, value.size() - 1));
             std::string curLine;
             for(int i = 0; std::getline(ss, curLine, ','); ++i) {
                 switch(i) {
-                    case 0: w = std::stof(curLine); break;
-                    case 1: axis.x = std::stof(curLine); break;
-                    case 2: axis.y = std::stof(curLine); break;
-                    case 3: axis.z = std::stof(curLine); break;
+                case 0: w = std::stof(curLine); break;
+                case 1: axis.x = std::stof(curLine); break;
+                case 2: axis.y = std::stof(curLine); break;
+                case 3: axis.z = std::stof(curLine); break;
                 }
             }
         }
@@ -141,7 +141,7 @@ Quaternion::Quaternion(const std::string& value) noexcept
     }
 }
 
-Quaternion  Quaternion::operator+(const Quaternion& rhs) const noexcept {
+Quaternion Quaternion::operator+(const Quaternion& rhs) const noexcept {
     return Quaternion(w + rhs.w, axis + rhs.axis);
 }
 Quaternion& Quaternion::operator+=(const Quaternion& rhs) noexcept {
@@ -149,7 +149,7 @@ Quaternion& Quaternion::operator+=(const Quaternion& rhs) noexcept {
     axis += rhs.axis;
     return *this;
 }
-Quaternion  Quaternion::operator-(const Quaternion& rhs) const noexcept {
+Quaternion Quaternion::operator-(const Quaternion& rhs) const noexcept {
     return Quaternion(w - rhs.w, axis - rhs.axis);
 }
 Quaternion& Quaternion::operator-=(const Quaternion& rhs) noexcept {
@@ -186,7 +186,6 @@ Quaternion& Quaternion::operator*=(const Vector3& rhs) noexcept {
 Quaternion Quaternion::operator-() noexcept {
     return Quaternion(-w, -axis);
 }
-
 
 bool Quaternion::operator==(const Quaternion& rhs) const noexcept {
     return w == rhs.w && axis == rhs.axis;
@@ -258,7 +257,6 @@ Vector3 Quaternion::CalcEulerAnglesRadians() const noexcept {
 
 //From http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToEuler/index.htm
 Vector3 Quaternion::CalcEulerAngles(bool degrees) const noexcept {
-
     //First pass change to non-normalized version later.
 
     auto q_n = GetNormalize();
@@ -449,10 +447,10 @@ Quaternion Quaternion::CreateFromEulerAngles(float pitch, float yaw, float roll,
     float cz = std::cos(he.z);
     float sz = std::sin(he.z);
 
-    float w = cx * cy*cz - sx * sy*sz;
-    float ix = sx * cy*cz + cx * sy*sz;
-    float iy = cx * sy*cz + sx * cy*sz;
-    float iz = cx * cy*sz - sx * sy*cz;
+    float w = cx * cy * cz - sx * sy * sz;
+    float ix = sx * cy * cz + cx * sy * sz;
+    float iy = cx * sy * cz + sx * cy * sz;
+    float iz = cx * cy * sz - sx * sy * cz;
 
     Quaternion result(w, ix, iy, iz);
 

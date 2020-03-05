@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Engine/RHI/RHITypes.hpp"
-
 #include "Engine/Renderer/Texture.hpp"
 
 #include <memory>
@@ -48,6 +47,6 @@ protected:
     std::unique_ptr<Texture> _back_buffer = nullptr;
     std::unique_ptr<Texture> _depthstencil = nullptr;
     std::unique_ptr<Texture> _fullscreen = nullptr;
-private:
 
+private:
 };

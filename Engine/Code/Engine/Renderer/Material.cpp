@@ -3,7 +3,6 @@
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Core/Win.hpp"
-
 #include "Engine/Renderer/Renderer.hpp"
 
 #include <algorithm>
@@ -12,9 +11,8 @@
 #include <sstream>
 
 Material::Material(Renderer& renderer) noexcept
-    : _renderer(renderer)
-    , _textures(CustomTextureIndexSlotOffset, nullptr)
-{
+: _renderer(renderer)
+, _textures(CustomTextureIndexSlotOffset, nullptr) {
     _textures[0] = _renderer.GetTexture("__diffuse");
     _textures[1] = _renderer.GetTexture("__normal");
     _textures[2] = _renderer.GetTexture("__displacement");
@@ -27,9 +25,8 @@ Material::Material(Renderer& renderer) noexcept
 }
 
 Material::Material(Renderer& renderer, const XMLElement& element) noexcept
-    : _renderer(renderer)
-    , _textures(CustomTextureIndexSlotOffset, nullptr)
-{
+: _renderer(renderer)
+, _textures(CustomTextureIndexSlotOffset, nullptr) {
     _textures[0] = _renderer.GetTexture("__diffuse");
     _textures[1] = _renderer.GetTexture("__normal");
     _textures[2] = _renderer.GetTexture("__displacement");
@@ -63,7 +60,8 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
                 ss << "Shader:\n";
                 ss << file << "\n";
                 ss << "Referenced in Material file \"" << _name << "\" could not be found.\n";
-                ss << "The filesystem returned an error:\n" << ec.message() << '\n';
+                ss << "The filesystem returned an error:\n"
+                   << ec.message() << '\n';
                 ERROR_AND_DIE(ss.str().c_str());
                 return false;
             }
@@ -282,38 +280,38 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
         }
 
         DataUtils::ForEachChildElement(*xml_textures, "texture",
-        [this, &invalid_tex](const XMLElement& elem) {
-            DataUtils::ValidateXmlElement(elem, "texture", "", "index,src");
-            std::size_t index = CustomTextureIndexSlotOffset + DataUtils::ParseXmlAttribute(elem, std::string("index"), 0u);
-            if(index >= CustomTextureIndexSlotOffset + MaxCustomTextureSlotCount) {
-                return;
-            }
-            auto file = DataUtils::ParseXmlAttribute(elem, "src", "");
-            FS::path p(file);
-            bool bad_path = false;
-            if(!StringUtils::StartsWith(p.string(), "__")) {
-                std::error_code ec{};
-                p = FS::canonical(p, ec);
-                if(ec) {
-                    bad_path = true;
-                    _textures[index] = invalid_tex;
-                    DebuggerPrintf("Custom texture at index %lu referenced in Material file \"%s\" could not be found. The filesystem returned an error: %s\n", index, _name.c_str(), ec.message().c_str());
-                }
-            }
-            if(!bad_path) {
-                p.make_preferred();
-                const auto& p_str = p.string();
-                bool empty_path = p.empty();
-                bool texture_not_loaded = _renderer.IsTextureNotLoaded(p_str);
-                if(texture_not_loaded) {
-                    texture_not_loaded = _renderer.CreateTexture(p.string(), IntVector3::XY_AXIS) ? false : true;
-                }
-                bool texture_not_exist = !empty_path && texture_not_loaded;
-                bool invalid_src = empty_path || texture_not_exist;
-                auto tex = invalid_src ? invalid_tex : (_renderer.GetTexture(p_str));
-                _textures[index] = tex;
-            }
-        });
+                                       [this, &invalid_tex](const XMLElement& elem) {
+                                           DataUtils::ValidateXmlElement(elem, "texture", "", "index,src");
+                                           std::size_t index = CustomTextureIndexSlotOffset + DataUtils::ParseXmlAttribute(elem, std::string("index"), 0u);
+                                           if(index >= CustomTextureIndexSlotOffset + MaxCustomTextureSlotCount) {
+                                               return;
+                                           }
+                                           auto file = DataUtils::ParseXmlAttribute(elem, "src", "");
+                                           FS::path p(file);
+                                           bool bad_path = false;
+                                           if(!StringUtils::StartsWith(p.string(), "__")) {
+                                               std::error_code ec{};
+                                               p = FS::canonical(p, ec);
+                                               if(ec) {
+                                                   bad_path = true;
+                                                   _textures[index] = invalid_tex;
+                                                   DebuggerPrintf("Custom texture at index %lu referenced in Material file \"%s\" could not be found. The filesystem returned an error: %s\n", index, _name.c_str(), ec.message().c_str());
+                                               }
+                                           }
+                                           if(!bad_path) {
+                                               p.make_preferred();
+                                               const auto& p_str = p.string();
+                                               bool empty_path = p.empty();
+                                               bool texture_not_loaded = _renderer.IsTextureNotLoaded(p_str);
+                                               if(texture_not_loaded) {
+                                                   texture_not_loaded = _renderer.CreateTexture(p.string(), IntVector3::XY_AXIS) ? false : true;
+                                               }
+                                               bool texture_not_exist = !empty_path && texture_not_loaded;
+                                               bool invalid_src = empty_path || texture_not_exist;
+                                               auto tex = invalid_src ? invalid_tex : (_renderer.GetTexture(p_str));
+                                               _textures[index] = tex;
+                                           }
+                                       });
     }
     return true;
 }
@@ -335,7 +333,7 @@ std::string Material::GetName() const noexcept {
     return _name;
 }
 
-Shader * Material::GetShader() const noexcept {
+Shader* Material::GetShader() const noexcept {
     return _shader;
 }
 

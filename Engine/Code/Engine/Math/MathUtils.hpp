@@ -1,17 +1,16 @@
 #pragma once
 
+#include "Engine/Math/IntVector2.hpp"
+#include "Engine/Math/IntVector3.hpp"
+#include "Engine/Math/IntVector4.hpp"
+#include "Engine/Math/Vector2.hpp"
+#include "Engine/Math/Vector3.hpp"
+#include "Engine/Math/Vector4.hpp"
+
 #include <algorithm>
 #include <random>
 #include <ratio>
 #include <utility>
-
-#include "Engine/Math/IntVector2.hpp"
-#include "Engine/Math/IntVector3.hpp"
-#include "Engine/Math/IntVector4.hpp"
-
-#include "Engine/Math/Vector2.hpp"
-#include "Engine/Math/Vector3.hpp"
-#include "Engine/Math/Vector4.hpp"
 
 class AABB2;
 class AABB3;
@@ -30,44 +29,44 @@ class Rgba;
 
 namespace MathUtils {
 
-constexpr const float M_1PI_6               = 0.52359877559829887307f;            // 1pi/6
-constexpr const float M_1PI_4               = 0.78539816339744830962f;            // 1pi/4
-constexpr const float M_1PI_3               = 1.04719755119659774615f;            // 1pi/3
-constexpr const float M_1PI_2               = 1.57079632679489661923f;            // 1pi/2
-constexpr const float M_2PI_3               = 2.09439510239319549230f;            // 2pi/3
-constexpr const float M_3PI_4               = 2.35619449019234492884f;            // 3pi/4
-constexpr const float M_5PI_6               = 2.61799387799149436538f;            // 5pi/6
-constexpr const float M_PI                  = 3.14159265358979323846f;            // pi
-constexpr const float M_7PI_6               = 3.66519142918809211153f;            // 7pi/6
-constexpr const float M_5PI_4               = 3.92699081698724154807f;            // 5pi/4
-constexpr const float M_4PI_3               = 4.18879020478639098461f;            // 4pi/3
-constexpr const float M_3PI_2               = 4.71238898038468985769f;            // 3pi/2
-constexpr const float M_5PI_3               = 5.23598775598298873077f;            // 5pi/3
-constexpr const float M_7PI_4               = 5.49778714378213816730f;            // 7pi/4
-constexpr const float M_11PI_6              = 5.75958653158128760384f;            // 11pi/6
-constexpr const float M_2PI                 = 6.28318530717958647692f;            // 2pi
-constexpr const float M_E                   = 2.71828182845904523536f;            // e
-constexpr const float M_LOG2E               = 1.44269504088896340736f;            // log2(e)
-constexpr const float M_LOG10E              = 0.43429448190325182765f;            // log10(e)
-constexpr const float M_LN2                 = 0.69314718055994530942f;            // ln(2)
-constexpr const float M_LN10                = 2.30258509299404568402f;            // ln(10)
-constexpr const float M_PI_2                = 1.57079632679489661923f;            // pi/2
-constexpr const float M_PI_4                = 0.78539816339744830962f;            // pi/4
-constexpr const float M_1_PI                = 0.31830988618379067151f;            // 1/pi
-constexpr const float M_2_PI                = 0.63661977236758134308f;            // 2/pi
-constexpr const float M_2_SQRTPI            = 1.12837916709551257390f;            // 2/sqrt(pi)
-constexpr const float M_SQRT2               = 1.41421356237309504880f;            // sqrt(2)
-constexpr const float M_1_SQRT2             = 0.70710678118654752440f;            // 1/sqrt(2)
-constexpr const float M_SQRT3_3             = 0.57735026918962576451f;            // sqrt(3)/3
-constexpr const float M_TAU                 = 1.61803398874989484821f;            // tau (golden ratio)
-constexpr const float M_16_BY_9_RATIO       = 1.77777777777777777778f;            // 16/9
-constexpr const float M_4_BY_3_RATIO        = 1.33333333333333333333f;            // 4/3
-constexpr const std::ratio<1, 1024> KIB_BYTES_RATIO;                              // Kilobyte/Bytes
-constexpr const std::ratio<1, 1048576> MIB_BYTES_RATIO;                           // Megabyte/Bytes
-constexpr const std::ratio<1, 1073741824> GIB_BYTES_RATIO;                        // Gigabyte/Bytes
-constexpr const std::ratio<1024, 1> BYTES_KIB_RATIO;                              // Bytes/Kilobytes
-constexpr const std::ratio<1048576, 1> BYTES_MIB_RATIO;                            // Bytes/Megabytes
-constexpr const std::ratio<1073741824, 1> BYTES_GIB_RATIO;                        // Bytes/Gigabytes
+constexpr const float M_1PI_6 = 0.52359877559829887307f;         // 1pi/6
+constexpr const float M_1PI_4 = 0.78539816339744830962f;         // 1pi/4
+constexpr const float M_1PI_3 = 1.04719755119659774615f;         // 1pi/3
+constexpr const float M_1PI_2 = 1.57079632679489661923f;         // 1pi/2
+constexpr const float M_2PI_3 = 2.09439510239319549230f;         // 2pi/3
+constexpr const float M_3PI_4 = 2.35619449019234492884f;         // 3pi/4
+constexpr const float M_5PI_6 = 2.61799387799149436538f;         // 5pi/6
+constexpr const float M_PI = 3.14159265358979323846f;            // pi
+constexpr const float M_7PI_6 = 3.66519142918809211153f;         // 7pi/6
+constexpr const float M_5PI_4 = 3.92699081698724154807f;         // 5pi/4
+constexpr const float M_4PI_3 = 4.18879020478639098461f;         // 4pi/3
+constexpr const float M_3PI_2 = 4.71238898038468985769f;         // 3pi/2
+constexpr const float M_5PI_3 = 5.23598775598298873077f;         // 5pi/3
+constexpr const float M_7PI_4 = 5.49778714378213816730f;         // 7pi/4
+constexpr const float M_11PI_6 = 5.75958653158128760384f;        // 11pi/6
+constexpr const float M_2PI = 6.28318530717958647692f;           // 2pi
+constexpr const float M_E = 2.71828182845904523536f;             // e
+constexpr const float M_LOG2E = 1.44269504088896340736f;         // log2(e)
+constexpr const float M_LOG10E = 0.43429448190325182765f;        // log10(e)
+constexpr const float M_LN2 = 0.69314718055994530942f;           // ln(2)
+constexpr const float M_LN10 = 2.30258509299404568402f;          // ln(10)
+constexpr const float M_PI_2 = 1.57079632679489661923f;          // pi/2
+constexpr const float M_PI_4 = 0.78539816339744830962f;          // pi/4
+constexpr const float M_1_PI = 0.31830988618379067151f;          // 1/pi
+constexpr const float M_2_PI = 0.63661977236758134308f;          // 2/pi
+constexpr const float M_2_SQRTPI = 1.12837916709551257390f;      // 2/sqrt(pi)
+constexpr const float M_SQRT2 = 1.41421356237309504880f;         // sqrt(2)
+constexpr const float M_1_SQRT2 = 0.70710678118654752440f;       // 1/sqrt(2)
+constexpr const float M_SQRT3_3 = 0.57735026918962576451f;       // sqrt(3)/3
+constexpr const float M_TAU = 1.61803398874989484821f;           // tau (golden ratio)
+constexpr const float M_16_BY_9_RATIO = 1.77777777777777777778f; // 16/9
+constexpr const float M_4_BY_3_RATIO = 1.33333333333333333333f;  // 4/3
+constexpr const std::ratio<1, 1024> KIB_BYTES_RATIO;             // Kilobyte/Bytes
+constexpr const std::ratio<1, 1048576> MIB_BYTES_RATIO;          // Megabyte/Bytes
+constexpr const std::ratio<1, 1073741824> GIB_BYTES_RATIO;       // Gigabyte/Bytes
+constexpr const std::ratio<1024, 1> BYTES_KIB_RATIO;             // Bytes/Kilobytes
+constexpr const std::ratio<1048576, 1> BYTES_MIB_RATIO;          // Bytes/Megabytes
+constexpr const std::ratio<1073741824, 1> BYTES_GIB_RATIO;       // Bytes/Gigabytes
 
 void SetRandomEngineSeed(unsigned int seed) noexcept;
 std::random_device& GetRandomDevice() noexcept;
@@ -109,7 +108,6 @@ long double GetRandomLongDoubleZeroToOne() noexcept;
 long double GetRandomLongDoubleZeroUpToOne() noexcept;
 long double GetRandomLongDoubleNegOneToOne() noexcept;
 bool IsPercentChance(long double probability) noexcept;
-
 
 float CosDegrees(float degrees) noexcept;
 float SinDegrees(float degrees) noexcept;
@@ -269,13 +267,10 @@ bool IsPointBehindOfPlane(const Vector2& point, const Plane2& plane) noexcept;
 bool IsPointOnPlane(const Vector2& point, const Plane2& plane) noexcept;
 
 //Column major
-float CalculateMatrix3Determinant(float m00, float m01, float m02,
-    float m10, float m11, float m12,
-    float m20, float m21, float m22) noexcept;
+float CalculateMatrix3Determinant(float m00, float m01, float m02, float m10, float m11, float m12, float m20, float m21, float m22) noexcept;
 
 //Column major
-float CalculateMatrix2Determinant(float m00, float m01,
-    float m10, float m11) noexcept;
+float CalculateMatrix2Determinant(float m00, float m01, float m10, float m11) noexcept;
 
 Quaternion SLERP(const Quaternion& a, const Quaternion& b, float t) noexcept;
 
@@ -378,7 +373,6 @@ Vector3 Wrap(const Vector3& valuesToWrap, const Vector3& minValues, const Vector
 template<>
 Vector2 Wrap(const Vector2& valuesToWrap, const Vector2& minValues, const Vector2& maxValues);
 
-
 template<>
 IntVector4 Wrap(const IntVector4& valuesToWrap, const IntVector4& minValues, const IntVector4& maxValues);
 
@@ -392,17 +386,17 @@ namespace EasingFunctions {
 
 namespace detail {
 
-    template<typename T, std::size_t... Is>
-    T SmoothStart_helper(const T& t, std::index_sequence<Is...>) {
-        return (((void)Is, t) * ...);
-    }
+template<typename T, std::size_t... Is>
+T SmoothStart_helper(const T& t, std::index_sequence<Is...>) {
+    return (((void)Is, t) * ...);
+}
 
-    template<typename T, std::size_t... Is>
-    T SmoothStop_helper(const T& t, std::index_sequence<Is...>) {
-        return (((void)Is, (1.0f - t)) * ...);
-    }
+template<typename T, std::size_t... Is>
+T SmoothStop_helper(const T& t, std::index_sequence<Is...>) {
+    return (((void)Is, (1.0f - t)) * ...);
+}
 
-}//detail
+} // namespace detail
 
 template<std::size_t N, typename T>
 T SmoothStart(const T& t) {
@@ -410,7 +404,6 @@ T SmoothStart(const T& t) {
     static_assert(N > 0, "SmoothStart requires value of N to be non-negative and non-zero.");
     return detail::SmoothStart_helper(t, std::make_index_sequence<N>{});
 }
-
 
 template<std::size_t N, typename T>
 T SmoothStop(const T& t) {
@@ -426,6 +419,6 @@ T SmoothStep(const T& t) {
     return Interpolate(SmoothStart<N>(t), SmoothStop<N>(t), 0.5f);
 }
 
-} //End EasingFunctions
+} // namespace EasingFunctions
 
-} //End MathUtils
+} // namespace MathUtils

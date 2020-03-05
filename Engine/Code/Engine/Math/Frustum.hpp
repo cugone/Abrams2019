@@ -60,5 +60,4 @@ private:
     };
     std::array<Plane3, static_cast<std::size_t>(PlaneDirection::Max)> _planes{};
     std::array<Vector3, 8> _points{};
-
 };

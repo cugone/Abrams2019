@@ -1,7 +1,6 @@
 #include "Engine/Math/IntVector4.hpp"
 
 #include "Engine/Core/StringUtils.hpp"
-
 #include "Engine/Math/IntVector2.hpp"
 #include "Engine/Math/IntVector3.hpp"
 #include "Engine/Math/Vector2.hpp"
@@ -39,74 +38,74 @@ const IntVector4 IntVector4::WYZ_AXIS(0, 1, 1, 1);
 const IntVector4 IntVector4::XYZW_AXIS(1, 1, 1, 1);
 
 IntVector4::IntVector4(int initialX, int initialY, int initialZ, int initialW) noexcept
-    : x(initialX)
-    , y(initialY)
-    , z(initialZ)
-    , w(initialW) {
+: x(initialX)
+, y(initialY)
+, z(initialZ)
+, w(initialW) {
     /* DO NOTHING */
 }
 
 IntVector4::IntVector4(const IntVector2& iv2, int initialZ, int initialW) noexcept
-    : x(iv2.x)
-    , y(iv2.y)
-    , z(initialZ)
-    , w(initialW) {
+: x(iv2.x)
+, y(iv2.y)
+, z(initialZ)
+, w(initialW) {
     /* DO NOTHING */
 }
 
 IntVector4::IntVector4(const Vector2& v2, int initialZ, int initialW) noexcept
-    : x(static_cast<int>(std::floor(v2.x)))
-    , y(static_cast<int>(std::floor(v2.y)))
-    , z(initialZ)
-    , w(initialW) {
+: x(static_cast<int>(std::floor(v2.x)))
+, y(static_cast<int>(std::floor(v2.y)))
+, z(initialZ)
+, w(initialW) {
     /* DO NOTHING */
 }
 
 IntVector4::IntVector4(const Vector2& xy, const Vector2& zw) noexcept
-    : x(static_cast<int>(std::floor(xy.x)))
-    , y(static_cast<int>(std::floor(xy.y)))
-    , z(static_cast<int>(std::floor(zw.x)))
-    , w(static_cast<int>(std::floor(zw.y))) {
+: x(static_cast<int>(std::floor(xy.x)))
+, y(static_cast<int>(std::floor(xy.y)))
+, z(static_cast<int>(std::floor(zw.x)))
+, w(static_cast<int>(std::floor(zw.y))) {
     /* DO NOTHING */
 }
 
 IntVector4::IntVector4(const IntVector2& xy, const IntVector2& zw) noexcept
-    : x(xy.x)
-    , y(xy.y)
-    , z(zw.x)
-    , w(zw.y) {
+: x(xy.x)
+, y(xy.y)
+, z(zw.x)
+, w(zw.y) {
     /* DO NOTHING */
 }
 
 IntVector4::IntVector4(const IntVector3& iv3, int initialW) noexcept
-    : x(iv3.x)
-    , y(iv3.y)
-    , z(iv3.z)
-    , w(initialW) {
+: x(iv3.x)
+, y(iv3.y)
+, z(iv3.z)
+, w(initialW) {
     /* DO NOTHING */
 }
 
 IntVector4::IntVector4(const Vector3& v3, int initialW) noexcept
-    : x(static_cast<int>(std::floor(v3.x)))
-    , y(static_cast<int>(std::floor(v3.y)))
-    , z(static_cast<int>(std::floor(v3.z)))
-    , w(initialW) {
+: x(static_cast<int>(std::floor(v3.x)))
+, y(static_cast<int>(std::floor(v3.y)))
+, z(static_cast<int>(std::floor(v3.z)))
+, w(initialW) {
     /* DO NOTHING */
 }
 
 IntVector4::IntVector4(const Vector4& rhs) noexcept
-    : x(static_cast<int>(std::floor(rhs.x)))
-    , y(static_cast<int>(std::floor(rhs.y)))
-    , z(static_cast<int>(std::floor(rhs.z)))
-    , w(static_cast<int>(std::floor(rhs.w))) {
+: x(static_cast<int>(std::floor(rhs.x)))
+, y(static_cast<int>(std::floor(rhs.y)))
+, z(static_cast<int>(std::floor(rhs.z)))
+, w(static_cast<int>(std::floor(rhs.w))) {
     /* DO NOTHING */
 }
 
 IntVector4::IntVector4(const std::string& value) noexcept
-    : x(0)
-    , y(0)
-    , z(0)
-    , w(0) {
+: x(0)
+, y(0)
+, z(0)
+, w(0) {
     if(value[0] == '[') {
         if(value.back() == ']') {
             std::string contents_str = value.substr(1, value.size() - 1);
@@ -143,4 +142,3 @@ bool IntVector4::operator!=(const IntVector4& rhs) noexcept {
 bool IntVector4::operator==(const IntVector4& rhs) noexcept {
     return x == rhs.x && y == rhs.y && z == rhs.z && w == rhs.w;
 }
-

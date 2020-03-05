@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Engine/Core/Rgba.hpp"
-
 #include "Engine/UI/Element.hpp"
 
 #include <string>
@@ -40,6 +39,7 @@ public:
 
 protected:
     void CalcBoundsFromFont(KerningFont* font);
+
 private:
     KerningFont* _font = nullptr;
     std::string _text{};
@@ -47,4 +47,4 @@ private:
     float _scale = 1.0f;
 };
 
-} //End UI
+} // namespace UI

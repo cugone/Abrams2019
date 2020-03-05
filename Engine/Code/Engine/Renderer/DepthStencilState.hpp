@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Engine/Core/DataUtils.hpp"
-
 #include "Engine/RHI/RHITypes.hpp"
 
 struct ID3D11DepthStencilState;
@@ -34,6 +33,7 @@ public:
     ID3D11DepthStencilState* GetDxDepthStencilState() const noexcept;
     DepthStencilDesc GetDesc() const noexcept;
     void SetDebugName([[maybe_unused]] const std::string& name) const noexcept;
+
 protected:
 private:
     bool CreateDepthStencilState(const RHIDevice* device, const DepthStencilDesc& desc = DepthStencilDesc{}) noexcept;

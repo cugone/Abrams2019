@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Engine/Renderer/DirectX/DX11.hpp"
 #include "Engine/RHI/RHITypes.hpp"
+#include "Engine/Renderer/DirectX/DX11.hpp"
 
 #include <memory>
 
@@ -17,6 +17,7 @@ public:
 
     std::unique_ptr<RHIDevice> CreateDevice(Renderer& renderer) const noexcept;
     static void ReportLiveObjects() noexcept;
+
 protected:
     RHIInstance() = default;
     ~RHIInstance() noexcept;

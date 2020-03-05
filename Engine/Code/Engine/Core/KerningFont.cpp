@@ -4,7 +4,6 @@
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/FileUtils.hpp"
 #include "Engine/Core/StringUtils.hpp"
-
 #include "Engine/Renderer/Material.hpp"
 
 #include <algorithm>
@@ -13,13 +12,11 @@
 #include <sstream>
 
 KerningFont::KerningFont(Renderer& renderer) noexcept
-    : _renderer(renderer)
-{
+: _renderer(renderer) {
     /* DO NOTHING */
 }
 
 float KerningFont::CalculateTextWidth(const KerningFont& font, const std::string& text, float scale /*= 1.0f*/) noexcept {
-
     if(text.find('\n') != std::string::npos) {
         return CalculateLongestMultiline(font, text, scale);
     }
@@ -489,7 +486,6 @@ bool KerningFont::ParseKerningsLine(const std::string& kerningsLine) noexcept {
         }
     }
     return true;
-
 }
 
 bool KerningFont::ParseKerningLine(const std::string& kerningLine) noexcept {
@@ -590,15 +586,15 @@ bool KerningFont::LoadFromXml(std::vector<unsigned char>& buffer) noexcept {
     if(auto xml_pages = xml_root->FirstChildElement("pages")) {
         DataUtils::ValidateXmlElement(*xml_pages, "pages", "page", "");
         _image_paths.resize(_common.page_count);
-        {//Scope constraint
+        { //Scope constraint
             namespace FS = std::filesystem;
             DataUtils::ForEachChildElement(*xml_pages, "page",
-            [this](const XMLElement& elem) {
-                DataUtils::ValidateXmlElement(elem, "page", "", "id,file");
-                unsigned int page_id = DataUtils::ParseXmlAttribute(elem, "id", 0u);
-                auto page_file = DataUtils::ParseXmlAttribute(elem, "file", std::string{});
-                _image_paths[page_id] = page_file;
-            });
+                                           [this](const XMLElement& elem) {
+                                               DataUtils::ValidateXmlElement(elem, "page", "", "id,file");
+                                               unsigned int page_id = DataUtils::ParseXmlAttribute(elem, "id", 0u);
+                                               auto page_file = DataUtils::ParseXmlAttribute(elem, "file", std::string{});
+                                               _image_paths[page_id] = page_file;
+                                           });
         }
     }
     if(auto xml_chars = xml_root->FirstChildElement("chars")) {
@@ -606,36 +602,36 @@ bool KerningFont::LoadFromXml(std::vector<unsigned char>& buffer) noexcept {
 
         _char_count = DataUtils::ParseXmlAttribute(*xml_chars, "count", _char_count);
         DataUtils::ForEachChildElement(*xml_chars, "char",
-        [this](const XMLElement& elem) {
-                DataUtils::ValidateXmlElement(elem, "char", "", "id,x,y,width,height,xoffset,yoffset,xadvance,page,chnl");
-                int id = DataUtils::ParseXmlAttribute(elem, "id", 0u);
-                CharDef t;
-                t.position.x = DataUtils::ParseXmlAttribute(elem, "x", t.position.x);
-                t.position.y = DataUtils::ParseXmlAttribute(elem, "y", t.position.y);
-                t.dimensions.x = DataUtils::ParseXmlAttribute(elem, "width", t.dimensions.x);
-                t.dimensions.y = DataUtils::ParseXmlAttribute(elem, "height", t.dimensions.y);
-                t.offsets.x = DataUtils::ParseXmlAttribute(elem, "xoffset", t.offsets.x);
-                t.offsets.y = DataUtils::ParseXmlAttribute(elem, "yoffset", t.offsets.y);
-                t.xadvance = DataUtils::ParseXmlAttribute(elem, "xadvance", t.xadvance);
-                t.page_id = DataUtils::ParseXmlAttribute(elem, "page", t.page_id);
-                t.channel_id = DataUtils::ParseXmlAttribute(elem, "chnl", t.channel_id);
+                                       [this](const XMLElement& elem) {
+                                           DataUtils::ValidateXmlElement(elem, "char", "", "id,x,y,width,height,xoffset,yoffset,xadvance,page,chnl");
+                                           int id = DataUtils::ParseXmlAttribute(elem, "id", 0u);
+                                           CharDef t;
+                                           t.position.x = DataUtils::ParseXmlAttribute(elem, "x", t.position.x);
+                                           t.position.y = DataUtils::ParseXmlAttribute(elem, "y", t.position.y);
+                                           t.dimensions.x = DataUtils::ParseXmlAttribute(elem, "width", t.dimensions.x);
+                                           t.dimensions.y = DataUtils::ParseXmlAttribute(elem, "height", t.dimensions.y);
+                                           t.offsets.x = DataUtils::ParseXmlAttribute(elem, "xoffset", t.offsets.x);
+                                           t.offsets.y = DataUtils::ParseXmlAttribute(elem, "yoffset", t.offsets.y);
+                                           t.xadvance = DataUtils::ParseXmlAttribute(elem, "xadvance", t.xadvance);
+                                           t.page_id = DataUtils::ParseXmlAttribute(elem, "page", t.page_id);
+                                           t.channel_id = DataUtils::ParseXmlAttribute(elem, "chnl", t.channel_id);
 
-                _charmap.insert_or_assign(id, t);
-        });
+                                           _charmap.insert_or_assign(id, t);
+                                       });
     }
     if(auto xml_kernings = xml_root->FirstChildElement("kernings")) {
         DataUtils::ValidateXmlElement(*xml_kernings, "kernings", "kerning", "count");
         _kerns_count = DataUtils::ParseXmlAttribute(*xml_kernings, "count", _char_count);
         DataUtils::ForEachChildElement(*xml_kernings, "kerning",
-        [this](const XMLElement& elem) {
-            DataUtils::ValidateXmlElement(elem, "kerning", "", "first,second,amount");
-            KerningDef def{};
-            def.first = DataUtils::ParseXmlAttribute(elem, "first", def.first);
-            def.second = DataUtils::ParseXmlAttribute(elem, "second", def.second);
-            def.amount = DataUtils::ParseXmlAttribute(elem, "amount", def.amount);
+                                       [this](const XMLElement& elem) {
+                                           DataUtils::ValidateXmlElement(elem, "kerning", "", "first,second,amount");
+                                           KerningDef def{};
+                                           def.first = DataUtils::ParseXmlAttribute(elem, "first", def.first);
+                                           def.second = DataUtils::ParseXmlAttribute(elem, "second", def.second);
+                                           def.amount = DataUtils::ParseXmlAttribute(elem, "amount", def.amount);
 
-            _kernmap.insert_or_assign(std::make_pair(def.first, def.second), def.amount);
-        });
+                                           _kernmap.insert_or_assign(std::make_pair(def.first, def.second), def.amount);
+                                       });
     } else {
         DebuggerPrintf("No kerning pairs found in font \"%s\"\n", _name.c_str());
     }
@@ -737,105 +733,99 @@ bool KerningFont::LoadFromBinary(std::vector<unsigned char>& buffer) noexcept {
     constexpr const uint8_t BLOCK_ID_KERNINGS = 5;
     while(bss.read(reinterpret_cast<char*>(&block_id), sizeof(block_id))) {
         switch(block_id) {
-            case BLOCK_ID_INFO:
-            {
-                ++successful_block_reads;
-                bss.read(reinterpret_cast<char*>(&block_size), sizeof(block_size));
-                bss.read(reinterpret_cast<char*>(&info), sizeof(info));
-                std::string font_name(block_size - sizeof(info), '\0');
-                bss.read(font_name.data(), font_name.size());
-                if(info.font_size < 0) {
-                    DebuggerPrintf("%s uses \"Match char height\" option which will result in negative font sizes.\n", _filepath.string().c_str());
+        case BLOCK_ID_INFO: {
+            ++successful_block_reads;
+            bss.read(reinterpret_cast<char*>(&block_size), sizeof(block_size));
+            bss.read(reinterpret_cast<char*>(&info), sizeof(info));
+            std::string font_name(block_size - sizeof(info), '\0');
+            bss.read(font_name.data(), font_name.size());
+            if(info.font_size < 0) {
+                DebuggerPrintf("%s uses \"Match char height\" option which will result in negative font sizes.\n", _filepath.string().c_str());
+            }
+            _info.charset = info.char_set;
+            _info.em_size = info.font_size;
+            _info.face = font_name.c_str();
+            _info.is_aliased = info.aa != 0;
+            _info.is_smoothed = (info.suibfr3_bitfield & 0b10000000) != 0;
+            _info.is_unicode = (info.suibfr3_bitfield & 0b01000000) != 0;
+            _info.is_italic = (info.suibfr3_bitfield & 0b00100000) != 0;
+            _info.is_bold = (info.suibfr3_bitfield & 0b00010000) != 0;
+            _info.is_fixedHeight = (info.suibfr3_bitfield & 0b00001000) != 0;
+            _info.outline = info.outline;
+            _info.padding = IntVector4(info.padding_up, info.padding_right, info.padding_down, info.padding_left);
+            _info.spacing = IntVector2(info.spacing_h, info.spacing_v);
+            _info.stretch_height = info.stretch_height / 100.0f;
+            _name = StringUtils::ReplaceAll(_info.face, " ", "") + std::to_string(_info.em_size);
+            break;
+        }
+        case BLOCK_ID_COMMON: {
+            ++successful_block_reads;
+            bss.read(reinterpret_cast<char*>(&block_size), sizeof(block_size));
+            bss.read(reinterpret_cast<char*>(&common), block_size);
+            _common.alpha_channel = common.alpha_channel;
+            _common.base = common.base;
+            _common.blue_channel = common.blue_channel;
+            _common.green_channel = common.green_channel;
+            _common.is_packed = (common.r7p_bitfield & 0b00000001) != 0;
+            _common.line_height = common.line_height;
+            _common.page_count = common.pages;
+            _image_paths.resize(_common.page_count);
+            _common.red_channel = common.red_channel;
+            _common.scale = IntVector2(common.scale_w, common.scale_h);
+            break;
+        }
+        case BLOCK_ID_PAGES: {
+            ++successful_block_reads;
+            bss.read(reinterpret_cast<char*>(&block_size), sizeof(block_size));
+            uint8_t page_name_length = (uint8_t)(((uint32_t)block_size / (uint32_t)_common.page_count) - (uint32_t)1);
+            for(std::size_t i = 0; i < static_cast<std::size_t>(_common.page_count); ++i) {
+                _image_paths[i].resize(page_name_length);
+                bss.read(_image_paths[i].data(), _image_paths[i].size() + 1);
+            }
+            break;
+        }
+        case BLOCK_ID_CHARS: {
+            ++successful_block_reads;
+            bss.read(reinterpret_cast<char*>(&block_size), sizeof(block_size));
+            uint32_t chars_size = sizeof(chars);
+            uint32_t char_count = block_size / chars_size;
+            for(uint32_t i = 0; i < char_count; ++i) {
+                if(!bss.read(reinterpret_cast<char*>(&chars), chars_size)) {
+                    DebuggerPrintf("%s is not a BMFont file.\n", _filepath.string().c_str());
+                    return false;
                 }
-                _info.charset = info.char_set;
-                _info.em_size = info.font_size;
-                _info.face = font_name.c_str();
-                _info.is_aliased = info.aa != 0;
-                _info.is_smoothed    = (info.suibfr3_bitfield & 0b10000000) != 0;
-                _info.is_unicode     = (info.suibfr3_bitfield & 0b01000000) != 0;
-                _info.is_italic      = (info.suibfr3_bitfield & 0b00100000) != 0;
-                _info.is_bold        = (info.suibfr3_bitfield & 0b00010000) != 0;
-                _info.is_fixedHeight = (info.suibfr3_bitfield & 0b00001000) != 0;
-                _info.outline = info.outline;
-                _info.padding = IntVector4(info.padding_up, info.padding_right, info.padding_down, info.padding_left);
-                _info.spacing = IntVector2(info.spacing_h, info.spacing_v);
-                _info.stretch_height = info.stretch_height / 100.0f;
-                _name = StringUtils::ReplaceAll(_info.face, " ", "") + std::to_string(_info.em_size);
-                break;
+                CharDef d{};
+                d.channel_id = chars.channel;
+                d.dimensions = IntVector2(chars.width, chars.height);
+                d.id = chars.id;
+                d.offsets = IntVector2(chars.x_offset, chars.y_offset);
+                d.page_id = chars.page;
+                d.position = IntVector2(chars.x, chars.y);
+                d.xadvance = chars.x_advance;
+                _charmap.insert_or_assign(d.id, d);
             }
-            case BLOCK_ID_COMMON:
-            {
-                ++successful_block_reads;
-                bss.read(reinterpret_cast<char*>(&block_size), sizeof(block_size));
-                bss.read(reinterpret_cast<char*>(&common), block_size);
-                _common.alpha_channel = common.alpha_channel;
-                _common.base = common.base;
-                _common.blue_channel = common.blue_channel;
-                _common.green_channel = common.green_channel;
-                _common.is_packed = (common.r7p_bitfield & 0b00000001) != 0;
-                _common.line_height = common.line_height;
-                _common.page_count = common.pages;
-                _image_paths.resize(_common.page_count);
-                _common.red_channel = common.red_channel;
-                _common.scale = IntVector2(common.scale_w, common.scale_h);
-                break;
-            }
-            case BLOCK_ID_PAGES:
-            {
-                ++successful_block_reads;
-                bss.read(reinterpret_cast<char*>(&block_size), sizeof(block_size));
-                uint8_t page_name_length = (uint8_t)(((uint32_t)block_size / (uint32_t)_common.page_count) - (uint32_t)1);
-                for(std::size_t i = 0; i < static_cast<std::size_t>(_common.page_count); ++i) {
-                    _image_paths[i].resize(page_name_length);
-                    bss.read(_image_paths[i].data(), _image_paths[i].size() + 1);
+            break;
+        }
+        case BLOCK_ID_KERNINGS: {
+            ++successful_block_reads;
+            bss.read(reinterpret_cast<char*>(&block_size), sizeof(block_size));
+            uint32_t kerns_size = sizeof(kerning);
+            uint32_t kerns_count = block_size / kerns_size;
+            for(uint32_t i = 0; i < kerns_count; ++i) {
+                if(bss.read(reinterpret_cast<char*>(&kerning), kerns_size)) {
+                    KerningDef d{};
+                    d.first = kerning.first;
+                    d.second = kerning.second;
+                    d.amount = kerning.amount;
+                    _kernmap.insert_or_assign(std::make_pair(d.first, d.second), d.amount);
                 }
-                break;
             }
-            case BLOCK_ID_CHARS:
-            {
-                ++successful_block_reads;
-                bss.read(reinterpret_cast<char*>(&block_size), sizeof(block_size));
-                uint32_t chars_size = sizeof(chars);
-                uint32_t char_count = block_size / chars_size;
-                for(uint32_t i = 0; i < char_count; ++i) {
-                    if(!bss.read(reinterpret_cast<char*>(&chars), chars_size)) {
-                        DebuggerPrintf("%s is not a BMFont file.\n", _filepath.string().c_str());
-                        return false;
-                    }
-                    CharDef d{};
-                    d.channel_id = chars.channel;
-                    d.dimensions = IntVector2(chars.width, chars.height);
-                    d.id = chars.id;
-                    d.offsets = IntVector2(chars.x_offset, chars.y_offset);
-                    d.page_id = chars.page;
-                    d.position = IntVector2(chars.x, chars.y);
-                    d.xadvance = chars.x_advance;
-                    _charmap.insert_or_assign(d.id, d);
-                }
-                break;
-            }
-            case BLOCK_ID_KERNINGS:
-            {
-                ++successful_block_reads;
-                bss.read(reinterpret_cast<char*>(&block_size), sizeof(block_size));
-                uint32_t kerns_size = sizeof(kerning);
-                uint32_t kerns_count = block_size / kerns_size;
-                for(uint32_t i = 0; i < kerns_count; ++i) {
-                    if(bss.read(reinterpret_cast<char*>(&kerning), kerns_size)) {
-                        KerningDef d{};
-                        d.first = kerning.first;
-                        d.second = kerning.second;
-                        d.amount = kerning.amount;
-                        _kernmap.insert_or_assign(std::make_pair(d.first, d.second), d.amount);
-                    }
-                }
-                break;
-            }
-            default:
-            {
-                DebuggerPrintf("BMF LAYOUT HAS CHANGED. See https://www.angelcode.com/products/bmfont/doc/file_format.html#bin for updates!\n");
-                return false;
-            }
+            break;
+        }
+        default: {
+            DebuggerPrintf("BMF LAYOUT HAS CHANGED. See https://www.angelcode.com/products/bmfont/doc/file_format.html#bin for updates!\n");
+            return false;
+        }
         }
     }
     if(successful_block_reads < BLOCK_ID_KERNINGS) {

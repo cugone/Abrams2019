@@ -1,8 +1,7 @@
 #include "Engine/Core/Stopwatch.hpp"
 
 Stopwatch::Stopwatch(unsigned int frequency) noexcept
-    : Stopwatch(TimeUtils::FPSeconds(1.0f / static_cast<float>(frequency)))
-{
+: Stopwatch(TimeUtils::FPSeconds(1.0f / static_cast<float>(frequency))) {
     /* DO NOTHING */
 }
 
@@ -12,8 +11,8 @@ Stopwatch::Stopwatch(const TimeUtils::FPSeconds& seconds) noexcept {
 
 void Stopwatch::SetSeconds(const TimeUtils::FPSeconds& seconds) noexcept {
     interval_time = seconds;
-    target_time = TimeUtils::FPSeconds{ TimeUtils::GetCurrentTimeElapsed()
-        + seconds };
+    target_time = TimeUtils::FPSeconds{TimeUtils::GetCurrentTimeElapsed()
+                                       + seconds};
 }
 
 void Stopwatch::SetFrequency(unsigned int hz) noexcept {
@@ -53,6 +52,6 @@ unsigned int Stopwatch::DecrementAll() noexcept {
 }
 
 void Stopwatch::Reset() noexcept {
-    target_time = TimeUtils::FPSeconds{ TimeUtils::GetCurrentTimeElapsed()
-                             + interval_time };
+    target_time = TimeUtils::FPSeconds{TimeUtils::GetCurrentTimeElapsed()
+                                       + interval_time};
 }

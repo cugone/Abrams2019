@@ -1,7 +1,6 @@
 #include "Engine/RHI/RHIDeviceContext.hpp"
 
 #include "Engine/Core/Rgba.hpp"
-
 #include "Engine/Renderer/BlendState.hpp"
 #include "Engine/Renderer/Buffer.hpp"
 #include "Engine/Renderer/ConstantBuffer.hpp"
@@ -9,19 +8,18 @@
 #include "Engine/Renderer/IndexBuffer.hpp"
 #include "Engine/Renderer/InputLayout.hpp"
 #include "Engine/Renderer/Material.hpp"
+#include "Engine/Renderer/RasterState.hpp"
+#include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Renderer/Sampler.hpp"
 #include "Engine/Renderer/Shader.hpp"
 #include "Engine/Renderer/ShaderProgram.hpp"
 #include "Engine/Renderer/StructuredBuffer.hpp"
-#include "Engine/Renderer/RasterState.hpp"
-#include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/VertexBuffer.hpp"
 
 RHIDeviceContext::RHIDeviceContext(const RHIDevice& parentDevice, const Microsoft::WRL::ComPtr<ID3D11DeviceContext>& deviceContext) noexcept
-    : _device(parentDevice)
-    , _dx_context(deviceContext)
-{
+: _device(parentDevice)
+, _dx_context(deviceContext) {
     /* DO NOTHING */
 }
 
@@ -61,14 +59,14 @@ void RHIDeviceContext::SetMaterial(Material* material) noexcept {
 
 void RHIDeviceContext::SetTexture(unsigned int index, Texture* texture) noexcept {
     if(texture) {
-        ID3D11ShaderResourceView* srvs = { texture->GetShaderResourceView() };
+        ID3D11ShaderResourceView* srvs = {texture->GetShaderResourceView()};
         _dx_context->VSSetShaderResources(index, 1, &srvs);
         _dx_context->PSSetShaderResources(index, 1, &srvs);
         _dx_context->DSSetShaderResources(index, 1, &srvs);
         _dx_context->HSSetShaderResources(index, 1, &srvs);
         _dx_context->GSSetShaderResources(index, 1, &srvs);
     } else {
-        ID3D11ShaderResourceView* no_srvs = { nullptr };
+        ID3D11ShaderResourceView* no_srvs = {nullptr};
         _dx_context->VSSetShaderResources(index, 1, &no_srvs);
         _dx_context->PSSetShaderResources(index, 1, &no_srvs);
         _dx_context->DSSetShaderResources(index, 1, &no_srvs);
@@ -79,10 +77,10 @@ void RHIDeviceContext::SetTexture(unsigned int index, Texture* texture) noexcept
 
 void RHIDeviceContext::SetUnorderedAccessView(unsigned int index, Texture* texture) noexcept {
     if(texture) {
-        ID3D11UnorderedAccessView* uavs = { texture->GetUnorderedAccessView() };
+        ID3D11UnorderedAccessView* uavs = {texture->GetUnorderedAccessView()};
         _dx_context->CSSetUnorderedAccessViews(index, 1, &uavs, nullptr);
     } else {
-        ID3D11UnorderedAccessView* no_uavs = { nullptr };
+        ID3D11UnorderedAccessView* no_uavs = {nullptr};
         _dx_context->CSSetUnorderedAccessViews(index, 1, &no_uavs, nullptr);
     }
 }
@@ -94,7 +92,7 @@ void RHIDeviceContext::SetVertexBuffer(unsigned int startIndex, VertexBuffer* bu
         ID3D11Buffer* const dx_buffer = buffer->GetDxBuffer().Get();
         _dx_context->IASetVertexBuffers(startIndex, 1, &dx_buffer, &stride, &offsets);
     } else {
-        ID3D11Buffer* nobuffer[1] = { nullptr };
+        ID3D11Buffer* nobuffer[1] = {nullptr};
         _dx_context->IASetVertexBuffers(startIndex, 1, nobuffer, &stride, &offsets);
     }
 }
@@ -117,7 +115,7 @@ void RHIDeviceContext::SetConstantBuffer(unsigned int index, ConstantBuffer* buf
         _dx_context->HSSetConstantBuffers(index, 1, &dx_buffer);
         _dx_context->GSSetConstantBuffers(index, 1, &dx_buffer);
     } else {
-        ID3D11Buffer* nobuffer[1] = { nullptr };
+        ID3D11Buffer* nobuffer[1] = {nullptr};
         _dx_context->VSSetConstantBuffers(index, 1, nobuffer);
         _dx_context->PSSetConstantBuffers(index, 1, nobuffer);
         _dx_context->DSSetConstantBuffers(index, 1, nobuffer);
@@ -136,7 +134,7 @@ void RHIDeviceContext::SetStructuredBuffer(unsigned int index, StructuredBuffer*
         _dx_context->GSSetShaderResources(index + StructuredBufferSlotOffset, 1, &dx_buffer);
         _dx_context->CSSetShaderResources(index + StructuredBufferSlotOffset, 1, &dx_buffer);
     } else {
-        ID3D11ShaderResourceView* nobuffer[1] = { nullptr };
+        ID3D11ShaderResourceView* nobuffer[1] = {nullptr};
         _dx_context->VSSetShaderResources(index + StructuredBufferSlotOffset, 1, nobuffer);
         _dx_context->PSSetShaderResources(index + StructuredBufferSlotOffset, 1, nobuffer);
         _dx_context->DSSetShaderResources(index + StructuredBufferSlotOffset, 1, nobuffer);
@@ -148,20 +146,20 @@ void RHIDeviceContext::SetStructuredBuffer(unsigned int index, StructuredBuffer*
 
 void RHIDeviceContext::SetComputeTexture(unsigned int index, Texture* texture) noexcept {
     if(texture) {
-        ID3D11ShaderResourceView* srvs = { texture->GetShaderResourceView() };
+        ID3D11ShaderResourceView* srvs = {texture->GetShaderResourceView()};
         _dx_context->CSSetShaderResources(index, 1, &srvs);
     } else {
-        ID3D11ShaderResourceView* no_srvs = { nullptr };
+        ID3D11ShaderResourceView* no_srvs = {nullptr};
         _dx_context->CSSetShaderResources(index, 1, &no_srvs);
     }
 }
 
 void RHIDeviceContext::SetComputeConstantBuffer(unsigned int index, ConstantBuffer* buffer) noexcept {
     if(buffer) {
-        ID3D11Buffer * const dx_buffer = buffer->GetDxBuffer().Get();
+        ID3D11Buffer* const dx_buffer = buffer->GetDxBuffer().Get();
         _dx_context->CSSetConstantBuffers(index, 1, &dx_buffer);
     } else {
-        ID3D11Buffer* nobuffer[1] = { nullptr };
+        ID3D11Buffer* nobuffer[1] = {nullptr};
         _dx_context->CSSetConstantBuffers(index, 1, nobuffer);
     }
 }
@@ -171,7 +169,7 @@ void RHIDeviceContext::SetComputeStructuredBuffer(unsigned int index, Structured
         ID3D11ShaderResourceView* const dx_buffer = buffer->dx_srv.Get();
         _dx_context->CSSetShaderResources(index + StructuredBufferSlotOffset, 1, &dx_buffer);
     } else {
-        ID3D11ShaderResourceView* nobuffer[1] = { nullptr };
+        ID3D11ShaderResourceView* nobuffer[1] = {nullptr};
         _dx_context->CSSetShaderResources(index + StructuredBufferSlotOffset, 1, nobuffer);
     }
 }
@@ -248,7 +246,7 @@ void RHIDeviceContext::SetBlendState(BlendState* blendState /*= nullptr*/) noexc
 
 void RHIDeviceContext::SetSampler(Sampler* sampler) noexcept {
     if(sampler == nullptr) {
-        ID3D11SamplerState* no_samplers[D3D11_COMMONSHADER_SAMPLER_SLOT_COUNT] = { nullptr };
+        ID3D11SamplerState* no_samplers[D3D11_COMMONSHADER_SAMPLER_SLOT_COUNT] = {nullptr};
         _dx_context->VSSetSamplers(0, D3D11_COMMONSHADER_SAMPLER_SLOT_COUNT, no_samplers);
         _dx_context->PSSetSamplers(0, D3D11_COMMONSHADER_SAMPLER_SLOT_COUNT, no_samplers);
         _dx_context->DSSetSamplers(0, D3D11_COMMONSHADER_SAMPLER_SLOT_COUNT, no_samplers);
@@ -273,7 +271,7 @@ void RHIDeviceContext::UnbindAllConstantBuffers() noexcept {
 
 void RHIDeviceContext::UnbindConstantBuffers() noexcept {
     constexpr auto nobuffers_count = D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT;
-    ID3D11Buffer* nobuffers[nobuffers_count] = { nullptr };
+    ID3D11Buffer* nobuffers[nobuffers_count] = {nullptr};
     _dx_context->VSSetConstantBuffers(0, nobuffers_count, nobuffers);
     _dx_context->PSSetConstantBuffers(0, nobuffers_count, nobuffers);
     _dx_context->DSSetConstantBuffers(0, nobuffers_count, nobuffers);
@@ -282,7 +280,7 @@ void RHIDeviceContext::UnbindConstantBuffers() noexcept {
 }
 
 void RHIDeviceContext::UnbindShaderResources() noexcept {
-    ID3D11ShaderResourceView* no_srvs[D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT] = { nullptr };
+    ID3D11ShaderResourceView* no_srvs[D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT] = {nullptr};
     _dx_context->VSSetShaderResources(0, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT, no_srvs);
     _dx_context->PSSetShaderResources(0, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT, no_srvs);
     _dx_context->DSSetShaderResources(0, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT, no_srvs);
@@ -292,7 +290,7 @@ void RHIDeviceContext::UnbindShaderResources() noexcept {
 
 void RHIDeviceContext::UnbindAllCustomConstantBuffers() noexcept {
     constexpr auto nobuffers_count = D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT - Renderer::CONSTANT_BUFFER_START_INDEX;
-    ID3D11Buffer* nobuffers[nobuffers_count] = { nullptr };
+    ID3D11Buffer* nobuffers[nobuffers_count] = {nullptr};
     _dx_context->VSSetConstantBuffers(Renderer::CONSTANT_BUFFER_START_INDEX, nobuffers_count, nobuffers);
     _dx_context->PSSetConstantBuffers(Renderer::CONSTANT_BUFFER_START_INDEX, nobuffers_count, nobuffers);
     _dx_context->DSSetConstantBuffers(Renderer::CONSTANT_BUFFER_START_INDEX, nobuffers_count, nobuffers);
@@ -301,24 +299,24 @@ void RHIDeviceContext::UnbindAllCustomConstantBuffers() noexcept {
 }
 
 void RHIDeviceContext::UnbindComputeShaderResources() noexcept {
-    ID3D11ShaderResourceView* no_srvs[D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT] = { nullptr };
+    ID3D11ShaderResourceView* no_srvs[D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT] = {nullptr};
     _dx_context->CSSetShaderResources(0, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT, no_srvs);
 }
 
 void RHIDeviceContext::UnbindAllComputeUAVs() noexcept {
-    ID3D11UnorderedAccessView* no_uavs[D3D11_1_UAV_SLOT_COUNT] = { nullptr };
+    ID3D11UnorderedAccessView* no_uavs[D3D11_1_UAV_SLOT_COUNT] = {nullptr};
     _dx_context->CSSetUnorderedAccessViews(0, D3D11_1_UAV_SLOT_COUNT, no_uavs, nullptr);
 }
 
 void RHIDeviceContext::UnbindComputeCustomConstantBuffers() noexcept {
     constexpr auto nobuffers_count = D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT - Renderer::CONSTANT_BUFFER_START_INDEX;
-    ID3D11Buffer* nobuffers[nobuffers_count] = { nullptr };
+    ID3D11Buffer* nobuffers[nobuffers_count] = {nullptr};
     _dx_context->CSSetConstantBuffers(Renderer::CONSTANT_BUFFER_START_INDEX, nobuffers_count, nobuffers);
 }
 
 void RHIDeviceContext::UnbindAllComputeConstantBuffers() noexcept {
     constexpr auto nobuffers_count = D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT;
-    ID3D11Buffer* nobuffers[nobuffers_count] = { nullptr };
+    ID3D11Buffer* nobuffers[nobuffers_count] = {nullptr};
     _dx_context->CSSetConstantBuffers(0, nobuffers_count, nobuffers);
 }
 

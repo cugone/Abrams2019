@@ -1,8 +1,8 @@
 #pragma once
 
-#include <string>
-
 #include "Engine/Math/Vector3.hpp"
+
+#include <string>
 
 class Matrix4;
 

@@ -4,16 +4,16 @@
 
 #if defined(PLATFORM_WINDOWS)
 
-#define WIN32_LEAN_AND_MEAN
-#define NOMINMAX
-#include <windows.h>
-#include <windowsx.h>
+    #define WIN32_LEAN_AND_MEAN
+    #define NOMINMAX
+    #include <windows.h>
+    #include <windowsx.h>
 
-#ifdef NETWORKING
-#include <WinSock2.h>
-#include <WS2tcpip.h>
+    #ifdef NETWORKING
+        #include <WS2tcpip.h>
+        #include <WinSock2.h>
 
-#pragma comment(lib, "ws2_32.lib")
-#endif
+        #pragma comment(lib, "ws2_32.lib")
+    #endif
 
 #endif

@@ -1,7 +1,6 @@
 #include "Engine/Math/IntVector2.hpp"
 
 #include "Engine/Core/StringUtils.hpp"
-
 #include "Engine/Math/IntVector3.hpp"
 #include "Engine/Math/Vector2.hpp"
 
@@ -16,30 +15,26 @@ const IntVector2 IntVector2::XY_AXIS(1, 1);
 const IntVector2 IntVector2::YX_AXIS(1, 1);
 
 IntVector2::IntVector2(int initialX, int initialY) noexcept
-    : x(initialX)
-    , y(initialY)
-{
+: x(initialX)
+, y(initialY) {
     /* DO NOTHING */
 }
 
 IntVector2::IntVector2(const Vector2& v2) noexcept
-    : x(static_cast<int>(std::floor(v2.x)))
-    , y(static_cast<int>(std::floor(v2.y)))
-{
+: x(static_cast<int>(std::floor(v2.x)))
+, y(static_cast<int>(std::floor(v2.y))) {
     /* DO NOTHING */
 }
 
 IntVector2::IntVector2(const IntVector3& iv3) noexcept
-    : x(iv3.x)
-    , y(iv3.y)
-{
+: x(iv3.x)
+, y(iv3.y) {
     /* DO NOTHING */
 }
 
 IntVector2::IntVector2(const std::string& value) noexcept
-    : x(0)
-    , y(0)
-{
+: x(0)
+, y(0) {
     if(value[0] == '[') {
         if(value.back() == ']') {
             std::string contents_str = value.substr(1, value.size() - 1);
@@ -47,9 +42,9 @@ IntVector2::IntVector2(const std::string& value) noexcept
             auto s = values.size();
             for(std::size_t i = 0; i < s; ++i) {
                 switch(i) {
-                    case 0: x = std::stoi(values[i]); break;
-                    case 1: y = std::stoi(values[i]); break;
-                    default: break;
+                case 0: x = std::stoi(values[i]); break;
+                case 1: y = std::stoi(values[i]); break;
+                default: break;
                 }
             }
         }
@@ -173,7 +168,7 @@ void IntVector2::SetXY(int newX, int newY) noexcept {
     y = newY;
 }
 
-std::pair<int,int> IntVector2::GetXY() const noexcept {
+std::pair<int, int> IntVector2::GetXY() const noexcept {
     return std::make_pair(x, y);
 }
 
@@ -186,9 +181,12 @@ bool IntVector2::operator==(const IntVector2& rhs) const noexcept {
 }
 
 bool IntVector2::operator<(const IntVector2& rhs) const noexcept {
-    if(x < rhs.x) return true;
-    if(rhs.x < x) return false;
-    if(y < rhs.y) return true;
+    if(x < rhs.x)
+        return true;
+    if(rhs.x < x)
+        return false;
+    if(y < rhs.y)
+        return true;
     return false;
 }
 

@@ -1,25 +1,22 @@
 #include "Engine/UI/Canvas.hpp"
 
 #include "Engine/Core/ErrorWarningAssert.hpp"
-
+#include "Engine/RHI/RHIOutput.hpp"
 #include "Engine/Renderer/DepthStencilState.hpp"
 #include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/Texture2D.hpp"
-
-#include "Engine/RHI/RHIOutput.hpp"
 
 #include <sstream>
 
 namespace UI {
 
 Canvas::Canvas(Renderer& renderer, float reference_resolution, Texture* target_texture /*= nullptr*/, Texture* target_depthStencil /*= nullptr*/)
-    : Element()
-    , _renderer(renderer)
-    , _target_texture(target_texture)
-    , _target_depthstencil(target_depthStencil)
-    , _reference_resolution(reference_resolution)
-{
+: Element()
+, _renderer(renderer)
+, _target_texture(target_texture)
+, _target_depthstencil(target_depthStencil)
+, _reference_resolution(reference_resolution) {
     if(!_target_texture) {
         _target_texture = _renderer.GetOutput()->GetBackBuffer();
     }
@@ -33,7 +30,7 @@ Canvas::Canvas(Renderer& renderer, float reference_resolution, Texture* target_t
 
     Vector2 dimensions{};
     CalcDimensionsAndAspectRatio(dimensions, _aspect_ratio);
-    SetSize(Metric{ Ratio{}, dimensions });
+    SetSize(Metric{Ratio{}, dimensions});
 
     auto desc = DepthStencilDesc{};
     desc.stencil_enabled = true;
@@ -64,7 +61,7 @@ void Canvas::SetupMVPFromTargetAndCamera(Renderer& renderer) const {
     auto target_dims = Vector2((float)texture_dims.x, (float)texture_dims.y);
     Vector2 leftBottom = Vector2(0.0f, 1.0f) * target_dims;
     Vector2 rightTop = Vector2(1.0f, 0.0f) * target_dims;
-    Vector2 nearFar{ 0.0f, 1.0f };
+    Vector2 nearFar{0.0f, 1.0f};
     _camera.SetupView(leftBottom, rightTop, nearFar, _aspect_ratio);
     renderer.SetCamera(_camera);
     renderer.SetModelMatrix(GetWorldTransform());
@@ -103,7 +100,6 @@ void Canvas::CalcDimensionsAndAspectRatio(Vector2& dimensions, float& aspectRati
     dimensions = dims;
 }
 
-
 void Canvas::SetTargetTexture(Texture* target, Texture* depthstencil) {
     if(!target) {
         target = _renderer.GetOutput()->GetBackBuffer();
@@ -122,4 +118,4 @@ void Canvas::SetTargetTexture(Texture* target, Texture* depthstencil) {
     SetSize(m);
 }
 
-} //End UI
+} // namespace UI

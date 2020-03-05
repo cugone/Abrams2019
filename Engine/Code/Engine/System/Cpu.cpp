@@ -3,14 +3,12 @@
 #include "Engine/Core/DataUtils.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Core/Win.hpp"
-
 #include "Engine/System/OS.hpp"
 
 #include <iomanip>
 #include <memory>
 #include <sstream>
 #include <string>
-
 
 std::string StringUtils::to_string(const System::Cpu::ProcessorArchitecture& architecture) noexcept {
     using namespace System::Cpu;
@@ -68,9 +66,9 @@ System::Cpu::CpuDesc System::Cpu::GetCpuDesc() noexcept {
 std::ostream& System::Cpu::operator<<(std::ostream& out, const System::Cpu::CpuDesc& cpu) noexcept {
     auto old_fmt = out.flags();
     auto old_w = out.width();
-    out << std::left << std::setw(25) << "Processor Type:"           << std::right << std::setw(27) << StringUtils::to_string(cpu.type) << '\n';
-    out << std::left << std::setw(25) << "Socket Count:"             << std::right << std::setw(27) << cpu.socketCount  << '\n';
-    out << std::left << std::setw(25) << "Logical Processor Count:"  << std::right << std::setw(27) << cpu.logicalCount << '\n';
+    out << std::left << std::setw(25) << "Processor Type:" << std::right << std::setw(27) << StringUtils::to_string(cpu.type) << '\n';
+    out << std::left << std::setw(25) << "Socket Count:" << std::right << std::setw(27) << cpu.socketCount << '\n';
+    out << std::left << std::setw(25) << "Logical Processor Count:" << std::right << std::setw(27) << cpu.logicalCount << '\n';
     out.flags(old_fmt);
     out.width(old_w);
     return out;
@@ -79,19 +77,16 @@ std::ostream& System::Cpu::operator<<(std::ostream& out, const System::Cpu::CpuD
 SYSTEM_INFO GetSystemInfo() noexcept {
     SYSTEM_INFO info{};
     switch(System::OS::GetOperatingSystemArchitecture()) {
-    case System::OS::OperatingSystemArchitecture::x86:
-    {
+    case System::OS::OperatingSystemArchitecture::x86: {
         ::GetSystemInfo(&info);
         return info;
     }
-    case System::OS::OperatingSystemArchitecture::x64:
-    {
+    case System::OS::OperatingSystemArchitecture::x64: {
         ::GetNativeSystemInfo(&info);
         return info;
     }
     case System::OS::OperatingSystemArchitecture::Unknown:
-    default:
-    {
+    default: {
         return info;
     }
     }
@@ -147,8 +142,7 @@ unsigned long GetSocketCount() noexcept {
             SYSTEM_LOGICAL_PROCESSOR_INFORMATION p{};
             while(ss.read(reinterpret_cast<char*>(&p), sizeof(p))) {
                 switch(p.Relationship) {
-                case RelationProcessorPackage:
-                {
+                case RelationProcessorPackage: {
                     ++socketCount;
                     break;
                 }

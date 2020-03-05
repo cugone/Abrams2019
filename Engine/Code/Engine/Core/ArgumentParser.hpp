@@ -13,11 +13,11 @@ class IntVector4;
 class Matrix4;
 
 enum class ArgumentParserState : uint8_t {
-    None
-    , BadBit
-    , FailBit
-    , EndOfFileBit
-    , Max
+    None,
+    BadBit,
+    FailBit,
+    EndOfFileBit,
+    Max
 };
 
 class ArgumentParser {
@@ -58,9 +58,8 @@ public:
 
 protected:
 private:
-
     void SetState(const ArgumentParserState& stateBits, bool newValue) const noexcept;
-    bool GetNextValueFromBuffer(std::string &value) const noexcept;
+    bool GetNextValueFromBuffer(std::string& value) const noexcept;
     mutable std::string _current{};
     mutable std::bitset<static_cast<std::size_t>(ArgumentParserState::Max)> _state_bits{};
 };

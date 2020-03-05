@@ -1,8 +1,7 @@
 #include "Engine/System/Ram.hpp"
 
-#include "Engine/Math/MathUtils.hpp"
-
 #include "Engine/Core/Win.hpp"
+#include "Engine/Math/MathUtils.hpp"
 
 #include <iomanip>
 
@@ -38,4 +37,3 @@ unsigned long long GetAvailableRam() noexcept {
     ::GlobalMemoryStatusEx(&mem);
     return mem.ullTotalPhys;
 }
-

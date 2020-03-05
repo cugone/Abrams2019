@@ -6,7 +6,6 @@ class AABB2;
 
 class OBB2 {
 public:
-
     Vector2 half_extents{};
     Vector2 position{};
     float orientationDegrees = 0.0f;
@@ -16,10 +15,14 @@ public:
     OBB2(OBB2&& other) = default;
     OBB2& operator=(const OBB2& other) = default;
     OBB2& operator=(OBB2&& other) = default;
-    OBB2(const Vector2& initialPosition, float initialOrientationDegrees) noexcept;
-    OBB2(float initialX, float initialY, float initialOrientationDegrees) noexcept;
-    OBB2(const Vector2& center, const Vector2& halfExtents, float orientationDegrees) noexcept;
-    OBB2(const Vector2& center, float halfExtentX, float halfExtentY, float orientationDegrees) noexcept;
+    OBB2(const Vector2& initialPosition, float initialOrientationDegrees)
+    noexcept;
+    OBB2(float initialX, float initialY, float initialOrientationDegrees)
+    noexcept;
+    OBB2(const Vector2& center, const Vector2& halfExtents, float orientationDegrees)
+    noexcept;
+    OBB2(const Vector2& center, float halfExtentX, float halfExtentY, float orientationDegrees)
+    noexcept;
     explicit OBB2(const AABB2& aabb) noexcept;
     ~OBB2() = default;
 

@@ -7,7 +7,6 @@ class IntVector2;
 
 class Vector2 {
 public:
-
     static const Vector2 ONE;
     static const Vector2 ZERO;
     static const Vector2 X_AXIS;
@@ -53,7 +52,6 @@ public:
     float CalcLength() const noexcept;
     float CalcLengthSquared() const noexcept;
 
-
     void SetHeadingDegrees(float headingDegrees) noexcept;
     void SetHeadingRadians(float headingRadians) noexcept;
 
@@ -84,5 +82,5 @@ private:
 };
 
 namespace StringUtils {
-    std::string to_string(const Vector2& v) noexcept;
+std::string to_string(const Vector2& v) noexcept;
 }

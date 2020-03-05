@@ -9,7 +9,6 @@ class Quaternion;
 
 class Vector3 {
 public:
-
     static const Vector3 ONE;
     static const Vector3 ZERO;
     static const Vector3 X_AXIS;
@@ -60,7 +59,7 @@ public:
 
     float CalcLength() const noexcept;
     float CalcLengthSquared() const noexcept;
-    
+
     float Normalize() noexcept;
     Vector3 GetNormalize() const noexcept;
 
@@ -77,5 +76,5 @@ private:
 };
 
 namespace StringUtils {
-    std::string to_string(const Vector3& v) noexcept;
+std::string to_string(const Vector3& v) noexcept;
 }

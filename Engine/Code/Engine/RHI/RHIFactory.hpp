@@ -21,6 +21,7 @@ public:
     std::vector<AdapterInfo> GetAdaptersByHighPerformancePreference() const noexcept;
     std::vector<AdapterInfo> GetAdaptersByMinimumPowerPreference() const noexcept;
     std::vector<AdapterInfo> GetAdaptersByUnspecifiedPreference() const noexcept;
+
 protected:
 private:
     Microsoft::WRL::ComPtr<IDXGIFactory6> _dxgi_factory{};

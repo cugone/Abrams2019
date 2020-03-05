@@ -177,10 +177,10 @@ void KeyValueParser::CollapseMultiParamWhitespace(std::string& whole_line) noexc
     }
     //Remove consecutive spaces
     whole_line.erase(std::unique(whole_line.begin(), whole_line.end(),
-    [](char lhs, char rhs) {
-        return lhs == rhs && std::isspace(lhs, std::locale(""));
-    }),
-    whole_line.end());
+                                 [](char lhs, char rhs) {
+                                     return lhs == rhs && std::isspace(lhs, std::locale(""));
+                                 }),
+                     whole_line.end());
 }
 
 void KeyValueParser::SetValue(const std::string& key, const std::string& value) noexcept {
@@ -188,7 +188,7 @@ void KeyValueParser::SetValue(const std::string& key, const std::string& value) 
 }
 
 void KeyValueParser::SetValue(const std::string& key, const bool& value) noexcept {
-    _kv_pairs[key] = value ? std::string{ "true" } : std::string{ "false" };
+    _kv_pairs[key] = value ? std::string{"true"} : std::string{"false"};
 }
 
 std::size_t KeyValueParser::CountCharNotInQuotes(std::string& cur_line, char c) noexcept {

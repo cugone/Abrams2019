@@ -1,13 +1,11 @@
 #include "Engine/Renderer/ShaderProgram.hpp"
 
+#include "Engine/RHI/RHIDevice.hpp"
 #include "Engine/Renderer/DirectX/DX11.hpp"
 #include "Engine/Renderer/InputLayout.hpp"
 
-#include "Engine/RHI/RHIDevice.hpp"
-
 ShaderProgram::ShaderProgram(ShaderProgramDesc&& desc) noexcept
-    : _desc(std::move(desc))
-{
+: _desc(std::move(desc)) {
     /* DO NOTHING */
 }
 
@@ -117,7 +115,6 @@ ShaderProgramDesc::ShaderProgramDesc(ShaderProgramDesc&& other) noexcept {
     cs_bytecode = other.cs_bytecode;
     other.cs = nullptr;
     other.cs_bytecode = nullptr;
-
 }
 
 ShaderProgramDesc& ShaderProgramDesc::operator=(ShaderProgramDesc&& other) noexcept {

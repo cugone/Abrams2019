@@ -3,19 +3,16 @@
 #include "Engine/Core/DataUtils.hpp"
 #include "Engine/Core/TimeUtils.hpp"
 #include "Engine/Core/Vertex3D.hpp"
-
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/AABB3.hpp"
 #include "Engine/Math/IntVector2.hpp"
 #include "Engine/Math/Matrix4.hpp"
-
+#include "Engine/RHI/RHI.hpp"
 #include "Engine/Renderer/Camera3D.hpp"
 #include "Engine/Renderer/IndexBuffer.hpp"
 #include "Engine/Renderer/RenderTargetStack.hpp"
 #include "Engine/Renderer/StructuredBuffer.hpp"
 #include "Engine/Renderer/VertexBuffer.hpp"
-
-#include "Engine/RHI/RHI.hpp"
 
 #include <filesystem>
 #include <map>
@@ -102,7 +99,7 @@ struct light_t {
 constexpr const unsigned int max_light_count = 16;
 
 struct lighting_buffer_t {
-    light_t lights[max_light_count] = { light_t{} };
+    light_t lights[max_light_count] = {light_t{}};
     Vector4 ambient = Vector4::ZERO;
     Vector4 specular_glossy_emissive_factors = Vector4(1.0f, 8.0f, 0.0f, 1.0f);
     Vector4 eye_position = Vector4::ZERO;
@@ -187,11 +184,7 @@ public:
     Texture* Create3DTexture(std::filesystem::path filepath, const IntVector3& dimensions, const BufferUsage& bufferUsage, const BufferBindUsage& bindUsage, const ImageFormat& imageFormat) noexcept;
     std::unique_ptr<Texture> Create3DTextureFromMemory(const unsigned char* data, unsigned int width = 1, unsigned int height = 1, unsigned int depth = 1, const BufferUsage& bufferUsage = BufferUsage::Static, const BufferBindUsage& bindUsage = BufferBindUsage::Shader_Resource, const ImageFormat& imageFormat = ImageFormat::R8G8B8A8_UNorm) noexcept;
     std::unique_ptr<Texture> Create3DTextureFromMemory(const std::vector<Rgba>& data, unsigned int width = 1, unsigned int height = 1, unsigned int depth = 1, const BufferUsage& bufferUsage = BufferUsage::Static, const BufferBindUsage& bindUsage = BufferBindUsage::Shader_Resource, const ImageFormat& imageFormat = ImageFormat::R8G8B8A8_UNorm) noexcept;
-    Texture* CreateTexture(std::filesystem::path filepath
-        , const IntVector3& dimensions
-        , const BufferUsage& bufferUsage = BufferUsage::Static
-        , const BufferBindUsage& bindUsage = BufferBindUsage::Shader_Resource
-        , const ImageFormat& imageFormat = ImageFormat::R8G8B8A8_UNorm) noexcept;
+    Texture* CreateTexture(std::filesystem::path filepath, const IntVector3& dimensions, const BufferUsage& bufferUsage = BufferUsage::Static, const BufferBindUsage& bindUsage = BufferBindUsage::Shader_Resource, const ImageFormat& imageFormat = ImageFormat::R8G8B8A8_UNorm) noexcept;
 
     std::shared_ptr<SpriteSheet> CreateSpriteSheet(const std::filesystem::path& filepath, unsigned int width = 1, unsigned int height = 1) noexcept;
     std::shared_ptr<SpriteSheet> CreateSpriteSheet(const XMLElement& elem) noexcept;
@@ -373,7 +366,7 @@ public:
 
     std::vector<std::unique_ptr<ConstantBuffer>> CreateConstantBuffersFromShaderProgram(const ShaderProgram* _shader_program) const noexcept;
 
-    void SetWinProc(const std::function<bool(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) >& windowProcedure) noexcept;
+    void SetWinProc(const std::function<bool(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)>& windowProcedure) noexcept;
 
     void CopyTexture(Texture* src, Texture* dst) noexcept;
     void ResizeBuffers() noexcept;
@@ -422,7 +415,7 @@ private:
     void SetPointLight(unsigned int index, const light_t& light) noexcept;
     void SetDirectionalLight(unsigned int index, const light_t& light) noexcept;
     void SetSpotlight(unsigned int index, const light_t& light) noexcept;
-    
+
     void CreateAndRegisterDefaultTextures() noexcept;
     std::unique_ptr<Texture> CreateDefaultTexture() noexcept;
     std::unique_ptr<Texture> CreateInvalidTexture() noexcept;
@@ -436,7 +429,7 @@ private:
 
     void CreateDefaultColorTextures() noexcept;
     std::unique_ptr<Texture> CreateDefaultColorTexture(const Rgba& color) noexcept;
-    
+
     void CreateAndRegisterDefaultShaderPrograms() noexcept;
     std::unique_ptr<ShaderProgram> CreateDefaultShaderProgram() noexcept;
     std::unique_ptr<ShaderProgram> CreateDefaultUnlitShaderProgram() noexcept;

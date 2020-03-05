@@ -30,4 +30,4 @@ std::string GetDateTimeStampFromNow(const DateTimeStampOptions& options = DateTi
 std::string GetTimeStampFromNow(const DateTimeStampOptions& options = DateTimeStampOptions{}) noexcept;
 std::string GetDateStampFromNow(const DateTimeStampOptions& options = DateTimeStampOptions{}) noexcept;
 
-} //End TimeUtils
+} // namespace TimeUtils

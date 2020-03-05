@@ -1,7 +1,6 @@
 #include "Engine/Core/ArgumentParser.hpp"
 
 #include "Engine/Core/Rgba.hpp"
-
 #include "Engine/Math/IntVector2.hpp"
 #include "Engine/Math/IntVector3.hpp"
 #include "Engine/Math/IntVector4.hpp"
@@ -14,15 +13,13 @@
 #include <type_traits>
 
 ArgumentParser::ArgumentParser(const std::string& args) noexcept
-    : _current(args)
-{
+: _current(args) {
     /* DO NOTHING */
 }
 
 void ArgumentParser::clear() noexcept {
     _state_bits.reset();
 }
-
 
 bool ArgumentParser::fail() const noexcept {
     bool badbit = _state_bits[static_cast<std::size_t>(ArgumentParserState::BadBit)];
@@ -42,7 +39,6 @@ bool ArgumentParser::bad() const noexcept {
     return badbit;
 }
 
-
 bool ArgumentParser::eof() const noexcept {
     bool eofbit = _state_bits[static_cast<std::size_t>(ArgumentParserState::EndOfFileBit)];
     return eofbit;
@@ -57,7 +53,6 @@ bool ArgumentParser::operator!() const noexcept {
 }
 
 bool ArgumentParser::GetNext(Rgba& value) const noexcept {
-
     std::string value_str{};
     if(GetNext(value_str)) {
         value = Rgba(value_str);
@@ -68,7 +63,6 @@ bool ArgumentParser::GetNext(Rgba& value) const noexcept {
 }
 
 bool ArgumentParser::GetNext(Vector2& value) const noexcept {
-
     std::string value_str{};
     if(GetNext(value_str)) {
         value = Vector2(value_str);
@@ -79,7 +73,6 @@ bool ArgumentParser::GetNext(Vector2& value) const noexcept {
 }
 
 bool ArgumentParser::GetNext(Vector3& value) const noexcept {
-
     std::string value_str{};
     if(GetNext(value_str)) {
         value = Vector3(value_str);
@@ -90,7 +83,6 @@ bool ArgumentParser::GetNext(Vector3& value) const noexcept {
 }
 
 bool ArgumentParser::GetNext(Vector4& value) const noexcept {
-
     std::string value_str{};
     if(GetNext(value_str)) {
         value = Vector4(value_str);
@@ -101,7 +93,6 @@ bool ArgumentParser::GetNext(Vector4& value) const noexcept {
 }
 
 bool ArgumentParser::GetNext(IntVector2& value) const noexcept {
-
     std::string value_str{};
     if(GetNext(value_str)) {
         value = IntVector2(value_str);
@@ -112,7 +103,6 @@ bool ArgumentParser::GetNext(IntVector2& value) const noexcept {
 }
 
 bool ArgumentParser::GetNext(IntVector3& value) const noexcept {
-
     std::string value_str{};
     if(GetNext(value_str)) {
         value = IntVector3(value_str);
@@ -123,7 +113,6 @@ bool ArgumentParser::GetNext(IntVector3& value) const noexcept {
 }
 
 bool ArgumentParser::GetNext(IntVector4& value) const noexcept {
-
     std::string value_str{};
     if(GetNext(value_str)) {
         value = IntVector4(value_str);
@@ -134,7 +123,6 @@ bool ArgumentParser::GetNext(IntVector4& value) const noexcept {
 }
 
 bool ArgumentParser::GetNext(Matrix4& value) const noexcept {
-
     std::string value_str{};
     if(GetNext(value_str)) {
         value = Matrix4(value_str);
@@ -145,7 +133,6 @@ bool ArgumentParser::GetNext(Matrix4& value) const noexcept {
 }
 
 bool ArgumentParser::GetNext(std::string& value) const noexcept {
-
     if(_current.empty()) {
         SetState(ArgumentParserState::EndOfFileBit, true);
         return false;
@@ -158,7 +145,6 @@ bool ArgumentParser::GetNext(std::string& value) const noexcept {
 }
 
 bool ArgumentParser::GetNext(unsigned char& value) const noexcept {
-
     std::string value_str;
     if(GetNext(value_str)) {
         try {
@@ -174,7 +160,6 @@ bool ArgumentParser::GetNext(unsigned char& value) const noexcept {
 }
 
 bool ArgumentParser::GetNext(signed char& value) const noexcept {
-
     std::string value_str;
     if(GetNext(value_str)) {
         try {
@@ -190,7 +175,6 @@ bool ArgumentParser::GetNext(signed char& value) const noexcept {
 }
 
 bool ArgumentParser::GetNext(char& value) const noexcept {
-
     std::string value_str;
     if(GetNext(value_str)) {
         value = *value_str.begin();
@@ -201,7 +185,6 @@ bool ArgumentParser::GetNext(char& value) const noexcept {
 }
 
 bool ArgumentParser::GetNext(unsigned short& value) const noexcept {
-
     std::string value_str;
     if(GetNext(value_str)) {
         try {
@@ -217,7 +200,6 @@ bool ArgumentParser::GetNext(unsigned short& value) const noexcept {
 }
 
 bool ArgumentParser::GetNext(short& value) const noexcept {
-
     std::string value_str;
     if(GetNext(value_str)) {
         try {
@@ -233,7 +215,6 @@ bool ArgumentParser::GetNext(short& value) const noexcept {
 }
 
 bool ArgumentParser::GetNext(unsigned int& value) const noexcept {
-
     std::string value_str;
     if(GetNext(value_str)) {
         try {
@@ -249,7 +230,6 @@ bool ArgumentParser::GetNext(unsigned int& value) const noexcept {
 }
 
 bool ArgumentParser::GetNext(int& value) const noexcept {
-
     std::string value_str;
     if(GetNext(value_str)) {
         try {
@@ -265,7 +245,6 @@ bool ArgumentParser::GetNext(int& value) const noexcept {
 }
 
 bool ArgumentParser::GetNext(unsigned long& value) const noexcept {
-
     std::string value_str;
     if(GetNext(value_str)) {
         try {
@@ -281,7 +260,6 @@ bool ArgumentParser::GetNext(unsigned long& value) const noexcept {
 }
 
 bool ArgumentParser::GetNext(long& value) const noexcept {
-
     std::string value_str;
     if(GetNext(value_str)) {
         try {
@@ -297,7 +275,6 @@ bool ArgumentParser::GetNext(long& value) const noexcept {
 }
 
 bool ArgumentParser::GetNext(unsigned long long& value) const noexcept {
-
     std::string value_str;
     if(GetNext(value_str)) {
         try {
@@ -313,7 +290,6 @@ bool ArgumentParser::GetNext(unsigned long long& value) const noexcept {
 }
 
 bool ArgumentParser::GetNext(long long& value) const noexcept {
-
     std::string value_str;
     if(GetNext(value_str)) {
         try {
@@ -329,7 +305,6 @@ bool ArgumentParser::GetNext(long long& value) const noexcept {
 }
 
 bool ArgumentParser::GetNext(float& value) const noexcept {
-
     std::string value_str;
     if(GetNext(value_str)) {
         try {
@@ -345,7 +320,6 @@ bool ArgumentParser::GetNext(float& value) const noexcept {
 }
 
 bool ArgumentParser::GetNext(double& value) const noexcept {
-
     std::string value_str;
     if(GetNext(value_str)) {
         try {
@@ -361,7 +335,6 @@ bool ArgumentParser::GetNext(double& value) const noexcept {
 }
 
 bool ArgumentParser::GetNext(long double& value) const noexcept {
-
     std::string value_str;
     if(GetNext(value_str)) {
         try {

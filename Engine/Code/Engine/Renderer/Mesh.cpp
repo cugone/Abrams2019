@@ -8,11 +8,9 @@ bool operator!=(const draw_instruction& a, const draw_instruction& b) noexcept {
     return !(a == b);
 }
 
-
 Mesh::Builder::Builder(const std::vector<Vertex3D>& verts, const std::vector<unsigned int>& indcs) noexcept
-    : verticies{ verts }
-    , indicies{ indcs }
-{
+: verticies{verts}
+, indicies{indcs} {
     /* DO NOTHING */
 }
 

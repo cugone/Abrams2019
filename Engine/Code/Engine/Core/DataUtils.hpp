@@ -1,20 +1,18 @@
 #pragma once
 
-#include "ThirdParty/TinyXML2/tinyxml2.h"
-
 #include "Engine/Core/Rgba.hpp"
-#include "Engine/Math/Vector2.hpp"
 #include "Engine/Math/IntVector2.hpp"
-#include "Engine/Math/Vector3.hpp"
 #include "Engine/Math/IntVector3.hpp"
-#include "Engine/Math/Vector4.hpp"
 #include "Engine/Math/IntVector4.hpp"
 #include "Engine/Math/Matrix4.hpp"
+#include "Engine/Math/Vector2.hpp"
+#include "Engine/Math/Vector3.hpp"
+#include "Engine/Math/Vector4.hpp"
+#include "ThirdParty/TinyXML2/tinyxml2.h"
 
 #include <functional>
-#include <string>
-
 #include <intrin.h>
+#include <string>
 
 using XMLElement = tinyxml2::XMLElement;
 using XMLAttribute = tinyxml2::XMLAttribute;
@@ -23,22 +21,22 @@ namespace DataUtils {
 
 [[nodiscard]] constexpr inline auto Bits(uint8_t value) noexcept -> uint8_t {
     const char* const bits =
-        "\0\1\1\2\1\2\2\3\1\2\2\3\2\3\3\4"
-        "\1\2\2\3\2\3\3\4\2\3\3\4\3\4\4\5"
-        "\1\2\2\3\2\3\3\4\2\3\3\4\3\4\4\5"
-        "\2\3\3\4\3\4\4\5\3\4\4\5\4\5\5\6"
-        "\1\2\2\3\2\3\3\4\2\3\3\4\3\4\4\5"
-        "\2\3\3\4\3\4\4\5\3\4\4\5\4\5\5\6"
-        "\2\3\3\4\3\4\4\5\3\4\4\5\4\5\5\6"
-        "\3\4\4\5\4\5\5\6\4\5\5\6\5\6\6\7"
-        "\1\2\2\3\2\3\3\4\2\3\3\4\3\4\4\5"
-        "\2\3\3\4\3\4\4\5\3\4\4\5\4\5\5\6"
-        "\2\3\3\4\3\4\4\5\3\4\4\5\4\5\5\6"
-        "\3\4\4\5\4\5\5\6\4\5\5\6\5\6\6\7"
-        "\2\3\3\4\3\4\4\5\3\4\4\5\4\5\5\6"
-        "\3\4\4\5\4\5\5\6\4\5\5\6\5\6\6\7"
-        "\3\4\4\5\4\5\5\6\4\5\5\6\5\6\6\7"
-        "\4\5\5\6\5\6\6\7\5\6\6\7\6\7\7\x8";
+    "\0\1\1\2\1\2\2\3\1\2\2\3\2\3\3\4"
+    "\1\2\2\3\2\3\3\4\2\3\3\4\3\4\4\5"
+    "\1\2\2\3\2\3\3\4\2\3\3\4\3\4\4\5"
+    "\2\3\3\4\3\4\4\5\3\4\4\5\4\5\5\6"
+    "\1\2\2\3\2\3\3\4\2\3\3\4\3\4\4\5"
+    "\2\3\3\4\3\4\4\5\3\4\4\5\4\5\5\6"
+    "\2\3\3\4\3\4\4\5\3\4\4\5\4\5\5\6"
+    "\3\4\4\5\4\5\5\6\4\5\5\6\5\6\6\7"
+    "\1\2\2\3\2\3\3\4\2\3\3\4\3\4\4\5"
+    "\2\3\3\4\3\4\4\5\3\4\4\5\4\5\5\6"
+    "\2\3\3\4\3\4\4\5\3\4\4\5\4\5\5\6"
+    "\3\4\4\5\4\5\5\6\4\5\5\6\5\6\6\7"
+    "\2\3\3\4\3\4\4\5\3\4\4\5\4\5\5\6"
+    "\3\4\4\5\4\5\5\6\4\5\5\6\5\6\6\7"
+    "\3\4\4\5\4\5\5\6\4\5\5\6\5\6\6\7"
+    "\4\5\5\6\5\6\6\7\5\6\6\7\6\7\7\x8";
     return bits[value];
 }
 
@@ -109,7 +107,7 @@ void ValidateXmlElement(const XMLElement& element,
                         const std::string& optionalChildElements = std::string{},
                         const std::string& optionalAttributes = std::string{}) noexcept;
 
-std::size_t GetAttributeCount(const XMLElement &element) noexcept;
+std::size_t GetAttributeCount(const XMLElement& element) noexcept;
 std::size_t GetChildElementCount(const XMLElement& element, const std::string& elementName = std::string{}) noexcept;
 
 std::string GetElementName(const XMLElement& elem) noexcept;
@@ -195,11 +193,10 @@ Matrix4 ParseXmlElementText(const XMLElement& element, const Matrix4& defaultVal
 std::string ParseXmlElementText(const XMLElement& element, const char* defaultValue) noexcept;
 std::string ParseXmlElementText(const XMLElement& element, const std::string& defaultValue) noexcept;
 
-
 //************************************
 // Method:    ForEachChildElement
 // FullName:  DataUtils::ForEachChildElement
-// Access:    public 
+// Access:    public
 // Returns:   UnaryFunction: A copy of the UnaryFunction Callable argument.
 // Qualifier: noexcept
 // Parameter: const XMLElement& element: The parent element.
@@ -218,7 +215,7 @@ UnaryFunction ForEachChildElement(const XMLElement& element, const std::string& 
 //************************************
 // Method:    ForEachAttribute
 // FullName:  DataUtils::ForEachAttribute
-// Access:    public 
+// Access:    public
 // Returns:   UnaryFunction: A copy of the UnaryFunction Callable argument.
 // Qualifier: noexcept
 // Parameter: const XMLElement& element: The parent element.
@@ -232,5 +229,4 @@ UnaryFunction ForEachAttribute(const XMLElement& element, UnaryFunction&& f) noe
     return f;
 }
 
-
-}
+} // namespace DataUtils

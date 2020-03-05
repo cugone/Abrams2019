@@ -2,15 +2,16 @@
 
 #include "Engine/Core/BuildConfig.hpp"
 
-#include <sstream>
 #include <iomanip>
+#include <sstream>
 
 #ifdef PLATFORM_WINDOWS
-#define HAS_VERSION_HELPERS
-#include "Engine/Core/Win.hpp"
-#include <VersionHelpers.h>
-#include <wow64apiset.h>
-#include <processthreadsapi.h>
+    #define HAS_VERSION_HELPERS
+    #include "Engine/Core/Win.hpp"
+
+    #include <VersionHelpers.h>
+    #include <processthreadsapi.h>
+    #include <wow64apiset.h>
 #endif
 
 std::ostream& System::OS::operator<<(std::ostream& out, const System::OS::OsDesc& os) noexcept {
@@ -63,7 +64,7 @@ System::OS::OperatingSystem System::OS::operator~(const OperatingSystem& a) noex
 }
 
 System::OS::OperatingSystemArchitecture System::OS::GetOperatingSystemArchitecture() noexcept {
-    OperatingSystemArchitecture arch{ OperatingSystemArchitecture::Unknown };
+    OperatingSystemArchitecture arch{OperatingSystemArchitecture::Unknown};
 #ifdef HAS_VERSION_HELPERS
     auto pid = ::GetCurrentProcess();
     USHORT process_machine_raw{};
@@ -82,7 +83,7 @@ System::OS::OperatingSystemArchitecture System::OS::GetOperatingSystemArchitectu
 }
 
 System::OS::OperatingSystem System::OS::GetOperatingSystemType() noexcept {
-    OperatingSystem type{ OperatingSystem::Unknown };
+    OperatingSystem type{OperatingSystem::Unknown};
 #ifdef HAS_VERSION_HELPERS
     auto pid = ::GetCurrentProcess();
     USHORT process_machine_raw{};
@@ -138,7 +139,7 @@ std::string System::OS::GetFriendlyStringFromOperatingSystemType(System::OS::Ope
             s = std::string{"Windows 32-bit"};
         }
         if((type & OperatingSystem::Windows_x64) != OperatingSystem::Unknown) {
-            s =  std::string{ "Windows 64-bit" };
+            s = std::string{"Windows 64-bit"};
         }
         return s;
     } else {

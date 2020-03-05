@@ -58,9 +58,7 @@ public:
     friend std::ostream& operator<<(std::ostream& output, const Config& config) noexcept;
     friend std::istream& operator>>(std::istream& input, Config& config) noexcept;
 
-
 protected:
 private:
     std::map<std::string, std::string> _config{};
-    
 };

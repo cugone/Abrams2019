@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Engine/Core/DataUtils.hpp"
-
 #include "Engine/RHI/RHITypes.hpp"
 
 class RHIDevice;
@@ -32,6 +31,7 @@ public:
     ~Sampler() noexcept;
     ID3D11SamplerState* GetDxSampler() const noexcept;
     void SetDebugName([[maybe_unused]] const std::string& name) const noexcept;
+
 protected:
 private:
     bool CreateSamplerState(const RHIDevice* device, const SamplerDesc& desc = SamplerDesc()) noexcept;

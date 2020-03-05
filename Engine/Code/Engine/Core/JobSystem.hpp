@@ -47,7 +47,8 @@ public:
     void OnFinish() noexcept;
 
     std::vector<Job*> dependents{};
-    std::atomic<unsigned int> num_dependencies{ 0u };
+    std::atomic<unsigned int> num_dependencies{0u};
+
 private:
     void AddDependent(Job* dependent) noexcept;
     JobSystem* _job_system = nullptr;
@@ -60,6 +61,7 @@ public:
     unsigned int ConsumeAll() noexcept;
     void ConsumeFor(TimeUtils::FPMilliseconds consume_duration) noexcept;
     bool HasJobs() const noexcept;
+
 private:
     std::vector<ThreadSafeQueue<Job*>*> _consumables{};
     friend class JobSystem;
@@ -85,6 +87,7 @@ public:
     void SetIsRunning(bool value = true) noexcept;
 
     std::condition_variable* GetMainJobSignal() const noexcept;
+
 protected:
 private:
     void Initialize(int genericCount, std::size_t categoryCount) noexcept;

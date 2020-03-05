@@ -1,7 +1,6 @@
 #include "Engine/Input/XboxController.hpp"
 
 #include "Engine/Core/Win.hpp"
-
 #include "Engine/Math/MathUtils.hpp"
 
 bool XboxController::WasAnyButtonJustPressed() const noexcept {
@@ -112,7 +111,6 @@ void XboxController::Update(int controller_number) noexcept {
             SetMotorSpeed(controller_number, Motor::Left, _leftMotorState);
             SetMotorSpeed(controller_number, Motor::Right, _rightMotorState);
         }
-
     }
 }
 
@@ -202,43 +200,41 @@ void XboxController::UpdateConnectedState(int controller_number) noexcept {
 }
 
 void XboxController::UpdateState() noexcept {
-
     _previousButtonState = _currentButtonState;
 
-    _currentButtonState[(std::size_t)Button::Up]    = (_currentRawInput & XINPUT_GAMEPAD_DPAD_UP) != 0;
-    _currentButtonState[(std::size_t)Button::Down]  = (_currentRawInput & XINPUT_GAMEPAD_DPAD_DOWN) != 0;
-    _currentButtonState[(std::size_t)Button::Left]  = (_currentRawInput & XINPUT_GAMEPAD_DPAD_LEFT) != 0;
+    _currentButtonState[(std::size_t)Button::Up] = (_currentRawInput & XINPUT_GAMEPAD_DPAD_UP) != 0;
+    _currentButtonState[(std::size_t)Button::Down] = (_currentRawInput & XINPUT_GAMEPAD_DPAD_DOWN) != 0;
+    _currentButtonState[(std::size_t)Button::Left] = (_currentRawInput & XINPUT_GAMEPAD_DPAD_LEFT) != 0;
     _currentButtonState[(std::size_t)Button::Right] = (_currentRawInput & XINPUT_GAMEPAD_DPAD_RIGHT) != 0;
 
-    _currentButtonState[(std::size_t)Button::Start]      = (_currentRawInput & XINPUT_GAMEPAD_START) != 0;
-    _currentButtonState[(std::size_t)Button::Back]       = (_currentRawInput & XINPUT_GAMEPAD_BACK) != 0;
-    _currentButtonState[(std::size_t)Button::LeftThumb]  = (_currentRawInput & XINPUT_GAMEPAD_LEFT_THUMB) != 0;
+    _currentButtonState[(std::size_t)Button::Start] = (_currentRawInput & XINPUT_GAMEPAD_START) != 0;
+    _currentButtonState[(std::size_t)Button::Back] = (_currentRawInput & XINPUT_GAMEPAD_BACK) != 0;
+    _currentButtonState[(std::size_t)Button::LeftThumb] = (_currentRawInput & XINPUT_GAMEPAD_LEFT_THUMB) != 0;
     _currentButtonState[(std::size_t)Button::RightThumb] = (_currentRawInput & XINPUT_GAMEPAD_RIGHT_THUMB) != 0;
 
-    _currentButtonState[(std::size_t)Button::LeftBumper]  = (_currentRawInput & XINPUT_GAMEPAD_LEFT_SHOULDER) != 0;
+    _currentButtonState[(std::size_t)Button::LeftBumper] = (_currentRawInput & XINPUT_GAMEPAD_LEFT_SHOULDER) != 0;
     _currentButtonState[(std::size_t)Button::RightBumper] = (_currentRawInput & XINPUT_GAMEPAD_RIGHT_SHOULDER) != 0;
 
     _currentButtonState[(std::size_t)Button::A] = (_currentRawInput & XINPUT_GAMEPAD_A) != 0;
     _currentButtonState[(std::size_t)Button::B] = (_currentRawInput & XINPUT_GAMEPAD_B) != 0;
     _currentButtonState[(std::size_t)Button::X] = (_currentRawInput & XINPUT_GAMEPAD_X) != 0;
     _currentButtonState[(std::size_t)Button::Y] = (_currentRawInput & XINPUT_GAMEPAD_Y) != 0;
-
 }
 
 void XboxController::SetMotorSpeed(int controller_number, const Motor& motor, unsigned short value) noexcept {
     XINPUT_VIBRATION vibration{};
     switch(motor) {
-        case Motor::Left:
-            vibration.wLeftMotorSpeed = value;
-            break;
-        case Motor::Right:
-            vibration.wRightMotorSpeed = value;
-            break;
-        case Motor::Both:
-            vibration.wLeftMotorSpeed = value;
-            vibration.wRightMotorSpeed = value;
-        default:
-            /* DO NOTHING */;
+    case Motor::Left:
+        vibration.wLeftMotorSpeed = value;
+        break;
+    case Motor::Right:
+        vibration.wRightMotorSpeed = value;
+        break;
+    case Motor::Both:
+        vibration.wLeftMotorSpeed = value;
+        vibration.wRightMotorSpeed = value;
+    default:
+    /* DO NOTHING */;
     }
     DWORD errorStatus = ::XInputSetState(controller_number, &vibration);
     if(errorStatus == ERROR_SUCCESS) {

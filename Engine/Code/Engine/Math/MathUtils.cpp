@@ -1,21 +1,20 @@
 #include "Engine/Math/MathUtils.hpp"
 
 #include "Engine/Core/Rgba.hpp"
-
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/AABB3.hpp"
-#include "Engine/Math/OBB2.hpp"
 #include "Engine/Math/Capsule2.hpp"
 #include "Engine/Math/Capsule3.hpp"
 #include "Engine/Math/Disc2.hpp"
-#include "Engine/Math/Sphere3.hpp"
 #include "Engine/Math/LineSegment2.hpp"
 #include "Engine/Math/LineSegment3.hpp"
 #include "Engine/Math/Matrix4.hpp"
+#include "Engine/Math/OBB2.hpp"
 #include "Engine/Math/Plane2.hpp"
 #include "Engine/Math/Plane3.hpp"
 #include "Engine/Math/Polygon2.hpp"
 #include "Engine/Math/Quaternion.hpp"
+#include "Engine/Math/Sphere3.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -83,7 +82,6 @@ int GetRandomIntLessThan(int maxValueNotInclusive) noexcept {
 int GetRandomIntInRange(int minInclusive, int maxInclusive) noexcept {
     std::uniform_int_distribution<int> d(minInclusive, maxInclusive);
     return d(GetMTRandomEngine(MT_RANDOM_SEED));
-
 }
 
 long GetRandomLongLessThan(long maxValueNotInclusive) noexcept {
@@ -452,12 +450,12 @@ unsigned int CalculateManhattanDistance(const IntVector4& start, const IntVector
 }
 
 Vector2 GetRandomPointOn(const AABB2& aabb) noexcept {
-    float result[2]{ 0.0f, 0.0f };
+    float result[2]{0.0f, 0.0f};
     int s = MathUtils::GetRandomIntLessThan(4);
     int c = s % 2;
     result[(c + 0) % 2] = s > 1 ? 1.0f : 0.0f;
     result[(c + 1) % 2] = s > 1 ? 1.0f : 0.0f;
-    Vector2 point{ result[0], result[1]};
+    Vector2 point{result[0], result[1]};
     return aabb.CalcCenter() + (point * aabb.CalcDimensions());
 }
 
@@ -474,13 +472,13 @@ Vector2 GetRandomPointOn(const LineSegment2& line) noexcept {
 }
 
 Vector3 GetRandomPointOn(const AABB3& aabb) noexcept {
-    float result[3]{ 0.0f, 0.0f, 0.0f };
+    float result[3]{0.0f, 0.0f, 0.0f};
     int s = MathUtils::GetRandomIntLessThan(6);
     int c = s % 3;
     result[(c + 0) % 3] = s > 2 ? 1.0f : 0.0f;
     result[(c + 1) % 3] = MathUtils::GetRandomFloatZeroToOne();
     result[(c + 2) % 3] = MathUtils::GetRandomFloatZeroToOne();
-    Vector3 point{ result[0], result[1], result[2] };
+    Vector3 point{result[0], result[1], result[2]};
     return aabb.CalcCenter() + (point * aabb.CalcDimensions());
 }
 
@@ -498,7 +496,7 @@ Vector3 GetRandomPointOn(const Sphere3& sphere) noexcept {
     float x = r * sin_phi * cos_theta;
     float y = r * sin_phi * sin_theta;
     float z = r * cos_phi;
-    return sphere.center + Vector3{x,y,z};
+    return sphere.center + Vector3{x, y, z};
 }
 
 Vector3 GetRandomPointOn(const LineSegment3& line) noexcept {
@@ -508,7 +506,7 @@ Vector3 GetRandomPointOn(const LineSegment3& line) noexcept {
 }
 
 Vector2 GetRandomPointInside(const AABB2& aabb) noexcept {
-    return Vector2{ MathUtils::GetRandomFloatInRange(aabb.mins.x, aabb.maxs.x), MathUtils::GetRandomFloatInRange(aabb.mins.y, aabb.maxs.y)};
+    return Vector2{MathUtils::GetRandomFloatInRange(aabb.mins.x, aabb.maxs.x), MathUtils::GetRandomFloatInRange(aabb.mins.y, aabb.maxs.y)};
 }
 
 Vector2 GetRandomPointInside(const Disc2& disc) noexcept {
@@ -518,7 +516,7 @@ Vector2 GetRandomPointInside(const Disc2& disc) noexcept {
 }
 
 Vector3 GetRandomPointInside(const AABB3& aabb) noexcept {
-    return Vector3{ MathUtils::GetRandomFloatInRange(aabb.mins.x, aabb.maxs.x), MathUtils::GetRandomFloatInRange(aabb.mins.y, aabb.maxs.y),MathUtils::GetRandomFloatInRange(aabb.mins.z, aabb.maxs.z) };
+    return Vector3{MathUtils::GetRandomFloatInRange(aabb.mins.x, aabb.maxs.x), MathUtils::GetRandomFloatInRange(aabb.mins.y, aabb.maxs.y), MathUtils::GetRandomFloatInRange(aabb.mins.z, aabb.maxs.z)};
 }
 
 Vector3 GetRandomPointInside(const Sphere3& sphere) noexcept {
@@ -535,20 +533,18 @@ Vector3 GetRandomPointInside(const Sphere3& sphere) noexcept {
     float x = r * sin_phi * cos_theta;
     float y = r * sin_phi * sin_theta;
     float z = r * cos_phi;
-    return sphere.center + Vector3{ x,y,z };
+    return sphere.center + Vector3{x, y, z};
 }
-
 
 bool Contains(const AABB2& aabb, const Vector2& point) noexcept {
     return IsPointInside(aabb, point);
 }
 
-
 bool Contains(const AABB2& a, const AABB2& b) noexcept {
-    const auto tl = Vector2{ b.mins.x, b.mins.y };
-    const auto tr = Vector2{ b.maxs.x, b.mins.y };
-    const auto bl = Vector2{ b.mins.x, b.maxs.y };
-    const auto br = Vector2{ b.maxs.x, b.maxs.y };
+    const auto tl = Vector2{b.mins.x, b.mins.y};
+    const auto tr = Vector2{b.maxs.x, b.mins.y};
+    const auto bl = Vector2{b.mins.x, b.maxs.y};
+    const auto br = Vector2{b.maxs.x, b.maxs.y};
     return IsPointInside(a, tl) && IsPointInside(a, tr) && IsPointInside(a, bl) && IsPointInside(a, br);
 }
 
@@ -565,25 +561,35 @@ bool Contains(const OBB2& a, const OBB2& b) noexcept {
 }
 
 bool IsPointInside(const AABB2& aabb, const Vector2& point) noexcept {
-    if(aabb.maxs.x < point.x) return false;
-    if(point.x < aabb.mins.x) return false;
-    if(aabb.maxs.y < point.y) return false;
-    if(point.y < aabb.mins.y) return false;
+    if(aabb.maxs.x < point.x)
+        return false;
+    if(point.x < aabb.mins.x)
+        return false;
+    if(aabb.maxs.y < point.y)
+        return false;
+    if(point.y < aabb.mins.y)
+        return false;
     return true;
 }
 
 bool IsPointInside(const AABB3& aabb, const Vector3& point) noexcept {
-    if(aabb.maxs.x < point.x) return false;
-    if(point.x < aabb.mins.x) return false;
-    if(aabb.maxs.y < point.y) return false;
-    if(point.y < aabb.mins.y) return false;
-    if(aabb.maxs.z < point.z) return false;
-    if(point.z < aabb.mins.z) return false;
+    if(aabb.maxs.x < point.x)
+        return false;
+    if(point.x < aabb.mins.x)
+        return false;
+    if(aabb.maxs.y < point.y)
+        return false;
+    if(point.y < aabb.mins.y)
+        return false;
+    if(aabb.maxs.z < point.z)
+        return false;
+    if(point.z < aabb.mins.z)
+        return false;
     return true;
 }
 
 bool IsPointInside(const OBB2& obb, const Vector2& point) noexcept {
-    return DoOBBsOverlap(obb, { point, 0.0f });
+    return DoOBBsOverlap(obb, {point, 0.0f});
 }
 
 bool IsPointInside(const Disc2& disc, const Vector2& point) noexcept {
@@ -677,12 +683,16 @@ Vector2 CalcClosestPoint(const Vector2& p, const OBB2& obb) noexcept {
     const auto u1 = M.TransformDirection(Vector2(0.0f, obb.half_extents.y).GetNormalize());
 
     auto x_distance = MathUtils::DotProduct(u0, displacement);
-    if(x_distance > obb.half_extents.x) x_distance = obb.half_extents.x;
-    if(x_distance < -obb.half_extents.x) x_distance = -obb.half_extents.x;
+    if(x_distance > obb.half_extents.x)
+        x_distance = obb.half_extents.x;
+    if(x_distance < -obb.half_extents.x)
+        x_distance = -obb.half_extents.x;
     auto y_distance = MathUtils::DotProduct(u1, displacement);
-    if(y_distance > obb.half_extents.y) y_distance = obb.half_extents.y;
-    if(y_distance < -obb.half_extents.y) y_distance = -obb.half_extents.y;
-    return M.TransformPosition(Vector2{ x_distance, y_distance });
+    if(y_distance > obb.half_extents.y)
+        y_distance = obb.half_extents.y;
+    if(y_distance < -obb.half_extents.y)
+        y_distance = -obb.half_extents.y;
+    return M.TransformPosition(Vector2{x_distance, y_distance});
 }
 
 Vector3 CalcClosestPoint(const Vector3& p, const AABB3& aabb) noexcept {
@@ -707,7 +717,7 @@ Vector2 CalcClosestPoint(const Vector2& p, const LineSegment2& line) noexcept {
     if(regionI < 0.0f) {
         return line.start;
     }
-    
+
     Vector2 EP = p - line.end;
     float regionII = MathUtils::DotProduct(T, EP);
     if(regionII > 0.0f) {
@@ -809,20 +819,30 @@ bool DoSpheresOverlap(const Sphere3& a, const Capsule3& b) noexcept {
 }
 
 bool DoAABBsOverlap(const AABB2& a, const AABB2& b) noexcept {
-    if(a.maxs.x < b.mins.x) return false;
-    if(b.maxs.x < a.mins.x) return false;
-    if(a.maxs.y < b.mins.y) return false;
-    if(b.maxs.y < a.mins.y) return false;
+    if(a.maxs.x < b.mins.x)
+        return false;
+    if(b.maxs.x < a.mins.x)
+        return false;
+    if(a.maxs.y < b.mins.y)
+        return false;
+    if(b.maxs.y < a.mins.y)
+        return false;
     return true;
 }
 
 bool DoAABBsOverlap(const AABB3& a, const AABB3& b) noexcept {
-    if(a.maxs.x < b.mins.x) return false;
-    if(b.maxs.x < a.mins.x) return false;
-    if(a.maxs.y < b.mins.y) return false;
-    if(b.maxs.y < a.mins.y) return false;
-    if(a.maxs.z < b.mins.z) return false;
-    if(b.maxs.z < a.mins.z) return false;
+    if(a.maxs.x < b.mins.x)
+        return false;
+    if(b.maxs.x < a.mins.x)
+        return false;
+    if(a.maxs.y < b.mins.y)
+        return false;
+    if(b.maxs.y < a.mins.y)
+        return false;
+    if(a.maxs.z < b.mins.z)
+        return false;
+    if(b.maxs.z < a.mins.z)
+        return false;
     return true;
 }
 
@@ -835,10 +855,10 @@ bool DoOBBsOverlap(const OBB2& a, const OBB2& b) noexcept {
     const auto Ma = Matrix4::MakeRT(Ra, Ta);
     const auto a_hex = a.half_extents.x;
     const auto a_hey = a.half_extents.y;
-    const auto a_topright = Ma.TransformPosition(Vector2(+a_hex,-a_hey));
-    const auto a_bottomright = Ma.TransformPosition(Vector2(+a_hex,+a_hey));
-    const auto a_topleft = Ma.TransformPosition(Vector2(-a_hex,-a_hey));
-    const auto a_bottomleft = Ma.TransformPosition(Vector2(-a_hex,+a_hey));
+    const auto a_topright = Ma.TransformPosition(Vector2(+a_hex, -a_hey));
+    const auto a_bottomright = Ma.TransformPosition(Vector2(+a_hex, +a_hey));
+    const auto a_topleft = Ma.TransformPosition(Vector2(-a_hex, -a_hey));
+    const auto a_bottomleft = Ma.TransformPosition(Vector2(-a_hex, +a_hey));
     const auto a_right_normal = Ra.TransformDirection(Vector2(a_hex, 0.0f).GetNormalize());
     const auto a_down_normal = Ra.TransformDirection(Vector2(0.0f, a_hey).GetNormalize());
     const auto a_left_normal = -a_right_normal;
@@ -860,10 +880,10 @@ bool DoOBBsOverlap(const OBB2& a, const OBB2& b) noexcept {
     const auto b_left_normal = -b_right_normal;
     const auto b_up_normal = -b_down_normal;
 
-    const std::vector<Vector2> a_normals{ a_right_normal, a_down_normal};
-    const std::vector<Vector2> a_corners{ a_bottomleft, a_topleft, a_topright, a_bottomright};
-    const std::vector<Vector2> b_normals{ b_right_normal, b_down_normal};
-    const std::vector<Vector2> b_corners{ b_bottomleft, b_topleft, b_topright, b_bottomright};
+    const std::vector<Vector2> a_normals{a_right_normal, a_down_normal};
+    const std::vector<Vector2> a_corners{a_bottomleft, a_topleft, a_topright, a_bottomright};
+    const std::vector<Vector2> b_normals{b_right_normal, b_down_normal};
+    const std::vector<Vector2> b_corners{b_bottomleft, b_topleft, b_topright, b_bottomright};
 
     for(const auto& an : a_normals) {
         auto min_a = std::numeric_limits<float>::infinity();
@@ -882,8 +902,10 @@ bool DoOBBsOverlap(const OBB2& a, const OBB2& b) noexcept {
             max_b = (std::max)(max_b, proj_dp);
         }
 
-        if(max_a < min_b) return false;
-        if(max_b < min_a) return false;
+        if(max_a < min_b)
+            return false;
+        if(max_b < min_a)
+            return false;
     }
     for(const auto& bn : b_normals) {
         auto min_b = std::numeric_limits<float>::infinity();
@@ -902,8 +924,10 @@ bool DoOBBsOverlap(const OBB2& a, const OBB2& b) noexcept {
             max_a = (std::max)(max_a, proj_dp);
         }
 
-        if(max_b < min_a) return false;
-        if(max_a < min_b) return false;
+        if(max_b < min_a)
+            return false;
+        if(max_a < min_b)
+            return false;
     }
     return true;
 }
@@ -935,8 +959,10 @@ bool DoPolygonsOverlap(const Polygon2& a, const Polygon2& b) noexcept {
             max_b = (std::max)(max_b, proj_dp);
         }
 
-        if(max_a < min_b) return false;
-        if(max_b < min_a) return false;
+        if(max_a < min_b)
+            return false;
+        if(max_b < min_a)
+            return false;
     }
     for(const auto& bn : b.GetNormals()) {
         auto min_b = std::numeric_limits<float>::infinity();
@@ -955,12 +981,13 @@ bool DoPolygonsOverlap(const Polygon2& a, const Polygon2& b) noexcept {
             max_a = (std::max)(max_a, proj_dp);
         }
 
-        if(max_b < min_a) return false;
-        if(max_a < min_b) return false;
+        if(max_b < min_a)
+            return false;
+        if(max_a < min_b)
+            return false;
     }
     return true;
 }
-
 
 bool DoLineSegmentOverlap(const Disc2& a, const LineSegment2& b) noexcept {
     return CalcDistanceSquared(a.center, b) < a.radius * a.radius;
@@ -1030,9 +1057,7 @@ bool IsPointOnPlane(const Vector2& point, const Plane2& plane) noexcept {
     return !IsPointInFrontOfPlane(point, plane) && !IsPointBehindOfPlane(point, plane);
 }
 
-float CalculateMatrix3Determinant(float m00, float m01, float m02,
-                                  float m10, float m11, float m12,
-                                  float m20, float m21, float m22) noexcept {
+float CalculateMatrix3Determinant(float m00, float m01, float m02, float m10, float m11, float m12, float m20, float m21, float m22) noexcept {
     float a = m00;
     float b = m01;
     float c = m02;
@@ -1043,8 +1068,7 @@ float CalculateMatrix3Determinant(float m00, float m01, float m02,
     return a * det_not_a - b * det_not_b + c * det_not_c;
 }
 
-float CalculateMatrix2Determinant(float m00, float m01,
-                                  float m10, float m11) noexcept {
+float CalculateMatrix2Determinant(float m00, float m01, float m10, float m11) noexcept {
     return m00 * m11 - m01 * m10;
 }
 
@@ -1232,9 +1256,9 @@ Rgba Interpolate(const Rgba& a, const Rgba& b, float t) {
     float b_color[4];
     b.GetAsFloats(b_color[0], b_color[1], b_color[2], b_color[3]);
 
-    float red   = Interpolate(a_color[0], b_color[0], t);
+    float red = Interpolate(a_color[0], b_color[0], t);
     float green = Interpolate(a_color[1], b_color[1], t);
-    float blue  = Interpolate(a_color[2], b_color[2], t);
+    float blue = Interpolate(a_color[2], b_color[2], t);
     float alpha = Interpolate(a_color[3], b_color[3], t);
 
     Rgba result;
@@ -1245,14 +1269,14 @@ Rgba Interpolate(const Rgba& a, const Rgba& b, float t) {
 Vector2 RangeMap(const Vector2& valueToMap, const Vector2& minmaxInputRange, const Vector2& minmaxOutputRange) {
     auto x = RangeMap(valueToMap.x, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
     auto y = RangeMap(valueToMap.y, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
-    return Vector2{ x, y };
+    return Vector2{x, y};
 }
 
 Vector3 RangeMap(const Vector3& valueToMap, const Vector2& minmaxInputRange, const Vector2& minmaxOutputRange) {
     auto x = RangeMap(valueToMap.x, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
     auto y = RangeMap(valueToMap.y, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
     auto z = RangeMap(valueToMap.z, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
-    return Vector3{ x, y, z };
+    return Vector3{x, y, z};
 }
 
 Vector4 RangeMap(const Vector4& valueToMap, const Vector2& minmaxInputRange, const Vector2& minmaxOutputRange) {
@@ -1260,20 +1284,20 @@ Vector4 RangeMap(const Vector4& valueToMap, const Vector2& minmaxInputRange, con
     auto y = RangeMap(valueToMap.y, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
     auto z = RangeMap(valueToMap.z, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
     auto w = RangeMap(valueToMap.w, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
-    return Vector4{ x, y, z, w };
+    return Vector4{x, y, z, w};
 }
 
 IntVector2 RangeMap(const IntVector2& valueToMap, const IntVector2& minmaxInputRange, const IntVector2& minmaxOutputRange) {
     auto x = RangeMap(valueToMap.x, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
     auto y = RangeMap(valueToMap.y, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
-    return IntVector2{ x, y };
+    return IntVector2{x, y};
 }
 
 IntVector3 RangeMap(const IntVector3& valueToMap, const IntVector2& minmaxInputRange, const IntVector2& minmaxOutputRange) {
     auto x = RangeMap(valueToMap.x, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
     auto y = RangeMap(valueToMap.y, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
     auto z = RangeMap(valueToMap.z, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
-    return IntVector3{ x, y, z };
+    return IntVector3{x, y, z};
 }
 
 IntVector4 RangeMap(const IntVector4& valueToMap, const IntVector2& minmaxInputRange, const IntVector2& minmaxOutputRange) {
@@ -1281,7 +1305,7 @@ IntVector4 RangeMap(const IntVector4& valueToMap, const IntVector2& minmaxInputR
     auto y = RangeMap(valueToMap.y, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
     auto z = RangeMap(valueToMap.z, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
     auto w = RangeMap(valueToMap.w, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
-    return IntVector4{ x, y, z, w };
+    return IntVector4{x, y, z, w};
 }
 
 template<>
@@ -1332,4 +1356,4 @@ IntVector2 Wrap(const IntVector2& valuesToWrap, const IntVector2& minValues, con
     return IntVector2(x, y);
 }
 
-} //End MathUtils
+} // namespace MathUtils

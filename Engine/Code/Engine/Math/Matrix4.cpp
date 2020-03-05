@@ -1,9 +1,9 @@
 #include "Engine/Math/Matrix4.hpp"
 
-#include <sstream>
-
 #include "Engine/Math/AABB3.hpp"
 #include "Engine/Math/MathUtils.hpp"
+
+#include <sstream>
 
 const Matrix4 Matrix4::I{};
 
@@ -19,32 +19,64 @@ Matrix4::Matrix4(const std::string& value) noexcept {
     }
 }
 
-Matrix4::Matrix4(float m00, float m01, float m02, float m03,
-    float m10, float m11, float m12, float m13,
-    float m20, float m21, float m22, float m23,
-    float m30, float m31, float m32, float m33) noexcept {
-    m_indicies[0] = m00; m_indicies[1] = m01; m_indicies[2] = m02; m_indicies[3] = m03;
-    m_indicies[4] = m10; m_indicies[5] = m11; m_indicies[6] = m12; m_indicies[7] = m13;
-    m_indicies[8] = m20; m_indicies[9] = m21; m_indicies[10] = m22; m_indicies[11] = m23;
-    m_indicies[12] = m30; m_indicies[13] = m31; m_indicies[14] = m32; m_indicies[15] = m33;
+Matrix4::Matrix4(float m00, float m01, float m02, float m03, float m10, float m11, float m12, float m13, float m20, float m21, float m22, float m23, float m30, float m31, float m32, float m33) noexcept {
+    m_indicies[0] = m00;
+    m_indicies[1] = m01;
+    m_indicies[2] = m02;
+    m_indicies[3] = m03;
+    m_indicies[4] = m10;
+    m_indicies[5] = m11;
+    m_indicies[6] = m12;
+    m_indicies[7] = m13;
+    m_indicies[8] = m20;
+    m_indicies[9] = m21;
+    m_indicies[10] = m22;
+    m_indicies[11] = m23;
+    m_indicies[12] = m30;
+    m_indicies[13] = m31;
+    m_indicies[14] = m32;
+    m_indicies[15] = m33;
 }
 
 Matrix4::Matrix4(const Vector4& iBasis, const Vector4& jBasis, const Vector4& kBasis, const Vector4& translation /*= Vector4::ZERO_XYZ_ONE_W*/) noexcept {
-    m_indicies[0] = iBasis.x; m_indicies[1] = jBasis.x; m_indicies[2] = kBasis.x; m_indicies[3] = translation.x;
-    m_indicies[4] = iBasis.y; m_indicies[5] = jBasis.y; m_indicies[6] = kBasis.y; m_indicies[7] = translation.y;
-    m_indicies[8] = iBasis.z; m_indicies[9] = jBasis.z; m_indicies[10] = kBasis.z; m_indicies[11] = translation.z;
-    m_indicies[12] = iBasis.w; m_indicies[13] = jBasis.w; m_indicies[14] = kBasis.w; m_indicies[15] = translation.w;
+    m_indicies[0] = iBasis.x;
+    m_indicies[1] = jBasis.x;
+    m_indicies[2] = kBasis.x;
+    m_indicies[3] = translation.x;
+    m_indicies[4] = iBasis.y;
+    m_indicies[5] = jBasis.y;
+    m_indicies[6] = kBasis.y;
+    m_indicies[7] = translation.y;
+    m_indicies[8] = iBasis.z;
+    m_indicies[9] = jBasis.z;
+    m_indicies[10] = kBasis.z;
+    m_indicies[11] = translation.z;
+    m_indicies[12] = iBasis.w;
+    m_indicies[13] = jBasis.w;
+    m_indicies[14] = kBasis.w;
+    m_indicies[15] = translation.w;
 }
 
 Matrix4::Matrix4(const float* arrayOfFloats) noexcept {
-    m_indicies[0] = arrayOfFloats[0];   m_indicies[1] = arrayOfFloats[1];   m_indicies[2] = arrayOfFloats[2];   m_indicies[3] = arrayOfFloats[3];
-    m_indicies[4] = arrayOfFloats[4];   m_indicies[5] = arrayOfFloats[5];   m_indicies[6] = arrayOfFloats[6];   m_indicies[7] = arrayOfFloats[7];
-    m_indicies[8] = arrayOfFloats[8];   m_indicies[9] = arrayOfFloats[9];   m_indicies[10] = arrayOfFloats[10];  m_indicies[11] = arrayOfFloats[11];
-    m_indicies[12] = arrayOfFloats[12];  m_indicies[13] = arrayOfFloats[13];  m_indicies[14] = arrayOfFloats[14];  m_indicies[15] = arrayOfFloats[15];
+    m_indicies[0] = arrayOfFloats[0];
+    m_indicies[1] = arrayOfFloats[1];
+    m_indicies[2] = arrayOfFloats[2];
+    m_indicies[3] = arrayOfFloats[3];
+    m_indicies[4] = arrayOfFloats[4];
+    m_indicies[5] = arrayOfFloats[5];
+    m_indicies[6] = arrayOfFloats[6];
+    m_indicies[7] = arrayOfFloats[7];
+    m_indicies[8] = arrayOfFloats[8];
+    m_indicies[9] = arrayOfFloats[9];
+    m_indicies[10] = arrayOfFloats[10];
+    m_indicies[11] = arrayOfFloats[11];
+    m_indicies[12] = arrayOfFloats[12];
+    m_indicies[13] = arrayOfFloats[13];
+    m_indicies[14] = arrayOfFloats[14];
+    m_indicies[15] = arrayOfFloats[15];
 }
 
 Matrix4::Matrix4(const Quaternion& q) noexcept {
-
     auto q_norm = q.GetNormalize();
 
     float x = q.axis.x;
@@ -53,47 +85,70 @@ Matrix4::Matrix4(const Quaternion& q) noexcept {
     float w = q.w;
 
     Matrix4 left;
-    left.m_indicies[0] = w; left.m_indicies[1] = -z; left.m_indicies[2] = y; left.m_indicies[3] = -x;
-    left.m_indicies[4] = z; left.m_indicies[5] = w; left.m_indicies[6] = -x; left.m_indicies[7] = -y;
-    left.m_indicies[8] = -y; left.m_indicies[9] = x; left.m_indicies[10] = w; left.m_indicies[11] = -z;
-    left.m_indicies[12] = x; left.m_indicies[13] = y; left.m_indicies[14] = z; left.m_indicies[15] = w;
+    left.m_indicies[0] = w;
+    left.m_indicies[1] = -z;
+    left.m_indicies[2] = y;
+    left.m_indicies[3] = -x;
+    left.m_indicies[4] = z;
+    left.m_indicies[5] = w;
+    left.m_indicies[6] = -x;
+    left.m_indicies[7] = -y;
+    left.m_indicies[8] = -y;
+    left.m_indicies[9] = x;
+    left.m_indicies[10] = w;
+    left.m_indicies[11] = -z;
+    left.m_indicies[12] = x;
+    left.m_indicies[13] = y;
+    left.m_indicies[14] = z;
+    left.m_indicies[15] = w;
 
     Matrix4 right;
-    right.m_indicies[0] = w; right.m_indicies[1] = -z; right.m_indicies[2] = y; right.m_indicies[3] = x;
-    right.m_indicies[4] = z; right.m_indicies[5] = w; right.m_indicies[6] = -x; right.m_indicies[7] = y;
-    right.m_indicies[8] = -y; right.m_indicies[9] = x; right.m_indicies[10] = w; right.m_indicies[11] = z;
-    right.m_indicies[12] = -x; right.m_indicies[13] = -y; right.m_indicies[14] = -z; right.m_indicies[15] = w;
+    right.m_indicies[0] = w;
+    right.m_indicies[1] = -z;
+    right.m_indicies[2] = y;
+    right.m_indicies[3] = x;
+    right.m_indicies[4] = z;
+    right.m_indicies[5] = w;
+    right.m_indicies[6] = -x;
+    right.m_indicies[7] = y;
+    right.m_indicies[8] = -y;
+    right.m_indicies[9] = x;
+    right.m_indicies[10] = w;
+    right.m_indicies[11] = z;
+    right.m_indicies[12] = -x;
+    right.m_indicies[13] = -y;
+    right.m_indicies[14] = -z;
+    right.m_indicies[15] = w;
 
     m_indicies = (left * right).m_indicies;
-
 }
 Matrix4::Matrix4(const Vector2& iBasis, const Vector2& jBasis, const Vector2& translation /*= Vector2::ZERO*/) noexcept
-    : m_indicies{ iBasis.x, jBasis.x, 0.0f, translation.x,
-    iBasis.y, jBasis.y, 0.0f, translation.y,
-    0.0f,     0.0f, 1.0f,          0.0f,
-    0.0f,     0.0f, 0.0f,          1.0f } {
+: m_indicies{iBasis.x, jBasis.x, 0.0f, translation.x,
+             iBasis.y, jBasis.y, 0.0f, translation.y,
+             0.0f, 0.0f, 1.0f, 0.0f,
+             0.0f, 0.0f, 0.0f, 1.0f} {
     /* DO NOTHING */
 }
 Matrix4::Matrix4(const Vector3& iBasis, const Vector3& jBasis, const Vector3& kBasis, const Vector3& translation /*= Vector3::ZERO*/) noexcept
-    : m_indicies{ iBasis.x, jBasis.x, kBasis.x, translation.x,
-    iBasis.y, jBasis.y, kBasis.y, translation.y,
-    iBasis.z, jBasis.z, kBasis.z, translation.z,
-    0.0f,     0.0f,     0.0f,          1.0f } {
+: m_indicies{iBasis.x, jBasis.x, kBasis.x, translation.x,
+             iBasis.y, jBasis.y, kBasis.y, translation.y,
+             iBasis.z, jBasis.z, kBasis.z, translation.z,
+             0.0f, 0.0f, 0.0f, 1.0f} {
     /* DO NOTHING */
 }
 
 Matrix4 Matrix4::GetIdentity() noexcept {
     return Matrix4(1.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 0.0f, 1.0f);
+                   0.0f, 1.0f, 0.0f, 0.0f,
+                   0.0f, 0.0f, 1.0f, 0.0f,
+                   0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 Matrix4 Matrix4::CreateTranslationMatrix(float x, float y, float z) noexcept {
     return Matrix4(1.0f, 0.0f, 0.0f, x,
-        0.0f, 1.0f, 0.0f, y,
-        0.0f, 0.0f, 1.0f, z,
-        0.0f, 0.0f, 0.0f, 1.0f);
+                   0.0f, 1.0f, 0.0f, y,
+                   0.0f, 0.0f, 1.0f, z,
+                   0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 Matrix4 Matrix4::CreateTranslationMatrix(const Vector3& position) noexcept {
@@ -123,30 +178,30 @@ Matrix4 Matrix4::Create2DRotationMatrix(float angleRadians) noexcept {
 
 Matrix4 Matrix4::Create3DXRotationMatrix(float angle) noexcept {
     return Matrix4(1.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, std::cos(angle), -std::sin(angle), 0.0f,
-        0.0f, std::sin(angle), std::cos(angle), 0.0f,
-        0.0f, 0.0f, 0.0f, 1.0f);
+                   0.0f, std::cos(angle), -std::sin(angle), 0.0f,
+                   0.0f, std::sin(angle), std::cos(angle), 0.0f,
+                   0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 Matrix4 Matrix4::Create3DYRotationMatrix(float angle) noexcept {
     return Matrix4(std::cos(angle), 0.0f, std::sin(angle), 0.0f,
-        0.0f, 1.0f, 0.0f, 0.0f,
-        -std::sin(angle), 0.0f, std::cos(angle), 0.0f,
-        0.0f, 0.0f, 0.0f, 1.0f);
+                   0.0f, 1.0f, 0.0f, 0.0f,
+                   -std::sin(angle), 0.0f, std::cos(angle), 0.0f,
+                   0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 Matrix4 Matrix4::Create3DZRotationMatrix(float angle) noexcept {
     return Matrix4(std::cos(angle), -std::sin(angle), 0.0f, 0.0f,
-        std::sin(angle), std::cos(angle), 0.0f, 0.0f,
-        0.0f, 0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 0.0f, 1.0f);
+                   std::sin(angle), std::cos(angle), 0.0f, 0.0f,
+                   0.0f, 0.0f, 1.0f, 0.0f,
+                   0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 Matrix4 Matrix4::CreateScaleMatrix(float scale_x, float scale_y, float scale_z) noexcept {
     return Matrix4(scale_x, 0.0f, 0.0f, 0.0f,
-        0.0f, scale_y, 0.0f, 0.0f,
-        0.0f, 0.0f, scale_z, 0.0f,
-        0.0f, 0.0f, 0.0f, 1.0f);
+                   0.0f, scale_y, 0.0f, 0.0f,
+                   0.0f, 0.0f, scale_z, 0.0f,
+                   0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 Matrix4 Matrix4::CreateScaleMatrix(const Vector3& scale) noexcept {
@@ -313,15 +368,24 @@ float Matrix4::GetIndex(unsigned int col, unsigned int row) const noexcept {
 }
 
 void Matrix4::Identity() noexcept {
-
-    m_indicies[0] = 1.0f;  m_indicies[1] = 0.0f;  m_indicies[2] = 0.0f;  m_indicies[3] = 0.0f;
-    m_indicies[4] = 0.0f;  m_indicies[5] = 1.0f;  m_indicies[6] = 0.0f;  m_indicies[7] = 0.0f;
-    m_indicies[8] = 0.0f;  m_indicies[9] = 0.0f;  m_indicies[10] = 1.0f;  m_indicies[11] = 0.0f;
-    m_indicies[12] = 0.0f;  m_indicies[13] = 0.0f;  m_indicies[14] = 0.0f;  m_indicies[15] = 1.0f;
-
+    m_indicies[0] = 1.0f;
+    m_indicies[1] = 0.0f;
+    m_indicies[2] = 0.0f;
+    m_indicies[3] = 0.0f;
+    m_indicies[4] = 0.0f;
+    m_indicies[5] = 1.0f;
+    m_indicies[6] = 0.0f;
+    m_indicies[7] = 0.0f;
+    m_indicies[8] = 0.0f;
+    m_indicies[9] = 0.0f;
+    m_indicies[10] = 1.0f;
+    m_indicies[11] = 0.0f;
+    m_indicies[12] = 0.0f;
+    m_indicies[13] = 0.0f;
+    m_indicies[14] = 0.0f;
+    m_indicies[15] = 1.0f;
 }
 void Matrix4::Transpose() noexcept {
-
     //[00 01 02 03] [0   1  2  3]
     //[10 11 12 13] [4   5  6  7]
     //[20 21 22 23] [8   9 10 11]
@@ -339,41 +403,36 @@ void Matrix4::Transpose() noexcept {
     std::swap(m_indicies[6], m_indicies[9]);
     std::swap(m_indicies[7], m_indicies[13]);
     std::swap(m_indicies[11], m_indicies[14]);
-
 }
 
 Matrix4 Matrix4::CreateTransposeMatrix(const Matrix4& mat) noexcept {
     return Matrix4(mat.m_indicies[0], mat.m_indicies[4], mat.m_indicies[8], mat.m_indicies[12],
-        mat.m_indicies[1], mat.m_indicies[5], mat.m_indicies[9], mat.m_indicies[13],
-        mat.m_indicies[2], mat.m_indicies[6], mat.m_indicies[10], mat.m_indicies[14],
-        mat.m_indicies[3], mat.m_indicies[7], mat.m_indicies[11], mat.m_indicies[15]);
+                   mat.m_indicies[1], mat.m_indicies[5], mat.m_indicies[9], mat.m_indicies[13],
+                   mat.m_indicies[2], mat.m_indicies[6], mat.m_indicies[10], mat.m_indicies[14],
+                   mat.m_indicies[3], mat.m_indicies[7], mat.m_indicies[11], mat.m_indicies[15]);
 }
 
 Matrix4 Matrix4::CreatePerspectiveProjectionMatrix(float top, float bottom, float right, float left, float nearZ, float farZ) noexcept {
-    return Matrix4(((2.0f * nearZ) / (right - left)), 0.0f, ((right + left) / (right - left)), 0.0f
-        , 0.0f, 2.0f / (top - bottom), ((top + bottom) / (top - bottom)), 0.0f
-        , 0.0f, 0.0f, ((-2.0f) / (farZ - nearZ)), (-(farZ + nearZ) / (farZ - nearZ))
-        , 0.0f, 0.0f, 0.0f, 1.0f);
+    return Matrix4(((2.0f * nearZ) / (right - left)), 0.0f, ((right + left) / (right - left)), 0.0f, 0.0f, 2.0f / (top - bottom), ((top + bottom) / (top - bottom)), 0.0f, 0.0f, 0.0f, ((-2.0f) / (farZ - nearZ)), (-(farZ + nearZ) / (farZ - nearZ)), 0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 Matrix4 Matrix4::CreateHPerspectiveProjectionMatrix(float fov, float /*aspect_ratio*/, float nearZ, float farZ) noexcept {
     float S = 1.0f / std::tan(MathUtils::ConvertDegreesToRadians(fov / 2.0f));
     return Matrix4(S, 0.0f, 0.0f, 0.0f,
-        0.0f, S, 0.0f, 0.0f,
-        0.0f, 0.0f, -(farZ / (farZ - nearZ)), -1.0f,
-        0.0f, 0.0f, -((farZ * nearZ) / (farZ - nearZ)), 0.0f);
+                   0.0f, S, 0.0f, 0.0f,
+                   0.0f, 0.0f, -(farZ / (farZ - nearZ)), -1.0f,
+                   0.0f, 0.0f, -((farZ * nearZ) / (farZ - nearZ)), 0.0f);
 }
 
 Matrix4 Matrix4::CreateVPerspectiveProjectionMatrix(float fov, float aspect_ratio, float nearZ, float farZ) noexcept {
     float f = std::atan(MathUtils::ConvertDegreesToRadians(fov) / 2.0f);
     return Matrix4(f / aspect_ratio, 0.0f, 0.0f, 0.0f,
-        0.0f, f, 0.0f, 0.0f,
-        0.0f, 0.0f, ((farZ + nearZ) / (nearZ - farZ)), (2.0f * farZ * nearZ) / (nearZ - farZ),
-        0.0f, 0.0f, -1.0f, 0.0f);
+                   0.0f, f, 0.0f, 0.0f,
+                   0.0f, 0.0f, ((farZ + nearZ) / (nearZ - farZ)), (2.0f * farZ * nearZ) / (nearZ - farZ),
+                   0.0f, 0.0f, -1.0f, 0.0f);
 }
 
 Matrix4 Matrix4::CreateDXOrthographicProjection(float nx, float fx, float ny, float fy, float nz, float fz) noexcept {
-
     float sx = 2.0f / (fx - nx);
     float sy = 2.0f / (fy - ny);
     float sz = 1.0f / (fz - nz);
@@ -381,10 +440,9 @@ Matrix4 Matrix4::CreateDXOrthographicProjection(float nx, float fx, float ny, fl
     float ty = -(fy + ny) * sy;
     float tz = -nz * sz;
     Matrix4 mat(sx, 0.0f, 0.0f, tx,
-        0.0f, sy, 0.0f, ty,
-        0.0f, 0.0f, sz, tz,
-        0.0f, 0.0f, 0.0f, 1.0f
-    );
+                0.0f, sy, 0.0f, ty,
+                0.0f, 0.0f, sz, tz,
+                0.0f, 0.0f, 0.0f, 1.0f);
     return mat;
 }
 
@@ -404,19 +462,12 @@ Matrix4 Matrix4::CreateDXPerspectiveProjection(float vfovDegrees, float aspect, 
     float sy = inv_tan;
     float sz = fz * inv_depth;
     float tz = -nzfz * inv_depth;
-    Matrix4 mat(sx, 0.0f, 0.0f, 0.0f
-        , 0.0f, sy, 0.0f, 0.0f
-        , 0.0f, 0.0f, sz, tz
-        , 0.0f, 0.0f, 1.0f, 0.0f
-    );
+    Matrix4 mat(sx, 0.0f, 0.0f, 0.0f, 0.0f, sy, 0.0f, 0.0f, 0.0f, 0.0f, sz, tz, 0.0f, 0.0f, 1.0f, 0.0f);
     return mat;
 }
 
 Matrix4 Matrix4::CreateOrthographicProjectionMatrix(float top, float bottom, float right, float left, float nearZ, float farZ) noexcept {
-    return Matrix4(2.0f / (right - left), 0.0f, 0.0f, -((right + left) / (right - left))
-        , 0.0f, 2.0f / (top - bottom), 0.0f, -((top + bottom) / (top - bottom))
-        , 0.0f, 0.0f, (-2.0f / (farZ - nearZ)), (-(farZ + nearZ) / (farZ - nearZ))
-        , 0.0f, 0.0f, 0.0f, 1.0f);
+    return Matrix4(2.0f / (right - left), 0.0f, 0.0f, -((right + left) / (right - left)), 0.0f, 2.0f / (top - bottom), 0.0f, -((top + bottom) / (top - bottom)), 0.0f, 0.0f, (-2.0f / (farZ - nearZ)), (-(farZ + nearZ) / (farZ - nearZ)), 0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 Matrix4 Matrix4::CreateLookAtMatrix(const Vector3& eye, const Vector3& lookAt, const Vector3& up) noexcept {
@@ -426,14 +477,14 @@ Matrix4 Matrix4::CreateLookAtMatrix(const Vector3& eye, const Vector3& lookAt, c
     Vector3 cam_up = MathUtils::CrossProduct(cam_forward, cam_right);
 
     Matrix4 R(cam_right.x, cam_up.x, cam_forward.x, 0.0f,
-        cam_right.y, cam_up.y, cam_forward.y, 0.0f,
-        cam_right.z, cam_up.z, cam_forward.z, 0.0f,
-        0.0f, 0.0f, 0.0f, 1.0f);
+              cam_right.y, cam_up.y, cam_forward.y, 0.0f,
+              cam_right.z, cam_up.z, cam_forward.z, 0.0f,
+              0.0f, 0.0f, 0.0f, 1.0f);
 
     Matrix4 T(1.0f, 0.0f, 0.0f, -eye.x,
-        0.0f, 1.0f, 0.0f, -eye.y,
-        0.0f, 0.0f, 1.0f, -eye.z,
-        0.0f, 0.0f, 0.0f, 1.0f);
+              0.0f, 1.0f, 0.0f, -eye.y,
+              0.0f, 0.0f, 1.0f, -eye.z,
+              0.0f, 0.0f, 0.0f, 1.0f);
 
     Matrix4 L = Matrix4::MakeRT(R, T);
 
@@ -445,7 +496,6 @@ void Matrix4::CalculateInverse() noexcept {
 }
 
 Matrix4 Matrix4::CalculateInverse(const Matrix4& mat) noexcept {
-
     //Minors, Cofactors, Adjugates method.
     //See http://www.mathsisfun.com/algebra/matrix-inverse-minors-cofactors-adjugate.html
 
@@ -503,7 +553,6 @@ void Matrix4::OrthoNormalizeIKJ() noexcept {
     SetIBasis(i);
     SetJBasis(j);
     SetKBasis(k);
-
 }
 
 void Matrix4::OrthoNormalizeIJK() noexcept {
@@ -521,12 +570,9 @@ void Matrix4::OrthoNormalizeIJK() noexcept {
     SetIBasis(i);
     SetJBasis(j);
     SetKBasis(k);
-
 }
 
 float Matrix4::CalculateDeterminant(const Matrix4& mat) noexcept {
-
-
     //[00 01 02 03] [0   1  2  3]
     //[10 11 12 13] [4   5  6  7]
     //[20 21 22 23] [8   9 10 11]
@@ -534,23 +580,23 @@ float Matrix4::CalculateDeterminant(const Matrix4& mat) noexcept {
 
     float a = mat.m_indicies[0];
     float det_not_a = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[5], mat.m_indicies[6], mat.m_indicies[7],
-        mat.m_indicies[9], mat.m_indicies[10], mat.m_indicies[11],
-        mat.m_indicies[13], mat.m_indicies[14], mat.m_indicies[15]);
+                                                             mat.m_indicies[9], mat.m_indicies[10], mat.m_indicies[11],
+                                                             mat.m_indicies[13], mat.m_indicies[14], mat.m_indicies[15]);
 
     float b = mat.m_indicies[1];
     float det_not_b = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[4], mat.m_indicies[6], mat.m_indicies[7],
-        mat.m_indicies[8], mat.m_indicies[10], mat.m_indicies[11],
-        mat.m_indicies[12], mat.m_indicies[14], mat.m_indicies[15]);
+                                                             mat.m_indicies[8], mat.m_indicies[10], mat.m_indicies[11],
+                                                             mat.m_indicies[12], mat.m_indicies[14], mat.m_indicies[15]);
 
     float c = mat.m_indicies[2];
     float det_not_c = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[4], mat.m_indicies[5], mat.m_indicies[7],
-        mat.m_indicies[8], mat.m_indicies[9], mat.m_indicies[11],
-        mat.m_indicies[12], mat.m_indicies[13], mat.m_indicies[15]);
+                                                             mat.m_indicies[8], mat.m_indicies[9], mat.m_indicies[11],
+                                                             mat.m_indicies[12], mat.m_indicies[13], mat.m_indicies[15]);
 
     float d = mat.m_indicies[3];
     float det_not_d = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[4], mat.m_indicies[5], mat.m_indicies[6],
-        mat.m_indicies[8], mat.m_indicies[9], mat.m_indicies[10],
-        mat.m_indicies[12], mat.m_indicies[13], mat.m_indicies[14]);
+                                                             mat.m_indicies[8], mat.m_indicies[9], mat.m_indicies[10],
+                                                             mat.m_indicies[12], mat.m_indicies[13], mat.m_indicies[14]);
 
     return (a * det_not_a) - (b * det_not_b) + (c * det_not_c) - (d * det_not_d);
 }
@@ -598,7 +644,6 @@ void Matrix4::Scale(const Vector3& scale) noexcept {
 }
 
 void Matrix4::Scale(const Vector4& scale) noexcept {
-
     m_indicies[0] *= scale.x;
     m_indicies[1] *= scale.x;
     m_indicies[2] *= scale.x;
@@ -614,7 +659,6 @@ void Matrix4::Scale(const Vector4& scale) noexcept {
     m_indicies[12] *= scale.w;
     m_indicies[13] *= scale.w;
     m_indicies[14] *= scale.w;
-
 }
 
 void Matrix4::Rotate3DXDegrees(float degrees) noexcept {
@@ -630,7 +674,6 @@ void Matrix4::Rotate2DDegrees(float degrees) noexcept {
     Rotate3DZDegrees(degrees);
 }
 void Matrix4::Rotate3DXRadians(float radians) noexcept {
-
     float r = radians;
     float c = std::cos(r);
     float s = std::sin(r);
@@ -641,7 +684,6 @@ void Matrix4::Rotate3DXRadians(float radians) noexcept {
     m_indicies[10] = c;
 }
 void Matrix4::Rotate3DYRadians(float radians) noexcept {
-
     float r = radians;
     float c = std::cos(r);
     float s = std::sin(r);
@@ -650,10 +692,8 @@ void Matrix4::Rotate3DYRadians(float radians) noexcept {
     m_indicies[2] = s;
     m_indicies[8] = -s;
     m_indicies[10] = c;
-
 }
 void Matrix4::Rotate3DZRadians(float radians) noexcept {
-
     float r = radians;
     float c = std::cos(r);
     float s = std::sin(r);
@@ -662,7 +702,6 @@ void Matrix4::Rotate3DZRadians(float radians) noexcept {
     m_indicies[1] = -s;
     m_indicies[4] = s;
     m_indicies[5] = c;
-
 }
 void Matrix4::Rotate2DRadians(float radians) noexcept {
     Rotate3DZRadians(radians);
@@ -726,10 +765,7 @@ Vector4 Matrix4::GetDiagonal(const Matrix4& mat) noexcept {
     return Vector4(mat.m_indicies[0], mat.m_indicies[5], mat.m_indicies[10], mat.m_indicies[15]);
 }
 bool Matrix4::operator==(const Matrix4& rhs) const noexcept {
-    return (MathUtils::IsEquivalent(m_indicies[0], rhs.m_indicies[0]) && MathUtils::IsEquivalent(m_indicies[1], rhs.m_indicies[1]) && MathUtils::IsEquivalent(m_indicies[2], rhs.m_indicies[2]) && MathUtils::IsEquivalent(m_indicies[3], rhs.m_indicies[3]) &&
-        MathUtils::IsEquivalent(m_indicies[4], rhs.m_indicies[4]) && MathUtils::IsEquivalent(m_indicies[5], rhs.m_indicies[5]) && MathUtils::IsEquivalent(m_indicies[6], rhs.m_indicies[6]) && MathUtils::IsEquivalent(m_indicies[7], rhs.m_indicies[7]) &&
-        MathUtils::IsEquivalent(m_indicies[8], rhs.m_indicies[8]) && MathUtils::IsEquivalent(m_indicies[9], rhs.m_indicies[9]) && MathUtils::IsEquivalent(m_indicies[10], rhs.m_indicies[10]) && MathUtils::IsEquivalent(m_indicies[11], rhs.m_indicies[11]) &&
-        MathUtils::IsEquivalent(m_indicies[12], rhs.m_indicies[12]) && MathUtils::IsEquivalent(m_indicies[13], rhs.m_indicies[13]) && MathUtils::IsEquivalent(m_indicies[14], rhs.m_indicies[14]) && MathUtils::IsEquivalent(m_indicies[15], rhs.m_indicies[15]));
+    return (MathUtils::IsEquivalent(m_indicies[0], rhs.m_indicies[0]) && MathUtils::IsEquivalent(m_indicies[1], rhs.m_indicies[1]) && MathUtils::IsEquivalent(m_indicies[2], rhs.m_indicies[2]) && MathUtils::IsEquivalent(m_indicies[3], rhs.m_indicies[3]) && MathUtils::IsEquivalent(m_indicies[4], rhs.m_indicies[4]) && MathUtils::IsEquivalent(m_indicies[5], rhs.m_indicies[5]) && MathUtils::IsEquivalent(m_indicies[6], rhs.m_indicies[6]) && MathUtils::IsEquivalent(m_indicies[7], rhs.m_indicies[7]) && MathUtils::IsEquivalent(m_indicies[8], rhs.m_indicies[8]) && MathUtils::IsEquivalent(m_indicies[9], rhs.m_indicies[9]) && MathUtils::IsEquivalent(m_indicies[10], rhs.m_indicies[10]) && MathUtils::IsEquivalent(m_indicies[11], rhs.m_indicies[11]) && MathUtils::IsEquivalent(m_indicies[12], rhs.m_indicies[12]) && MathUtils::IsEquivalent(m_indicies[13], rhs.m_indicies[13]) && MathUtils::IsEquivalent(m_indicies[14], rhs.m_indicies[14]) && MathUtils::IsEquivalent(m_indicies[15], rhs.m_indicies[15]));
 }
 
 bool Matrix4::operator==(const Matrix4& rhs) noexcept {
@@ -758,8 +794,8 @@ Vector3 Matrix4::GetTranslation() noexcept {
 }
 Vector3 Matrix4::GetScale() const noexcept {
     return Vector3(GetIBasis().CalcLength3D(),
-        GetJBasis().CalcLength3D(),
-        GetKBasis().CalcLength3D());
+                   GetJBasis().CalcLength3D(),
+                   GetKBasis().CalcLength3D());
 }
 Vector3 Matrix4::GetScale() noexcept {
     return static_cast<const Matrix4&>(*this).GetScale();
@@ -825,7 +861,6 @@ Vector3 Matrix4::CalcEulerAngles() const noexcept {
 }
 
 Matrix4 Matrix4::operator*(const Matrix4& rhs) const noexcept {
-
     using namespace MathUtils;
 
     Vector4 myI = GetIBasis();
@@ -846,31 +881,39 @@ Matrix4 Matrix4::operator*(const Matrix4& rhs) const noexcept {
     Vector4 rhsZ = rhs.GetZComponents();
     Vector4 rhsW = rhs.GetWComponents();
 
-    float m00 = DotProduct(myX, rhsI);  float m01 = DotProduct(myX, rhsJ); float m02 = DotProduct(myX, rhsK);  float m03 = DotProduct(myX, rhsT);
-    float m04 = DotProduct(myY, rhsI);  float m05 = DotProduct(myY, rhsJ); float m06 = DotProduct(myY, rhsK);  float m07 = DotProduct(myY, rhsT);
-    float m08 = DotProduct(myZ, rhsI);  float m09 = DotProduct(myZ, rhsJ); float m10 = DotProduct(myZ, rhsK);  float m11 = DotProduct(myZ, rhsT);
-    float m12 = DotProduct(myW, rhsI);  float m13 = DotProduct(myW, rhsJ); float m14 = DotProduct(myW, rhsK);  float m15 = DotProduct(myW, rhsT);
+    float m00 = DotProduct(myX, rhsI);
+    float m01 = DotProduct(myX, rhsJ);
+    float m02 = DotProduct(myX, rhsK);
+    float m03 = DotProduct(myX, rhsT);
+    float m04 = DotProduct(myY, rhsI);
+    float m05 = DotProduct(myY, rhsJ);
+    float m06 = DotProduct(myY, rhsK);
+    float m07 = DotProduct(myY, rhsT);
+    float m08 = DotProduct(myZ, rhsI);
+    float m09 = DotProduct(myZ, rhsJ);
+    float m10 = DotProduct(myZ, rhsK);
+    float m11 = DotProduct(myZ, rhsT);
+    float m12 = DotProduct(myW, rhsI);
+    float m13 = DotProduct(myW, rhsJ);
+    float m14 = DotProduct(myW, rhsK);
+    float m15 = DotProduct(myW, rhsT);
 
-    Matrix4 result(m00, m01, m02, m03
-        , m04, m05, m06, m07
-        , m08, m09, m10, m11
-        , m12, m13, m14, m15
-    );
+    Matrix4 result(m00, m01, m02, m03, m04, m05, m06, m07, m08, m09, m10, m11, m12, m13, m14, m15);
     return result;
 }
 
 Matrix4 Matrix4::operator*(float scalar) const noexcept {
     return Matrix4(scalar * m_indicies[0], scalar * m_indicies[1], scalar * m_indicies[2], scalar * m_indicies[3],
-        scalar * m_indicies[4], scalar * m_indicies[5], scalar * m_indicies[6], scalar * m_indicies[7],
-        scalar * m_indicies[8], scalar * m_indicies[9], scalar * m_indicies[10], scalar * m_indicies[11],
-        scalar * m_indicies[12], scalar * m_indicies[13], scalar * m_indicies[14], scalar * m_indicies[15]);
+                   scalar * m_indicies[4], scalar * m_indicies[5], scalar * m_indicies[6], scalar * m_indicies[7],
+                   scalar * m_indicies[8], scalar * m_indicies[9], scalar * m_indicies[10], scalar * m_indicies[11],
+                   scalar * m_indicies[12], scalar * m_indicies[13], scalar * m_indicies[14], scalar * m_indicies[15]);
 }
 
 Vector4 Matrix4::operator*(const Vector4& rhs) const noexcept {
-    const Vector4 my_x{ GetXComponents() };
-    const Vector4 my_y{ GetYComponents() };
-    const Vector4 my_z{ GetZComponents() };
-    const Vector4 my_w{ GetWComponents() };
+    const Vector4 my_x{GetXComponents()};
+    const Vector4 my_y{GetYComponents()};
+    const Vector4 my_z{GetZComponents()};
+    const Vector4 my_w{GetWComponents()};
     const float x = MathUtils::DotProduct(rhs, my_x);
     const float y = MathUtils::DotProduct(rhs, my_y);
     const float z = MathUtils::DotProduct(rhs, my_z);
@@ -911,23 +954,22 @@ Vector3 operator*(const Vector3& lhs, const Matrix4& rhs) noexcept {
 }
 
 Vector2 Matrix4::operator*(const Vector2& rhs) const noexcept {
-    const Vector2 my_x{ Vector3{ GetXComponents() } };
-    const Vector2 my_y{ Vector3{ GetYComponents() } };
+    const Vector2 my_x{Vector3{GetXComponents()}};
+    const Vector2 my_y{Vector3{GetYComponents()}};
     const float x = MathUtils::DotProduct(my_x, rhs);
     const float y = MathUtils::DotProduct(my_y, rhs);
     return Vector2(x, y);
 }
 
 Vector2 operator*(const Vector2& lhs, const Matrix4& rhs) noexcept {
-    const Vector2 my_i{ Vector3{ rhs.GetIBasis() } };
-    const Vector2 my_j{ Vector3{ rhs.GetKBasis() } };
+    const Vector2 my_i{Vector3{rhs.GetIBasis()}};
+    const Vector2 my_j{Vector3{rhs.GetKBasis()}};
     const float x = MathUtils::DotProduct(lhs, my_i);
     const float y = MathUtils::DotProduct(lhs, my_j);
     return Vector2(x, y);
 }
 
 Matrix4& Matrix4::operator*=(const Matrix4& rhs) noexcept {
-
     using namespace MathUtils;
 
     Vector4 myI = GetIBasis();
@@ -948,17 +990,27 @@ Matrix4& Matrix4::operator*=(const Matrix4& rhs) noexcept {
     Vector4 rhsZ = rhs.GetZComponents();
     Vector4 rhsW = rhs.GetWComponents();
 
-
-    m_indicies[0] = DotProduct(myX, rhsI);  m_indicies[1] = DotProduct(myX, rhsJ); m_indicies[2] = DotProduct(myX, rhsK);  m_indicies[3] = DotProduct(myX, rhsT);
-    m_indicies[4] = DotProduct(myY, rhsI);  m_indicies[5] = DotProduct(myY, rhsJ); m_indicies[6] = DotProduct(myY, rhsK); m_indicies[7] = DotProduct(myY, rhsT);
-    m_indicies[8] = DotProduct(myZ, rhsI);  m_indicies[9] = DotProduct(myZ, rhsJ); m_indicies[10] = DotProduct(myZ, rhsK);  m_indicies[11] = DotProduct(myZ, rhsT);
-    m_indicies[12] = DotProduct(myW, rhsI);  m_indicies[13] = DotProduct(myW, rhsJ); m_indicies[14] = DotProduct(myW, rhsK);  m_indicies[15] = DotProduct(myW, rhsT);
+    m_indicies[0] = DotProduct(myX, rhsI);
+    m_indicies[1] = DotProduct(myX, rhsJ);
+    m_indicies[2] = DotProduct(myX, rhsK);
+    m_indicies[3] = DotProduct(myX, rhsT);
+    m_indicies[4] = DotProduct(myY, rhsI);
+    m_indicies[5] = DotProduct(myY, rhsJ);
+    m_indicies[6] = DotProduct(myY, rhsK);
+    m_indicies[7] = DotProduct(myY, rhsT);
+    m_indicies[8] = DotProduct(myZ, rhsI);
+    m_indicies[9] = DotProduct(myZ, rhsJ);
+    m_indicies[10] = DotProduct(myZ, rhsK);
+    m_indicies[11] = DotProduct(myZ, rhsT);
+    m_indicies[12] = DotProduct(myW, rhsI);
+    m_indicies[13] = DotProduct(myW, rhsJ);
+    m_indicies[14] = DotProduct(myW, rhsK);
+    m_indicies[15] = DotProduct(myW, rhsT);
 
     return *this;
 }
 
 Matrix4& Matrix4::operator*=(float scalar) noexcept {
-
     m_indicies[0] *= scalar;
     m_indicies[1] *= scalar;
     m_indicies[2] *= scalar;
@@ -982,7 +1034,7 @@ Matrix4& Matrix4::operator*=(float scalar) noexcept {
     return *this;
 }
 
-const float * Matrix4::operator*() const noexcept {
+const float* Matrix4::operator*() const noexcept {
     return &m_indicies[0];
 }
 float* Matrix4::operator*() noexcept {
@@ -991,13 +1043,12 @@ float* Matrix4::operator*() noexcept {
 
 Matrix4 Matrix4::operator+(const Matrix4& rhs) const noexcept {
     return Matrix4(m_indicies[0] + rhs.m_indicies[0], m_indicies[1] + rhs.m_indicies[1], m_indicies[2] + rhs.m_indicies[2], m_indicies[3] + rhs.m_indicies[3],
-        m_indicies[4] + rhs.m_indicies[4], m_indicies[5] + rhs.m_indicies[5], m_indicies[6] + rhs.m_indicies[6], m_indicies[7] + rhs.m_indicies[7],
-        m_indicies[8] + rhs.m_indicies[8], m_indicies[9] + rhs.m_indicies[9], m_indicies[10] + rhs.m_indicies[10], m_indicies[11] + rhs.m_indicies[11],
-        m_indicies[12] + rhs.m_indicies[12], m_indicies[13] + rhs.m_indicies[13], m_indicies[14] + rhs.m_indicies[14], m_indicies[15] + rhs.m_indicies[15]);
+                   m_indicies[4] + rhs.m_indicies[4], m_indicies[5] + rhs.m_indicies[5], m_indicies[6] + rhs.m_indicies[6], m_indicies[7] + rhs.m_indicies[7],
+                   m_indicies[8] + rhs.m_indicies[8], m_indicies[9] + rhs.m_indicies[9], m_indicies[10] + rhs.m_indicies[10], m_indicies[11] + rhs.m_indicies[11],
+                   m_indicies[12] + rhs.m_indicies[12], m_indicies[13] + rhs.m_indicies[13], m_indicies[14] + rhs.m_indicies[14], m_indicies[15] + rhs.m_indicies[15]);
 }
 
 Matrix4& Matrix4::operator+=(const Matrix4& rhs) noexcept {
-
     m_indicies[0] += rhs.m_indicies[0];
     m_indicies[1] += rhs.m_indicies[1];
     m_indicies[2] += rhs.m_indicies[2];
@@ -1023,13 +1074,12 @@ Matrix4& Matrix4::operator+=(const Matrix4& rhs) noexcept {
 
 Matrix4 Matrix4::operator-(const Matrix4& rhs) const noexcept {
     return Matrix4(m_indicies[0] - rhs.m_indicies[0], m_indicies[1] - rhs.m_indicies[1], m_indicies[2] - rhs.m_indicies[2], m_indicies[3] - rhs.m_indicies[3],
-        m_indicies[4] - rhs.m_indicies[4], m_indicies[5] - rhs.m_indicies[5], m_indicies[6] - rhs.m_indicies[6], m_indicies[7] - rhs.m_indicies[7],
-        m_indicies[8] - rhs.m_indicies[8], m_indicies[9] - rhs.m_indicies[9], m_indicies[10] - rhs.m_indicies[10], m_indicies[11] - rhs.m_indicies[11],
-        m_indicies[12] - rhs.m_indicies[12], m_indicies[13] - rhs.m_indicies[13], m_indicies[14] - rhs.m_indicies[14], m_indicies[15] - rhs.m_indicies[15]);
+                   m_indicies[4] - rhs.m_indicies[4], m_indicies[5] - rhs.m_indicies[5], m_indicies[6] - rhs.m_indicies[6], m_indicies[7] - rhs.m_indicies[7],
+                   m_indicies[8] - rhs.m_indicies[8], m_indicies[9] - rhs.m_indicies[9], m_indicies[10] - rhs.m_indicies[10], m_indicies[11] - rhs.m_indicies[11],
+                   m_indicies[12] - rhs.m_indicies[12], m_indicies[13] - rhs.m_indicies[13], m_indicies[14] - rhs.m_indicies[14], m_indicies[15] - rhs.m_indicies[15]);
 }
 
 Matrix4& Matrix4::operator-=(const Matrix4& rhs) noexcept {
-
     m_indicies[0] -= rhs.m_indicies[0];
     m_indicies[1] -= rhs.m_indicies[1];
     m_indicies[2] -= rhs.m_indicies[2];
@@ -1058,7 +1108,6 @@ Matrix4 Matrix4::operator/(const Matrix4& rhs) noexcept {
 }
 
 Matrix4& Matrix4::operator/=(const Matrix4& rhs) noexcept {
-
     Matrix4 inv(Matrix4::CalculateInverse(rhs));
     Matrix4 result = (*this * inv);
 
@@ -1081,21 +1130,20 @@ const float& Matrix4::operator[](std::size_t index) const {
 
 Matrix4 operator*(float lhs, const Matrix4& rhs) noexcept {
     return Matrix4(lhs * rhs.m_indicies[0], lhs * rhs.m_indicies[1], lhs * rhs.m_indicies[2], lhs * rhs.m_indicies[3],
-        lhs * rhs.m_indicies[4], lhs * rhs.m_indicies[5], lhs * rhs.m_indicies[6], lhs * rhs.m_indicies[7],
-        lhs * rhs.m_indicies[8], lhs * rhs.m_indicies[9], lhs * rhs.m_indicies[10], lhs * rhs.m_indicies[11],
-        lhs * rhs.m_indicies[12], lhs * rhs.m_indicies[13], lhs * rhs.m_indicies[14], lhs * rhs.m_indicies[15]);
+                   lhs * rhs.m_indicies[4], lhs * rhs.m_indicies[5], lhs * rhs.m_indicies[6], lhs * rhs.m_indicies[7],
+                   lhs * rhs.m_indicies[8], lhs * rhs.m_indicies[9], lhs * rhs.m_indicies[10], lhs * rhs.m_indicies[11],
+                   lhs * rhs.m_indicies[12], lhs * rhs.m_indicies[13], lhs * rhs.m_indicies[14], lhs * rhs.m_indicies[15]);
 }
 
 std::ostream& operator<<(std::ostream& out_stream, const Matrix4& m) noexcept {
     out_stream << '[' << m.m_indicies[0] << ',' << m.m_indicies[1] << ',' << m.m_indicies[2] << ',' << m.m_indicies[3] << ','
-        << m.m_indicies[4] << ',' << m.m_indicies[5] << ',' << m.m_indicies[6] << ',' << m.m_indicies[7] << ','
-        << m.m_indicies[8] << ',' << m.m_indicies[9] << ',' << m.m_indicies[10] << ',' << m.m_indicies[11] << ','
-        << m.m_indicies[12] << ',' << m.m_indicies[13] << ',' << m.m_indicies[14] << ',' << m.m_indicies[15] << ']';
+               << m.m_indicies[4] << ',' << m.m_indicies[5] << ',' << m.m_indicies[6] << ',' << m.m_indicies[7] << ','
+               << m.m_indicies[8] << ',' << m.m_indicies[9] << ',' << m.m_indicies[10] << ',' << m.m_indicies[11] << ','
+               << m.m_indicies[12] << ',' << m.m_indicies[13] << ',' << m.m_indicies[14] << ',' << m.m_indicies[15] << ']';
     return out_stream;
 }
 
 std::istream& operator>>(std::istream& in_stream, Matrix4& m) noexcept {
-
     std::array<float, 16> indicies;
 
     in_stream.ignore(); //[
@@ -1136,7 +1184,6 @@ std::istream& operator>>(std::istream& in_stream, Matrix4& m) noexcept {
 
     return in_stream;
 }
-
 
 std::string StringUtils::to_string(const Matrix4& m) noexcept {
     std::ostringstream ss;

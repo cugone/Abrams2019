@@ -5,22 +5,21 @@
 #include <algorithm>
 
 Camera3D::Camera3D(const Camera2D& camera2D) noexcept
-    : trauma(camera2D.trauma)
-    , trauma_recovery_rate(camera2D.trauma_recovery_rate)
-    , aspect_ratio(camera2D.GetAspectRatio())
-    , far_distance(camera2D.GetFarDistance())
-    , near_distance(camera2D.GetNearDistance())
-    , position(camera2D.GetPosition())
-    , rotationRoll(camera2D.GetOrientation())
-    , view_matrix(camera2D.GetViewMatrix())
-    , projection_matrix(camera2D.GetProjectionMatrix())
-    , view_projection_matrix(camera2D.GetViewProjectionMatrix())
-    , inv_view_matrix(camera2D.GetInverseViewMatrix())
-    , inv_projection_matrix(camera2D.GetInverseProjectionMatrix())
-    , inv_view_projection_matrix(camera2D.GetInverseViewProjectionMatrix())
-    , rotation_matrix(camera2D.GetViewMatrix().GetRotation())
-    , rotation(rotation_matrix)
-{
+: trauma(camera2D.trauma)
+, trauma_recovery_rate(camera2D.trauma_recovery_rate)
+, aspect_ratio(camera2D.GetAspectRatio())
+, far_distance(camera2D.GetFarDistance())
+, near_distance(camera2D.GetNearDistance())
+, position(camera2D.GetPosition())
+, rotationRoll(camera2D.GetOrientation())
+, view_matrix(camera2D.GetViewMatrix())
+, projection_matrix(camera2D.GetProjectionMatrix())
+, view_projection_matrix(camera2D.GetViewProjectionMatrix())
+, inv_view_matrix(camera2D.GetInverseViewMatrix())
+, inv_projection_matrix(camera2D.GetInverseProjectionMatrix())
+, inv_view_projection_matrix(camera2D.GetInverseViewProjectionMatrix())
+, rotation_matrix(camera2D.GetViewMatrix().GetRotation())
+, rotation(rotation_matrix) {
     /* DO NOTHING */
 }
 
@@ -39,7 +38,7 @@ Camera3D& Camera3D::operator=(const Camera2D& camera2D) noexcept {
     inv_projection_matrix = camera2D.GetInverseProjectionMatrix();
     inv_view_projection_matrix = camera2D.GetInverseViewProjectionMatrix();
     rotation_matrix = camera2D.GetViewMatrix().GetRotation();
-    rotation = Quaternion{ rotation_matrix };
+    rotation = Quaternion{rotation_matrix};
     return *this;
 }
 
@@ -80,7 +79,6 @@ Vector3 Camera3D::GetEulerAngles() const noexcept {
 }
 
 void Camera3D::CalcViewMatrix() noexcept {
-
     Matrix4 vT = Matrix4::CreateTranslationMatrix(-position);
     Matrix4 vQ = rotation_matrix;
     view_matrix = Matrix4::MakeRT(vT, vQ);
@@ -126,7 +124,7 @@ void Camera3D::SetPosition(const Vector3& newPosition) noexcept {
 }
 
 void Camera3D::SetPosition(float x, float y, float z) noexcept {
-    SetPosition(Vector3{ x, y, z });
+    SetPosition(Vector3{x, y, z});
 }
 
 void Camera3D::SetPosition(const Vector2& newPosition) noexcept {
@@ -134,7 +132,7 @@ void Camera3D::SetPosition(const Vector2& newPosition) noexcept {
 }
 
 void Camera3D::SetPosition(float x, float y) noexcept {
-    SetPosition(Vector2{ x, y });
+    SetPosition(Vector2{x, y});
 }
 
 void Camera3D::Translate(const Vector3& displacement) noexcept {
@@ -142,7 +140,7 @@ void Camera3D::Translate(const Vector3& displacement) noexcept {
 }
 
 void Camera3D::Translate(float x, float y, float z) noexcept {
-    Translate(Vector3{ x, y, z });
+    Translate(Vector3{x, y, z});
 }
 
 void Camera3D::Translate(const Vector2& displacement) noexcept {
@@ -150,7 +148,7 @@ void Camera3D::Translate(const Vector2& displacement) noexcept {
 }
 
 void Camera3D::Translate(float x, float y) noexcept {
-    Translate(Vector2{ x, y });
+    Translate(Vector2{x, y});
 }
 
 float Camera3D::CalcFovYDegrees() const noexcept {
@@ -229,10 +227,7 @@ void Camera3D::SetEulerAngles(const Vector3& eulerAngles) noexcept {
 }
 
 void Camera3D::SetEulerAnglesDegrees(const Vector3& eulerAnglesDegrees) noexcept {
-    SetEulerAngles(Vector3{ MathUtils::ConvertDegreesToRadians(eulerAnglesDegrees.x)
-                   , MathUtils::ConvertDegreesToRadians(eulerAnglesDegrees.y)
-                   , MathUtils::ConvertDegreesToRadians(eulerAnglesDegrees.z) }
-                   );
+    SetEulerAngles(Vector3{MathUtils::ConvertDegreesToRadians(eulerAnglesDegrees.x), MathUtils::ConvertDegreesToRadians(eulerAnglesDegrees.y), MathUtils::ConvertDegreesToRadians(eulerAnglesDegrees.z)});
 }
 
 void Camera3D::SetForwardFromTarget(const Vector3& lookAtPosition) noexcept {

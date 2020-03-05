@@ -2,7 +2,6 @@
 
 #include "Engine/Core/DataUtils.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
-
 #include "Engine/RHI/RHIDevice.hpp"
 
 #include <algorithm>
@@ -10,7 +9,7 @@
 #include <string>
 
 bool BlendState::CreateBlendState(const RHIDevice* device, BlendDesc render_target /*= BlendDesc()*/) noexcept {
-    const std::vector<BlendDesc> targets{ 1, render_target };
+    const std::vector<BlendDesc> targets{1, render_target};
     return CreateBlendState(device, targets);
 }
 
@@ -43,9 +42,9 @@ BlendState::BlendState(const RHIDevice* device, const XMLElement& element) noexc
         _independant_blend_enable = DataUtils::ParseXmlAttribute(element, "independantblend", _independant_blend_enable);
 
         DataUtils::ForEachChildElement(*xml_blends, "blend",
-                                           [this](const XMLElement& element) {
-            _descs.push_back(BlendDesc{ element });
-        });
+                                       [this](const XMLElement& element) {
+                                           _descs.push_back(BlendDesc{element});
+                                       });
 
         if(!CreateBlendState(device, _descs)) {
             if(_dx_state) {
@@ -58,16 +57,14 @@ BlendState::BlendState(const RHIDevice* device, const XMLElement& element) noexc
 }
 
 BlendState::BlendState(const RHIDevice* device, const BlendDesc& desc /*= BlendDesc{}*/, bool alphaCoverage /*= false*/) noexcept
-    : BlendState(device, std::vector<BlendDesc>{1, desc}, alphaCoverage, false)
-{
+: BlendState(device, std::vector<BlendDesc>{1, desc}, alphaCoverage, false) {
     /* DO NOTHING */
 }
 
 BlendState::BlendState(const RHIDevice* device, const std::vector<BlendDesc>& descs /*= std::vector<BlendDesc>{}*/, bool alphaCoverage /*= false*/, bool independantBlend /*= false*/) noexcept
-    : _alpha_to_coverage_enable(alphaCoverage)
-    , _independant_blend_enable(independantBlend)
-    , _descs{ descs }
-{
+: _alpha_to_coverage_enable(alphaCoverage)
+, _independant_blend_enable(independantBlend)
+, _descs{descs} {
     if(!CreateBlendState(device, _descs)) {
         if(_dx_state) {
             _dx_state->Release();

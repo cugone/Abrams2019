@@ -12,6 +12,7 @@ public:
 
 protected:
     Microsoft::WRL::ComPtr<ID3D11Buffer> _dx_buffer{};
+
 private:
 };
 

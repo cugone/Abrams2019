@@ -8,9 +8,8 @@
 #include <sstream>
 
 ProfileLogScope::ProfileLogScope(const char* scopeName) noexcept
-    : _scope_name(scopeName)
-    , _time_at_creation(TimeUtils::Now())
-{
+: _scope_name(scopeName)
+, _time_at_creation(TimeUtils::Now()) {
     /* DO NOTHING */
 }
 
@@ -19,4 +18,3 @@ ProfileLogScope::~ProfileLogScope() noexcept {
     TimeUtils::FPMicroseconds elapsedTime = (now - _time_at_creation);
     DebuggerPrintf("ProfileLogScope %s took %.02f us.\n", _scope_name, elapsedTime.count());
 }
-

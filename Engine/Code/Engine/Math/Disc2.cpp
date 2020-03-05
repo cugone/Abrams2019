@@ -5,16 +5,14 @@
 const Disc2 Disc2::UNIT_CIRCLE(0.0f, 0.0f, 1.0f);
 
 Disc2::Disc2(float initialX, float initialY, float initialRadius) noexcept
-    : center(initialX, initialY)
-    , radius(initialRadius)
-{
+: center(initialX, initialY)
+, radius(initialRadius) {
     /* DO NOTHING */
 }
 
 Disc2::Disc2(const Vector2& initialCenter, float initialRadius) noexcept
-    : center(initialCenter)
-    , radius(initialRadius)
-{
+: center(initialCenter)
+, radius(initialRadius) {
     /* DO NOTHING */
 }
 

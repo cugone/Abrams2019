@@ -5,7 +5,6 @@
 
 class Capsule2 {
 public:
-
     static const Capsule2 UNIT_HORIZONTAL;
     static const Capsule2 UNIT_VERTICAL;
     static const Capsule2 UNIT_CENTERED_HORIZONTAL;

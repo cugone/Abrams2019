@@ -1,7 +1,6 @@
 #include "Engine/Core/Rgba.hpp"
 
 #include "Engine/Core/StringUtils.hpp"
-
 #include "Engine/Math/MathUtils.hpp"
 
 #include <iomanip>
@@ -41,19 +40,15 @@ const Rgba Rgba::NormalZ(128, 128, 255, 255);
 const Rgba Rgba::NoAlpha(0, 0, 0, 0);
 
 namespace StringUtils {
-    std::string to_string(const Rgba& clr) noexcept {
-        std::ostringstream ss;
-        ss << std::hex << clr;
-        return ss.str();
-    }
+std::string to_string(const Rgba& clr) noexcept {
+    std::ostringstream ss;
+    ss << std::hex << clr;
+    return ss.str();
 }
-
+} // namespace StringUtils
 
 Rgba Rgba::Random() noexcept {
-    return Rgba(static_cast<unsigned char>(MathUtils::GetRandomIntLessThan(256))
-                , static_cast<unsigned char>(MathUtils::GetRandomIntLessThan(256))
-                , static_cast<unsigned char>(MathUtils::GetRandomIntLessThan(256))
-                ,255);
+    return Rgba(static_cast<unsigned char>(MathUtils::GetRandomIntLessThan(256)), static_cast<unsigned char>(MathUtils::GetRandomIntLessThan(256)), static_cast<unsigned char>(MathUtils::GetRandomIntLessThan(256)), 255);
 }
 
 Rgba Rgba::RandomGreyscale() noexcept {
@@ -66,18 +61,11 @@ Rgba Rgba::RandomGrayscale() noexcept {
 }
 
 Rgba Rgba::RandomWithAlpha() noexcept {
-    return Rgba(static_cast<unsigned char>(MathUtils::GetRandomIntLessThan(256))
-                , static_cast<unsigned char>(MathUtils::GetRandomIntLessThan(256))
-                , static_cast<unsigned char>(MathUtils::GetRandomIntLessThan(256))
-                , static_cast<unsigned char>(MathUtils::GetRandomIntLessThan(256)));
+    return Rgba(static_cast<unsigned char>(MathUtils::GetRandomIntLessThan(256)), static_cast<unsigned char>(MathUtils::GetRandomIntLessThan(256)), static_cast<unsigned char>(MathUtils::GetRandomIntLessThan(256)), static_cast<unsigned char>(MathUtils::GetRandomIntLessThan(256)));
 }
 
-
 Rgba Rgba::RandomLessThan(const Rgba& color) noexcept {
-    return Rgba(static_cast<unsigned char>(MathUtils::GetRandomIntLessThan(color.r + 1))
-        , static_cast<unsigned char>(MathUtils::GetRandomIntLessThan(color.g + 1))
-        , static_cast<unsigned char>(MathUtils::GetRandomIntLessThan(color.b + 1))
-        , static_cast<unsigned char>(MathUtils::GetRandomIntLessThan(color.a + 1)));
+    return Rgba(static_cast<unsigned char>(MathUtils::GetRandomIntLessThan(color.r + 1)), static_cast<unsigned char>(MathUtils::GetRandomIntLessThan(color.g + 1)), static_cast<unsigned char>(MathUtils::GetRandomIntLessThan(color.b + 1)), static_cast<unsigned char>(MathUtils::GetRandomIntLessThan(color.a + 1)));
 }
 
 std::ostream& operator<<(std::ostream& os, const Rgba& rhs) noexcept {
@@ -138,14 +126,12 @@ Rgba::Rgba(std::string name) noexcept {
 }
 
 Rgba::Rgba(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha /*= 0xFF*/) noexcept
-    : r(red)
-    , g(green)
-    , b(blue)
-    , a(alpha)
-{
+: r(red)
+, g(green)
+, b(blue)
+, a(alpha) {
     /* DO NOTHING */
 }
-
 
 Rgba::Rgba(const uint32_t rawValue) {
     SetFromRawValue(rawValue);
@@ -166,9 +152,9 @@ void Rgba::SetAsFloats(float normalized_red, float normalized_green, float norma
 }
 
 void Rgba::GetAsFloats(float& out_normalized_red, float& out_normalized_green, float& out_normalized_blue, float& out_normalized_alpha) const noexcept {
-    out_normalized_red   = r / 255.0f;
+    out_normalized_red = r / 255.0f;
     out_normalized_green = g / 255.0f;
-    out_normalized_blue  = b / 255.0f;
+    out_normalized_blue = b / 255.0f;
     out_normalized_alpha = a / 255.0f;
 }
 
@@ -177,7 +163,7 @@ Vector4 Rgba::GetRgbaAsFloats() const noexcept {
 }
 
 Vector3 Rgba::GetRgbAsFloats() const noexcept {
-    return Vector3{ r / 255.0f, g / 255.0f, b / 255.0f};
+    return Vector3{r / 255.0f, g / 255.0f, b / 255.0f};
 }
 
 void Rgba::ScaleRGB(float scale) noexcept {
@@ -187,7 +173,6 @@ void Rgba::ScaleRGB(float scale) noexcept {
     r = static_cast<unsigned char>(std::clamp(scaled_red, 0.0f, 255.0f));
     g = static_cast<unsigned char>(std::clamp(scaled_green, 0.0f, 255.0f));
     b = static_cast<unsigned char>(std::clamp(scaled_blue, 0.0f, 255.0f));
-
 }
 
 void Rgba::ScaleAlpha(float scale) noexcept {
@@ -196,10 +181,10 @@ void Rgba::ScaleAlpha(float scale) noexcept {
 }
 
 uint32_t Rgba::GetAsRawValue() const noexcept {
-    return static_cast<uint32_t>(  ((static_cast<uint32_t>(r) << 24) & 0xFF000000u)
+    return static_cast<uint32_t>(((static_cast<uint32_t>(r) << 24) & 0xFF000000u)
                                  | ((static_cast<uint32_t>(g) << 16) & 0x00FF0000u)
-                                 | ((static_cast<uint32_t>(b) << 8)  & 0x0000FF00u)
-                                 | ((static_cast<uint32_t>(a) << 0)  & 0x000000FFu));
+                                 | ((static_cast<uint32_t>(b) << 8) & 0x0000FF00u)
+                                 | ((static_cast<uint32_t>(a) << 0) & 0x000000FFu));
 }
 
 void Rgba::SetFromRawValue(uint32_t value) noexcept {
@@ -219,13 +204,11 @@ void Rgba::SetRGBFromRawValue(uint32_t value) noexcept {
     b = static_cast<uint8_t>((value & 0x0000ffu) >> 0);
 }
 
-
 void Rgba::SetRgbFromFloats(const Vector3& value) noexcept {
     r = static_cast<unsigned char>(value.x * 255.0f);
     g = static_cast<unsigned char>(value.y * 255.0f);
     b = static_cast<unsigned char>(value.z * 255.0f);
 }
-
 
 void Rgba::SetRgbaFromFloats(const Vector4& value) noexcept {
     r = static_cast<unsigned char>(value.x * 255.0f);

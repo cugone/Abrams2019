@@ -1,13 +1,12 @@
 #pragma once
 
 #include "Engine/Core/Rgba.hpp"
-
 #include "Engine/Math/IntVector2.hpp"
 
+#include <filesystem>
 #include <memory>
 #include <mutex>
 #include <string>
-#include <filesystem>
 
 class Image {
 public:

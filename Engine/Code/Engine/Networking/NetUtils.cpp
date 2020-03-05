@@ -10,4 +10,4 @@ Address GetIpv6(Address& /*addy*/) noexcept {
     return Address{};
 }
 
-}
+} // namespace Net

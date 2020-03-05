@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Engine/Math/IntVector3.hpp"
-
 #include "Engine/Renderer/DirectX/DX11.hpp"
 
 #include <string>
@@ -45,5 +44,6 @@ protected:
     Microsoft::WRL::ComPtr<ID3D11UnorderedAccessView> _uav{};
     bool _isLoaded = false;
     bool _isArray = false;
+
 private:
 };

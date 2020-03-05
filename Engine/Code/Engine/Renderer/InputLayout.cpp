@@ -1,14 +1,11 @@
 #include "Engine/Renderer/InputLayout.hpp"
 
 #include "Engine/Core/ErrorWarningAssert.hpp"
-
+#include "Engine/RHI/RHIDevice.hpp"
 #include "Engine/Renderer/DirectX/DX11.hpp"
 
-#include "Engine/RHI/RHIDevice.hpp"
-
 InputLayout::InputLayout(const RHIDevice& parent_device) noexcept
-: _parent_device(parent_device)
-{
+: _parent_device(parent_device) {
     /* DO NOTHING */
 }
 
@@ -86,26 +83,26 @@ D3D11_INPUT_ELEMENT_DESC InputLayout::CreateInputElementFromSignature(D3D11_SIGN
     const auto four_channel_float = ImageFormatToDxgiFormat(ImageFormat::R32G32B32A32_Float);
     if(input_desc.Mask == r_mask) {
         switch(input_desc.ComponentType) {
-        case D3D_REGISTER_COMPONENT_UINT32:  elem.Format = one_channel_uint; break;
-        case D3D_REGISTER_COMPONENT_SINT32:  elem.Format = one_channel_sint; break;
+        case D3D_REGISTER_COMPONENT_UINT32: elem.Format = one_channel_uint; break;
+        case D3D_REGISTER_COMPONENT_SINT32: elem.Format = one_channel_sint; break;
         case D3D_REGISTER_COMPONENT_FLOAT32: elem.Format = one_channel_float; break;
         }
     } else if(input_desc.Mask <= rg_mask) {
         switch(input_desc.ComponentType) {
-        case D3D_REGISTER_COMPONENT_UINT32:  elem.Format = two_channel_uint; break;
-        case D3D_REGISTER_COMPONENT_SINT32:  elem.Format = two_channel_sint; break;
+        case D3D_REGISTER_COMPONENT_UINT32: elem.Format = two_channel_uint; break;
+        case D3D_REGISTER_COMPONENT_SINT32: elem.Format = two_channel_sint; break;
         case D3D_REGISTER_COMPONENT_FLOAT32: elem.Format = two_channel_float; break;
         }
     } else if(input_desc.Mask <= rgb_mask) {
         switch(input_desc.ComponentType) {
-        case D3D_REGISTER_COMPONENT_UINT32:  elem.Format = three_channel_uint; break;
-        case D3D_REGISTER_COMPONENT_SINT32:  elem.Format = three_channel_sint; break;
+        case D3D_REGISTER_COMPONENT_UINT32: elem.Format = three_channel_uint; break;
+        case D3D_REGISTER_COMPONENT_SINT32: elem.Format = three_channel_sint; break;
         case D3D_REGISTER_COMPONENT_FLOAT32: elem.Format = three_channel_float; break;
         }
     } else if(input_desc.Mask <= rgba_mask) {
         switch(input_desc.ComponentType) {
-        case D3D_REGISTER_COMPONENT_UINT32:  elem.Format = four_channel_uint; break;
-        case D3D_REGISTER_COMPONENT_SINT32:  elem.Format = four_channel_sint; break;
+        case D3D_REGISTER_COMPONENT_UINT32: elem.Format = four_channel_uint; break;
+        case D3D_REGISTER_COMPONENT_SINT32: elem.Format = four_channel_sint; break;
         case D3D_REGISTER_COMPONENT_FLOAT32: elem.Format = four_channel_float; break;
         }
     }

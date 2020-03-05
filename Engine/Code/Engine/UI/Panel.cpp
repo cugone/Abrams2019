@@ -5,8 +5,7 @@
 namespace UI {
 
 Panel::Panel(UI::Canvas* parent_canvas)
-    : Element(parent_canvas)
-{
+: Element(parent_canvas) {
     /* DO NOTHING */
 }
 
@@ -31,4 +30,4 @@ void Panel::DebugRender(Renderer& renderer, bool showSortOrder /*= false*/) cons
     DebugRenderBottomUp(renderer, showSortOrder);
 }
 
-} //End UI
+} // namespace UI

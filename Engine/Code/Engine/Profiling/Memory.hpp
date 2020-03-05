@@ -11,36 +11,35 @@
 #include <iostream>
 #include <new>
 #include <ostream>
-#include <string_view>
-#include <string>
 #include <sstream>
+#include <string>
+#include <string_view>
 
 class Memory {
 public:
-
     struct status_t {
-        std::size_t leaked_objs  = 0;
+        std::size_t leaked_objs = 0;
         std::size_t leaked_bytes = 0;
         operator bool() const noexcept {
             return leaked_objs || leaked_bytes;
         }
-        friend std::ostream& operator<<(std::ostream& os, [[maybe_unused]]const status_t& s) noexcept {
+        friend std::ostream& operator<<(std::ostream& os, [[maybe_unused]] const status_t& s) noexcept {
 #ifdef TRACK_MEMORY
-            static std::array<char, std::numeric_limits<std::size_t>::digits10> obj_count{ "%f" };
+            static std::array<char, std::numeric_limits<std::size_t>::digits10> obj_count{"%f"};
             std::to_chars_result count_result;
-            if (count_result = std::to_chars(obj_count.data(), obj_count.data() + obj_count.size(), s.leaked_objs);
-                count_result.ec == std::errc::value_too_large) {
+            if(count_result = std::to_chars(obj_count.data(), obj_count.data() + obj_count.size(), s.leaked_objs);
+               count_result.ec == std::errc::value_too_large) {
                 DebuggerPrintf("Memory profiler could not convert total leaked objects for printing: Value too large.\n");
                 return os;
             }
-            static std::array<char, std::numeric_limits<std::size_t>::digits10> obj_bytes{ "%f" };
+            static std::array<char, std::numeric_limits<std::size_t>::digits10> obj_bytes{"%f"};
             std::to_chars_result size_result;
-            if (size_result = std::to_chars(obj_bytes.data(), obj_bytes.data() + obj_bytes.size(), s.leaked_bytes);
-                size_result.ec == std::errc::value_too_large) {
+            if(size_result = std::to_chars(obj_bytes.data(), obj_bytes.data() + obj_bytes.size(), s.leaked_bytes);
+               size_result.ec == std::errc::value_too_large) {
                 DebuggerPrintf("Memory profiler could not convert total leaked bytes value for printing: Value too large.\n");
                 return os;
             }
-            os << std::string_view{ "Leaked objects " } << std::string_view(obj_count.data(), count_result.ptr - obj_count.data()) << std::string_view{ " for " } << std::string_view(obj_bytes.data(), size_result.ptr - obj_bytes.data()) << std::string_view{ " bytes." };
+            os << std::string_view{"Leaked objects "} << std::string_view(obj_count.data(), count_result.ptr - obj_count.data()) << std::string_view{" for "} << std::string_view(obj_bytes.data(), size_result.ptr - obj_bytes.data()) << std::string_view{" bytes."};
 #endif
             return os;
         }
@@ -52,30 +51,30 @@ public:
         operator bool() const noexcept {
             return leaked_objs || leaked_bytes;
         }
-        friend std::ostream& operator<<(std::ostream& os, [[maybe_unused]]const status_frame_t& s) noexcept {
+        friend std::ostream& operator<<(std::ostream& os, [[maybe_unused]] const status_frame_t& s) noexcept {
 #ifdef TRACK_MEMORY
-            static std::array<char, std::numeric_limits<std::size_t>::digits10> frame_id{ "%f" };
+            static std::array<char, std::numeric_limits<std::size_t>::digits10> frame_id{"%f"};
             std::to_chars_result frame_result;
-            if (frame_result = std::to_chars(frame_id.data(), frame_id.data() + frame_id.size(), s.frame_id);
-                frame_result.ec == std::errc::value_too_large) {
+            if(frame_result = std::to_chars(frame_id.data(), frame_id.data() + frame_id.size(), s.frame_id);
+               frame_result.ec == std::errc::value_too_large) {
                 DebuggerPrintf("Memory profiler could not convert frame id value for printing: Value too large.\n", frame_result.ec);
                 return os;
             }
-            static std::array<char, std::numeric_limits<std::size_t>::digits10> obj_count{ "%f" };
+            static std::array<char, std::numeric_limits<std::size_t>::digits10> obj_count{"%f"};
             std::to_chars_result objects_result;
-            if (objects_result = std::to_chars(obj_count.data(), obj_count.data() + obj_count.size(), s.leaked_objs);
-                objects_result.ec == std::errc::value_too_large) {
+            if(objects_result = std::to_chars(obj_count.data(), obj_count.data() + obj_count.size(), s.leaked_objs);
+               objects_result.ec == std::errc::value_too_large) {
                 DebuggerPrintf("Memory profiler could not convert frame leaked objects value for printing: Value too large.\n", objects_result.ec);
                 return os;
             }
-            static std::array<char, std::numeric_limits<std::size_t>::digits10> bytes_count{ "%f" };
+            static std::array<char, std::numeric_limits<std::size_t>::digits10> bytes_count{"%f"};
             std::to_chars_result bytes_result;
-            if (bytes_result = std::to_chars(bytes_count.data(), bytes_count.data() + bytes_count.size(), s.leaked_bytes);
-                bytes_result.ec == std::errc::value_too_large) {
+            if(bytes_result = std::to_chars(bytes_count.data(), bytes_count.data() + bytes_count.size(), s.leaked_bytes);
+               bytes_result.ec == std::errc::value_too_large) {
                 DebuggerPrintf("Memory profiler could not convert frame leaked bytes value for printing: Value too large.\n", bytes_result.ec);
                 return os;
             }
-            os << std::string_view{"Frame "} << std::string_view(frame_id.data(), frame_result.ptr - frame_id.data()) << std::string_view{ ": Leaked objects " } << std::string_view(obj_count.data(), objects_result.ptr - obj_count.data()) << std::string_view{ " for " } << std::string_view(bytes_count.data(), bytes_result.ptr - bytes_count.data()) << std::string_view{ " bytes." };
+            os << std::string_view{"Frame "} << std::string_view(frame_id.data(), frame_result.ptr - frame_id.data()) << std::string_view{": Leaked objects "} << std::string_view(obj_count.data(), objects_result.ptr - obj_count.data()) << std::string_view{" for "} << std::string_view(bytes_count.data(), bytes_result.ptr - bytes_count.data()) << std::string_view{" bytes."};
 #endif
             return os;
         }
@@ -107,7 +106,7 @@ public:
         std::free(ptr);
     }
 
-    static void enable([[maybe_unused]]bool e) noexcept {
+    static void enable([[maybe_unused]] bool e) noexcept {
 #ifdef TRACK_MEMORY
         _active = e;
         if(_active) {
@@ -124,7 +123,7 @@ public:
 #endif
     }
 
-    static void trace([[maybe_unused]]bool doTrace) noexcept {
+    static void trace([[maybe_unused]] bool doTrace) noexcept {
 #ifdef TRACK_MEMORY
         _trace = doTrace;
 #endif
@@ -170,11 +169,11 @@ public:
     }
 
     static status_t status() noexcept {
-        return { allocCount - freeCount, allocSize - freeSize };
+        return {allocCount - freeCount, allocSize - freeSize};
     }
 
     static status_frame_t frame_status() noexcept {
-        return { frameCounter, frameCount - framefreeCount, frameSize - framefreeSize };
+        return {frameCounter, frameCount - framefreeCount, frameSize - framefreeSize};
     }
 
     inline static std::size_t maxSize = 0;
@@ -188,6 +187,7 @@ public:
     inline static std::size_t freeSize = 0;
     inline static std::size_t framefreeCount = 0;
     inline static std::size_t framefreeSize = 0;
+
 protected:
 private:
     inline static bool _active = true;
@@ -196,14 +196,14 @@ private:
 
 #ifdef TRACK_MEMORY
 
-#pragma warning(push)
-#pragma warning(disable : 28251 )
+    #pragma warning(push)
+    #pragma warning(disable : 28251)
 
 void* operator new(std::size_t size);
 void* operator new[](std::size_t size);
 void operator delete(void* ptr, std::size_t size) noexcept;
 void operator delete[](void* ptr, std::size_t size) noexcept;
 
-#pragma warning(pop)
+    #pragma warning(pop)
 
 #endif

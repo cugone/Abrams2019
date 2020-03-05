@@ -1,16 +1,14 @@
 #pragma once
 
+#include "Engine/Math/IntVector2.hpp"
 #include "Engine/RHI/RHIDeviceContext.hpp"
 #include "Engine/RHI/RHIFactory.hpp"
 #include "Engine/RHI/RHIOutput.hpp"
 #include "Engine/RHI/RHITypes.hpp"
-
-#include "Engine/Math/IntVector2.hpp"
-
+#include "Engine/Renderer/ConstantBuffer.hpp"
 #include "Engine/Renderer/DirectX/DX11.hpp"
 #include "Engine/Renderer/IndexBuffer.hpp"
 #include "Engine/Renderer/StructuredBuffer.hpp"
-#include "Engine/Renderer/ConstantBuffer.hpp"
 #include "Engine/Renderer/VertexBuffer.hpp"
 
 #include <filesystem>
@@ -43,7 +41,6 @@ public:
     std::unique_ptr<StructuredBuffer> CreateStructuredBuffer(const StructuredBuffer::buffer_t& buffer, std::size_t element_size, std::size_t element_count, const BufferUsage& usage, const BufferBindUsage& bindUsage) const noexcept;
     std::unique_ptr<ConstantBuffer> CreateConstantBuffer(const ConstantBuffer::buffer_t& buffer, std::size_t buffer_size, const BufferUsage& usage, const BufferBindUsage& bindUsage) const noexcept;
 
-
     D3D_FEATURE_LEVEL GetFeatureLevel() const noexcept;
     ID3D11Device5* GetDxDevice() const noexcept;
     IDXGISwapChain4* GetDxSwapChain() const noexcept;
@@ -52,7 +49,7 @@ public:
     std::unique_ptr<ShaderProgram> CreateShaderProgramFromHlslString(const std::string& name, const std::string& hlslString, const std::string& entryPoint, std::unique_ptr<InputLayout> inputLayout, const PipelineStage& target) const noexcept;
     std::unique_ptr<ShaderProgram> CreateShaderProgramFromHlslFile(std::filesystem::path filepath, const std::string& entryPoint, const PipelineStage& target) const noexcept;
 
-    ID3DBlob* CompileShader(const std::string& name, const void*  sourceCode, std::size_t sourceCodeSize, const std::string& entryPoint, const PipelineStage& target) const noexcept;
+    ID3DBlob* CompileShader(const std::string& name, const void* sourceCode, std::size_t sourceCodeSize, const std::string& entryPoint, const PipelineStage& target) const noexcept;
     std::vector<std::unique_ptr<ConstantBuffer>> CreateConstantBuffersFromByteCode(ID3DBlob* bytecode) const noexcept;
 
     mutable std::set<DisplayDesc, DisplayDescGTComparator> displayModes{};
@@ -85,5 +82,4 @@ private:
     bool _allow_tearing_supported = false;
 
     void SetupDebuggingInfo([[maybe_unused]] bool breakOnWarningSeverityOrLower = true) noexcept;
-
 };

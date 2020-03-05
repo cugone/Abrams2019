@@ -5,7 +5,6 @@
 
 class Capsule3 {
 public:
-
     static const Capsule3 UNIT_HORIZONTAL;
     static const Capsule3 UNIT_VERTICAL;
     static const Capsule3 UNIT_DEPTH;
@@ -52,5 +51,4 @@ public:
 
 protected:
 private:
-
 };

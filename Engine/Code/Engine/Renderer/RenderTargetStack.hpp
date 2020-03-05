@@ -11,14 +11,13 @@ class Texture;
 
 class RenderTargetStack {
 public:
-
     struct Node {
         Texture* color_target{};
         Texture* depthstencil_target{};
         ViewportDesc view_desc{};
     };
 
-	explicit RenderTargetStack(Renderer& renderer) noexcept;
+    explicit RenderTargetStack(Renderer& renderer) noexcept;
     ~RenderTargetStack() = default;
 
     [[nodiscard]] const RenderTargetStack::Node& top() const noexcept;

@@ -6,30 +6,26 @@ const AABB3 AABB3::ZERO_TO_ONE(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
 const AABB3 AABB3::NEG_ONE_TO_ONE(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f);
 
 AABB3::AABB3(float initialX, float initialY, float initialZ) noexcept
-    : mins(initialX, initialY, initialZ)
-    , maxs(initialX,initialY, initialZ)
-{
+: mins(initialX, initialY, initialZ)
+, maxs(initialX, initialY, initialZ) {
     /* DO NOTHING */
 }
 
 AABB3::AABB3(float minX, float minY, float maxX, float maxY, float minZ, float maxZ) noexcept
-    : mins(minX, minY, minZ)
-    , maxs(maxX, maxY, maxZ)
-{
+: mins(minX, minY, minZ)
+, maxs(maxX, maxY, maxZ) {
     /* DO NOTHING */
 }
 
 AABB3::AABB3(const Vector3& mins, const Vector3& maxs) noexcept
-    : mins(mins)
-    , maxs(maxs)
-{
+: mins(mins)
+, maxs(maxs) {
     /* DO NOTHING */
 }
 
 AABB3::AABB3(const Vector3& center, float radiusX, float radiusY, float radiusZ) noexcept
-    : mins(center.x - radiusX, center.y - radiusY, center.z - radiusZ)
-    , maxs(center.x + radiusX, center.y + radiusY, center.z + radiusZ)
-{
+: mins(center.x - radiusX, center.y - radiusY, center.z - radiusZ)
+, maxs(center.x + radiusX, center.y + radiusY, center.z + radiusZ) {
     /* DO NOTHING */
 }
 
@@ -127,4 +123,3 @@ AABB3& AABB3::operator+=(const Vector3& translation) noexcept {
     maxs += translation;
     return *this;
 }
-

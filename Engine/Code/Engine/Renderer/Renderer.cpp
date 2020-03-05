@@ -3,53 +3,47 @@
 #include "Engine/Core/BuildConfig.hpp"
 #include "Engine/Core/DataUtils.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
-#include "Engine/Core/FileUtils.hpp"
 #include "Engine/Core/FileLogger.hpp"
+#include "Engine/Core/FileUtils.hpp"
 #include "Engine/Core/Image.hpp"
 #include "Engine/Core/KerningFont.hpp"
 #include "Engine/Core/Obj.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Core/Vertex3D.hpp"
-
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/Disc2.hpp"
 #include "Engine/Math/Frustum.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/OBB2.hpp"
-#include "Engine/Math/Vector2.hpp"
 #include "Engine/Math/Polygon2.hpp"
-
+#include "Engine/Math/Vector2.hpp"
 #include "Engine/Profiling/ProfileLogScope.hpp"
-
-#include "Engine/RHI/RHIInstance.hpp"
 #include "Engine/RHI/RHIDevice.hpp"
 #include "Engine/RHI/RHIDeviceContext.hpp"
+#include "Engine/RHI/RHIInstance.hpp"
 #include "Engine/RHI/RHIOutput.hpp"
-
 #include "Engine/Renderer/AnimatedSprite.hpp"
 #include "Engine/Renderer/Camera2D.hpp"
 #include "Engine/Renderer/Camera3D.hpp"
 #include "Engine/Renderer/ConstantBuffer.hpp"
 #include "Engine/Renderer/DepthStencilState.hpp"
+#include "Engine/Renderer/DirectX/DX11.hpp"
 #include "Engine/Renderer/InputLayout.hpp"
 #include "Engine/Renderer/Material.hpp"
-#include "Engine/Renderer/RenderTargetStack.hpp"
 #include "Engine/Renderer/RasterState.hpp"
+#include "Engine/Renderer/RenderTargetStack.hpp"
 #include "Engine/Renderer/Sampler.hpp"
 #include "Engine/Renderer/Shader.hpp"
 #include "Engine/Renderer/ShaderProgram.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Engine/Renderer/StructuredBuffer.hpp"
-#include "Engine/Renderer/TextureArray2D.hpp"
 #include "Engine/Renderer/Texture1D.hpp"
 #include "Engine/Renderer/Texture2D.hpp"
 #include "Engine/Renderer/Texture3D.hpp"
+#include "Engine/Renderer/TextureArray2D.hpp"
 #include "Engine/Renderer/Window.hpp"
-
-#include "Engine/Renderer/DirectX/DX11.hpp"
-
-#include "Thirdparty/stb/stb_image.h"
 #include "Thirdparty/TinyXML2/tinyxml2.h"
+#include "Thirdparty/stb/stb_image.h"
 
 #include <algorithm>
 #include <cstddef>
@@ -68,14 +62,13 @@ ComputeJob::ComputeJob(Renderer& renderer,
                        unsigned int threadGroupCountX,
                        unsigned int threadGroupCountY,
                        unsigned int threadGroupCountZ) noexcept
-:renderer(renderer)
-,uavCount(uavCount)
-,uavTextures{uavTextures}
-,computeShader(computeShader)
-,threadGroupCountX(threadGroupCountX)
-,threadGroupCountY(threadGroupCountY)
-,threadGroupCountZ(threadGroupCountZ)
-{
+: renderer(renderer)
+, uavCount(uavCount)
+, uavTextures{uavTextures}
+, computeShader(computeShader)
+, threadGroupCountX(threadGroupCountX)
+, threadGroupCountY(threadGroupCountY)
+, threadGroupCountZ(threadGroupCountZ) {
     /* DO NOTHING */
 }
 
@@ -88,14 +81,12 @@ ComputeJob::~ComputeJob() noexcept {
 }
 
 Renderer::Renderer(FileLogger& fileLogger, unsigned int width, unsigned int height) noexcept
-    : _fileLogger(fileLogger)
-    , _window_dimensions(width, height)
-{
+: _fileLogger(fileLogger)
+, _window_dimensions(width, height) {
     /* DO NOTHING */
 }
 
 Renderer::~Renderer() noexcept {
-
     UnbindAllConstantBuffers();
     UnbindComputeConstantBuffers();
     UnbindAllShaderResources();
@@ -130,7 +121,6 @@ Renderer::~Renderer() noexcept {
     _rhi_device.reset();
     RHIInstance::DestroyInstance();
     _rhi_instance = nullptr;
-
 }
 
 FileLogger& Renderer::GetFileLogger() noexcept {
@@ -224,7 +214,7 @@ void Renderer::EndFrame() {
 }
 
 TimeUtils::FPSeconds Renderer::GetGameFrameTime() const noexcept {
-    return TimeUtils::FPSeconds{ _time_data.game_frame_time };
+    return TimeUtils::FPSeconds{_time_data.game_frame_time};
 }
 
 TimeUtils::FPSeconds Renderer::GetSystemFrameTime() const noexcept {
@@ -294,8 +284,8 @@ Texture* Renderer::GetTexture(const std::string& nameOrFile) noexcept {
 }
 
 void Renderer::DrawPoint(const Vertex3D& point) noexcept {
-    std::vector<Vertex3D> vbo = { point };
-    std::vector<unsigned int> ibo = { 0 };
+    std::vector<Vertex3D> vbo = {point};
+    std::vector<unsigned int> ibo = {0};
     DrawIndexed(PrimitiveType::Points, vbo, ibo);
 }
 
@@ -304,7 +294,6 @@ void Renderer::DrawPoint(const Vector3& point, const Rgba& color /*= Rgba::WHITE
 }
 
 void Renderer::DrawFrustum(const Frustum& frustum, const Rgba& color /*= Rgba::YELLOW*/, const Vector2& tex_coords /*= Vector2::ZERO*/) noexcept {
-
     const Vector3& point1{frustum.GetNearBottomLeft()};
     const Vector3& point2{frustum.GetNearTopLeft()};
     const Vector3& point3{frustum.GetNearTopRight()};
@@ -314,19 +303,19 @@ void Renderer::DrawFrustum(const Frustum& frustum, const Rgba& color /*= Rgba::Y
     const Vector3& point7{frustum.GetFarTopRight()};
     const Vector3& point8{frustum.GetFarBottomRight()};
     std::vector<Vertex3D> vbo{
-        Vertex3D{point1, color, tex_coords}, //Near
-        Vertex3D{point2, color, tex_coords},
-        Vertex3D{point3, color, tex_coords},
-        Vertex3D{point4, color, tex_coords},
-        Vertex3D{point5, color, tex_coords}, //Far
-        Vertex3D{point6, color, tex_coords},
-        Vertex3D{point7, color, tex_coords},
-        Vertex3D{point8, color, tex_coords},
+    Vertex3D{point1, color, tex_coords}, //Near
+    Vertex3D{point2, color, tex_coords},
+    Vertex3D{point3, color, tex_coords},
+    Vertex3D{point4, color, tex_coords},
+    Vertex3D{point5, color, tex_coords}, //Far
+    Vertex3D{point6, color, tex_coords},
+    Vertex3D{point7, color, tex_coords},
+    Vertex3D{point8, color, tex_coords},
     };
     std::vector<unsigned int> ibo{
-        0, 1, 1, 2, 2, 3, 3, 0, //Near
-        4, 5, 5, 6, 6, 7, 7, 4, //Far
-        0, 4, 1, 5, 2, 6, 3, 7, //Edges
+    0, 1, 1, 2, 2, 3, 3, 0, //Near
+    4, 5, 5, 6, 6, 7, 7, 4, //Far
+    0, 4, 1, 5, 2, 6, 3, 7, //Edges
     };
     DrawIndexed(PrimitiveType::Lines, vbo, ibo);
 }
@@ -376,11 +365,9 @@ void Renderer::DrawWorldGridXZ(float radius /*= 500.0f*/, float major_gridsize /
     std::size_t minor_start = ibo.empty() ? 0 : major_count;
     DrawIndexed(PrimitiveType::Lines, vbo, ibo, major_count, major_start);
     DrawIndexed(PrimitiveType::Lines, vbo, ibo, minor_count, minor_start);
-
 }
 
 void Renderer::DrawWorldGridXY(float radius /*= 500.0f*/, float major_gridsize /*= 20.0f*/, float minor_gridsize /*= 5.0f*/, const Rgba& major_color /*= Rgba::WHITE*/, const Rgba& minor_color /*= Rgba::DARK_GRAY*/) noexcept {
-
     float half_length = radius;
     float length = radius * 2.0f;
     float space_between_majors = std::floor(length * (major_gridsize / length));
@@ -453,12 +440,12 @@ void Renderer::DrawWorldGrid2D(int width, int height, const Rgba& color /*= Rgba
     const auto size = static_cast<std::size_t>(2) + width + height;
     vbo.reserve(size);
     for(int x = x_first; x < x_last; ++x) {
-        vbo.push_back(Vertex3D{ Vector3{static_cast<float>(x), static_cast<float>(y_start), 0.0f}, color });
-        vbo.push_back(Vertex3D{ Vector3{static_cast<float>(x), static_cast<float>(y_end), 0.0f}, color });
+        vbo.push_back(Vertex3D{Vector3{static_cast<float>(x), static_cast<float>(y_start), 0.0f}, color});
+        vbo.push_back(Vertex3D{Vector3{static_cast<float>(x), static_cast<float>(y_end), 0.0f}, color});
     }
     for(int y = y_first; y < y_last; ++y) {
-        vbo.push_back(Vertex3D{ Vector3{static_cast<float>(x_start), static_cast<float>(y), 0.0f}, color });
-        vbo.push_back(Vertex3D{ Vector3{static_cast<float>(x_end), static_cast<float>(y), 0.0f}, color });
+        vbo.push_back(Vertex3D{Vector3{static_cast<float>(x_start), static_cast<float>(y), 0.0f}, color});
+        vbo.push_back(Vertex3D{Vector3{static_cast<float>(x_end), static_cast<float>(y), 0.0f}, color});
     }
     ibo.resize(vbo.size());
     std::iota(std::begin(ibo), std::end(ibo), 0);
@@ -466,27 +453,25 @@ void Renderer::DrawWorldGrid2D(int width, int height, const Rgba& color /*= Rgba
     DrawIndexed(PrimitiveType::Lines, vbo, ibo);
 }
 
-
 void Renderer::DrawWorldGrid2D(const IntVector2& dimensions, const Rgba& color /*= Rgba::White*/) noexcept {
     DrawWorldGrid2D(dimensions.x, dimensions.y, color);
 }
 
 void Renderer::DrawAxes(float maxlength /*= 1000.0f*/, bool disable_unit_depth /*= true*/) noexcept {
     static std::vector<Vertex3D> vbo{
-        Vertex3D{Vector3::ZERO, Rgba::Red},
-        Vertex3D{Vector3::ZERO, Rgba::Green},
-        Vertex3D{Vector3::ZERO, Rgba::Blue},
-        Vertex3D{Vector3::X_AXIS * maxlength, Rgba::Red},
-        Vertex3D{Vector3::Y_AXIS * maxlength, Rgba::Green},
-        Vertex3D{Vector3::Z_AXIS * maxlength, Rgba::Blue},
-        Vertex3D{Vector3::X_AXIS, Rgba::Red},
-        Vertex3D{Vector3::Y_AXIS, Rgba::Green},
-        Vertex3D{Vector3::Z_AXIS, Rgba::Blue},
+    Vertex3D{Vector3::ZERO, Rgba::Red},
+    Vertex3D{Vector3::ZERO, Rgba::Green},
+    Vertex3D{Vector3::ZERO, Rgba::Blue},
+    Vertex3D{Vector3::X_AXIS * maxlength, Rgba::Red},
+    Vertex3D{Vector3::Y_AXIS * maxlength, Rgba::Green},
+    Vertex3D{Vector3::Z_AXIS * maxlength, Rgba::Blue},
+    Vertex3D{Vector3::X_AXIS, Rgba::Red},
+    Vertex3D{Vector3::Y_AXIS, Rgba::Green},
+    Vertex3D{Vector3::Z_AXIS, Rgba::Blue},
     };
     static std::vector<unsigned int> ibo{
-        0, 3, 1, 4, 2, 5,
-        0, 6, 1, 7, 2, 8
-    };
+    0, 3, 1, 4, 2, 5,
+    0, 6, 1, 7, 2, 8};
     SetModelMatrix(Matrix4::I);
     SetMaterial(GetMaterial("__unlit"));
     DrawIndexed(PrimitiveType::Lines, vbo, ibo, 6, 0);
@@ -565,7 +550,6 @@ void Renderer::DrawDebugSphere(const Rgba& color) noexcept {
     //ibo[ibo.size() - 2] = idx;
     //ibo[ibo.size() - 1] = idx + 1;
     DrawIndexed(PrimitiveType::Lines, vbo, ibo);
-
 }
 
 void Renderer::Draw(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo) noexcept {
@@ -788,7 +772,7 @@ std::unique_ptr<AnimatedSprite> Renderer::CreateAnimatedSpriteFromGif(std::files
     std::weak_ptr<SpriteSheet> spr = CreateSpriteSheet(tex, 1, static_cast<int>(delays.size()));
     int duration_sum = std::accumulate(std::begin(delays), std::end(delays), 0);
     std::unique_ptr<AnimatedSprite> anim{};
-    anim.reset(new AnimatedSprite(*this, spr, TimeUtils::FPMilliseconds{ duration_sum }, 0, static_cast<int>(delays.size())));
+    anim.reset(new AnimatedSprite(*this, spr, TimeUtils::FPMilliseconds{duration_sum}, 0, static_cast<int>(delays.size())));
     tinyxml2::XMLDocument doc;
     std::ostringstream ss;
     ss << R"("<material name="__Gif_)" << filepath.stem().string() << R"("><shader src="__2D" /><textures><diffuse src=")" << filepath.string() << R"(" /></textures></material>)";
@@ -843,12 +827,9 @@ void Renderer::DrawLine2D(float startX, float startY, float endX, float endY, co
         Vertex3D start = Vertex3D(Vector3(Vector2(startX, startY), 0.0f), color, Vector2::ZERO);
         Vertex3D end = Vertex3D(Vector3(Vector2(endX, endY), 0.0f), color, Vector2::ONE);
         std::vector<Vertex3D> vbo = {
-            start
-            , end
-        };
+        start, end};
         std::vector<unsigned int> ibo = {
-            0, 1
-        };
+        0, 1};
         DrawIndexed(PrimitiveType::Lines, vbo, ibo);
         return;
     }
@@ -882,17 +863,10 @@ void Renderer::DrawQuad2D(float left, float bottom, float right, float top, cons
     Vector2 uv_rt = Vector2(texCoords.z, texCoords.y);
     Vector2 uv_rb = Vector2(texCoords.z, texCoords.w);
     std::vector<Vertex3D> vbo = {
-        Vertex3D(v_lb, color, uv_lb)
-        ,Vertex3D(v_lt, color, uv_lt)
-        ,Vertex3D(v_rt, color, uv_rt)
-        ,Vertex3D(v_rb, color, uv_rb)
-    };
+    Vertex3D(v_lb, color, uv_lb), Vertex3D(v_lt, color, uv_lt), Vertex3D(v_rt, color, uv_rt), Vertex3D(v_rb, color, uv_rb)};
     std::vector<unsigned int> ibo = {
-        0, 1, 2
-        , 0, 2, 3
-    };
+    0, 1, 2, 0, 2, 3};
     DrawIndexed(PrimitiveType::Triangles, vbo, ibo);
-
 }
 
 void Renderer::DrawQuad2D(const Rgba& color) noexcept {
@@ -932,8 +906,7 @@ void Renderer::DrawFilledCircle2D(const Disc2& circle, const Rgba& color /*= Rgb
 }
 
 void Renderer::DrawFilledCircle2D(const Vector2& center, float radius, const Rgba& color /*= Rgba::WHITE*/) noexcept {
-
-    auto num_sides = std::size_t{ 65 };
+    auto num_sides = std::size_t{65};
     auto size = num_sides + 1u;
     std::vector<Vector3> verts{};
     verts.reserve(size);
@@ -970,31 +943,51 @@ void Renderer::DrawAABB2(const AABB2& bounds, const Rgba& edgeColor, const Rgba&
     Vector2 rt_outer(bounds.maxs.x + edgeHalfExtents.x, bounds.mins.y - edgeHalfExtents.y);
     Vector2 rb_outer(bounds.maxs.x + edgeHalfExtents.x, bounds.maxs.y + edgeHalfExtents.y);
     std::vector<Vertex3D> vbo = {
-        Vertex3D(Vector3(rt_outer, 0.0f), edgeColor),
-        Vertex3D(Vector3(lt_outer, 0.0f), edgeColor),
-        Vertex3D(Vector3(lt_inner, 0.0f), edgeColor),
-        Vertex3D(Vector3(rt_inner, 0.0f), edgeColor),
-        Vertex3D(Vector3(rb_outer, 0.0f), edgeColor),
-        Vertex3D(Vector3(rb_inner, 0.0f), edgeColor),
-        Vertex3D(Vector3(lb_outer, 0.0f), edgeColor),
-        Vertex3D(Vector3(lb_inner, 0.0f), edgeColor),
-        Vertex3D(Vector3(rt_inner, 0.0f), fillColor),
-        Vertex3D(Vector3(lt_inner, 0.0f), fillColor),
-        Vertex3D(Vector3(lb_inner, 0.0f), fillColor),
-        Vertex3D(Vector3(rb_inner, 0.0f), fillColor),
+    Vertex3D(Vector3(rt_outer, 0.0f), edgeColor),
+    Vertex3D(Vector3(lt_outer, 0.0f), edgeColor),
+    Vertex3D(Vector3(lt_inner, 0.0f), edgeColor),
+    Vertex3D(Vector3(rt_inner, 0.0f), edgeColor),
+    Vertex3D(Vector3(rb_outer, 0.0f), edgeColor),
+    Vertex3D(Vector3(rb_inner, 0.0f), edgeColor),
+    Vertex3D(Vector3(lb_outer, 0.0f), edgeColor),
+    Vertex3D(Vector3(lb_inner, 0.0f), edgeColor),
+    Vertex3D(Vector3(rt_inner, 0.0f), fillColor),
+    Vertex3D(Vector3(lt_inner, 0.0f), fillColor),
+    Vertex3D(Vector3(lb_inner, 0.0f), fillColor),
+    Vertex3D(Vector3(rb_inner, 0.0f), fillColor),
     };
 
     std::vector<unsigned int> ibo = {
-        8, 9, 10,
-        8, 10, 11,
-        0, 1, 2,
-        0, 2, 3,
-        4, 0, 3,
-        4, 3, 5,
-        6, 4, 5,
-        6, 5, 7,
-        1, 6, 7,
-        1, 7, 2,
+    8,
+    9,
+    10,
+    8,
+    10,
+    11,
+    0,
+    1,
+    2,
+    0,
+    2,
+    3,
+    4,
+    0,
+    3,
+    4,
+    3,
+    5,
+    6,
+    4,
+    5,
+    6,
+    5,
+    7,
+    1,
+    6,
+    7,
+    1,
+    7,
+    2,
     };
     if(edgeHalfExtents == Vector2::ZERO) {
         DrawIndexed(PrimitiveType::Lines, vbo, ibo, ibo.size() - 6, 6);
@@ -1025,31 +1018,51 @@ void Renderer::DrawOBB2(const OBB2& obb, const Rgba& edgeColor, const Rgba& fill
     Vector2 rt_outer(rt.x + edgeHalfExtents.x, rt.y - edgeHalfExtents.y);
     Vector2 rb_outer(rb.x + edgeHalfExtents.x, rb.y + edgeHalfExtents.y);
     const std::vector<Vertex3D> vbo = {
-        Vertex3D(Vector3(rt_outer, 0.0f), edgeColor),
-        Vertex3D(Vector3(lt_outer, 0.0f), edgeColor),
-        Vertex3D(Vector3(lt_inner, 0.0f), edgeColor),
-        Vertex3D(Vector3(rt_inner, 0.0f), edgeColor),
-        Vertex3D(Vector3(rb_outer, 0.0f), edgeColor),
-        Vertex3D(Vector3(rb_inner, 0.0f), edgeColor),
-        Vertex3D(Vector3(lb_outer, 0.0f), edgeColor),
-        Vertex3D(Vector3(lb_inner, 0.0f), edgeColor),
-        Vertex3D(Vector3(rt_inner, 0.0f), fillColor),
-        Vertex3D(Vector3(lt_inner, 0.0f), fillColor),
-        Vertex3D(Vector3(lb_inner, 0.0f), fillColor),
-        Vertex3D(Vector3(rb_inner, 0.0f), fillColor),
+    Vertex3D(Vector3(rt_outer, 0.0f), edgeColor),
+    Vertex3D(Vector3(lt_outer, 0.0f), edgeColor),
+    Vertex3D(Vector3(lt_inner, 0.0f), edgeColor),
+    Vertex3D(Vector3(rt_inner, 0.0f), edgeColor),
+    Vertex3D(Vector3(rb_outer, 0.0f), edgeColor),
+    Vertex3D(Vector3(rb_inner, 0.0f), edgeColor),
+    Vertex3D(Vector3(lb_outer, 0.0f), edgeColor),
+    Vertex3D(Vector3(lb_inner, 0.0f), edgeColor),
+    Vertex3D(Vector3(rt_inner, 0.0f), fillColor),
+    Vertex3D(Vector3(lt_inner, 0.0f), fillColor),
+    Vertex3D(Vector3(lb_inner, 0.0f), fillColor),
+    Vertex3D(Vector3(rb_inner, 0.0f), fillColor),
     };
 
     const std::vector<unsigned int> ibo = {
-        8, 9, 10,
-        8, 10, 11,
-        0, 1, 2,
-        0, 2, 3,
-        4, 0, 3,
-        4, 3, 5,
-        6, 4, 5,
-        6, 5, 7,
-        1, 6, 7,
-        1, 7, 2,
+    8,
+    9,
+    10,
+    8,
+    10,
+    11,
+    0,
+    1,
+    2,
+    0,
+    2,
+    3,
+    4,
+    0,
+    3,
+    4,
+    3,
+    5,
+    6,
+    4,
+    5,
+    6,
+    5,
+    7,
+    1,
+    6,
+    7,
+    1,
+    7,
+    2,
     };
     if(edgeHalfExtents == Vector2::ZERO) {
         DrawIndexed(PrimitiveType::Lines, vbo, ibo, ibo.size() - 6, 6);
@@ -1076,15 +1089,14 @@ void Renderer::DrawX2D(const Vector2& position /*= Vector2::ZERO*/, const Vector
     Vector3 lb = Vector3(left, bottom, 0.0f);
     Vector3 rb = Vector3(right, bottom, 0.0f);
     std::vector<Vertex3D> vbo = {
-        Vertex3D(lt, color),
-        Vertex3D(rb, color),
-        Vertex3D(lb, color),
-        Vertex3D(rt, color),
+    Vertex3D(lt, color),
+    Vertex3D(rb, color),
+    Vertex3D(lb, color),
+    Vertex3D(rt, color),
     };
 
     std::vector<unsigned int> ibo = {
-        0, 1, 2, 3
-    };
+    0, 1, 2, 3};
 
     DrawIndexed(PrimitiveType::Lines, vbo, ibo);
 }
@@ -1143,10 +1155,10 @@ void Renderer::DrawPolygon2D(const Polygon2& polygon, const Rgba& color /*= Rgba
 }
 
 void Renderer::DrawTextLine(const KerningFont* font, const std::string& text, const Rgba& color /*= Rgba::WHITE*/) noexcept {
-    if (font == nullptr) {
+    if(font == nullptr) {
         return;
     }
-    if (text.empty()) {
+    if(text.empty()) {
         return;
     }
     float cursor_x = 0.0f;
@@ -1160,7 +1172,7 @@ void Renderer::DrawTextLine(const KerningFont* font, const std::string& text, co
     std::vector<unsigned int> ibo;
     ibo.reserve(text_size * 6);
 
-    for (auto text_iter = text.begin(); text_iter != text.end(); /* DO NOTHING */) {
+    for(auto text_iter = text.begin(); text_iter != text.end(); /* DO NOTHING */) {
         KerningFont::CharDef current_def = font->GetCharDef(*text_iter);
         float char_uvl = current_def.position.x / texture_w;
         float char_uvt = current_def.position.y / texture_h;
@@ -1187,7 +1199,7 @@ void Renderer::DrawTextLine(const KerningFont* font, const std::string& text, co
 
         auto previous_char = text_iter;
         ++text_iter;
-        if (text_iter != text.end()) {
+        if(text_iter != text.end()) {
             int kern_value = font->GetKerningValue(*previous_char, *text_iter);
             cursor_x += (current_def.xadvance + kern_value);
         }
@@ -1196,7 +1208,7 @@ void Renderer::DrawTextLine(const KerningFont* font, const std::string& text, co
     auto has_constant_buffers = !cbs.empty();
     if(has_constant_buffers) {
         auto& font_cb = cbs[0].get();
-        Vector4 channel{ 1.0f, 1.0f, 1.0f, 1.0f };
+        Vector4 channel{1.0f, 1.0f, 1.0f, 1.0f};
         font_cb.Update(*_rhi_context, &channel);
     }
     SetMaterial(font->GetMaterial());
@@ -1218,9 +1230,9 @@ void Renderer::DrawMultilineText(KerningFont* font, const std::string& text, con
     }
     const auto& cbs = font->GetMaterial()->GetShader()->GetConstantBuffers();
     auto has_constant_buffers = !cbs.empty();
-    if (has_constant_buffers) {
+    if(has_constant_buffers) {
         auto& font_cb = cbs[0].get();
-        Vector4 channel{ 1.0f, 1.0f, 1.0f, 1.0f };
+        Vector4 channel{1.0f, 1.0f, 1.0f, 1.0f};
         font_cb.Update(*_rhi_context, &channel);
     }
     SetMaterial(font->GetMaterial());
@@ -1228,7 +1240,6 @@ void Renderer::DrawMultilineText(KerningFont* font, const std::string& text, con
 }
 
 void Renderer::AppendMultiLineTextBuffer(KerningFont* font, const std::string& text, const Vector2& start_position, const Rgba& color, std::vector<Vertex3D>& vbo, std::vector<unsigned int>& ibo) noexcept {
-
     if(font == nullptr) {
         return;
     }
@@ -1287,13 +1298,12 @@ std::vector<std::unique_ptr<ConstantBuffer>> Renderer::CreateConstantBuffersFrom
     auto ps_cbuffers = std::move(_rhi_device->CreateConstantBuffersFromByteCode(_shader_program->GetPSByteCode()));
     auto cs_cbuffers = std::move(_rhi_device->CreateConstantBuffersFromByteCode(_shader_program->GetCSByteCode()));
     const auto sizes = std::vector<std::size_t>{
-        vs_cbuffers.size(),
-        hs_cbuffers.size(),
-        ds_cbuffers.size(),
-        gs_cbuffers.size(),
-        ps_cbuffers.size(),
-        cs_cbuffers.size()
-    };
+    vs_cbuffers.size(),
+    hs_cbuffers.size(),
+    ds_cbuffers.size(),
+    gs_cbuffers.size(),
+    ps_cbuffers.size(),
+    cs_cbuffers.size()};
     auto cbuffer_count = std::accumulate(std::begin(sizes), std::end(sizes), static_cast<std::size_t>(0u));
     if(!cbuffer_count) {
         return {};
@@ -1382,7 +1392,7 @@ void Renderer::SetWindowedMode() noexcept {
 }
 
 void Renderer::CreateAndRegisterDefaultFonts() noexcept {
-    std::filesystem::path p = FileUtils::GetKnownFolderPath(FileUtils::KnownPathID::EngineData) / std::filesystem::path{ "Fonts" };
+    std::filesystem::path p = FileUtils::GetKnownFolderPath(FileUtils::KnownPathID::EngineData) / std::filesystem::path{"Fonts"};
     FileUtils::CreateFolders(p);
     RegisterFontsFromFolder(p);
 }
@@ -1407,12 +1417,11 @@ void Renderer::CreateAndRegisterDefaultShaderPrograms() noexcept {
     auto font_sp = CreateDefaultFontShaderProgram();
     name = font_sp->GetName();
     RegisterShaderProgram(name, std::move(font_sp));
-
 }
 
 std::unique_ptr<ShaderProgram> Renderer::CreateDefaultShaderProgram() noexcept {
     std::string program =
-R"(
+    R"(
 
 static const int MAX_LIGHT_COUNT = 16;
 static const float PI = 3.141592653589793238;
@@ -1612,7 +1621,7 @@ float4 PixelFunction(ps_in_t input_pixel) : SV_Target0 {
 
 std::unique_ptr<ShaderProgram> Renderer::CreateDefaultUnlitShaderProgram() noexcept {
     std::string program =
-        R"(
+    R"(
 
 cbuffer matrix_cb : register(b0) {
     float4x4 g_MODEL;
@@ -1694,12 +1703,11 @@ float4 PixelFunction(ps_in_t input_pixel) : SV_Target0 {
     desc.ps_bytecode = ps_bytecode;
     desc.input_layout = std::move(il);
     return std::make_unique<ShaderProgram>(std::move(desc));
-
 }
 
 std::unique_ptr<ShaderProgram> Renderer::CreateDefaultNormalShaderProgram() noexcept {
     std::string program =
-        R"(
+    R"(
 
 float3 NormalAsColor(float3 n) {
     return ((n + 1.0f) * 0.5f);
@@ -1829,7 +1837,7 @@ float4 PixelFunction(ps_in_t input_pixel) : SV_Target0 {
 
 std::unique_ptr<ShaderProgram> Renderer::CreateDefaultNormalMapShaderProgram() noexcept {
     std::string program =
-        R"(
+    R"(
 
 float3 NormalAsColor(float3 n) {
     return ((n + 1.0f) * 0.5f);
@@ -1957,10 +1965,9 @@ float4 PixelFunction(ps_in_t input_pixel) : SV_Target0 {
     return std::make_unique<ShaderProgram>(std::move(desc));
 }
 
-
 std::unique_ptr<ShaderProgram> Renderer::CreateDefaultFontShaderProgram() noexcept {
     std::string program =
-        R"(
+    R"(
 
 cbuffer matrix_cb : register(b0) {
     float4x4 g_MODEL;
@@ -2080,12 +2087,11 @@ void Renderer::CreateAndRegisterDefaultMaterials() noexcept {
     auto mat_invalid = CreateDefaultInvalidMaterial();
     name = mat_invalid->GetName();
     RegisterMaterial(name, std::move(mat_invalid));
-
 }
 
 std::unique_ptr<Material> Renderer::CreateDefaultMaterial() noexcept {
     std::string material =
-R"(
+    R"(
 <material name="__default">
     <shader src="__default" />
 </material>
@@ -2097,12 +2103,11 @@ R"(
         return nullptr;
     }
     return std::make_unique<Material>(*this, *doc.RootElement());
-
 }
 
 std::unique_ptr<Material> Renderer::CreateDefaultUnlitMaterial() noexcept {
     std::string material =
-        R"(
+    R"(
 <material name="__unlit">
     <shader src="__unlit" />
 </material>
@@ -2114,12 +2119,11 @@ std::unique_ptr<Material> Renderer::CreateDefaultUnlitMaterial() noexcept {
         return nullptr;
     }
     return std::make_unique<Material>(*this, *doc.RootElement());
-
 }
 
 std::unique_ptr<Material> Renderer::CreateDefault2DMaterial() noexcept {
     std::string material =
-        R"(
+    R"(
 <material name="__2D">
     <shader src="__2D" />
 </material>
@@ -2131,12 +2135,11 @@ std::unique_ptr<Material> Renderer::CreateDefault2DMaterial() noexcept {
         return nullptr;
     }
     return std::make_unique<Material>(*this, *doc.RootElement());
-
 }
 
 std::unique_ptr<Material> Renderer::CreateDefaultNormalMaterial() noexcept {
     std::string material =
-        R"(
+    R"(
 <material name="__normal">
     <shader src="__normal" />
 </material>
@@ -2148,12 +2151,11 @@ std::unique_ptr<Material> Renderer::CreateDefaultNormalMaterial() noexcept {
         return nullptr;
     }
     return std::make_unique<Material>(*this, *doc.RootElement());
-
 }
 
 std::unique_ptr<Material> Renderer::CreateDefaultNormalMapMaterial() noexcept {
     std::string material =
-        R"(
+    R"(
 <material name="__normalmap">
     <shader src="__normalmap" />
 </material>
@@ -2165,12 +2167,11 @@ std::unique_ptr<Material> Renderer::CreateDefaultNormalMapMaterial() noexcept {
         return nullptr;
     }
     return std::make_unique<Material>(*this, *doc.RootElement());
-
 }
 
 std::unique_ptr<Material> Renderer::CreateDefaultInvalidMaterial() noexcept {
     std::string material =
-        R"(
+    R"(
 <material name="__invalid">
     <shader src="__invalid" />
     <textures>
@@ -2217,10 +2218,10 @@ std::unique_ptr<Material> Renderer::CreateMaterialFromFont(KerningFont* font) no
         case 3: material_stream << "\t\t<specular src=" << fullpath << " />\n"; break;
         case 4: material_stream << "\t\t<occlusion src=" << fullpath << " />\n"; break;
         case 5: material_stream << "\t\t<emissive src=" << fullpath << " />\n"; break;
-            default: /* DO NOTHING */;
+        default: /* DO NOTHING */;
         }
         if(i >= 6 && has_lots_of_textures) {
-            material_stream << "\t\t<texture index=\"" << (i-6) << "\" src=" << fullpath << " />\n";
+            material_stream << "\t\t<texture index=\"" << (i - 6) << "\" src=" << fullpath << " />\n";
         }
     }
     if(has_textures) {
@@ -2256,7 +2257,6 @@ void Renderer::CreateAndRegisterDefaultSamplers() noexcept {
     name = "__invalid";
     invalid_sampler->SetDebugName("__invalid_sampler");
     RegisterSampler(name, std::move(invalid_sampler));
-
 }
 
 std::unique_ptr<Sampler> Renderer::CreateDefaultSampler() noexcept {
@@ -2300,7 +2300,7 @@ void Renderer::CreateAndRegisterDefaultRasterStates() noexcept {
     name = "__scissorenable";
     scissorenable_raster->SetDebugName("__scissorenable");
     RegisterRasterState(name, std::move(scissorenable_raster));
-    
+
     auto scissordisable_raster = CreateScissorDisableRaster();
     name = "__scissordisable";
     scissordisable_raster->SetDebugName("__scissordisable");
@@ -2335,7 +2335,6 @@ void Renderer::CreateAndRegisterDefaultRasterStates() noexcept {
     name = "__solidfc";
     solidfc_raster->SetDebugName("__solidfc");
     RegisterRasterState(name, std::move(solidfc_raster));
-
 }
 
 std::unique_ptr<RasterState> Renderer::CreateDefaultRaster() noexcept {
@@ -2428,7 +2427,6 @@ void Renderer::CreateAndRegisterDefaultDepthStencilStates() noexcept {
     name = "__stencilenabled";
     stencil_enabled->SetDebugName(name);
     RegisterDepthStencilState(name, std::move(stencil_enabled));
-
 }
 
 std::unique_ptr<DepthStencilState> Renderer::CreateDefaultDepthStencilState() noexcept {
@@ -2510,7 +2508,6 @@ void Renderer::RegisterDepthStencilState(const std::string& name, std::unique_pt
         _depthstencils.erase(found_iter);
     }
     _depthstencils.try_emplace(name, std::move(depthstencil));
-
 }
 
 RasterState* Renderer::GetRasterState(const std::string& name) noexcept {
@@ -2581,7 +2578,7 @@ bool Renderer::RegisterShader(std::filesystem::path filepath) noexcept {
     namespace FS = std::filesystem;
     tinyxml2::XMLDocument doc;
     bool path_exists = FS::exists(filepath);
-    bool has_valid_extension = filepath.has_extension() && StringUtils::ToLowerCase(filepath.extension().string()) == std::string{ ".shader" };
+    bool has_valid_extension = filepath.has_extension() && StringUtils::ToLowerCase(filepath.extension().string()) == std::string{".shader"};
     bool is_valid_path = path_exists && has_valid_extension;
     if(!is_valid_path) {
         return false;
@@ -2654,7 +2651,7 @@ bool Renderer::RegisterFont(std::filesystem::path filepath) noexcept {
             folderpath = FS::canonical(folderpath);
             folderpath.make_preferred();
             folderpath = folderpath.parent_path();
-            FS::path texture_path = folderpath / FS::path{ texture_filename };
+            FS::path texture_path = folderpath / FS::path{texture_filename};
             texture_path = FS::canonical(texture_path);
             texture_path.make_preferred();
             CreateTexture(texture_path.string(), IntVector3::XY_AXIS);
@@ -2680,7 +2677,7 @@ void Renderer::RegisterFontsFromFolder(std::filesystem::path folderpath, bool re
     folderpath = FS::canonical(folderpath);
     folderpath.make_preferred();
     auto cb =
-        [this](const FS::path& p) {
+    [this](const FS::path& p) {
         RegisterFont(p);
     };
     FileUtils::ForEachFileInFolder(folderpath, ".fnt", cb, recursive);
@@ -2732,58 +2729,53 @@ void Renderer::CreateAndRegisterDefaultTextures() noexcept {
 
 std::unique_ptr<Texture> Renderer::CreateDefaultTexture() noexcept {
     static const std::vector<Rgba> data = {
-        Rgba::White
-    };
+    Rgba::White};
     return Create2DTextureFromMemory(data, 1, 1);
 }
 
 std::unique_ptr<Texture> Renderer::CreateInvalidTexture() noexcept {
     static const std::vector<Rgba> data = {
-        Rgba::Magenta, Rgba::Black,
-        Rgba::Black,   Rgba::Magenta,
+    Rgba::Magenta,
+    Rgba::Black,
+    Rgba::Black,
+    Rgba::Magenta,
     };
     return Create2DTextureFromMemory(data, 2, 2);
 }
 
 std::unique_ptr<Texture> Renderer::CreateDefaultDiffuseTexture() noexcept {
     static const std::vector<Rgba> data = {
-        Rgba::White
-    };
+    Rgba::White};
     return Create2DTextureFromMemory(data, 1, 1);
 }
 
 std::unique_ptr<Texture> Renderer::CreateDefaultNormalTexture() noexcept {
     static const std::vector<Rgba> data = {
-        Rgba::NormalZ
-    };
+    Rgba::NormalZ};
     return Create2DTextureFromMemory(data, 1, 1);
 }
 
 std::unique_ptr<Texture> Renderer::CreateDefaultDisplacementTexture() noexcept {
     static const std::vector<Rgba> data = {
-        Rgba::Gray
-    };
+    Rgba::Gray};
     return Create2DTextureFromMemory(data, 1, 1);
 }
 
 std::unique_ptr<Texture> Renderer::CreateDefaultSpecularTexture() noexcept {
     static const std::vector<Rgba> data = {
-        Rgba::Black
-    };
+    Rgba::Black};
     return Create2DTextureFromMemory(data, 1, 1);
 }
 
 std::unique_ptr<Texture> Renderer::CreateDefaultOcclusionTexture() noexcept {
     static const std::vector<Rgba> data = {
-        Rgba::White
-    };
+    Rgba::White};
     return Create2DTextureFromMemory(data, 1, 1);
 }
 
 std::unique_ptr<Texture> Renderer::CreateDefaultEmissiveTexture() noexcept {
     static const std::vector<Rgba> data = {
-        Rgba::Black
-    };
+    Rgba::Black};
     return Create2DTextureFromMemory(data, 1, 1);
 }
 
@@ -2794,61 +2786,9 @@ std::unique_ptr<Texture> Renderer::CreateDefaultFullscreenTexture() noexcept {
 }
 void Renderer::CreateDefaultColorTextures() noexcept {
     static const std::vector<Rgba> colors = {
-        Rgba::White
-        ,Rgba::Black
-        ,Rgba::Red
-        ,Rgba::Pink
-        ,Rgba::Green
-        ,Rgba::ForestGreen
-        ,Rgba::Blue
-        ,Rgba::NavyBlue
-        ,Rgba::Cyan
-        ,Rgba::Yellow
-        ,Rgba::Magenta
-        ,Rgba::Orange
-        ,Rgba::Violet
-        ,Rgba::LightGrey
-        ,Rgba::LightGray
-        ,Rgba::Grey
-        ,Rgba::Gray
-        ,Rgba::DarkGrey
-        ,Rgba::DarkGray
-        ,Rgba::Olive
-        ,Rgba::SkyBlue
-        ,Rgba::Lime
-        ,Rgba::Teal
-        ,Rgba::Turquoise
-        ,Rgba::Periwinkle
-        ,Rgba::NormalZ
-    };
+    Rgba::White, Rgba::Black, Rgba::Red, Rgba::Pink, Rgba::Green, Rgba::ForestGreen, Rgba::Blue, Rgba::NavyBlue, Rgba::Cyan, Rgba::Yellow, Rgba::Magenta, Rgba::Orange, Rgba::Violet, Rgba::LightGrey, Rgba::LightGray, Rgba::Grey, Rgba::Gray, Rgba::DarkGrey, Rgba::DarkGray, Rgba::Olive, Rgba::SkyBlue, Rgba::Lime, Rgba::Teal, Rgba::Turquoise, Rgba::Periwinkle, Rgba::NormalZ};
     static const std::vector<std::string> names = {
-     "__white"
-    ,"__black"
-    ,"__red"
-    ,"__pink"
-    ,"__green"
-    ,"__forestGreen"
-    ,"__blue"
-    ,"__navyBlue"
-    ,"__cyan"
-    ,"__yellow"
-    ,"__magenta"
-    ,"__orange"
-    ,"__violet"
-    ,"__lightGrey"
-    ,"__lightGray"
-    ,"__grey"
-    ,"__gray"
-    ,"__darkGrey"
-    ,"__darkGray"
-    ,"__olive"
-    ,"__skyBlue"
-    ,"__lime"
-    ,"__teal"
-    ,"__turquoise"
-    ,"__periwinkle"
-    ,"__normalZ"
-    };
+    "__white", "__black", "__red", "__pink", "__green", "__forestGreen", "__blue", "__navyBlue", "__cyan", "__yellow", "__magenta", "__orange", "__violet", "__lightGrey", "__lightGray", "__grey", "__gray", "__darkGrey", "__darkGray", "__olive", "__skyBlue", "__lime", "__teal", "__turquoise", "__periwinkle", "__normalZ"};
     const std::size_t n_s = names.size();
     const std::size_t c_s = colors.size();
     GUARANTEE_OR_DIE(n_s == c_s, "Renderer::CreateDefaultColorTextures: names and color vector sizes do not match!!");
@@ -2861,8 +2801,7 @@ void Renderer::CreateDefaultColorTextures() noexcept {
 
 std::unique_ptr<Texture> Renderer::CreateDefaultColorTexture(const Rgba& color) noexcept {
     std::vector<Rgba> data = {
-        color
-    };
+    color};
     return Create2DTextureFromMemory(data, 1, 1);
 }
 
@@ -2894,12 +2833,11 @@ void Renderer::CreateAndRegisterDefaultShaders() noexcept {
     auto default_invalid = CreateDefaultInvalidShader();
     name = default_invalid->GetName();
     RegisterShader(name, std::move(default_invalid));
-
 }
 
 std::unique_ptr<Shader> Renderer::CreateDefaultShader() noexcept {
     std::string shader =
-R"(
+    R"(
 <shader name="__default">
     <shaderprogram src="__default" />
     <raster src="__solid" />
@@ -2922,7 +2860,7 @@ R"(
 
 std::unique_ptr<Shader> Renderer::CreateDefaultUnlitShader() noexcept {
     std::string shader =
-        R"(
+    R"(
 <shader name="__unlit">
     <shaderprogram src="__unlit" />
     <raster src="__solid" />
@@ -2944,8 +2882,8 @@ std::unique_ptr<Shader> Renderer::CreateDefaultUnlitShader() noexcept {
 }
 
 std::unique_ptr<Shader> Renderer::CreateDefault2DShader() noexcept {
-std::string shader =
-R"(
+    std::string shader =
+    R"(
 <shader name = "__2D">
     <shaderprogram src = "__unlit" />
     <raster>
@@ -2973,7 +2911,7 @@ R"(
 
 std::unique_ptr<Shader> Renderer::CreateDefaultNormalShader() noexcept {
     std::string shader =
-        R"(
+    R"(
 <shader name="__normal">
     <shaderprogram src="__normal" />
     <raster src="__solid" />
@@ -2996,7 +2934,7 @@ std::unique_ptr<Shader> Renderer::CreateDefaultNormalShader() noexcept {
 
 std::unique_ptr<Shader> Renderer::CreateDefaultNormalMapShader() noexcept {
     std::string shader =
-        R"(
+    R"(
 <shader name="__normalmap">
     <shaderprogram src="__normalmap" />
     <raster src="__solid" />
@@ -3018,7 +2956,7 @@ std::unique_ptr<Shader> Renderer::CreateDefaultNormalMapShader() noexcept {
 
 std::unique_ptr<Shader> Renderer::CreateDefaultInvalidShader() noexcept {
     std::string shader =
-        R"(
+    R"(
 <shader name="__invalid">
     <shaderprogram src="__unlit" />
     <raster src="__solid" />
@@ -3032,7 +2970,7 @@ std::unique_ptr<Shader> Renderer::CreateDefaultInvalidShader() noexcept {
 )";
     tinyxml2::XMLDocument doc;
     auto parse_result = doc.Parse(shader.c_str(), shader.size());
-    if (parse_result != tinyxml2::XML_SUCCESS) {
+    if(parse_result != tinyxml2::XML_SUCCESS) {
         return nullptr;
     }
 
@@ -3041,7 +2979,7 @@ std::unique_ptr<Shader> Renderer::CreateDefaultInvalidShader() noexcept {
 
 std::unique_ptr<Shader> Renderer::CreateDefaultFontShader() noexcept {
     std::string shader =
-        R"(
+    R"(
 <shader name="__font">
     <shaderprogram src = "__font" />
     <raster>
@@ -3136,7 +3074,7 @@ void Renderer::RegisterMaterialsFromFolder(std::filesystem::path folderpath, boo
     folderpath = FS::canonical(folderpath);
     folderpath.make_preferred();
     auto cb =
-        [this](const FS::path& p) {
+    [this](const FS::path& p) {
         RegisterMaterial(p);
     };
     FileUtils::ForEachFileInFolder(folderpath, ".material", cb, recursive);
@@ -3189,7 +3127,7 @@ RHIInstance* Renderer::GetInstance() const noexcept {
 
 ShaderProgram* Renderer::GetShaderProgram(const std::string& nameOrFile) noexcept {
     namespace FS = std::filesystem;
-    FS::path p{ nameOrFile };
+    FS::path p{nameOrFile};
     if(!StringUtils::StartsWith(p.string(), "__")) {
         p = FS::canonical(p);
     }
@@ -3207,16 +3145,16 @@ std::unique_ptr<ShaderProgram> Renderer::CreateShaderProgramFromHlslFile(std::fi
     do {
         if(auto contents = FileUtils::ReadStringBufferFromFile(filepath)) {
             sp = std::move(_rhi_device->CreateShaderProgramFromHlslString(filepath.string(), contents.value(), entryPointList, nullptr, target));
-                requested_retry = false;
+            requested_retry = false;
 #ifdef RENDER_DEBUG
-                if(sp == nullptr) {
-                    std::ostringstream error_msg{};
-                    error_msg << "Shader \"" << filepath << "\" failed to compile.\n";
-                    error_msg << "See Output window for details.\n";
-                    error_msg << "Press Retry to re-compile.";
-                    auto button_id = ::MessageBoxA(nullptr, error_msg.str().c_str(), "Shader compilation error.", MB_RETRYCANCEL | MB_ICONERROR);
-                    requested_retry = button_id == IDRETRY;
-                }
+            if(sp == nullptr) {
+                std::ostringstream error_msg{};
+                error_msg << "Shader \"" << filepath << "\" failed to compile.\n";
+                error_msg << "See Output window for details.\n";
+                error_msg << "Press Retry to re-compile.";
+                auto button_id = ::MessageBoxA(nullptr, error_msg.str().c_str(), "Shader compilation error.", MB_RETRYCANCEL | MB_ICONERROR);
+                requested_retry = button_id == IDRETRY;
+            }
 #endif
         }
     } while(requested_retry);
@@ -3325,7 +3263,7 @@ void Renderer::RegisterShadersFromFolder(std::filesystem::path folderpath, bool 
     folderpath = FS::canonical(folderpath);
     folderpath.make_preferred();
     auto cb =
-        [this](const FS::path& p) {
+    [this](const FS::path& p) {
         RegisterShader(p);
     };
     FileUtils::ForEachFileInFolder(folderpath, ".shader", cb, recursive);
@@ -3374,7 +3312,6 @@ void Renderer::ResetModelViewProjection() noexcept {
     SetViewMatrix(Matrix4::I);
     SetProjectionMatrix(Matrix4::I);
 }
-
 
 void Renderer::AppendModelMatrix(const Matrix4& modelMatrix) noexcept {
     _matrix_data.model = Matrix4::MakeRT(modelMatrix, _matrix_data.model);
@@ -3428,7 +3365,7 @@ void Renderer::SetPerspectiveProjection(const Vector2& vfovDegrees_aspect, const
 }
 
 void Renderer::SetPerspectiveProjectionFromCamera(const Camera3D& camera) noexcept {
-    SetPerspectiveProjection(Vector2{ camera.CalcFovYDegrees(), camera.GetAspectRatio()}, Vector2{ camera.GetNearDistance(), camera.GetFarDistance()});
+    SetPerspectiveProjection(Vector2{camera.CalcFovYDegrees(), camera.GetAspectRatio()}, Vector2{camera.GetNearDistance(), camera.GetFarDistance()});
 }
 
 void Renderer::SetCamera(const Camera3D& camera) noexcept {
@@ -3452,11 +3389,11 @@ Vector2 Renderer::ConvertWorldToScreenCoords(const Vector3& worldCoords) const n
 }
 
 Vector2 Renderer::ConvertWorldToScreenCoords(const Vector2& worldCoords) const noexcept {
-    return ConvertWorldToScreenCoords(_camera, Vector3{ worldCoords, 0.0f });
+    return ConvertWorldToScreenCoords(_camera, Vector3{worldCoords, 0.0f});
 }
 
 Vector2 Renderer::ConvertWorldToScreenCoords(const Camera2D& camera, const Vector2& worldCoords) const noexcept {
-    return ConvertWorldToScreenCoords(Camera3D{ camera }, Vector3{ worldCoords, 0.0f });
+    return ConvertWorldToScreenCoords(Camera3D{camera}, Vector3{worldCoords, 0.0f});
 }
 
 Vector2 Renderer::ConvertWorldToScreenCoords(const Camera3D& camera, const Vector3& worldCoords) const noexcept {
@@ -3482,7 +3419,7 @@ Vector3 Renderer::ConvertScreenToWorldCoords(const Camera3D& camera, const Vecto
 }
 
 Vector2 Renderer::ConvertScreenToWorldCoords(const Camera2D& camera, const Vector2& mouseCoords) const noexcept {
-    return Vector2{ ConvertScreenToWorldCoords(Camera3D{ camera }, mouseCoords) };
+    return Vector2{ConvertScreenToWorldCoords(Camera3D{camera}, mouseCoords)};
 }
 
 void Renderer::SetConstantBuffer(unsigned int index, ConstantBuffer* buffer) noexcept {
@@ -3517,20 +3454,10 @@ void Renderer::DrawQuad(const Vector3& position /*= Vector3::ZERO*/, const Vecto
     Vector2 uv_rb = Vector2(texCoords.z, texCoords.w);
 
     std::vector<Vertex3D> vbo{
-         Vertex3D(v_lb, color, uv_lb, normalFront)
-        ,Vertex3D(v_lt, color, uv_lt, normalFront)
-        ,Vertex3D(v_rt, color, uv_rt, normalFront)
-        ,Vertex3D(v_rb, color, uv_rb, normalFront)
-        ,Vertex3D(v_rb, color, uv_rb, normalBack)
-        ,Vertex3D(v_rt, color, uv_rt, normalBack)
-        ,Vertex3D(v_lt, color, uv_lt, normalBack)
-        ,Vertex3D(v_lb, color, uv_lb, normalBack)
-    };
+    Vertex3D(v_lb, color, uv_lb, normalFront), Vertex3D(v_lt, color, uv_lt, normalFront), Vertex3D(v_rt, color, uv_rt, normalFront), Vertex3D(v_rb, color, uv_rb, normalFront), Vertex3D(v_rb, color, uv_rb, normalBack), Vertex3D(v_rt, color, uv_rt, normalBack), Vertex3D(v_lt, color, uv_lt, normalBack), Vertex3D(v_lb, color, uv_lb, normalBack)};
 
     std::vector<unsigned int> ibo{
-         0 ,1 ,2 ,0 ,2 ,3
-        ,4 ,5 ,6 ,4 ,6 ,7
-    };
+    0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7};
     DrawIndexed(PrimitiveType::Triangles, vbo, ibo);
 }
 
@@ -3550,20 +3477,10 @@ void Renderer::DrawQuad(const Rgba& frontColor, const Rgba& backColor, const Vec
     Vector2 uv_rb = Vector2(texCoords.z, texCoords.w);
 
     std::vector<Vertex3D> vbo{
-         Vertex3D(v_lb, frontColor, uv_lb, normalFront)
-        ,Vertex3D(v_lt, frontColor, uv_lt, normalFront)
-        ,Vertex3D(v_rt, frontColor, uv_rt, normalFront)
-        ,Vertex3D(v_rb, frontColor, uv_rb, normalFront)
-        ,Vertex3D(v_rb, backColor, uv_rb, normalBack)
-        ,Vertex3D(v_rt, backColor, uv_rt, normalBack)
-        ,Vertex3D(v_lt, backColor, uv_lt, normalBack)
-        ,Vertex3D(v_lb, backColor, uv_lb, normalBack)
-    };
+    Vertex3D(v_lb, frontColor, uv_lb, normalFront), Vertex3D(v_lt, frontColor, uv_lt, normalFront), Vertex3D(v_rt, frontColor, uv_rt, normalFront), Vertex3D(v_rb, frontColor, uv_rb, normalFront), Vertex3D(v_rb, backColor, uv_rb, normalBack), Vertex3D(v_rt, backColor, uv_rt, normalBack), Vertex3D(v_lt, backColor, uv_lt, normalBack), Vertex3D(v_lb, backColor, uv_lb, normalBack)};
 
     std::vector<unsigned int> ibo{
-         0 ,1 ,2 ,0 ,2 ,3
-        ,4 ,5 ,6 ,4 ,6 ,7
-    };
+    0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7};
     DrawIndexed(PrimitiveType::Triangles, vbo, ibo);
 }
 
@@ -3637,10 +3554,7 @@ void Renderer::SetViewport(unsigned int x, unsigned int y, unsigned int width, u
 }
 
 void Renderer::SetViewport(const AABB2& viewport) noexcept {
-    SetViewport(static_cast<unsigned int>(viewport.mins.x)
-                , static_cast<unsigned int>(viewport.mins.y)
-                , static_cast<unsigned int>(viewport.maxs.x - viewport.mins.x)
-                , static_cast<unsigned int>(viewport.maxs.y - viewport.mins.y));
+    SetViewport(static_cast<unsigned int>(viewport.mins.x), static_cast<unsigned int>(viewport.mins.y), static_cast<unsigned int>(viewport.maxs.x - viewport.mins.x), static_cast<unsigned int>(viewport.maxs.y - viewport.mins.y));
 }
 
 void Renderer::SetViewportAndScissor(unsigned int x, unsigned int y, unsigned int width, unsigned int height) noexcept {
@@ -3648,10 +3562,7 @@ void Renderer::SetViewportAndScissor(unsigned int x, unsigned int y, unsigned in
 }
 
 void Renderer::SetViewportAndScissor(const AABB2& viewport_and_scissor) noexcept {
-    SetViewportAndScissor(static_cast<unsigned int>(viewport_and_scissor.mins.x)
-                          , static_cast<unsigned int>(viewport_and_scissor.mins.y)
-                          , static_cast<unsigned int>(viewport_and_scissor.maxs.x - viewport_and_scissor.mins.x)
-                          , static_cast<unsigned int>(viewport_and_scissor.maxs.y - viewport_and_scissor.mins.y));
+    SetViewportAndScissor(static_cast<unsigned int>(viewport_and_scissor.mins.x), static_cast<unsigned int>(viewport_and_scissor.mins.y), static_cast<unsigned int>(viewport_and_scissor.maxs.x - viewport_and_scissor.mins.x), static_cast<unsigned int>(viewport_and_scissor.maxs.y - viewport_and_scissor.mins.y));
 }
 
 void Renderer::SetViewports(const std::vector<AABB3>& viewports) noexcept {
@@ -3679,10 +3590,7 @@ void Renderer::SetScissor(unsigned int x, unsigned int y, unsigned int width, un
 }
 
 void Renderer::SetScissor(const AABB2& scissor) noexcept {
-    SetScissor(static_cast<unsigned int>(scissor.mins.x)
-               , static_cast<unsigned int>(scissor.mins.y)
-               , static_cast<unsigned int>(scissor.maxs.x - scissor.mins.x)
-               , static_cast<unsigned int>(scissor.maxs.y - scissor.mins.y));
+    SetScissor(static_cast<unsigned int>(scissor.mins.x), static_cast<unsigned int>(scissor.mins.y), static_cast<unsigned int>(scissor.maxs.x - scissor.mins.x), static_cast<unsigned int>(scissor.maxs.y - scissor.mins.y));
 }
 
 void Renderer::SetScissorAsPercent(float x /*= 0.0f*/, float y /*= 0.0f*/, float w /*= 1.0f*/, float h /*= 1.0f*/) noexcept {
@@ -3694,10 +3602,9 @@ void Renderer::SetScissorAsPercent(float x /*= 0.0f*/, float y /*= 0.0f*/, float
     auto width = window_width * w;
     auto height = window_height * h;
     SetScissor(static_cast<unsigned int>(left),
-        static_cast<unsigned int>(top),
-        static_cast<unsigned int>(width),
-        static_cast<unsigned int>(height));
-
+               static_cast<unsigned int>(top),
+               static_cast<unsigned int>(width),
+               static_cast<unsigned int>(height));
 }
 
 void Renderer::SetScissorAndViewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height) noexcept {
@@ -3706,10 +3613,7 @@ void Renderer::SetScissorAndViewport(unsigned int x, unsigned int y, unsigned in
 }
 
 void Renderer::SetScissorAndViewport(const AABB2& scissor_and_viewport) noexcept {
-    SetScissorAndViewport(static_cast<unsigned int>(scissor_and_viewport.mins.x)
-                          , static_cast<unsigned int>(scissor_and_viewport.mins.y)
-                          , static_cast<unsigned int>(scissor_and_viewport.maxs.x - scissor_and_viewport.mins.x)
-                          , static_cast<unsigned int>(scissor_and_viewport.maxs.y - scissor_and_viewport.mins.y));
+    SetScissorAndViewport(static_cast<unsigned int>(scissor_and_viewport.mins.x), static_cast<unsigned int>(scissor_and_viewport.mins.y), static_cast<unsigned int>(scissor_and_viewport.maxs.x - scissor_and_viewport.mins.x), static_cast<unsigned int>(scissor_and_viewport.maxs.y - scissor_and_viewport.mins.y));
 }
 
 void Renderer::SetScissors(const std::vector<AABB2>& scissors) noexcept {
@@ -3717,9 +3621,9 @@ void Renderer::SetScissors(const std::vector<AABB2>& scissors) noexcept {
     dxScissors.resize(scissors.size());
 
     for(std::size_t i = 0; i < scissors.size(); ++i) {
-        dxScissors[i].left   = static_cast<long>(scissors[i].mins.x);
-        dxScissors[i].top    = static_cast<long>(scissors[i].mins.y);
-        dxScissors[i].right  = static_cast<long>(scissors[i].maxs.x);
+        dxScissors[i].left = static_cast<long>(scissors[i].mins.x);
+        dxScissors[i].top = static_cast<long>(scissors[i].mins.y);
+        dxScissors[i].right = static_cast<long>(scissors[i].maxs.x);
         dxScissors[i].bottom = static_cast<long>(scissors[i].maxs.y);
     }
     _rhi_context->GetDxContext()->RSSetScissorRects(static_cast<unsigned int>(dxScissors.size()), dxScissors.data());
@@ -3822,7 +3726,7 @@ void Renderer::RegisterTexturesFromFolder(std::filesystem::path folderpath, bool
     folderpath = FS::canonical(folderpath);
     folderpath.make_preferred();
     auto cb =
-        [this](const FS::path& p) {
+    [this](const FS::path& p) {
         RegisterTexture(p);
     };
     FileUtils::ForEachFileInFolder(folderpath, std::string{}, cb, recursive);
@@ -3862,7 +3766,6 @@ void Renderer::SetTexture(Texture* texture, unsigned int registerIndex /*= 0*/) 
 }
 
 std::unique_ptr<Texture> Renderer::CreateDepthStencil(const RHIDevice& owner, const IntVector2& dimensions) noexcept {
-
     Microsoft::WRL::ComPtr<ID3D11Texture2D> dx_resource{};
 
     D3D11_TEXTURE2D_DESC descDepth;
@@ -3885,7 +3788,6 @@ std::unique_ptr<Texture> Renderer::CreateDepthStencil(const RHIDevice& owner, co
 }
 
 std::unique_ptr<Texture> Renderer::CreateRenderableDepthStencil(const RHIDevice& owner, const IntVector2& dimensions) noexcept {
-
     ID3D11Texture2D* dx_resource = nullptr;
 
     D3D11_TEXTURE2D_DESC descDepth;
@@ -3960,7 +3862,7 @@ Texture* Renderer::Create1DTexture(std::filesystem::path filepath, const BufferU
     namespace FS = std::filesystem;
     if(!FS::exists(filepath)) {
         return GetTexture("__invalid");
-    }    
+    }
     filepath = FS::canonical(filepath);
     filepath.make_preferred();
     Image img = Image(filepath);
@@ -4101,21 +4003,21 @@ Texture* Renderer::Create2DTexture(std::filesystem::path filepath, const BufferU
 
     D3D11_TEXTURE2D_DESC tex_desc{};
 
-    tex_desc.Width = img.GetDimensions().x;     // width... 
-    tex_desc.Height = img.GetDimensions().y;    // ...and height of image in pixels.
-    tex_desc.MipLevels = 1;    // setting to 0 means there's a full chain (or can generate a full chain) - we're immutable, so not allowed
-    tex_desc.ArraySize = 1;    // only one texture (
-    tex_desc.Usage = BufferUsageToD3DUsage(bufferUsage);            // data is set at creation time and won't change
-    tex_desc.Format = ImageFormatToDxgiFormat(imageFormat);      // R8G8B8A8 texture
-    tex_desc.BindFlags = BufferBindUsageToD3DBindFlags(bindUsage);   // we're going to be using this texture as a shader resource
-                                                                     //Make every texture a shader resource
+    tex_desc.Width = img.GetDimensions().x;                        // width...
+    tex_desc.Height = img.GetDimensions().y;                       // ...and height of image in pixels.
+    tex_desc.MipLevels = 1;                                        // setting to 0 means there's a full chain (or can generate a full chain) - we're immutable, so not allowed
+    tex_desc.ArraySize = 1;                                        // only one texture (
+    tex_desc.Usage = BufferUsageToD3DUsage(bufferUsage);           // data is set at creation time and won't change
+    tex_desc.Format = ImageFormatToDxgiFormat(imageFormat);        // R8G8B8A8 texture
+    tex_desc.BindFlags = BufferBindUsageToD3DBindFlags(bindUsage); // we're going to be using this texture as a shader resource
+                                                                   //Make every texture a shader resource
     tex_desc.BindFlags |= BufferBindUsageToD3DBindFlags(BufferBindUsage::Shader_Resource);
-    tex_desc.CPUAccessFlags = CPUAccessFlagFromUsage(bufferUsage);                      // Determines how I can access this resource CPU side (IMMUTABLE, So none)
-    tex_desc.MiscFlags = 0;                            // Extra Flags, of note is;
-                                                       // D3D11_RESOURCE_MISC_GENERATE_MIPS - if we want to use this to be able to generate mips (not compatible with IMMUTABLE)
+    tex_desc.CPUAccessFlags = CPUAccessFlagFromUsage(bufferUsage); // Determines how I can access this resource CPU side (IMMUTABLE, So none)
+    tex_desc.MiscFlags = 0;                                        // Extra Flags, of note is;
+                                                                   // D3D11_RESOURCE_MISC_GENERATE_MIPS - if we want to use this to be able to generate mips (not compatible with IMMUTABLE)
 
-                                                       // If Multisampling - set this up - we're not multisampling, so 1 and 0
-                                                       // (MSAA as far as I know only makes sense for Render Targets, not shader resource textures)
+    // If Multisampling - set this up - we're not multisampling, so 1 and 0
+    // (MSAA as far as I know only makes sense for Render Targets, not shader resource textures)
     tex_desc.SampleDesc.Count = 1;
     tex_desc.SampleDesc.Quality = 0;
 

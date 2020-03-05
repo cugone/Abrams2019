@@ -1,12 +1,12 @@
 #pragma once
 
-#include <array>
-#include <string>
-
+#include "Engine/Math/Quaternion.hpp"
 #include "Engine/Math/Vector2.hpp"
 #include "Engine/Math/Vector3.hpp"
 #include "Engine/Math/Vector4.hpp"
-#include "Engine/Math/Quaternion.hpp"
+
+#include <array>
+#include <string>
 
 class AABB3;
 class Camera3D;
@@ -134,7 +134,7 @@ public:
     friend Vector2 operator*(const Vector2& lhs, const Matrix4& rhs) noexcept;
     Matrix4& operator*=(const Matrix4& rhs) noexcept;
     friend Matrix4 operator*(float lhs, const Matrix4& rhs) noexcept;
-    const float * operator*() const noexcept;
+    const float* operator*() const noexcept;
     float* operator*() noexcept;
 
     bool operator==(const Matrix4& rhs) const noexcept;
@@ -188,9 +188,7 @@ public:
     void SetZComponents(const Vector4& components) noexcept;
     void SetWComponents(const Vector4& components) noexcept;
 
-
 protected:
-
     const float& operator[](std::size_t index) const;
     float& operator[](std::size_t index);
 
@@ -202,27 +200,22 @@ protected:
     static Matrix4 CreateTranslationMatrix(float x, float y, float z) noexcept;
     static Matrix4 CreateScaleMatrix(float scale_x, float scale_y, float scale_z) noexcept;
 
-    explicit Matrix4(float m00, float m01, float m02, float m03,
-                     float m10, float m11, float m12, float m13,
-                     float m20, float m21, float m22, float m23,
-                     float m30, float m31, float m32, float m33) noexcept;
-
+    explicit Matrix4(float m00, float m01, float m02, float m03, float m10, float m11, float m12, float m13, float m20, float m21, float m22, float m23, float m30, float m31, float m32, float m33) noexcept;
 
 private:
-    //[00 01 02 03] [0   1  2  3] 
+    //[00 01 02 03] [0   1  2  3]
     //[10 11 12 13] [4   5  6  7]
     //[20 21 22 23] [8   9 10 11]
     //[30 31 32 33] [12 13 14 15]
 
-    std::array<float, 16> m_indicies{ 1.0f, 0.0f, 0.0f, 0.0f,
-                                      0.0f, 1.0f, 0.0f, 0.0f,
-                                      0.0f, 0.0f, 1.0f, 0.0f,
-                                      0.0f, 0.0f, 0.0f, 1.0f };
+    std::array<float, 16> m_indicies{1.0f, 0.0f, 0.0f, 0.0f,
+                                     0.0f, 1.0f, 0.0f, 0.0f,
+                                     0.0f, 0.0f, 1.0f, 0.0f,
+                                     0.0f, 0.0f, 0.0f, 1.0f};
 
     friend class Quaternion;
-
 };
 
 namespace StringUtils {
-    std::string to_string(const Matrix4& m) noexcept;
+std::string to_string(const Matrix4& m) noexcept;
 }

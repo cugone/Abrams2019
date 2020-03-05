@@ -1,10 +1,10 @@
 #pragma once
 
-#include <string>
+#include <filesystem>
 #include <fstream>
 #include <istream>
 #include <map>
-#include <filesystem>
+#include <string>
 
 class KeyValueParser {
 public:
@@ -27,9 +27,9 @@ public:
 
     //Releases the underlying database to the caller.
     [[nodiscard]] std::map<std::string, std::string>&& Release() noexcept;
+
 protected:
 private:
-
     bool ParseMultiParams(const std::string& input) noexcept;
     void ConvertFromMultiParam(std::string& whole_line) noexcept;
     void CollapseMultiParamWhitespace(std::string& whole_line) noexcept;

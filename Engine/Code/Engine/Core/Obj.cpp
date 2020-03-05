@@ -3,12 +3,11 @@
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/FileUtils.hpp"
 #include "Engine/Core/StringUtils.hpp"
-
 #include "Engine/Profiling/ProfileLogScope.hpp"
 
 #include <numeric>
-#include <string>
 #include <sstream>
+#include <string>
 
 namespace FileUtils {
 
@@ -218,10 +217,10 @@ bool Obj::Parse(const std::filesystem::path& filepath) noexcept {
                     std::string v_str = {"["};
                     v_str += StringUtils::Join(elems, ',');
                     switch(elems.size()) {
-                    case 4: /* DO NOTHING */                        break;
-                    case 3: v_str += ",1.0";                         break;
-                    case 2: v_str += ",0.0,1.0";                     break;
-                    case 1: v_str += ",0.0,0.0,1.0";                 break;
+                    case 4: /* DO NOTHING */ break;
+                    case 3: v_str += ",1.0"; break;
+                    case 2: v_str += ",0.0,1.0"; break;
+                    case 1: v_str += ",0.0,0.0,1.0"; break;
                     default: PrintErrorToDebugger(filepath, "vertex", line_index); return false;
                     }
                     v_str += "]";
@@ -229,20 +228,20 @@ bool Obj::Parse(const std::filesystem::path& filepath) noexcept {
                     v.CalcHomogeneous();
                     _verts.emplace_back(v);
                 } else if(StringUtils::StartsWith(cur_line, "vt ")) {
-                    auto elems = StringUtils::Split(std::string{ std::begin(cur_line) + 3, std::end(cur_line) }, ' ');
-                    std::string v_str = { "[" };
+                    auto elems = StringUtils::Split(std::string{std::begin(cur_line) + 3, std::end(cur_line)}, ' ');
+                    std::string v_str = {"["};
                     v_str += StringUtils::Join(elems, ',');
                     switch(elems.size()) {
-                    case 3: /* DO NOTHING */    break;
-                    case 2: v_str += ",0.0";     break;
+                    case 3: /* DO NOTHING */ break;
+                    case 2: v_str += ",0.0"; break;
                     case 1: v_str += ",0.0,0.0"; break;
                     default: PrintErrorToDebugger(filepath, "texture coordinate", line_index); return false;
                     }
                     v_str += "]";
                     _tex_coords.emplace_back(v_str);
                 } else if(StringUtils::StartsWith(cur_line, "vn ")) {
-                    auto elems = StringUtils::Split(std::string{ std::begin(cur_line) + 3, std::end(cur_line) }, ' ');
-                    std::string v_str = { "[" };
+                    auto elems = StringUtils::Split(std::string{std::begin(cur_line) + 3, std::end(cur_line)}, ' ');
+                    std::string v_str = {"["};
                     v_str += StringUtils::Join(elems, ',');
                     if(elems.size() != 3) {
                         PrintErrorToDebugger(filepath, "vertex normal", line_index);
@@ -256,7 +255,7 @@ bool Obj::Parse(const std::filesystem::path& filepath) noexcept {
                         PrintErrorToDebugger(filepath, "face index", line_index);
                         return false;
                     }
-                    auto tris = StringUtils::Split(std::string{ std::begin(cur_line) + 2, std::end(cur_line) }, ' ');
+                    auto tris = StringUtils::Split(std::string{std::begin(cur_line) + 2, std::end(cur_line)}, ' ');
                     if(tris.size() != 3) {
                         DebuggerPrintf("OBJ implementation does not support non-triangle faces!\n");
                         PrintErrorToDebugger(filepath, "face triplet", line_index);
@@ -270,36 +269,36 @@ bool Obj::Parse(const std::filesystem::path& filepath) noexcept {
                         std::size_t cur_vbo_index = 0;
                         for(auto i = 0u; i < elem_count; ++i) {
                             switch(i) {
-                                case 0:
-                                    if(!elems[0].empty()) {
-                                        std::size_t cur_v = std::stoul(elems[0]);
-                                        cur_vbo_index = cur_v - 1;
-                                        std::get<0>(face) = cur_vbo_index;
-                                        vertex.position = _verts[cur_vbo_index];
-                                        _ibo.push_back(static_cast<unsigned int>(cur_vbo_index));
-                                    } else {
-                                        std::get<0>(face) = static_cast<std::size_t>(-1);
-                                    }
-                                    break;
-                                case 1:
-                                    if(!elems[1].empty()) {
-                                        std::size_t cur_vt = std::stoul(elems[1]);
-                                        std::get<1>(face) = cur_vt;
-                                        vertex.texcoords = Vector2{ _tex_coords[cur_vt - 1] };
-                                    } else {
-                                        std::get<1>(face) = static_cast<std::size_t>(-1);
-                                    }
-                                    break;
-                                case 2:
-                                    if(!elems[2].empty()) {
-                                        std::size_t cur_vn = std::stoul(elems[2]);
-                                        std::get<2>(face) = cur_vn - 1;
-                                        vertex.normal = _normals[cur_vn - 1];
-                                    } else {
-                                        std::get<2>(face) = static_cast<std::size_t>(-1);
-                                    }
-                                    break;
-                                default: break;
+                            case 0:
+                                if(!elems[0].empty()) {
+                                    std::size_t cur_v = std::stoul(elems[0]);
+                                    cur_vbo_index = cur_v - 1;
+                                    std::get<0>(face) = cur_vbo_index;
+                                    vertex.position = _verts[cur_vbo_index];
+                                    _ibo.push_back(static_cast<unsigned int>(cur_vbo_index));
+                                } else {
+                                    std::get<0>(face) = static_cast<std::size_t>(-1);
+                                }
+                                break;
+                            case 1:
+                                if(!elems[1].empty()) {
+                                    std::size_t cur_vt = std::stoul(elems[1]);
+                                    std::get<1>(face) = cur_vt;
+                                    vertex.texcoords = Vector2{_tex_coords[cur_vt - 1]};
+                                } else {
+                                    std::get<1>(face) = static_cast<std::size_t>(-1);
+                                }
+                                break;
+                            case 2:
+                                if(!elems[2].empty()) {
+                                    std::size_t cur_vn = std::stoul(elems[2]);
+                                    std::get<2>(face) = cur_vn - 1;
+                                    vertex.normal = _normals[cur_vn - 1];
+                                } else {
+                                    std::get<2>(face) = static_cast<std::size_t>(-1);
+                                }
+                                break;
+                            default: break;
                             }
                         }
                         _vbo[cur_vbo_index] = vertex;
@@ -326,4 +325,4 @@ void Obj::PrintErrorToDebugger(std::filesystem::path filepath, const std::string
     DebuggerPrintf("%s(%lld): Invalid %s\n", filepath.string().c_str(), line_index, elementType.c_str());
 }
 
-} //End FileUtils
+} // namespace FileUtils

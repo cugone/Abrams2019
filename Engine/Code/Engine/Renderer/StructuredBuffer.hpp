@@ -1,8 +1,7 @@
 #pragma once
 
-#include "Engine/Renderer/Buffer.hpp"
-
 #include "Engine/Core/Vertex3D.hpp"
+#include "Engine/Renderer/Buffer.hpp"
 
 #include <vector>
 
@@ -17,6 +16,7 @@ public:
     void Update(RHIDeviceContext& context, const buffer_t& buffer) noexcept;
 
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> dx_srv{};
+
 protected:
 private:
     std::size_t _element_count = 0;

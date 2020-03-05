@@ -1,26 +1,22 @@
 #include "Engine/UI/Label.hpp"
 
 #include "Engine/Core/KerningFont.hpp"
-
 #include "Engine/Renderer/Camera2D.hpp"
 #include "Engine/Renderer/Renderer.hpp"
-
 #include "Engine/UI/Canvas.hpp"
 #include "Engine/UI/Types.hpp"
 
 namespace UI {
 
 Label::Label(UI::Canvas* parent_canvas)
-    : UI::Element(parent_canvas)
-{
+: UI::Element(parent_canvas) {
     /* DO NOTHING */
 }
 
 Label::Label(UI::Canvas* parent_canvas, KerningFont* font, const std::string& text /*= "Label"*/)
-    : UI::Element(parent_canvas)
-    , _font(font)
-    , _text(text)
-{
+: UI::Element(parent_canvas)
+, _font(font)
+, _text(text) {
     DirtyElement();
     CalcBoundsFromFont(_font);
 }
@@ -113,14 +109,14 @@ void Label::CalcBoundsFromFont(KerningFont* font) {
     float old_width = old_size.x;
     float old_height = old_size.y;
     if(old_width < width && old_height < height) {
-        SetSize(UI::Metric{ UI::Ratio{ _size.ratio }, Vector2{ width, height } });
+        SetSize(UI::Metric{UI::Ratio{_size.ratio}, Vector2{width, height}});
     } else {
         if(old_width < width) {
-            SetSize(UI::Metric{ UI::Ratio{ _size.ratio }, Vector2{ width, old_height } });
+            SetSize(UI::Metric{UI::Ratio{_size.ratio}, Vector2{width, old_height}});
         } else if(old_height < height) {
-            SetSize(UI::Metric{ UI::Ratio{ _size.ratio }, Vector2{ old_width, height } });
+            SetSize(UI::Metric{UI::Ratio{_size.ratio}, Vector2{old_width, height}});
         }
     }
 }
 
-} //End UI
+} // namespace UI

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Engine/Core/Win.hpp"
-
 #include "Engine/RHI/RHITypes.hpp"
 
 #include <functional>
@@ -37,7 +36,7 @@ public:
     void SetDimensions(const IntVector2& new_dimensions) noexcept;
     void SetForegroundWindow() noexcept;
     void SetFocus() noexcept;
-    
+
     void* GetWindowHandle() const noexcept;
     void SetWindowHandle(void* hWnd) noexcept;
 
@@ -54,12 +53,13 @@ protected:
     bool Register() noexcept;
     bool Unregister() noexcept;
     bool Create() noexcept;
+
 private:
     RHIOutputMode _currentDisplayMode = RHIOutputMode::Windowed;
     HWND _hWnd{};
     HDC _hdc{};
     HINSTANCE _hInstance{};
-    std::string _title{ "DEFAULT WINDOW" };
+    std::string _title{"DEFAULT WINDOW"};
     INT _cmdShow{};
     WNDCLASSEX _wc{};
     int _positionX{};

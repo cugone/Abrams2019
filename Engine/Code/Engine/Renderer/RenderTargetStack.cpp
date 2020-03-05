@@ -3,7 +3,6 @@
 #include "Engine/Renderer/DepthStencilState.hpp"
 #include "Engine/Renderer/Renderer.hpp"
 
-
 bool operator==(const RenderTargetStack::Node& lhs, const RenderTargetStack::Node& rhs) {
     return lhs.color_target == rhs.color_target && lhs.depthstencil_target == rhs.depthstencil_target && lhs.view_desc == rhs.view_desc;
 }
@@ -13,16 +12,13 @@ bool operator!=(const RenderTargetStack::Node& lhs, const RenderTargetStack::Nod
 }
 
 RenderTargetStack::RenderTargetStack(Renderer& renderer) noexcept
-    : _renderer(renderer)
-{
+: _renderer(renderer) {
     /* DO NOTHING */
 }
-
 
 [[nodiscard]] bool RenderTargetStack::empty() const {
     return _stack.empty();
 }
-
 
 [[nodiscard]] std::size_t RenderTargetStack::size() const {
     return _stack.size();
@@ -38,7 +34,6 @@ void RenderTargetStack::push(const RenderTargetStack::Node& node) noexcept {
     auto h = static_cast<unsigned int>(top.view_desc.height);
     _renderer.SetViewport(x, y, w, h);
 }
-
 
 void RenderTargetStack::push(RenderTargetStack::Node&& node) noexcept {
     _stack.push(node);

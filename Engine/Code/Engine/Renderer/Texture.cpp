@@ -3,21 +3,19 @@
 #include "Engine/Renderer/DirectX/DX11.hpp"
 
 Texture::Texture(const RHIDevice& device) noexcept
-    : _device(device)
-{
+: _device(device) {
     /* DO NOTHING */
 }
 
 Texture::Texture(Texture&& r_other) noexcept
 : _device(r_other._device)
-,_dimensions(r_other._dimensions)
-,_isLoaded(r_other._isLoaded)
-,_isArray(r_other._isArray)
-,_dsv(std::move(r_other._dsv))
-,_rtv(std::move(r_other._rtv))
-,_srv(std::move(r_other._srv))
-,_uav(std::move(r_other._uav))
-{
+, _dimensions(r_other._dimensions)
+, _isLoaded(r_other._isLoaded)
+, _isArray(r_other._isArray)
+, _dsv(std::move(r_other._dsv))
+, _rtv(std::move(r_other._rtv))
+, _srv(std::move(r_other._srv))
+, _uav(std::move(r_other._uav)) {
     r_other._dsv = nullptr;
     r_other._rtv = nullptr;
     r_other._srv = nullptr;
@@ -28,7 +26,6 @@ Texture::Texture(Texture&& r_other) noexcept
 }
 
 Texture& Texture::operator=(Texture&& rhs) noexcept {
-
     _dimensions = rhs._dimensions;
     _isLoaded = rhs._isLoaded;
     _isArray = rhs._isArray;

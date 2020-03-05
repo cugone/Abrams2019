@@ -1,8 +1,7 @@
 #include "Engine/Core/Clipboard.hpp"
 
 Clipboard::Clipboard(void* hwnd) noexcept
-    : _hwnd(reinterpret_cast<HWND>(hwnd))
-{
+: _hwnd(reinterpret_cast<HWND>(hwnd)) {
     Open(_hwnd);
 }
 

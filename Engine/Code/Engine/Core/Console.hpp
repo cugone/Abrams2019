@@ -4,7 +4,6 @@
 #include "Engine/Core/Rgba.hpp"
 #include "Engine/Core/Stopwatch.hpp"
 #include "Engine/Core/Vertex3D.hpp"
-
 #include "Engine/Math/Vector2.hpp"
 
 #include <functional>
@@ -34,6 +33,7 @@ public:
         void RemoveCommand(const std::string& name);
         void RemoveAllCommands() noexcept;
         const std::vector<Command>& GetCommands() const noexcept;
+
     private:
         Console* _console = nullptr;
         std::vector<Command> _commands{};
@@ -48,7 +48,7 @@ public:
 
     virtual void Initialize() override;
     virtual void BeginFrame() override;
-    virtual void Update([[maybe_unused]]TimeUtils::FPSeconds) override;
+    virtual void Update([[maybe_unused]] TimeUtils::FPSeconds) override;
     virtual void Render() const override;
     virtual void EndFrame() override;
     virtual bool ProcessSystemMessage(const EngineMessage& msg) noexcept override;
@@ -149,13 +149,12 @@ private:
     unsigned int _default_blink_rate = 4u;
     unsigned int _blink_rate = _default_blink_rate;
     Stopwatch _cursor_timer = Stopwatch(_blink_rate);
-    uint8_t _show_cursor             : 1;
-    uint8_t _is_open                 : 1;
-    uint8_t _highlight_mode          : 1;
+    uint8_t _show_cursor : 1;
+    uint8_t _is_open : 1;
+    uint8_t _highlight_mode : 1;
     uint8_t _skip_nonwhitespace_mode : 1;
-    uint8_t _dirty_text              : 1;
-    uint8_t _non_rendering_char      : 1;
-    uint8_t _entryline_changed       : 1;
-    uint8_t _output_changed          : 1;
-
+    uint8_t _dirty_text : 1;
+    uint8_t _non_rendering_char : 1;
+    uint8_t _entryline_changed : 1;
+    uint8_t _output_changed : 1;
 };

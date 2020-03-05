@@ -1,12 +1,9 @@
 #include "Engine/Renderer/DepthStencilState.hpp"
 
 #include "Engine/Core/BuildConfig.hpp"
-
 #include "Engine/Core/ErrorWarningAssert.hpp"
-
-#include "Engine/Renderer/DirectX/DX11.hpp"
-
 #include "Engine/RHI/RHIDevice.hpp"
+#include "Engine/Renderer/DirectX/DX11.hpp"
 
 #include <string>
 
@@ -17,14 +14,12 @@ void DepthStencilState::SetDebugName([[maybe_unused]] const std::string& name) c
 }
 
 DepthStencilState::DepthStencilState(const RHIDevice* device, const XMLElement& element) noexcept
-: DepthStencilState(device, DepthStencilDesc{ element })
-{
+: DepthStencilState(device, DepthStencilDesc{element}) {
     /* DO NOTHING */
 }
 
 DepthStencilState::DepthStencilState(const RHIDevice* device, const DepthStencilDesc& desc) noexcept
-    : _desc(desc)
-{
+: _desc(desc) {
     if(!CreateDepthStencilState(device, desc)) {
         if(_dx_state) {
             _dx_state->Release();
@@ -72,7 +67,7 @@ bool DepthStencilState::CreateDepthStencilState(const RHIDevice* device, const D
     return SUCCEEDED(hr);
 }
 
-DepthStencilDesc::DepthStencilDesc(const XMLElement &element) noexcept {
+DepthStencilDesc::DepthStencilDesc(const XMLElement& element) noexcept {
     if(auto xml_depth = element.FirstChildElement("depth")) {
         DataUtils::ValidateXmlElement(*xml_depth, "depth", "", "", "", "enable,writable,test");
         depth_enabled = DataUtils::ParseXmlAttribute(*xml_depth, "enable", depth_enabled);

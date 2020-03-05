@@ -5,7 +5,6 @@
 #include <iomanip>
 #include <type_traits>
 
-
 bool operator==(const ViewportDesc& a, const ViewportDesc& b) noexcept {
     bool x = MathUtils::IsEquivalent(a.x, b.x);
     bool y = MathUtils::IsEquivalent(a.y, b.y);
@@ -19,7 +18,6 @@ bool operator==(const ViewportDesc& a, const ViewportDesc& b) noexcept {
 bool operator!=(const ViewportDesc& a, const ViewportDesc& b) noexcept {
     return !(a == b);
 }
-
 
 std::ostream& operator<<(std::ostream& out_stream, const GraphicsCardDesc& graphicsCardDesc) noexcept {
     auto name = graphicsCardDesc.Description;
@@ -74,7 +72,7 @@ bool DisplayDescLTComparator::operator()(const DisplayDesc& a, const DisplayDesc
 }
 
 bool DisplayDescGTComparator::operator()(const DisplayDesc& a, const DisplayDesc& b) const noexcept {
-    return DisplayDescLTComparator{}.operator()(b,a);
+    return DisplayDescLTComparator{}.operator()(b, a);
 }
 
 RHIOutputMode& operator++(RHIOutputMode& mode) noexcept {

@@ -32,7 +32,7 @@ private:
     bool Copy_helper(const T& text);
 
     HWND _hwnd{};
-    bool _is_open{ false };
+    bool _is_open{false};
 };
 
 template<typename T>

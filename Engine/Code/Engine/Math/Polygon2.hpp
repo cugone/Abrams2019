@@ -1,18 +1,18 @@
 #pragma once
 
-#include "Engine/Math/Vector2.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Matrix4.hpp"
+#include "Engine/Math/Vector2.hpp"
 
 #include <vector>
 
 class Polygon2 {
 public:
     Polygon2(int sides = 3, const Vector2& position = Vector2::ZERO, const Vector2& half_extents = Vector2(0.5f, 0.5f), float orientationDegrees = 0.0f)
-        : _sides(sides)
-        , _orientationDegrees(orientationDegrees)
-        , _half_extents(half_extents)
-        , _position(position) {
+    : _sides(sides)
+    , _orientationDegrees(orientationDegrees)
+    , _half_extents(half_extents)
+    , _position(position) {
         CalcVerts();
         CalcNormals();
     }

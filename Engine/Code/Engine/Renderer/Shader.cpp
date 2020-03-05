@@ -2,14 +2,12 @@
 
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/StringUtils.hpp"
-
+#include "Engine/RHI/RHIDevice.hpp"
 #include "Engine/Renderer/ConstantBuffer.hpp"
 #include "Engine/Renderer/RasterState.hpp"
 #include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Renderer/Sampler.hpp"
 #include "Engine/Renderer/ShaderProgram.hpp"
-
-#include "Engine/RHI/RHIDevice.hpp"
 
 #include <algorithm>
 #include <filesystem>
@@ -23,20 +21,17 @@ Shader::Shader(Renderer& renderer, ShaderProgram* shaderProgram /*= nullptr*/, D
 , _depth_stencil_state(depthStencil)
 , _raster_state(rasterState)
 , _blend_state(blendState)
-, _sampler(sampler)
-{
+, _sampler(sampler) {
     std::size_t count = renderer.GetShaderCount();
     _name += "_" + std::to_string(count);
 }
 
 Shader::Shader(Renderer& renderer, const XMLElement& element) noexcept
-    : _renderer(renderer)
-{
+: _renderer(renderer) {
     std::size_t count = renderer.GetShaderCount();
     _name += "_" + std::to_string(count);
 
     LoadFromXml(element);
-
 }
 
 const std::string& Shader::GetName() const noexcept {
@@ -74,7 +69,6 @@ std::vector<std::reference_wrapper<ConstantBuffer>> Shader::GetConstantBuffers()
 }
 
 bool Shader::LoadFromXml(const XMLElement& element) noexcept {
-
     namespace FS = std::filesystem;
     DataUtils::ValidateXmlElement(element, "shader", "shaderprogram", "name", "depth,stencil,blends,raster,sampler,cbuffers");
 
@@ -102,11 +96,10 @@ bool Shader::LoadFromXml(const XMLElement& element) noexcept {
         if(StringUtils::StartsWith(p.string(), "__")) {
             const auto ss = std::string{"Intrinsic ShaderProgram referenced in Shader file \""} + _name + "\" does not already exist.";
             ERROR_AND_DIE(ss.c_str());
-        }
-        else {
+        } else {
             const auto& children = DataUtils::GetChildElementNames(*xml_SP);
             if(std::find(std::begin(children), std::end(children), "pipelinestages") == std::end(children)) {
-                const auto ss = std::string{"User-defined ShaderProgram referenced in Shader file \""} +_name + "\" must declare pipelinestages in use.";
+                const auto ss = std::string{"User-defined ShaderProgram referenced in Shader file \""} + _name + "\" must declare pipelinestages in use.";
                 ERROR_AND_DIE(ss.c_str());
             }
         }

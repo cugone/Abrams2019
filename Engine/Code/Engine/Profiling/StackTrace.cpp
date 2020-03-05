@@ -5,8 +5,8 @@
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Core/Win.hpp"
 
-#include <cstdint>
 #include <algorithm>
+#include <cstdint>
 #include <functional>
 #include <iostream>
 #include <ostream>
@@ -14,7 +14,7 @@
 #include <string_view>
 
 #ifdef PROFILE_BUILD
-#include <DbgHelp.h>
+    #include <DbgHelp.h>
 
 static constexpr auto MAX_FILENAME_LENGTH = 1024u;
 static constexpr auto MAX_CALLSTACK_LINES = 128ul;
@@ -23,11 +23,11 @@ static constexpr auto MAX_SYMBOL_NAME_LENGTH = 128u;
 static constexpr auto MAX_DEPTH = 128u;
 static constexpr auto SYMBOL_INFO_SIZE = sizeof(SYMBOL_INFO);
 
-using SymSetOptions_t = bool(__stdcall *)(DWORD SymOptions);
-using SymInitialize_t = bool(__stdcall *)(HANDLE hProcess, PCSTR UserSearchPath, BOOL fInvadeProcess);
-using SymCleanup_t = bool(__stdcall *)(HANDLE hProcess);
-using SymFromAddr_t = bool(__stdcall *)(HANDLE hProcess, DWORD64 Address, PDWORD64 Displacement, PSYMBOL_INFO Symbol);
-using SymGetLineFromAddr64_t = bool(__stdcall *)(HANDLE hProcess, DWORD64 qwAddr, PDWORD pdwDisplacement, PIMAGEHLP_LINE64 Line64);
+using SymSetOptions_t = bool(__stdcall*)(DWORD SymOptions);
+using SymInitialize_t = bool(__stdcall*)(HANDLE hProcess, PCSTR UserSearchPath, BOOL fInvadeProcess);
+using SymCleanup_t = bool(__stdcall*)(HANDLE hProcess);
+using SymFromAddr_t = bool(__stdcall*)(HANDLE hProcess, DWORD64 Address, PDWORD64 Displacement, PSYMBOL_INFO Symbol);
+using SymGetLineFromAddr64_t = bool(__stdcall*)(HANDLE hProcess, DWORD64 qwAddr, PDWORD pdwDisplacement, PIMAGEHLP_LINE64 Line64);
 
 static HMODULE debugHelpModule;
 static HANDLE process;
@@ -45,13 +45,12 @@ std::shared_mutex StackTrace::_cs{};
 std::atomic_bool StackTrace::_did_init(false);
 
 StackTrace::StackTrace() noexcept
-    : StackTrace(1ul, 30ul)
-{
+: StackTrace(1ul, 30ul) {
     /* DO NOTHING */
 }
 
-StackTrace::StackTrace([[maybe_unused]]unsigned long framesToSkip,
-                       [[maybe_unused]]unsigned long framesToCapture) noexcept {
+StackTrace::StackTrace([[maybe_unused]] unsigned long framesToSkip,
+                       [[maybe_unused]] unsigned long framesToCapture) noexcept {
 #ifdef PROFILE_BUILD
     if(!_refs) {
         Initialize();
@@ -63,7 +62,7 @@ StackTrace::StackTrace([[maybe_unused]]unsigned long framesToSkip,
         return;
     }
     _frame_count = (std::min)(count, MAX_FRAMES_PER_CALLSTACK);
-    
+
     GetLines(this, MAX_CALLSTACK_LINES);
 #else
     DebuggerPrintf("StackTrace unavailable. Attempting to call StackTrace in non-profile build. \n");
@@ -117,8 +116,8 @@ void StackTrace::Initialize() noexcept {
 #endif
 }
 
-void StackTrace::GetLines([[maybe_unused]]StackTrace* st,
-                          [[maybe_unused]]unsigned long max_lines) noexcept {
+void StackTrace::GetLines([[maybe_unused]] StackTrace* st,
+                          [[maybe_unused]] unsigned long max_lines) noexcept {
 #ifndef PROFILE_BUILD
     return;
 #else

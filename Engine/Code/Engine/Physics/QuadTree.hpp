@@ -1,12 +1,10 @@
 #pragma once
 
 #include "Engine/Core/ErrorWarningAssert.hpp"
-
-#include "Engine/Profiling/ProfileLogScope.hpp"
-
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Vector2.hpp"
+#include "Engine/Profiling/ProfileLogScope.hpp"
 
 #include <algorithm>
 #include <array>
@@ -17,7 +15,6 @@
 template<typename T>
 class QuadTree {
 public:
-
     QuadTree() = default;
     explicit QuadTree(const AABB2& bounds);
     QuadTree(const QuadTree& other) = delete;
@@ -33,16 +30,17 @@ public:
 
     void SetWorldBounds(const AABB2& bounds) noexcept;
     std::vector<std::add_pointer_t<T>> Query(const AABB2& area) noexcept;
+
 protected:
 private:
     explicit QuadTree(QuadTree<T>* parent, const AABB2& bounds);
     explicit QuadTree(QuadTree<T>* parent, const AABB2& bounds, const std::vector<T>& elements);
 
     enum class ChildID {
-        BottomLeft
-        , TopLeft
-        , TopRight
-        , BottomRight
+        BottomLeft,
+        TopLeft,
+        TopRight,
+        BottomRight
     };
 
     void DebugRender_helper(Renderer& renderer) const;
@@ -76,9 +74,9 @@ private:
 
     QuadTree<T>* m_parent = nullptr;
     Vector2 m_half_extents = Vector2::ONE;
-    AABB2 m_bounds = AABB2{ -m_half_extents, m_half_extents };
+    AABB2 m_bounds = AABB2{-m_half_extents, m_half_extents};
     std::array<std::unique_ptr<QuadTree>, 4> m_children{};
-    const int m_maxElementsBeforeSubdivide = 2;    
+    const int m_maxElementsBeforeSubdivide = 2;
     const int m_maxChildren = 4;
     const int m_maxDepth = 8;
     std::vector<std::add_pointer_t<T>> m_elements{};
@@ -89,7 +87,7 @@ std::vector<std::add_pointer_t<T>> QuadTree<T>::Query(const AABB2& area) noexcep
     std::vector<std::add_pointer_t<T>> result{};
     if(MathUtils::DoAABBsOverlap(area, m_bounds)) {
         if(!IsLeaf(*this)) {
-            for (const auto& c : m_children) {
+            for(const auto& c : m_children) {
                 auto inner_result = c->Query(area);
                 result.insert(std::end(result), std::begin(inner_result), std::end(inner_result));
             }
@@ -148,22 +146,22 @@ void QuadTree<T>::SetWorldBounds(const AABB2& bounds) noexcept {
         bl->m_half_extents = m_half_extents * 0.5f;
         bl->m_bounds.mins = -m_half_extents;
         bl->m_bounds.maxs = m_half_extents;
-        bl->m_bounds.Translate(GetParentBounds().CalcCenter() + Vector2{ -m_half_extents.x, +m_half_extents.y });
+        bl->m_bounds.Translate(GetParentBounds().CalcCenter() + Vector2{-m_half_extents.x, +m_half_extents.y});
         auto* tl = GetChild(ChildID::TopLeft);
         tl->m_half_extents = m_half_extents * 0.5f;
         tl->m_bounds.mins = -m_half_extents;
         tl->m_bounds.maxs = m_half_extents;
-        tl->m_bounds.Translate(GetParentBounds().CalcCenter() + Vector2{ -m_half_extents.x, -m_half_extents.y });
+        tl->m_bounds.Translate(GetParentBounds().CalcCenter() + Vector2{-m_half_extents.x, -m_half_extents.y});
         auto* tr = GetChild(ChildID::TopRight);
         tr->m_half_extents = m_half_extents * 0.5f;
         tr->m_bounds.mins = -m_half_extents;
         tr->m_bounds.maxs = m_half_extents;
-        tr->m_bounds.Translate(GetParentBounds().CalcCenter() + Vector2{ +m_half_extents.x, -m_half_extents.y });
+        tr->m_bounds.Translate(GetParentBounds().CalcCenter() + Vector2{+m_half_extents.x, -m_half_extents.y});
         auto* br = GetChild(ChildID::BottomRight);
         br->m_half_extents = m_half_extents * 0.5f;
         br->m_bounds.mins = -m_half_extents;
         br->m_bounds.maxs = m_half_extents;
-        br->m_bounds.Translate(GetParentBounds().CalcCenter() + Vector2{ +m_half_extents.x, +m_half_extents.y });
+        br->m_bounds.Translate(GetParentBounds().CalcCenter() + Vector2{+m_half_extents.x, +m_half_extents.y});
         for(auto& child : m_children) {
             if(child) {
                 child->SetWorldBounds(child->m_bounds);
@@ -206,7 +204,7 @@ void QuadTree<T>::Add(std::add_pointer_t<T> new_element) {
 template<typename T>
 void QuadTree<T>::Add(std::vector<std::add_pointer_t<T>> new_elements) {
     m_elements.reserve(m_elements.size() + new_elements.size());
-    for (const auto& elem : new_elements) {
+    for(const auto& elem : new_elements) {
         Add(elem);
     }
 }
@@ -264,30 +262,26 @@ void QuadTree<T>::CreateChild(const ChildID& id) {
     auto bounds = m_bounds;
     bounds.ScalePadding(0.50f, 0.50f);
     switch(id) {
-    case ChildID::BottomLeft:
-    {
+    case ChildID::BottomLeft: {
         const auto tl_corner = m_bounds.CalcCenter() + Vector2(-m_half_extents.x, 0.0f);
         const auto pos = tl_corner + Vector2(m_half_extents.x, m_half_extents.y) * 0.5f;
         bounds.SetPosition(pos);
         m_children[index] = std::move(std::unique_ptr<QuadTree<T>>(new QuadTree<T>(this, bounds)));
         break;
     }
-    case ChildID::BottomRight:
-    {
+    case ChildID::BottomRight: {
         const auto tl_corner = m_bounds.CalcCenter();
         const auto pos = tl_corner + m_half_extents * 0.50f;
         bounds.SetPosition(pos);
         m_children[index] = std::move(std::unique_ptr<QuadTree<T>>(new QuadTree<T>(this, bounds)));
         break;
     }
-    case ChildID::TopLeft:
-    {
+    case ChildID::TopLeft: {
         //bounds defaults to TopLeft by virtue of scale padding.
         m_children[index] = std::move(std::unique_ptr<QuadTree<T>>(new QuadTree<T>(this, bounds)));
         break;
     }
-    case ChildID::TopRight:
-    {
+    case ChildID::TopRight: {
         const auto tl_corner = m_bounds.CalcCenter() + Vector2(0.0f, -m_half_extents.y);
         const auto pos = tl_corner + m_half_extents * 0.50f;
         bounds.SetPosition(pos);
@@ -313,29 +307,25 @@ void QuadTree<T>::SetChild(const ChildID& id, std::unique_ptr<QuadTree<T>> child
 
 template<typename T>
 QuadTree<T>::QuadTree(const AABB2& bounds)
-: m_half_extents{ bounds.CalcDimensions() * 0.5f }
-, m_bounds{ bounds }
-{
+: m_half_extents{bounds.CalcDimensions() * 0.5f}
+, m_bounds{bounds} {
     /* DO NOTHING */
 }
 
 template<typename T>
 QuadTree<T>::QuadTree(QuadTree<T>* parent, const AABB2& bounds)
-    : m_parent(parent)
-    , m_half_extents(bounds.CalcDimensions() * 0.5f)
-    , m_bounds(bounds)
-{
+: m_parent(parent)
+, m_half_extents(bounds.CalcDimensions() * 0.5f)
+, m_bounds(bounds) {
     /* DO NOTHING */
-    
 }
 
 template<typename T>
 QuadTree<T>::QuadTree(QuadTree<T>* parent, const AABB2& bounds, const std::vector<T>& elements)
-    : m_parent(parent)
-    , m_half_extents(bounds.CalcDimensions() * 0.5f)
-    , m_bounds(bounds)
-    , m_elements(elements)
-{
+: m_parent(parent)
+, m_half_extents(bounds.CalcDimensions() * 0.5f)
+, m_bounds(bounds)
+, m_elements(elements) {
     /* DO NOTHING */
 }
 
@@ -430,7 +420,7 @@ bool QuadTree<T>::NeedsUnSubdivide() const {
 
 template<typename T>
 bool QuadTree<T>::IsElementIntersectingMe(std::add_pointer_t<T> new_element) const {
-    if (new_element) {
+    if(new_element) {
         return MathUtils::DoOBBsOverlap(OBB2(GetBounds()), OBB2(new_element->GetBounds()));
     }
     return false;
@@ -452,4 +442,3 @@ std::vector<QuadTree<T>*> QuadTree<T>::GetNodesByElement(const T& object) const 
     }
     return result;
 }
-

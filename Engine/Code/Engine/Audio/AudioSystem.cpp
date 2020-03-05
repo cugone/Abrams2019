@@ -1,21 +1,18 @@
 #include "Engine/Audio/AudioSystem.hpp"
 
-#include "Engine/Core/BuildConfig.hpp"
-#include "Engine/Core/FileUtils.hpp"
-#include "Engine/Core/FileLogger.hpp"
-#include "Engine/Core/ErrorWarningAssert.hpp"
-
 #include "Engine/Audio/Wav.hpp"
-
+#include "Engine/Core/BuildConfig.hpp"
+#include "Engine/Core/ErrorWarningAssert.hpp"
+#include "Engine/Core/FileLogger.hpp"
+#include "Engine/Core/FileUtils.hpp"
 #include "Engine/Input/InputSystem.hpp"
 
 #include <algorithm>
 
 AudioSystem::AudioSystem(FileLogger& fileLogger, std::size_t max_channels /*= 1024*/)
-    : EngineSubsystem()
-    , _fileLogger(&fileLogger)
-    , _max_channels(max_channels)
-{
+: EngineSubsystem()
+, _fileLogger(&fileLogger)
+, _max_channels(max_channels) {
     bool co_init_succeeded = SUCCEEDED(::CoInitializeEx(nullptr, COINIT_MULTITHREADED));
     GUARANTEE_OR_DIE(co_init_succeeded, "Failed to setup Audio System.");
     bool xaudio2_create_succeeded = SUCCEEDED(::XAudio2Create(&_xaudio2));
@@ -24,12 +21,11 @@ AudioSystem::AudioSystem(FileLogger& fileLogger, std::size_t max_channels /*= 10
 }
 
 AudioSystem::~AudioSystem() noexcept {
-
     {
-    std::scoped_lock<std::mutex> lock(_cs);
-    for(auto& channel : _active_channels) {
-        channel->Stop();
-    }
+        std::scoped_lock<std::mutex> lock(_cs);
+        for(auto& channel : _active_channels) {
+            channel->Stop();
+        }
     }
     {
         bool done_cleanup = false;
@@ -161,7 +157,7 @@ void AudioSystem::BeginFrame() {
     /* DO NOTHING */
 }
 
-void AudioSystem::Update([[maybe_unused]]TimeUtils::FPSeconds deltaSeconds) {
+void AudioSystem::Update([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) {
     /* DO NOTHING */
 }
 
@@ -283,21 +279,18 @@ void AudioSystem::RegisterWavFile(std::filesystem::path filepath) noexcept {
         }
     }
     switch(wav_result) {
-        case FileUtils::Wav::WAV_ERROR_NOT_A_WAV:
-        {
-            DebuggerPrintf("%s is not a .wav file.\n", filepath.string().c_str());
-            break;
-        }
-        case FileUtils::Wav::WAV_ERROR_BAD_FILE:
-        {
-            DebuggerPrintf("%s is improperly formatted.\n", filepath.string().c_str());
-            break;
-        }
-        default:
-        {
-            DebuggerPrintf("Unknown error attempting to load %s\n", filepath.string().c_str());
-            break;
-        }
+    case FileUtils::Wav::WAV_ERROR_NOT_A_WAV: {
+        DebuggerPrintf("%s is not a .wav file.\n", filepath.string().c_str());
+        break;
+    }
+    case FileUtils::Wav::WAV_ERROR_BAD_FILE: {
+        DebuggerPrintf("%s is improperly formatted.\n", filepath.string().c_str());
+        break;
+    }
+    default: {
+        DebuggerPrintf("Unknown error attempting to load %s\n", filepath.string().c_str());
+        break;
+    }
     }
 }
 
@@ -310,8 +303,7 @@ void STDMETHODCALLTYPE AudioSystem::Channel::VoiceCallback::OnBufferEnd(void* pB
 }
 
 AudioSystem::Channel::Channel(AudioSystem& audioSystem) noexcept
-: _audio_system(&audioSystem)
-{
+: _audio_system(&audioSystem) {
     static VoiceCallback vcb;
     _buffer.pContext = this;
     auto fmt = reinterpret_cast<const WAVEFORMATEX*>(&(_audio_system->GetFormat()));
@@ -361,8 +353,7 @@ void AudioSystem::Channel::SetVolume(float newVolume) noexcept {
 std::size_t AudioSystem::Sound::_id = 0;
 
 AudioSystem::Sound::Sound(AudioSystem& audiosystem, std::filesystem::path filepath)
-    : _audio_system(&audiosystem)
-{
+: _audio_system(&audiosystem) {
     namespace FS = std::filesystem;
     filepath = FS::canonical(filepath);
     filepath.make_preferred();
@@ -385,8 +376,8 @@ void AudioSystem::Sound::AddChannel(Channel* channel) noexcept {
 void AudioSystem::Sound::RemoveChannel(Channel* channel) noexcept {
     std::scoped_lock<std::mutex> lock(_cs);
     _channels.erase(std::remove_if(std::begin(_channels), std::end(_channels),
-                                   [channel](Channel* c)->bool { return c == channel; })
-                    , std::end(_channels));
+                                   [channel](Channel* c) -> bool { return c == channel; }),
+                    std::end(_channels));
 }
 
 const std::size_t AudioSystem::Sound::GetId() const noexcept {

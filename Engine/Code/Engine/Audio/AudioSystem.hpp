@@ -6,22 +6,21 @@
 /* https://www.youtube.com/watch?v=T51Eqbbald4  */
 /************************************************/
 
+#include "Engine/Audio/Wav.hpp"
 #include "Engine/Core/EngineSubsystem.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
-#include "Engine/Audio/Wav.hpp"
+#include "Engine/Core/Win.hpp"
 
-#include <iomanip>
+#include <Xaudio2.h>
 #include <filesystem>
 #include <functional>
+#include <iomanip>
 #include <map>
 #include <memory>
 #include <mutex>
 #include <sstream>
 #include <vector>
-#include <Xaudio2.h>
 #include <x3daudio.h>
-
-#include "Engine/Core/Win.hpp"
 
 #pragma comment(lib, "Xaudio2.lib")
 
@@ -34,12 +33,14 @@ class FileLogger;
 class AudioSystem : public EngineSubsystem {
 private:
     class Channel;
+
 public:
     class EngineCallback : public IXAudio2EngineCallback {
     public:
-        virtual ~EngineCallback() {}
-        virtual void STDMETHODCALLTYPE OnProcessingPassStart() override {};
-        virtual void STDMETHODCALLTYPE OnProcessingPassEnd() override {};
+        virtual ~EngineCallback() {
+        }
+        virtual void STDMETHODCALLTYPE OnProcessingPassStart() override{};
+        virtual void STDMETHODCALLTYPE OnProcessingPassEnd() override{};
         virtual void STDMETHODCALLTYPE OnCriticalError(HRESULT error) override;
     };
     class Sound {
@@ -50,6 +51,7 @@ public:
         const std::size_t GetId() const noexcept;
         const std::size_t GetCount() const noexcept;
         const FileUtils::Wav* const GetWav() const noexcept;
+
     private:
         static std::size_t _id;
         AudioSystem* _audio_system{};
@@ -58,25 +60,28 @@ public:
         std::vector<Channel*> _channels{};
         std::mutex _cs{};
     };
+
 private:
     class Channel {
     public:
         class VoiceCallback : public IXAudio2VoiceCallback {
         public:
-            virtual ~VoiceCallback() {}
-            virtual void STDMETHODCALLTYPE OnVoiceProcessingPassStart(uint32_t /*bytesRequired*/) override {};
-            virtual void STDMETHODCALLTYPE OnVoiceProcessingPassEnd() override {};
-            virtual void STDMETHODCALLTYPE OnStreamEnd() override {};
-            virtual void STDMETHODCALLTYPE OnBufferStart(void* /*pBufferContext*/) override {};
+            virtual ~VoiceCallback() {
+            }
+            virtual void STDMETHODCALLTYPE OnVoiceProcessingPassStart(uint32_t /*bytesRequired*/) override{};
+            virtual void STDMETHODCALLTYPE OnVoiceProcessingPassEnd() override{};
+            virtual void STDMETHODCALLTYPE OnStreamEnd() override{};
+            virtual void STDMETHODCALLTYPE OnBufferStart(void* /*pBufferContext*/) override{};
             virtual void STDMETHODCALLTYPE OnBufferEnd(void* pBufferContext) override;
-            virtual void STDMETHODCALLTYPE OnLoopEnd(void* /*pBufferContext*/) override {};
-            virtual void STDMETHODCALLTYPE OnVoiceError(void* /*pBufferContext*/, HRESULT /*Error*/) override {};
+            virtual void STDMETHODCALLTYPE OnLoopEnd(void* /*pBufferContext*/) override{};
+            virtual void STDMETHODCALLTYPE OnVoiceError(void* /*pBufferContext*/, HRESULT /*Error*/) override{};
         };
         explicit Channel(AudioSystem& audioSystem) noexcept;
         ~Channel() noexcept;
         void Play(Sound& snd) noexcept;
         void Stop() noexcept;
         void SetVolume(float newVolume) noexcept;
+
     private:
         XAUDIO2_BUFFER _buffer{};
         IXAudio2SourceVoice* _voice = nullptr;
@@ -89,6 +94,7 @@ private:
         std::vector<Sound*> sounds{};
         void SetVolume(float newVolume) noexcept;
     };
+
 public:
     explicit AudioSystem(FileLogger& fileLogger, std::size_t max_channels = 1024);
     AudioSystem(const AudioSystem& other) = delete;
@@ -98,7 +104,7 @@ public:
     virtual ~AudioSystem() noexcept;
     virtual void Initialize() override;
     virtual void BeginFrame() override;
-    virtual void Update([[maybe_unused]]TimeUtils::FPSeconds) override;
+    virtual void Update([[maybe_unused]] TimeUtils::FPSeconds) override;
     virtual void Render() const override;
     virtual void EndFrame() override;
     virtual bool ProcessSystemMessage(const EngineMessage& msg) noexcept override;
@@ -122,6 +128,7 @@ public:
     void SetEngineCallback(EngineCallback* callback) noexcept;
     const WAVEFORMATEXTENSIBLE& GetFormat() const noexcept;
     FileUtils::Wav::WavFormatChunk GetLoadedWavFileFormat() const noexcept;
+
 protected:
 private:
     void DeactivateChannel(Channel& channel) noexcept;

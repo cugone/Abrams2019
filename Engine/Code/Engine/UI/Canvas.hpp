@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Engine/Renderer/Camera2D.hpp"
-
 #include "Engine/UI/Element.hpp"
 
 class Texture;
@@ -21,15 +20,15 @@ public:
 
     template<typename T>
     T* CreateChild();
-    template<typename T, typename ...Args>
+    template<typename T, typename... Args>
     T* CreateChild(Args&&... args);
     template<typename T>
     T* CreateChildBefore(UI::Element* youngerSibling);
-    template<typename T, typename ...Args>
+    template<typename T, typename... Args>
     T* CreateChildBefore(UI::Element* youngerSibling, Args&&... args);
     template<typename T>
     T* CreateChildAfter(UI::Element* olderSibling);
-    template<typename T, typename ...Args>
+    template<typename T, typename... Args>
     T* CreateChildAfter(UI::Element* olderSibling, Args&&... args);
 
 protected:
@@ -50,7 +49,7 @@ T* UI::Canvas::CreateChild() {
     return dynamic_cast<T*>(Element::CreateChild<T>(this));
 }
 
-template<typename T, typename ...Args>
+template<typename T, typename... Args>
 T* UI::Canvas::CreateChild(Args&&... args) {
     return dynamic_cast<T*>(Element::CreateChild<T>(this, std::forward<Args>(args)...));
 }
@@ -60,7 +59,7 @@ T* UI::Canvas::CreateChildBefore(UI::Element* youngerSibling) {
     return dynamic_cast<T*>(Element::CreateChildBefore<T>(this, youngerSibling));
 }
 
-template<typename T, typename ...Args>
+template<typename T, typename... Args>
 T* UI::Canvas::CreateChildBefore(UI::Element* youngerSibling, Args&&... args) {
     return dynamic_cast<T*>(Element::CreateChildBefore<T>(this, youngerSibling, std::forward<Args>(args)...));
 }
@@ -69,9 +68,9 @@ template<typename T>
 T* UI::Canvas::CreateChildAfter(UI::Element* olderSibling) {
     return dynamic_cast<T*>(Element::CreateChildAfter<T>(this, olderSibling));
 }
-template<typename T, typename ...Args>
+template<typename T, typename... Args>
 T* UI::Canvas::CreateChildAfter(UI::Element* olderSibling, Args&&... args) {
     return dynamic_cast<T*>(Element::CreateChildAfter<T>(this, olderSibling, std::forward<Args>(args)...));
 }
 
-} //End UI
+} // namespace UI

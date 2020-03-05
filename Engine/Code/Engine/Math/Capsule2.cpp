@@ -6,35 +6,30 @@ const Capsule2 Capsule2::UNIT_CENTERED_HORIZONTAL(-0.5f, 0.0f, 0.5f, 0.0f, 1.0f)
 const Capsule2 Capsule2::UNIT_CENTERED_VERTICAL(0.0f, -0.5f, 0.0f, 0.5f, 1.0f);
 
 Capsule2::Capsule2(const LineSegment2& line, float radius) noexcept
-    : line(line)
-    , radius(radius)
-{
+: line(line)
+, radius(radius) {
     /* DO NOTHING */
 }
 Capsule2::Capsule2(float startX, float startY, float endX, float endY, float radius) noexcept
-    : line(startX, startY, endX, endY)
-    , radius(radius)
-{
+: line(startX, startY, endX, endY)
+, radius(radius) {
     /* DO NOTHING */
 }
 Capsule2::Capsule2(const Vector2& start_position, const Vector2& end_position, float radius) noexcept
-    : line(start_position, end_position)
-    , radius(radius)
-{
+: line(start_position, end_position)
+, radius(radius) {
     /* DO NOTHING */
 }
 
 Capsule2::Capsule2(const Vector2& start_position, const Vector2& direction, float length, float radius) noexcept
-    : line(start_position, direction, length)
-    , radius(radius)
-{
+: line(start_position, direction, length)
+, radius(radius) {
     /* DO NOTHING */
 }
 
 Capsule2::Capsule2(const Vector2& start_position, float angle_degrees, float length, float radius) noexcept
-    : line(start_position, angle_degrees, length)
-    , radius(radius)
-{
+: line(start_position, angle_degrees, length)
+, radius(radius) {
     /* DO NOTHING */
 }
 

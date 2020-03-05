@@ -14,4 +14,4 @@ bool Address::operator==(const Address& rhs) const noexcept {
     return address.ipv4 == rhs.address.ipv4 && address.ipv6 == rhs.address.ipv6 && port == rhs.port;
 }
 
-}
+} // namespace Net

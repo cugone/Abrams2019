@@ -4,7 +4,6 @@
 
 class Plane3 {
 public:
-
     Vector3 normal = Vector3::Z_AXIS;
     float dist = 0.0f;
 

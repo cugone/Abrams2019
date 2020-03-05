@@ -12,4 +12,4 @@ struct RamDesc {
 
 RamDesc GetRamDesc() noexcept;
 
-}
+} // namespace System::Ram

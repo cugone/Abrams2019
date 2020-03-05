@@ -1,12 +1,9 @@
 #include "Engine/Renderer/Sampler.hpp"
 
 #include "Engine/Core/BuildConfig.hpp"
-
 #include "Engine/Core/ErrorWarningAssert.hpp"
-
-#include "Engine/Renderer/DirectX/DX11.hpp"
-
 #include "Engine/RHI/RHIDevice.hpp"
+#include "Engine/Renderer/DirectX/DX11.hpp"
 
 void Sampler::SetDebugName([[maybe_unused]] const std::string& name) const noexcept {
 #ifdef RENDER_DEBUG
@@ -15,7 +12,7 @@ void Sampler::SetDebugName([[maybe_unused]] const std::string& name) const noexc
 }
 
 Sampler::Sampler(const RHIDevice* device, const XMLElement& element) noexcept
-    : Sampler(device, SamplerDesc{ element }) {
+: Sampler(device, SamplerDesc{element}) {
     /* DO NOTHING */
 }
 
@@ -41,7 +38,6 @@ ID3D11SamplerState* Sampler::GetDxSampler() const noexcept {
 }
 
 bool Sampler::CreateSamplerState(const RHIDevice* device, const SamplerDesc& desc /*= SamplerDesc()*/) noexcept {
-
     D3D11_SAMPLER_DESC dx_desc{};
 
     dx_desc.Filter = FilterModeToD3DFilter(desc.min_filter, desc.mag_filter, desc.mip_filter, desc.compare_mode);
@@ -105,7 +101,6 @@ SamplerDesc::SamplerDesc(const XMLElement& element) noexcept {
             compare_mode = FilterComparisonModeFromString(compare_str);
         }
         if(auto xml_textureAddress = xml_sampler->FirstChildElement("textureAddress")) {
-
             DataUtils::ValidateXmlElement(*xml_textureAddress, "textureAddress", "", "", "", "u,v,w");
 
             std::string str = "wrap";
@@ -119,7 +114,6 @@ SamplerDesc::SamplerDesc(const XMLElement& element) noexcept {
             str = "wrap";
             str = DataUtils::ParseXmlAttribute(*xml_textureAddress, "w", str);
             WaddressMode = TextureAddressModeFromString(str);
-
         }
         if(auto xml_lod = xml_sampler->FirstChildElement("lod")) {
             DataUtils::ValidateXmlElement(*xml_lod, "lod", "", "", "", "min,max,mipmapbias");
@@ -128,5 +122,4 @@ SamplerDesc::SamplerDesc(const XMLElement& element) noexcept {
             mipmapLODBias = DataUtils::ParseXmlAttribute(*xml_lod, "mipmapbias", mipmapLODBias);
         }
     }
-
 }

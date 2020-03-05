@@ -2,11 +2,8 @@
 
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/KerningFont.hpp"
-
 #include "Engine/Math/MathUtils.hpp"
-
 #include "Engine/Renderer/Renderer.hpp"
-
 #include "Engine/UI/Canvas.hpp"
 
 #include <sstream>
@@ -14,8 +11,7 @@
 namespace UI {
 
 Element::Element(UI::Canvas* parent_canvas)
-    : _parent_canvas(parent_canvas)
-{
+: _parent_canvas(parent_canvas) {
     /* DO NOTHING */
 }
 
@@ -63,11 +59,11 @@ UI::Element* Element::AddChildAfter(UI::Element* child, UI::Element* older_sibli
 void Element::RemoveChild(Element* child) {
     _dirty_bounds = true;
     _children.erase(
-        std::remove_if(_children.begin(), _children.end(),
-            [&child](UI::Element* c) {
-        return child == c;
-    }),
-        _children.end());
+    std::remove_if(_children.begin(), _children.end(),
+                   [&child](UI::Element* c) {
+                       return child == c;
+                   }),
+    _children.end());
     ReorderAllChildren();
     CalcBoundsForMeThenMyChildren();
 }
@@ -149,11 +145,11 @@ void Element::SetPosition(const Vector4& position) {
 }
 
 void Element::SetPositionRatio(const Vector2& ratio) {
-    Element::SetPosition(Vector4{ ratio, _position.GetZW() });
+    Element::SetPosition(Vector4{ratio, _position.GetZW()});
 }
 
 void Element::SetPositionOffset(const Vector2& offset) {
-    Element::SetPosition(Vector4{ _position.GetXY(), offset });
+    Element::SetPosition(Vector4{_position.GetXY(), offset});
 }
 
 void Element::SetPivot(const Vector2& pivotPosition) {
@@ -295,7 +291,7 @@ void Element::DebugRenderOrder(Renderer& renderer) const {
 }
 
 AABB2 Element::GetParentBounds() const noexcept {
-    return _parent ? _parent->_bounds : AABB2{ 0.0f, 0.0f, _size.unit.x, _size.unit.y };
+    return _parent ? _parent->_bounds : AABB2{0.0f, 0.0f, _size.unit.x, _size.unit.y};
 }
 
 bool Element::IsHidden() const {
@@ -359,8 +355,7 @@ void Element::CalcBounds() noexcept {
     case UI::PositionMode::Relative:
         _bounds = CalcRelativeBounds();
         break;
-    default:
-    {
+    default: {
         const auto ss = std::string{__FUNCTION__} + ": Unhandled positioning mode.";
         ERROR_AND_DIE(ss.c_str());
         break;
@@ -439,7 +434,7 @@ AABB2 Element::CalcAlignedAbsoluteBounds() const noexcept {
 }
 
 AABB2 Element::CalcLocalBounds() const noexcept {
-    return { Vector2::ZERO, GetSize() };
+    return {Vector2::ZERO, GetSize()};
 }
 
 bool Element::IsDirty() const {
@@ -498,7 +493,7 @@ AABB2 Element::GetParentLocalBounds() const {
 }
 
 AABB2 Element::GetParentRelativeBounds() const {
-    return _parent ? _parent->CalcBoundsRelativeToParent() : AABB2{ 0.0f, 0.0f, 0.0f, 0.0f };
+    return _parent ? _parent->CalcBoundsRelativeToParent() : AABB2{0.0f, 0.0f, 0.0f, 0.0f};
 }
 
 void Element::UpdateChildren(TimeUtils::FPSeconds deltaSeconds) {
@@ -547,11 +542,11 @@ Vector2 Element::GetTopLeft() const noexcept {
 }
 
 Vector2 Element::GetTopRight() const noexcept {
-    return Vector2{ _bounds.maxs.x, _bounds.mins.y };
+    return Vector2{_bounds.maxs.x, _bounds.mins.y};
 }
 
 Vector2 Element::GetBottomLeft() const noexcept {
-    return Vector2{ _bounds.mins.x, _bounds.maxs.y };
+    return Vector2{_bounds.mins.x, _bounds.maxs.y};
 }
 
 Vector2 Element::GetBottomRight() const noexcept {
@@ -635,4 +630,4 @@ void Element::SortAllChildren() {
     }
 }
 
-} //End UI
+} // namespace UI

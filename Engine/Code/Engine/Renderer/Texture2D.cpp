@@ -1,18 +1,14 @@
 #include "Engine/Renderer/Texture2D.hpp"
 
-
 #include "Engine/Core/BuildConfig.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/StringUtils.hpp"
-
+#include "Engine/RHI/RHIDevice.hpp"
 #include "Engine/Renderer/DirectX/DX11.hpp"
 
-#include "Engine/RHI/RHIDevice.hpp"
-
 Texture2D::Texture2D(const RHIDevice& device, Microsoft::WRL::ComPtr<ID3D11Texture2D> dxTexture) noexcept
-    : Texture(device)
-    , _dx_tex(dxTexture)
-{
+: Texture(device)
+, _dx_tex(dxTexture) {
     SetTexture();
 }
 
@@ -35,9 +31,8 @@ ID3D11Texture2D* Texture2D::GetDxTexture() noexcept {
 }
 
 Texture2D::Texture2D(Texture2D&& r_other) noexcept
-    : Texture(std::move(r_other))
-    , _dx_tex(std::move(r_other._dx_tex))
-{
+: Texture(std::move(r_other))
+, _dx_tex(std::move(r_other._dx_tex)) {
     r_other._dx_tex = nullptr;
 }
 
@@ -112,10 +107,18 @@ void Texture2D::SetTexture() noexcept {
     }
 
     if(!success) {
-        if(_dsv) { _dsv = nullptr; }
-        if(_rtv) { _rtv = nullptr; }
-        if(_srv) { _srv = nullptr; }
-        if(_uav) { _uav = nullptr; }
+        if(_dsv) {
+            _dsv = nullptr;
+        }
+        if(_rtv) {
+            _rtv = nullptr;
+        }
+        if(_srv) {
+            _srv = nullptr;
+        }
+        if(_uav) {
+            _uav = nullptr;
+        }
         ERROR_AND_DIE(error_str.c_str());
     }
 }

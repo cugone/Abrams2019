@@ -4,7 +4,6 @@
 
 class LineSegment2 {
 public:
-
     Vector2 start = Vector2::ZERO;
     Vector2 end = Vector2::ZERO;
 

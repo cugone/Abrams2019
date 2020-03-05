@@ -11,7 +11,6 @@ class Vector4;
 
 class IntVector4 {
 public:
-
     static const IntVector4 ZERO;
     static const IntVector4 ONE;
     static const IntVector4 X_AXIS;
@@ -71,5 +70,4 @@ public:
 
 protected:
 private:
-
 };

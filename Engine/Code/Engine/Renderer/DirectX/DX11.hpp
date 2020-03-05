@@ -1,31 +1,30 @@
 #pragma once
 
 #ifdef _DEBUG
-#define INITGUID
+    #define INITGUID
 #endif
 
 #include <d3d11_4.h>
 #include <dxgi1_6.h>
 
 // DEBUG STUFF
-#include <dxgidebug.h>
 #include <D3Dcommon.h>
 #include <d3d11sdklayers.h>
+#include <dxgidebug.h>
 
 // LIBS
-#pragma comment( lib, "d3d11.lib" )
-#pragma comment( lib, "DXGI.lib" )
-#pragma comment( lib, "dxguid.lib" )
+#pragma comment(lib, "d3d11.lib")
+#pragma comment(lib, "DXGI.lib")
+#pragma comment(lib, "dxguid.lib")
 
 #include <d3d11shader.h>
 #include <d3dcompiler.h>
-#pragma comment( lib, "d3dcompiler.lib" )
+#pragma comment(lib, "d3dcompiler.lib")
 
 #include "Engine/RHI/RHITypes.hpp"
 
-#include <string>
 #include <cstdint>
-
+#include <string>
 #include <wrl/client.h>
 
 struct AdapterInfo {
@@ -34,10 +33,10 @@ struct AdapterInfo {
 };
 
 enum class AdapterPreference {
-    None
-    ,Unspecified = None
-    ,HighPerformance
-    ,MinimumPower
+    None,
+    Unspecified = None,
+    HighPerformance,
+    MinimumPower
 };
 
 DXGI_GPU_PREFERENCE AdapterPreferenceToDxgiGpuPreference(const AdapterPreference& preference);

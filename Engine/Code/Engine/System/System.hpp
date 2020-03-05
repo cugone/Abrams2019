@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Engine/System/Cpu.hpp"
-#include "Engine/System/Ram.hpp"
 #include "Engine/System/OS.hpp"
+#include "Engine/System/Ram.hpp"
 
 #include <ostream>
 #include <string>
@@ -18,8 +18,8 @@ struct SystemDesc {
 
 SystemDesc GetSystemDesc() noexcept;
 
-}
+} // namespace System
 
 namespace StringUtils {
-    std::string to_string(const System::SystemDesc& system) noexcept;
+std::string to_string(const System::SystemDesc& system) noexcept;
 }

@@ -1,16 +1,12 @@
 #include "Engine/Renderer/RasterState.hpp"
 
 #include "Engine/Core/BuildConfig.hpp"
-
 #include "Engine/Core/ErrorWarningAssert.hpp"
-
-#include "Engine/Renderer/DirectX/DX11.hpp"
-
 #include "Engine/RHI/RHIDevice.hpp"
+#include "Engine/Renderer/DirectX/DX11.hpp"
 
 #include <algorithm>
 #include <locale>
-
 
 void RasterState::SetDebugName([[maybe_unused]] const std::string& name) const noexcept {
 #ifdef RENDER_DEBUG
@@ -19,14 +15,12 @@ void RasterState::SetDebugName([[maybe_unused]] const std::string& name) const n
 }
 
 RasterState::RasterState(const RHIDevice* device, const XMLElement& element) noexcept
-    : RasterState(device, RasterDesc{element})
-{
+: RasterState(device, RasterDesc{element}) {
     /* DO NOTHING */
 }
 
 RasterState::RasterState(const RHIDevice* device, const RasterDesc& desc) noexcept
-    : _desc(desc)
-{
+: _desc(desc) {
     if(!CreateRasterState(device, _desc)) {
         if(_dx_state) {
             _dx_state->Release();
@@ -52,7 +46,6 @@ ID3D11RasterizerState* RasterState::GetDxRasterState() noexcept {
 }
 
 bool RasterState::CreateRasterState(const RHIDevice* device, const RasterDesc& raster_desc /*= RasterDesc()*/) noexcept {
-
     D3D11_RASTERIZER_DESC desc{};
 
     desc.FillMode = FillModeToD3DFillMode(raster_desc.fillmode);
@@ -122,7 +115,7 @@ RasterDesc::RasterDesc(const XMLElement& element) noexcept {
             std::string value{"cw"};
             value = DataUtils::ParseXmlElementText(*xml_raster, value);
             auto windingOrder = WindingOrderFromString(value);
-            switch (windingOrder) {
+            switch(windingOrder) {
             case WindingOrder::CCW:
                 frontCounterClockwise = true;
                 break;

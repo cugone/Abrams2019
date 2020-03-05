@@ -1,7 +1,7 @@
 #include "Engine/Core/JobSystem.hpp"
 
-#include "Engine/Core/TimeUtils.hpp"
 #include "Engine/Core/ThreadUtils.hpp"
+#include "Engine/Core/TimeUtils.hpp"
 #include "Engine/Core/Win.hpp"
 
 #include <chrono>
@@ -19,7 +19,7 @@ void JobSystem::GenericJobWorker(std::condition_variable* signal) noexcept {
         if(signal) {
             std::unique_lock<std::mutex> lock(_cs);
             //Condition to wake up: Not running or has jobs available
-            signal->wait(lock, [&jc, this]()->bool { return !_is_running || jc.HasJobs(); });
+            signal->wait(lock, [&jc, this]() -> bool { return !_is_running || jc.HasJobs(); });
             if(jc.HasJobs()) {
                 jc.ConsumeAll();
             }
@@ -75,7 +75,6 @@ void JobConsumer::ConsumeFor(TimeUtils::FPMilliseconds consume_duration) noexcep
     }
 }
 
-
 bool JobConsumer::HasJobs() const noexcept {
     if(_consumables.empty()) {
         return false;
@@ -90,8 +89,7 @@ bool JobConsumer::HasJobs() const noexcept {
 }
 
 JobSystem::JobSystem(int genericCount, std::size_t categoryCount, std::condition_variable* mainJobSignal) noexcept
-: _main_job_signal(mainJobSignal)
-{
+: _main_job_signal(mainJobSignal) {
     Initialize(genericCount, categoryCount);
 }
 
@@ -118,7 +116,7 @@ void JobSystem::Initialize(int genericCount, std::size_t categoryCount) noexcept
         _signals[i] = nullptr;
     }
     _signals[static_cast<std::underlying_type_t<JobType>>(JobType::Generic)] = new std::condition_variable;
-    
+
     for(std::size_t i = 0; i < static_cast<std::size_t>(core_count); ++i) {
         auto t = std::thread(&JobSystem::GenericJobWorker, this, _signals[static_cast<std::underlying_type_t<JobType>>(JobType::Generic)]);
         std::wstring desc{L"Generic Job Thread "};
@@ -126,7 +124,6 @@ void JobSystem::Initialize(int genericCount, std::size_t categoryCount) noexcept
         ThreadUtils::SetThreadDescription(t, desc);
         _threads[i] = std::move(t);
     }
-
 }
 
 void JobSystem::BeginFrame() noexcept {
@@ -168,7 +165,6 @@ void JobSystem::Shutdown() noexcept {
 
     _threads.clear();
     _threads.shrink_to_fit();
-
 }
 
 void JobSystem::MainStep() noexcept {
@@ -248,8 +244,7 @@ std::condition_variable* JobSystem::GetMainJobSignal() const noexcept {
 }
 
 Job::Job(JobSystem& jobSystem) noexcept
-    : _job_system(&jobSystem)
-{
+: _job_system(&jobSystem) {
     /* DO NOTHING */
 }
 

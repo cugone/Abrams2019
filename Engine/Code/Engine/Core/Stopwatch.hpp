@@ -23,8 +23,8 @@ public:
     bool CheckAndReset() noexcept;
     unsigned int DecrementAll() noexcept;
     void Reset() noexcept;
+
 private:
     TimeUtils::FPSeconds interval_time{};
     TimeUtils::FPSeconds target_time{};
-
 };

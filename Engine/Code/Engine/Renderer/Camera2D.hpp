@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Engine/Core/TimeUtils.hpp"
-
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Matrix4.hpp"
 #include "Engine/Math/Vector2.hpp"
@@ -9,7 +8,6 @@
 
 class Camera2D {
 public:
-
     void SetupView(const Vector2& leftBottom, const Vector2& rightTop, const Vector2& nearFar = Vector2(0.0f, 1.0f), float aspectRatio = MathUtils::M_16_BY_9_RATIO) noexcept;
 
     void Update(TimeUtils::FPSeconds deltaSeconds) noexcept;
@@ -44,6 +42,7 @@ public:
     float trauma_recovery_rate = 1.0f;
     Vector2 position = Vector2::ZERO;
     float orientation_degrees = 0.0f;
+
 protected:
 private:
     void CalcViewMatrix() noexcept;
@@ -53,13 +52,13 @@ private:
     Matrix4 view_matrix = Matrix4::I;
     Matrix4 projection_matrix = Matrix4::I;
     Matrix4 view_projection_matrix = Matrix4::I;
-    
+
     Matrix4 inv_view_matrix = Matrix4::I;
     Matrix4 inv_projection_matrix = Matrix4::I;
     Matrix4 inv_view_projection_matrix = Matrix4::I;
 
-    Vector2 leftBottom_view = Vector2{ -1.0f, 1.0f };
-    Vector2 rightTop_view = Vector2{ 1.0f, -1.0f };
-    Vector2 nearFar_distance = Vector2{ 0.0f, 1.0f };
+    Vector2 leftBottom_view = Vector2{-1.0f, 1.0f};
+    Vector2 rightTop_view = Vector2{1.0f, -1.0f};
+    Vector2 nearFar_distance = Vector2{0.0f, 1.0f};
     float aspect_ratio = MathUtils::M_16_BY_9_RATIO;
 };

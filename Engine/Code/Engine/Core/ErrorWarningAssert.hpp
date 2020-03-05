@@ -9,20 +9,18 @@
 //	#define GUARANTEE_RECOVERABLE( condition, errorText )	// "SHOULD be true"; If condition is false, show warning dialogue then proceed
 //	#define ASSERT_OR_DIE( condition, errorText )			// Same as GUARANTEE_OR_DIE, but removed if DISABLE_ASSERTS is #defined
 //	#define ASSERT_RECOVERABLE( condition, errorText )		// Same as GUARANTEE_RECOVERABLE, but removed if DISABLE_ASSERTS is #defined
-// 
-
+//
 
 //-----------------------------------------------------------------------------------------------
 #include <string>
 
 //-----------------------------------------------------------------------------------------------
 enum class SeverityLevel {
-     Information
-    ,Question
-    ,Warning
-    ,Fatal
+    Information,
+    Question,
+    Warning,
+    Fatal
 };
-
 
 //-----------------------------------------------------------------------------------------------
 void DebuggerPrintf(const char* messageFormat, ...) noexcept;
@@ -33,8 +31,6 @@ void SystemDialogue_Okay(const std::string& messageTitle, const std::string& mes
 bool SystemDialogue_OkayCancel(const std::string& messageTitle, const std::string& messageText, SeverityLevel severity) noexcept;
 bool SystemDialogue_YesNo(const std::string& messageTitle, const std::string& messageText, SeverityLevel severity) noexcept;
 int SystemDialogue_YesNoCancel(const std::string& messageTitle, const std::string& messageText, SeverityLevel severity) noexcept;
-
-
 
 //-----------------------------------------------------------------------------------------------
 // ERROR_AND_DIE
@@ -50,11 +46,10 @@ int SystemDialogue_YesNoCancel(const std::string& messageTitle, const std::strin
 // Use this when reaching a certain line of code should never happen under any circumstances,
 // and continued execution is dangerous or impossible.
 //
-#define ERROR_AND_DIE( errorMessageText )															\
-{																									\
-	FatalError( __FILE__,  __FUNCTION__, __LINE__, errorMessageText );								\
-}
-
+#define ERROR_AND_DIE(errorMessageText)                                 \
+    {                                                                   \
+        FatalError(__FILE__, __FUNCTION__, __LINE__, errorMessageText); \
+    }
 
 //-----------------------------------------------------------------------------------------------
 // ERROR_RECOVERABLE
@@ -67,11 +62,10 @@ int SystemDialogue_YesNoCancel(const std::string& messageTitle, const std::strin
 //	- Triggers a debug breakpoint (if appropriate development suite is present)
 //	- Continues execution
 //
-#define ERROR_RECOVERABLE( errorMessageText )														\
-{																									\
-	RecoverableWarning( __FILE__,  __FUNCTION__, __LINE__, errorMessageText );						\
-}
-
+#define ERROR_RECOVERABLE(errorMessageText)                                     \
+    {                                                                           \
+        RecoverableWarning(__FILE__, __FUNCTION__, __LINE__, errorMessageText); \
+    }
 
 //-----------------------------------------------------------------------------------------------
 // GUARANTEE_OR_DIE
@@ -84,15 +78,13 @@ int SystemDialogue_YesNoCancel(const std::string& messageTitle, const std::strin
 //	- Triggers a debug breakpoint (if appropriate development suite is present)
 //	- Shuts down the app
 //
-#define GUARANTEE_OR_DIE( condition, errorMessageText )												\
-{																									\
-	if( !(condition) )																				\
-	{																								\
-		const char* conditionText = #condition;														\
-		FatalError( __FILE__,  __FUNCTION__, __LINE__, errorMessageText, conditionText );			\
-	}																								\
-}
-
+#define GUARANTEE_OR_DIE(condition, errorMessageText)                                      \
+    {                                                                                      \
+        if(!(condition)) {                                                                 \
+            const char* conditionText = #condition;                                        \
+            FatalError(__FILE__, __FUNCTION__, __LINE__, errorMessageText, conditionText); \
+        }                                                                                  \
+    }
 
 //-----------------------------------------------------------------------------------------------
 // GUARANTEE_RECOVERABLE
@@ -105,15 +97,13 @@ int SystemDialogue_YesNoCancel(const std::string& messageTitle, const std::strin
 //	- Triggers a debug breakpoint (if appropriate development suite is present)
 //	- Continues execution
 //
-#define GUARANTEE_RECOVERABLE( condition, errorMessageText )										\
-{																									\
-	if( !(condition) )																				\
-	{																								\
-		const char* conditionText = #condition;														\
-		RecoverableWarning( __FILE__,  __FUNCTION__, __LINE__, errorMessageText, conditionText );	\
-	}																								\
-}
-
+#define GUARANTEE_RECOVERABLE(condition, errorMessageText)                                         \
+    {                                                                                              \
+        if(!(condition)) {                                                                         \
+            const char* conditionText = #condition;                                                \
+            RecoverableWarning(__FILE__, __FUNCTION__, __LINE__, errorMessageText, conditionText); \
+        }                                                                                          \
+    }
 
 //-----------------------------------------------------------------------------------------------
 // ASSERT_OR_DIE
@@ -126,19 +116,18 @@ int SystemDialogue_YesNoCancel(const std::string& messageTitle, const std::strin
 //	- Triggers a debug breakpoint (if appropriate development suite is present)
 //	- Shuts down the app
 //
-#if defined( DISABLE_ASSERTS )
-#define ASSERT_OR_DIE( condition, errorMessageText ) { (void)( condition ); }
+#if defined(DISABLE_ASSERTS)
+    #define ASSERT_OR_DIE(condition, errorMessageText) \
+        { (void)(condition); }
 #else
-#define ASSERT_OR_DIE( condition, errorMessageText )												\
-{																									\
-	if( !(condition) )																				\
-	{																								\
-		const char* conditionText = #condition;														\
-		FatalError( __FILE__,  __FUNCTION__, __LINE__, errorMessageText, conditionText );			\
-	}																								\
-}
+    #define ASSERT_OR_DIE(condition, errorMessageText)                                         \
+        {                                                                                      \
+            if(!(condition)) {                                                                 \
+                const char* conditionText = #condition;                                        \
+                FatalError(__FILE__, __FUNCTION__, __LINE__, errorMessageText, conditionText); \
+            }                                                                                  \
+        }
 #endif
-
 
 //-----------------------------------------------------------------------------------------------
 // ASSERT_RECOVERABLE
@@ -151,17 +140,15 @@ int SystemDialogue_YesNoCancel(const std::string& messageTitle, const std::strin
 //	- Triggers a debug breakpoint (if appropriate development suite is present)
 //	- Continues execution
 //
-#if defined( DISABLE_ASSERTS )
-#define ASSERT_RECOVERABLE( condition, errorMessageText ) { (void)( condition ); }
+#if defined(DISABLE_ASSERTS)
+    #define ASSERT_RECOVERABLE(condition, errorMessageText) \
+        { (void)(condition); }
 #else
-#define ASSERT_RECOVERABLE( condition, errorMessageText )											\
-{																									\
-	if( !(condition) )																				\
-	{																								\
-		const char* conditionText = #condition;														\
-		RecoverableWarning( __FILE__,  __FUNCTION__, __LINE__, errorMessageText, conditionText );	\
-	}																								\
-}
+    #define ASSERT_RECOVERABLE(condition, errorMessageText)                                            \
+        {                                                                                              \
+            if(!(condition)) {                                                                         \
+                const char* conditionText = #condition;                                                \
+                RecoverableWarning(__FILE__, __FUNCTION__, __LINE__, errorMessageText, conditionText); \
+            }                                                                                          \
+        }
 #endif
-
-

@@ -1,13 +1,11 @@
 #include "Engine/Renderer/VertexBuffer.hpp"
 
 #include "Engine/Core/ErrorWarningAssert.hpp"
-
 #include "Engine/RHI/RHIDevice.hpp"
 #include "Engine/RHI/RHIDeviceContext.hpp"
 
-
 VertexBuffer::VertexBuffer(const RHIDevice& owner, const buffer_t& buffer, const BufferUsage& usage, const BufferBindUsage& bindUsage) noexcept
-    : ArrayBuffer<Vertex3D>() {
+: ArrayBuffer<Vertex3D>() {
     D3D11_BUFFER_DESC buffer_desc{};
     buffer_desc.Usage = BufferUsageToD3DUsage(usage);
     buffer_desc.BindFlags = BufferBindUsageToD3DBindFlags(bindUsage);

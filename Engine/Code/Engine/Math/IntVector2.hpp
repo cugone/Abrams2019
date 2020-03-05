@@ -8,7 +8,6 @@ class IntVector3;
 
 class IntVector2 {
 public:
-
     static const IntVector2 ZERO;
     static const IntVector2 ONE;
     static const IntVector2 X_AXIS;
@@ -29,7 +28,7 @@ public:
 
     IntVector2& operator=(const IntVector2& rhs) = default;
     IntVector2& operator=(IntVector2&& rhs) = default;
-    
+
     IntVector2 operator+(const IntVector2& rhs) const noexcept;
     IntVector2& operator+=(const IntVector2& rhs) noexcept;
 
@@ -70,5 +69,4 @@ public:
 
 protected:
 private:
-
 };

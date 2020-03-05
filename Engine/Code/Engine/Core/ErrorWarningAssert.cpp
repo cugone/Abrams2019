@@ -4,25 +4,21 @@
 #include "Engine/Core/ErrorWarningAssert.hpp"
 //-----------------------------------------------------------------------------------------------
 #if defined(_WIN32)
-#define PLATFORM_WINDOWS
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
+    #define PLATFORM_WINDOWS
+    #define WIN32_LEAN_AND_MEAN
+    #include <Windows.h>
 #endif
 
 //-----------------------------------------------------------------------------------------------
 #include "Engine/Core/StringUtils.hpp"
 
-#include <stdarg.h>
-
-#include <iostream>
 #include <filesystem>
-
-
-
+#include <iostream>
+#include <stdarg.h>
 
 //-----------------------------------------------------------------------------------------------
 bool IsDebuggerAvailable() noexcept {
-#if defined( PLATFORM_WINDOWS )
+#if defined(PLATFORM_WINDOWS)
     typedef BOOL(CALLBACK IsDebuggerPresentFunc)();
 
     // Get a handle to KERNEL32.DLL
@@ -37,7 +33,7 @@ bool IsDebuggerAvailable() noexcept {
 
     // Now CALL that function and return its result
     static BOOL isDebuggerAvailable = isDebuggerPresentFunc();
-    return(isDebuggerAvailable == TRUE);
+    return (isDebuggerAvailable == TRUE);
 #else
     return false;
 #endif
@@ -53,7 +49,7 @@ void DebuggerPrintf(const char* messageFormat, ...) noexcept {
     va_end(variableArgumentList);
     messageLiteral[MESSAGE_MAX_LENGTH - 1] = '\0'; // In case vsnprintf overran (doesn't auto-terminate)
 
-#if defined( PLATFORM_WINDOWS )
+#if defined(PLATFORM_WINDOWS)
     if(IsDebuggerAvailable()) {
         OutputDebugStringA(messageLiteral);
     }
@@ -65,21 +61,21 @@ void DebuggerPrintf(const char* messageFormat, ...) noexcept {
 //-----------------------------------------------------------------------------------------------
 // Converts a SeverityLevel to a Windows MessageBox icon type (MB_etc)
 //
-#if defined( PLATFORM_WINDOWS )
+#if defined(PLATFORM_WINDOWS)
 UINT GetWindowsMessageBoxIconFlagForSeverityLevel(SeverityLevel severity) noexcept {
     switch(severity) {
-        case SeverityLevel::Information:   return MB_ICONASTERISK;		// blue circle with 'i' in Windows 7
-        case SeverityLevel::Question:      return MB_ICONQUESTION;		// blue circle with '?' in Windows 7
-        case SeverityLevel::Warning:       return MB_ICONEXCLAMATION;	// yellow triangle with '!' in Windows 7
-        case SeverityLevel::Fatal:         return MB_ICONHAND;			// red circle with 'x' in Windows 7
-        default:                                    return MB_ICONEXCLAMATION;
+    case SeverityLevel::Information: return MB_ICONASTERISK; // blue circle with 'i' in Windows 7
+    case SeverityLevel::Question: return MB_ICONQUESTION;    // blue circle with '?' in Windows 7
+    case SeverityLevel::Warning: return MB_ICONEXCLAMATION;  // yellow triangle with '!' in Windows 7
+    case SeverityLevel::Fatal: return MB_ICONHAND;           // red circle with 'x' in Windows 7
+    default: return MB_ICONEXCLAMATION;
     }
 }
 #endif
 
 //-----------------------------------------------------------------------------------------------
 void SystemDialogue_Okay(const std::string& messageTitle, const std::string& messageText, SeverityLevel severity) noexcept {
-#if defined( PLATFORM_WINDOWS )
+#if defined(PLATFORM_WINDOWS)
     {
         ShowCursor(TRUE);
         UINT dialogueIconTypeFlag = GetWindowsMessageBoxIconFlagForSeverityLevel(severity);
@@ -89,14 +85,13 @@ void SystemDialogue_Okay(const std::string& messageTitle, const std::string& mes
 #endif
 }
 
-
 //-----------------------------------------------------------------------------------------------
 // Returns true if OKAY was chosen, false if CANCEL was chosen.
 //
 bool SystemDialogue_OkayCancel(const std::string& messageTitle, const std::string& messageText, SeverityLevel severity) noexcept {
     bool isAnswerOkay = true;
 
-#if defined( PLATFORM_WINDOWS )
+#if defined(PLATFORM_WINDOWS)
     {
         ShowCursor(TRUE);
         UINT dialogueIconTypeFlag = GetWindowsMessageBoxIconFlagForSeverityLevel(severity);
@@ -109,14 +104,13 @@ bool SystemDialogue_OkayCancel(const std::string& messageTitle, const std::strin
     return isAnswerOkay;
 }
 
-
 //-----------------------------------------------------------------------------------------------
 // Returns true if YES was chosen, false if NO was chosen.
 //
 bool SystemDialogue_YesNo(const std::string& messageTitle, const std::string& messageText, SeverityLevel severity) noexcept {
     bool isAnswerYes = true;
 
-#if defined( PLATFORM_WINDOWS )
+#if defined(PLATFORM_WINDOWS)
     {
         ShowCursor(TRUE);
         UINT dialogueIconTypeFlag = GetWindowsMessageBoxIconFlagForSeverityLevel(severity);
@@ -129,14 +123,13 @@ bool SystemDialogue_YesNo(const std::string& messageTitle, const std::string& me
     return isAnswerYes;
 }
 
-
 //-----------------------------------------------------------------------------------------------
 // Returns 1 if YES was chosen, 0 if NO was chosen, -1 if CANCEL was chosen.
 //
 int SystemDialogue_YesNoCancel(const std::string& messageTitle, const std::string& messageText, SeverityLevel severity) noexcept {
     int answerCode = 1;
 
-#if defined( PLATFORM_WINDOWS )
+#if defined(PLATFORM_WINDOWS)
     {
         ShowCursor(TRUE);
         UINT dialogueIconTypeFlag = GetWindowsMessageBoxIconFlagForSeverityLevel(severity);
@@ -148,7 +141,6 @@ int SystemDialogue_YesNoCancel(const std::string& messageTitle, const std::strin
 
     return answerCode;
 }
-
 
 //-----------------------------------------------------------------------------------------------
 [[noreturn]] void FatalError(const char* filePath, const char* functionName, int lineNum, const std::string& reasonForError, const char* conditionText) {
@@ -198,7 +190,6 @@ int SystemDialogue_YesNoCancel(const std::string& messageTitle, const std::strin
     }
     exit(0);
 }
-
 
 //-----------------------------------------------------------------------------------------------
 void RecoverableWarning(const char* filePath, const char* functionName, int lineNum, const std::string& reasonForWarning, const char* conditionText) noexcept {
@@ -256,5 +247,3 @@ void RecoverableWarning(const char* filePath, const char* functionName, int line
         }
     }
 }
-
-

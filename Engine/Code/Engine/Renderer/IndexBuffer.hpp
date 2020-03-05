@@ -1,8 +1,7 @@
 #pragma once
 
-#include "Engine/Renderer/ArrayBuffer.hpp"
-
 #include "Engine/Core/Vertex3D.hpp"
+#include "Engine/Renderer/ArrayBuffer.hpp"
 
 #include <vector>
 

@@ -2,27 +2,25 @@
 
 #include "Engine/Core/StringUtils.hpp"
 
-#include <string>
 #include <filesystem>
-#include <vector>
 #include <memory>
 #include <optional>
+#include <string>
+#include <vector>
 
 namespace FileUtils {
 
 namespace RiffChunkID {
-    constexpr const uint32_t RIFF = StringUtils::FourCC("RIFF");
-    constexpr const uint32_t LIST = StringUtils::FourCC("LIST");
-    constexpr const uint32_t WAVE = StringUtils::FourCC("WAVE");
-    constexpr const uint32_t INFO = StringUtils::FourCC("INFO");
-    constexpr const uint32_t AVI  = StringUtils::FourCC("AVI ");
-    constexpr const bool IsValid(const char* id) noexcept;
-}
-
+constexpr const uint32_t RIFF = StringUtils::FourCC("RIFF");
+constexpr const uint32_t LIST = StringUtils::FourCC("LIST");
+constexpr const uint32_t WAVE = StringUtils::FourCC("WAVE");
+constexpr const uint32_t INFO = StringUtils::FourCC("INFO");
+constexpr const uint32_t AVI = StringUtils::FourCC("AVI ");
+constexpr const bool IsValid(const char* id) noexcept;
+} // namespace RiffChunkID
 
 class Riff {
 public:
-
     static constexpr const unsigned int RIFF_SUCCESS = 0;
     static constexpr const unsigned int RIFF_ERROR_NOT_A_RIFF = 1;
     static constexpr const unsigned int RIFF_ERROR_INVALID_RIFF = 2;
@@ -46,6 +44,7 @@ public:
     unsigned int Load(std::filesystem::path filename) noexcept;
     unsigned int Load(const std::vector<unsigned char>& data) noexcept;
     static std::optional<std::unique_ptr<Riff::RiffChunk>> ReadListChunk(std::stringstream& stream) noexcept;
+
 protected:
 private:
     bool ParseDataIntoChunks(std::vector<unsigned char>& buffer) noexcept;
@@ -57,4 +56,4 @@ private:
     friend class Wav;
 };
 
-}
+} // namespace FileUtils

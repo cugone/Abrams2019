@@ -6,7 +6,7 @@ void PhysicsSystem::Update_Worker() noexcept {
     while(_is_running) {
         std::unique_lock<std::mutex> lock(_cs);
         //Condition to wake up: Not running or deltaSeconds has changed.
-        _signal.wait(lock, [this]()->bool { return !_is_running || _delta_seconds_changed; });
+        _signal.wait(lock, [this]() -> bool { return !_is_running || _delta_seconds_changed; });
         if(_delta_seconds_changed) {
             _delta_seconds_changed = false;
             UpdateBodiesInBounds(TimeUtils::FPSeconds(_deltaSeconds));
@@ -49,11 +49,10 @@ void PhysicsSystem::EnableGravity(bool isGravityEnabled) noexcept {
 }
 
 PhysicsSystem::PhysicsSystem(Renderer& renderer, const PhysicsSystemDesc& desc /*= PhysicsSystemDesc{}*/)
-	: _renderer(renderer)
-	, _desc(desc)
-    , _world_partition(_desc.world_bounds)
-{
-	/* DO NOTHING */
+: _renderer(renderer)
+, _desc(desc)
+, _world_partition(_desc.world_bounds) {
+    /* DO NOTHING */
 }
 
 PhysicsSystem::~PhysicsSystem() {
@@ -97,16 +96,15 @@ void PhysicsSystem::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
     //const auto query_area = AABB2(camera_position - half_extents, camera_position + half_extents);
     //const auto potential_collisions = BroadPhaseCollision(query_area);
     //const auto actual_collisions = NarrowPhaseCollision(potential_collisions);
-
 }
 
 void PhysicsSystem::UpdateBodiesInBounds(TimeUtils::FPSeconds deltaSeconds) noexcept {
     PROFILE_LOG_SCOPE_FUNCTION();
-    for (auto body : _rigidBodies) {
-        if (!body) {
+    for(auto body : _rigidBodies) {
+        if(!body) {
             continue;
         }
-        if (MathUtils::DoOBBsOverlap(OBB2(_desc.world_bounds), body->GetBounds())) {
+        if(MathUtils::DoOBBsOverlap(OBB2(_desc.world_bounds), body->GetBounds())) {
             body->Update(deltaSeconds);
         }
     }
@@ -115,8 +113,8 @@ void PhysicsSystem::UpdateBodiesInBounds(TimeUtils::FPSeconds deltaSeconds) noex
 std::vector<RigidBody*> PhysicsSystem::BroadPhaseCollision(const AABB2& query_area) noexcept {
     PROFILE_LOG_SCOPE_FUNCTION();
     std::vector<RigidBody*> potential_collisions{};
-    for (auto body : _rigidBodies) {
-        if (!body) {
+    for(auto body : _rigidBodies) {
+        if(!body) {
             continue;
         }
         if(!MathUtils::DoOBBsOverlap(OBB2(query_area), body->GetBounds())) {
@@ -124,7 +122,7 @@ std::vector<RigidBody*> PhysicsSystem::BroadPhaseCollision(const AABB2& query_ar
         }
         if(MathUtils::DoOBBsOverlap(OBB2(_desc.world_bounds), body->GetBounds())) {
             const auto queried_bodies = _world_partition.Query(query_area);
-            for (auto* query : queried_bodies) {
+            for(auto* query : queried_bodies) {
                 potential_collisions.push_back(query);
             }
         }
@@ -205,13 +203,12 @@ void PhysicsSystem::DebugShowWorldPartition(bool show) {
 }
 
 RigidBody::RigidBody(RigidBodyDesc desc /*= RigidBodyDesc{}*/)
-    : collider(std::move(desc.collider))
-    , phys_material(desc.physicsMaterial)
-    , prev_position(desc.initialPosition)
-    , position(desc.initialPosition)
-    , acceleration(desc.initialAcceleration)
-    , inv_mass(1.0f)
-{
+: collider(std::move(desc.collider))
+, phys_material(desc.physicsMaterial)
+, prev_position(desc.initialPosition)
+, position(desc.initialPosition)
+, acceleration(desc.initialAcceleration)
+, inv_mass(1.0f) {
     const auto area = collider->CalcArea();
     inv_mass = (1.0f / (desc.physicsMaterial.density * area));
 }
@@ -231,17 +228,17 @@ void RigidBody::Update(TimeUtils::FPSeconds deltaSeconds) {
     angular_impulses.clear();
     const auto linear_force_sum = std::accumulate(std::begin(linear_forces), std::end(linear_forces), Vector2::ZERO);
     const auto angular_force_sum = std::accumulate(std::begin(angular_forces), std::end(angular_forces), 0.0f);
-    const auto new_angular_acceleration = angular_impulse_sum  + angular_force_sum * inv_mass;
+    const auto new_angular_acceleration = angular_impulse_sum + angular_force_sum * inv_mass;
     const auto new_acceleration = (linear_impulse_sum + linear_force_sum) * inv_mass;
     const auto t = deltaSeconds.count();
     dt = deltaSeconds;
     if(MathUtils::IsEquivalentToZero(prev_position - position)
-        && MathUtils::IsEquivalentToZero(prev_orientationDegrees - orientationDegrees)) {
+       && MathUtils::IsEquivalentToZero(prev_orientationDegrees - orientationDegrees)) {
         time_since_last_move += dt;
     } else {
-        time_since_last_move = TimeUtils::FPSeconds{ 0.0f };
+        time_since_last_move = TimeUtils::FPSeconds{0.0f};
     }
-    is_awake = time_since_last_move < TimeUtils::FPSeconds{ 1.0f };
+    is_awake = time_since_last_move < TimeUtils::FPSeconds{1.0f};
     const auto new_position = 2.0f * position - prev_position + new_acceleration * t * t;
     const auto new_orientationDegrees = 2.0f * orientationDegrees - prev_orientationDegrees + new_angular_acceleration * t * t;
 
@@ -424,7 +421,8 @@ const Collider* RigidBody::GetCollider() const noexcept {
     return collider.get();
 }
 
-ColliderPolygon::ColliderPolygon(int sides /*= 4*/, const Vector2& position /*= Vector2::ZERO*/, const Vector2& half_extents /*= Vector2(0.5f, 0.5f)*/, float orientationDegrees /*= 0.0f*/) : Collider()
+ColliderPolygon::ColliderPolygon(int sides /*= 4*/, const Vector2& position /*= Vector2::ZERO*/, const Vector2& half_extents /*= Vector2(0.5f, 0.5f)*/, float orientationDegrees /*= 0.0f*/)
+: Collider()
 , _sides(sides)
 , _orientationDegrees(orientationDegrees)
 , _half_extents(half_extents)
@@ -433,7 +431,8 @@ ColliderPolygon::ColliderPolygon(int sides /*= 4*/, const Vector2& position /*= 
     CalcNormals();
 }
 
-ColliderPolygon::ColliderPolygon() : Collider() {
+ColliderPolygon::ColliderPolygon()
+: Collider() {
     CalcVerts();
     CalcNormals();
 }
@@ -583,14 +582,15 @@ void ColliderPolygon::CalcVerts() {
 }
 
 Vector2 ColliderPolygon::Support(const Vector2& d) const noexcept {
-    return *std::max_element(std::cbegin(_verts), std::cend(_verts), [&d](const Vector2& a, const Vector2& b) { return MathUtils::DotProduct(a, d) < MathUtils::DotProduct(b, d);  });
+    return *std::max_element(std::cbegin(_verts), std::cend(_verts), [&d](const Vector2& a, const Vector2& b) { return MathUtils::DotProduct(a, d) < MathUtils::DotProduct(b, d); });
 }
 
 Vector2 ColliderPolygon::CalcCenter() const noexcept {
     return _position;
 }
 
-ColliderOBB::ColliderOBB(const Vector2& position, const Vector2& half_extents) : ColliderPolygon(4, position, half_extents, 0.0f) {
+ColliderOBB::ColliderOBB(const Vector2& position, const Vector2& half_extents)
+: ColliderPolygon(4, position, half_extents, 0.0f) {
     /* DO NOTHING */
 }
 
@@ -635,7 +635,8 @@ Vector2 ColliderOBB::CalcCenter() const noexcept {
     return _position;
 }
 
-ColliderCircle::ColliderCircle(const Vector2& position, float radius) : ColliderPolygon(16, position, Vector2(radius, radius), 0.0f) {
+ColliderCircle::ColliderCircle(const Vector2& position, float radius)
+: ColliderPolygon(16, position, Vector2(radius, radius), 0.0f) {
     /* DO NOTHING */
 }
 
@@ -688,7 +689,7 @@ bool GJKIntersect(const Collider& a, const Collider& b) {
     const auto calcMinkowskiDiff = [](const Vector2& direction, const Collider& a) { return a.Support(direction.GetNormalize()); };
     const auto support = [&](const Vector2& direction) { return calcMinkowskiDiff(direction, a) - calcMinkowskiDiff(-direction, b); };
     auto A = support(Vector2::X_AXIS);
-    std::vector<Vector2> simplex{ A };
+    std::vector<Vector2> simplex{A};
     auto D = -A;
     bool containsOrigin = false;
     const auto doSimplexLine = [&](std::vector<Vector2>& simplex, Vector2& D) {
@@ -698,13 +699,12 @@ bool GJKIntersect(const Collider& a, const Collider& b) {
         const auto pointB = simplex[i_b];
         const auto lineAB = pointB - pointA;
         const auto lineAO = -pointA;
-        if (MathUtils::DotProduct(lineAB, lineAO) > 0.0f) {
+        if(MathUtils::DotProduct(lineAB, lineAO) > 0.0f) {
             D.SetHeadingDegrees(90.0f - 90.0f * MathUtils::DotProduct(lineAB, lineAO));
             simplex.clear();
             simplex.push_back(pointA);
             simplex.push_back(pointB);
-        }
-        else {
+        } else {
             D = lineAO.GetNormalize();
             simplex.clear();
             simplex.push_back(A);
@@ -720,27 +720,25 @@ bool GJKIntersect(const Collider& a, const Collider& b) {
         const auto lineAC = pointC - pointA;
         const auto lineAB = pointB - pointA;
         const auto lineAO = -pointA;
-        if (MathUtils::DotProduct(lineAC, lineAO) > 0.0f) {
+        if(MathUtils::DotProduct(lineAC, lineAO) > 0.0f) {
             D.SetHeadingDegrees(90.0f - 90.0f * MathUtils::DotProduct(lineAC, lineAO));
             simplex.clear();
             simplex.push_back(pointA);
             simplex.push_back(pointC);
             containsOrigin = false;
-        }
-        else if (MathUtils::DotProduct(lineAB, lineAO) > 0.0f) {
+        } else if(MathUtils::DotProduct(lineAB, lineAO) > 0.0f) {
             D.SetHeadingDegrees(90.0f - 90.0f * MathUtils::DotProduct(lineAB, lineAO));
             simplex.clear();
             simplex.push_back(pointA);
             simplex.push_back(pointB);
             containsOrigin = false;
-        }
-        else {
+        } else {
             containsOrigin = true;
         }
     };
     const auto doSimplex = [&](std::vector<Vector2>& simplex, Vector2& D) {
         const auto S = simplex.size();
-        switch (S) {
+        switch(S) {
         case 2:
             doSimplexLine(simplex, D);
             break;
@@ -752,14 +750,14 @@ bool GJKIntersect(const Collider& a, const Collider& b) {
         }
     };
     const auto result = [&](std::vector<Vector2>& simplex, Vector2& D) {
-        for (;;) {
+        for(;;) {
             A = support(D);
-            if (MathUtils::DotProduct(A, D) < 0.0f) {
+            if(MathUtils::DotProduct(A, D) < 0.0f) {
                 return false;
             }
             simplex.push_back(A);
             doSimplex(simplex, D);
-            if (containsOrigin) {
+            if(containsOrigin) {
                 return true;
             }
         }
@@ -771,7 +769,7 @@ Vector2 GJKClosestPoint(const Collider& a, const Collider& b) {
     const auto calcMinkowskiDiff = [](const Vector2& direction, const Collider& a) { return a.Support(direction); };
     const auto support = [&](const Vector2& direction) { return calcMinkowskiDiff(direction, a) - calcMinkowskiDiff(-direction, b); };
     auto A = support((b.CalcCenter() - a.CalcCenter()).GetNormalize());
-    std::vector<Vector2> simplex{ A };
+    std::vector<Vector2> simplex{A};
     auto D = -A;
     bool containsOrigin = false;
     const auto doSimplexLine = [&](std::vector<Vector2>& simplex, Vector2& D) {
@@ -781,13 +779,12 @@ Vector2 GJKClosestPoint(const Collider& a, const Collider& b) {
         const auto pointB = simplex[i_b];
         const auto lineAB = pointB - pointA;
         const auto lineAO = -pointA;
-        if (MathUtils::DotProduct(lineAB, lineAO) > 0.0f) {
+        if(MathUtils::DotProduct(lineAB, lineAO) > 0.0f) {
             D.SetHeadingDegrees(90.0f - 90.0f * MathUtils::DotProduct(lineAB, lineAO));
             simplex.clear();
             simplex.push_back(pointA);
             simplex.push_back(pointB);
-        }
-        else {
+        } else {
             D = lineAO.GetNormalize();
             simplex.clear();
             simplex.push_back(A);
@@ -803,27 +800,25 @@ Vector2 GJKClosestPoint(const Collider& a, const Collider& b) {
         const auto lineAC = pointC - pointA;
         const auto lineAB = pointB - pointA;
         const auto lineAO = -pointA;
-        if (MathUtils::DotProduct(lineAC, lineAO) > 0.0f) {
+        if(MathUtils::DotProduct(lineAC, lineAO) > 0.0f) {
             D.SetHeadingDegrees(90.0f - 90.0f * MathUtils::DotProduct(lineAC, lineAO));
             simplex.clear();
             simplex.push_back(pointA);
             simplex.push_back(pointC);
             containsOrigin = false;
-        }
-        else if (MathUtils::DotProduct(lineAB, lineAO) > 0.0f) {
+        } else if(MathUtils::DotProduct(lineAB, lineAO) > 0.0f) {
             D.SetHeadingDegrees(90.0f - 90.0f * MathUtils::DotProduct(lineAB, lineAO));
             simplex.clear();
             simplex.push_back(pointA);
             simplex.push_back(pointB);
             containsOrigin = false;
-        }
-        else {
+        } else {
             containsOrigin = true;
         }
     };
     const auto doSimplex = [&](std::vector<Vector2>& simplex, Vector2& D) {
         const auto S = simplex.size();
-        switch (S) {
+        switch(S) {
         case 2:
             doSimplexLine(simplex, D);
             break;
@@ -835,14 +830,14 @@ Vector2 GJKClosestPoint(const Collider& a, const Collider& b) {
         }
     };
     const auto result = [&](std::vector<Vector2>& simplex, Vector2& D) {
-        for (;;) {
+        for(;;) {
             A = support(D);
-            if (MathUtils::DotProduct(A, D) < 0.0f) {
+            if(MathUtils::DotProduct(A, D) < 0.0f) {
                 return false;
             }
             simplex.push_back(A);
             doSimplex(simplex, D);
-            if (containsOrigin) {
+            if(containsOrigin) {
                 return true;
             }
         }
@@ -854,7 +849,7 @@ std::tuple<bool, float, Vector2> GJKDistance(const Collider& a, const Collider& 
     const auto calcMinkowskiDiff = [](const Vector2& direction, const Collider& a) { return a.Support(direction); };
     const auto support = [&](const Vector2& direction) { return calcMinkowskiDiff(direction, a) - calcMinkowskiDiff(-direction, b); };
     auto A = support((b.CalcCenter() - a.CalcCenter()).GetNormalize());
-    std::vector<Vector2> simplex{ A };
+    std::vector<Vector2> simplex{A};
     auto D = -A;
     bool containsOrigin = false;
     const auto doSimplexLine = [&](std::vector<Vector2>& simplex, Vector2& D) {

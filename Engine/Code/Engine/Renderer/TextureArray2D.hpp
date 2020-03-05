@@ -1,8 +1,7 @@
 #pragma once
 
-#include "Engine/Renderer/Texture.hpp"
-
 #include "Engine/Renderer/DirectX/DX11.hpp"
+#include "Engine/Renderer/Texture.hpp"
 
 class RHIDevice;
 

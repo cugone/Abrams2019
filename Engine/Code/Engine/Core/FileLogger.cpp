@@ -1,27 +1,24 @@
 #include "Engine/Core/FileLogger.hpp"
 
 #include "Engine/Core/BuildConfig.hpp"
-
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/FileUtils.hpp"
 #include "Engine/Core/JobSystem.hpp"
-#include "Engine/Core/TimeUtils.hpp"
 #include "Engine/Core/ThreadUtils.hpp"
+#include "Engine/Core/TimeUtils.hpp"
 #include "Engine/Core/Win.hpp"
-
 #include "Engine/Profiling/Memory.hpp"
 
-#include <cstdio>
-#include <cstdarg>
 #include <chrono>
+#include <cstdarg>
+#include <cstdio>
 #include <filesystem>
 #include <iostream>
 
 namespace FS = std::filesystem;
 
 FileLogger::FileLogger(JobSystem& jobSystem, const std::string& logName) noexcept
-    : _job_system(jobSystem)
-{
+: _job_system(jobSystem) {
     Initialize(logName);
 }
 
@@ -37,7 +34,7 @@ void FileLogger::Log_worker() noexcept {
     while(IsRunning()) {
         std::unique_lock<std::mutex> lock(_cs);
         //Condition to wake up: not running or queue has jobs.
-        _signal.wait(lock, [this]()->bool { return !_is_running || !_queue.empty(); });
+        _signal.wait(lock, [this]() -> bool { return !_is_running || !_queue.empty(); });
         if(!_queue.empty()) {
             auto str = _queue.front();
             _queue.pop();
@@ -58,8 +55,8 @@ void FileLogger::RequestFlush() noexcept {
 bool FileLogger::IsRunning() const noexcept {
     bool running = false;
     {
-    std::scoped_lock<std::mutex> lock(_cs);
-    running = _is_running;
+        std::scoped_lock<std::mutex> lock(_cs);
+        running = _is_running;
     }
     return running;
 }
@@ -81,7 +78,8 @@ void FileLogger::DoCopyLog() noexcept {
         to_p.make_preferred();
         job_data->to = to_p;
         job_data->from = from_p;
-        _job_system.Run(JobType::Generic, [this](void* user_data) { CopyLog(user_data); }, job_data);
+        _job_system.Run(
+        JobType::Generic, [this](void* user_data) { CopyLog(user_data); }, job_data);
     }
 }
 
@@ -127,13 +125,13 @@ void FileLogger::Initialize(const std::string& log_name) noexcept {
     namespace FS = std::filesystem;
     std::string folder_str = "Data/Logs/";
     std::string log_str = folder_str + log_name + ".log";
-    FS::path folder_p{ folder_str };
-    FS::path log_p{ log_str };
+    FS::path folder_p{folder_str};
+    FS::path log_p{log_str};
     if(FS::exists(log_p)) {
         log_p = FS::canonical(log_p);
         log_p.make_preferred();
     } else {
-        log_p = FS::path{ folder_p / std::string{log_name + ".log"}};
+        log_p = FS::path{folder_p / std::string{log_name + ".log"}};
         log_p.make_preferred();
     }
     folder_p.make_preferred();
@@ -212,7 +210,6 @@ void FileLogger::LogError(const std::string& msg) noexcept {
 }
 
 void FileLogger::LogTag(const std::string& tag, const std::string& msg) noexcept {
-
     std::stringstream ss;
     InsertTimeStamp(ss);
     InsertTag(ss, tag);

@@ -4,7 +4,6 @@
 
 class Sphere3 {
 public:
-
     Vector3 center = Vector3::ZERO;
     float radius = 0.0f;
 
@@ -23,7 +22,7 @@ public:
     void StretchToIncludePoint(const Vector3& point) noexcept;
     void AddPadding(float paddingRadius) noexcept;
     void Translate(const Vector3& translation) noexcept;
-    
+
     Sphere3 operator+(const Vector3& translation) const noexcept;
     Sphere3 operator-(const Vector3& antiTranslation) const noexcept;
 

@@ -14,68 +14,67 @@ class Renderer;
 
 class KerningFont {
 public:
+    struct KerningFontInfoDef {
+        std::string face{};     //name of true type font
+        std::string charset{};  //OEM charset if not unicode (otherwise empty)
+        float stretch_height{}; //font height stretch percentage
+        int em_size{};          //size of font in em
+        int is_aliased{};       //supersamping level 1 for none
+        int outline{};          //outline thickness
+        IntVector4 padding{};   //top-right-bottom-left padding
+        IntVector2 spacing{};   //horizontal-vertical spacing
+        bool is_bold{};         //is bold
+        bool is_italic{};       //is italic
+        bool is_unicode{};      //is unicode
+        bool is_smoothed{};     //is smoothed
+        bool is_fixedHeight{};  //is fixed height
+    };
 
-struct KerningFontInfoDef {
-    std::string face{};    //name of true type font
-    std::string charset{}; //OEM charset if not unicode (otherwise empty)
-    float stretch_height{};  //font height stretch percentage
-    int em_size{};         //size of font in em
-    int is_aliased{};      //supersamping level 1 for none
-    int outline{};         //outline thickness
-    IntVector4 padding{};  //top-right-bottom-left padding
-    IntVector2 spacing{};  //horizontal-vertical spacing
-    bool is_bold{};        //is bold
-    bool is_italic{};      //is italic
-    bool is_unicode{};     //is unicode
-    bool is_smoothed{};    //is smoothed
-    bool is_fixedHeight{}; //is fixed height
-};
+    struct KerningFontPageDef {
+        int id{};
+        std::string file{};
+    };
 
-struct KerningFontPageDef {
-    int id{};
-    std::string file{};
-};
+    struct KerningFontCommonDef {
+        int line_height{};  //Distance in pixels between each line
+        int base{};         //Number of pixels from absolute top of line to base of the characters.
+        IntVector2 scale{}; //The width/height of the texture, normally used to scale the x/y position of the character image.
+        int page_count{};   //The number of texture pages included in the font.
+        bool is_packed{};   //true if monochrome characters have been packed into each texture channel. See individual channels for descriptions.
+        //0 -- channel holds glyph data.
+        //1 -- channel holds outline.
+        //2 -- channel holds glyph and outline.
+        //3 -- channel set to zero.
+        //4 -- channel set to one.
+        int alpha_channel{};
+        int red_channel{};
+        int green_channel{};
+        int blue_channel{};
+    };
 
-struct KerningFontCommonDef {
-    int line_height{};   //Distance in pixels between each line
-    int base{};          //Number of pixels from absolute top of line to base of the characters.
-    IntVector2 scale{};  //The width/height of the texture, normally used to scale the x/y position of the character image.
-    int page_count{};    //The number of texture pages included in the font.
-    bool is_packed{};    //true if monochrome characters have been packed into each texture channel. See individual channels for descriptions.
-    //0 -- channel holds glyph data.
-    //1 -- channel holds outline.
-    //2 -- channel holds glyph and outline.
-    //3 -- channel set to zero.
-    //4 -- channel set to one.
-    int alpha_channel{};
-    int red_channel{};
-    int green_channel{};
-    int blue_channel{};
-};
+    struct KerningFontCharDef {
+        int id{};
+        IntVector2 position{};
+        IntVector2 dimensions{};
+        IntVector2 offsets{};
+        int xadvance{};
+        int page_id{};
+        int channel_id{};
+    };
 
-struct KerningFontCharDef {
-    int id{};
-    IntVector2 position{};
-    IntVector2 dimensions{};
-    IntVector2 offsets{};
-    int xadvance{};
-    int page_id{};
-    int channel_id{};
-};
+    struct KerningFontKerningDef {
+        int first{};
+        int second{};
+        int amount{};
+    };
 
-struct KerningFontKerningDef {
-    int first{};
-    int second{};
-    int amount{};
-};
-
-using InfoDef = KerningFontInfoDef;
-using CommonDef = KerningFontCommonDef;
-using PageDef = KerningFontPageDef;
-using CharDef = KerningFontCharDef;
-using KerningDef = KerningFontKerningDef;
-using CharMap = std::map<int, CharDef>;
-using KerningMap = std::map<std::pair<int, int>, int>;
+    using InfoDef = KerningFontInfoDef;
+    using CommonDef = KerningFontCommonDef;
+    using PageDef = KerningFontPageDef;
+    using CharDef = KerningFontCharDef;
+    using KerningDef = KerningFontKerningDef;
+    using CharMap = std::map<int, CharDef>;
+    using KerningMap = std::map<std::pair<int, int>, int>;
 
     KerningFont() = delete;
     KerningFont(const KerningFont& font) = default;
@@ -111,7 +110,6 @@ using KerningMap = std::map<std::pair<int, int>, int>;
 
 protected:
 private:
-
     static float CalculateLongestMultiline(const KerningFont& font, const std::string& text, float scale = 1.0f) noexcept;
     float CalculateLongestMultiline(const std::string& text, float scale = 1.0f) const noexcept;
 
@@ -147,5 +145,4 @@ private:
     std::size_t _char_count = 0;
     std::size_t _kerns_count = 0;
     bool _is_loaded = false;
-
 };

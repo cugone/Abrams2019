@@ -3,8 +3,6 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Vector2.hpp"
 
-#include "Engine/Math/MathUtils.hpp"
-
 namespace UI {
 
 class Ratio {
@@ -17,6 +15,7 @@ public:
     ~Ratio() = default;
     const Vector2& GetValue() const;
     void SetValue(const Vector2& newValue);
+
 private:
     Vector2 value{};
 };
@@ -61,4 +60,4 @@ PivotPosition operator++(PivotPosition& mode, int);
 PivotPosition& operator--(PivotPosition& mode);
 PivotPosition operator--(PivotPosition& mode, int);
 
-} //End UI
+} // namespace UI

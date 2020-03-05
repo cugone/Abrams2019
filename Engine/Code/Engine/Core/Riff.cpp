@@ -17,7 +17,7 @@ constexpr const bool IsValid(const char* id) noexcept {
             || StringUtils::FourCC(id) == RiffChunkID::WAVE
             || StringUtils::FourCC(id) == RiffChunkID::AVI);
 }
-} //End RiffChunkID
+} // namespace RiffChunkID
 
 bool Riff::ParseDataIntoChunks(std::vector<unsigned char>& buffer) noexcept {
     std::stringstream stream(std::ios_base::in | std::ios_base::out | std::ios_base::binary);
@@ -32,81 +32,77 @@ bool Riff::ParseDataIntoChunks(std::vector<unsigned char>& buffer) noexcept {
         auto cur_chunk = std::make_unique<RiffChunk>();
         cur_chunk->header = cur_header;
         switch(StringUtils::FourCC(cur_header.fourcc)) {
-            case RiffChunkID::RIFF:
-            {
-                auto subdata = std::make_unique<RiffSubChunk>();
-                if(!stream.read(reinterpret_cast<char*>(&subdata->fourcc), 4)) {
-                    return false;
-                }
-                subdata->subdata_length = cur_header.length - 4;
-                subdata->subdata = std::move(std::make_unique<uint8_t[]>(subdata->subdata_length));
-                if(!stream.read(reinterpret_cast<char*>(subdata->subdata.get()), subdata->subdata_length)) {
-                    return false;
-                }
-                cur_chunk->data = std::move(subdata);
-                break;
+        case RiffChunkID::RIFF: {
+            auto subdata = std::make_unique<RiffSubChunk>();
+            if(!stream.read(reinterpret_cast<char*>(&subdata->fourcc), 4)) {
+                return false;
             }
-            case RiffChunkID::INFO:
-            {
-                auto subdata = std::make_unique<RiffSubChunk>();
-                if(!stream.read(reinterpret_cast<char*>(&subdata->fourcc), 4)) {
-                    return false;
-                }
-                subdata->subdata_length = cur_header.length - 4;
-                subdata->subdata = std::move(std::make_unique<uint8_t[]>(subdata->subdata_length));
-                if(!stream.read(reinterpret_cast<char*>(subdata->subdata.get()), subdata->subdata_length)) {
-                    return false;
-                }
-                {
-                    std::ostringstream err_ss{};
-                    std::string hdr{"RIFF INFO Chunk."};
-                    err_ss.write(hdr.c_str(), hdr.size());
-                    std::string len{"Length: "};
-                    len += std::to_string(cur_header.length);
-                    err_ss.write(len.c_str(), len.size());
-                    err_ss.write(reinterpret_cast<char*>(subdata->subdata.get()), subdata->subdata_length);
-                    DebuggerPrintf(err_ss.str().c_str());
-                }
-                cur_chunk->data = std::move(subdata);
-                break;
+            subdata->subdata_length = cur_header.length - 4;
+            subdata->subdata = std::move(std::make_unique<uint8_t[]>(subdata->subdata_length));
+            if(!stream.read(reinterpret_cast<char*>(subdata->subdata.get()), subdata->subdata_length)) {
+                return false;
             }
-            case RiffChunkID::LIST:
-            {
-                auto subdata = std::make_unique<RiffSubChunk>();
-                if(!stream.read(reinterpret_cast<char*>(&subdata->fourcc), 4)) {
-                    return false;
-                }
-                subdata->subdata_length = cur_header.length - 4;
-                subdata->subdata = std::move(std::make_unique<uint8_t[]>(subdata->subdata_length));
-                auto subdata_head = subdata->subdata.get();
-                if(!stream.read(reinterpret_cast<char*>(subdata_head), subdata->subdata_length)) {
-                    return false;
-                }
-                auto list_chunk = std::move(ReadListChunk(stream));
-                if(list_chunk) {
-                    cur_chunk = std::move(list_chunk.value());
-                }
-                break;
+            cur_chunk->data = std::move(subdata);
+            break;
+        }
+        case RiffChunkID::INFO: {
+            auto subdata = std::make_unique<RiffSubChunk>();
+            if(!stream.read(reinterpret_cast<char*>(&subdata->fourcc), 4)) {
+                return false;
             }
-            default:
-            {
-                {
-                    std::ostringstream err_ss{};
-                    std::string hdr{ "Unknown RIFF Chunk ID: " };
-                    hdr += cur_header.fourcc[0];
-                    hdr += cur_header.fourcc[1];
-                    hdr += cur_header.fourcc[2];
-                    hdr += cur_header.fourcc[3];
-                    err_ss.write(hdr.c_str(), hdr.size());
-                    std::string len{ " Length: " };
-                    len += std::to_string(cur_header.length);
-                    err_ss.write(len.c_str(), len.size());
-                    DebuggerPrintf(err_ss.str().c_str());
-                }
-                stream.seekp(cur_header.length, std::ios_base::cur);
-                stream.seekg(cur_header.length, std::ios_base::cur);
-                break;
+            subdata->subdata_length = cur_header.length - 4;
+            subdata->subdata = std::move(std::make_unique<uint8_t[]>(subdata->subdata_length));
+            if(!stream.read(reinterpret_cast<char*>(subdata->subdata.get()), subdata->subdata_length)) {
+                return false;
             }
+            {
+                std::ostringstream err_ss{};
+                std::string hdr{"RIFF INFO Chunk."};
+                err_ss.write(hdr.c_str(), hdr.size());
+                std::string len{"Length: "};
+                len += std::to_string(cur_header.length);
+                err_ss.write(len.c_str(), len.size());
+                err_ss.write(reinterpret_cast<char*>(subdata->subdata.get()), subdata->subdata_length);
+                DebuggerPrintf(err_ss.str().c_str());
+            }
+            cur_chunk->data = std::move(subdata);
+            break;
+        }
+        case RiffChunkID::LIST: {
+            auto subdata = std::make_unique<RiffSubChunk>();
+            if(!stream.read(reinterpret_cast<char*>(&subdata->fourcc), 4)) {
+                return false;
+            }
+            subdata->subdata_length = cur_header.length - 4;
+            subdata->subdata = std::move(std::make_unique<uint8_t[]>(subdata->subdata_length));
+            auto subdata_head = subdata->subdata.get();
+            if(!stream.read(reinterpret_cast<char*>(subdata_head), subdata->subdata_length)) {
+                return false;
+            }
+            auto list_chunk = std::move(ReadListChunk(stream));
+            if(list_chunk) {
+                cur_chunk = std::move(list_chunk.value());
+            }
+            break;
+        }
+        default: {
+            {
+                std::ostringstream err_ss{};
+                std::string hdr{"Unknown RIFF Chunk ID: "};
+                hdr += cur_header.fourcc[0];
+                hdr += cur_header.fourcc[1];
+                hdr += cur_header.fourcc[2];
+                hdr += cur_header.fourcc[3];
+                err_ss.write(hdr.c_str(), hdr.size());
+                std::string len{" Length: "};
+                len += std::to_string(cur_header.length);
+                err_ss.write(len.c_str(), len.size());
+                DebuggerPrintf(err_ss.str().c_str());
+            }
+            stream.seekp(cur_header.length, std::ios_base::cur);
+            stream.seekg(cur_header.length, std::ios_base::cur);
+            break;
+        }
         }
         _chunks.push_back(std::move(cur_chunk));
     }
@@ -191,4 +187,4 @@ std::optional<std::unique_ptr<Riff::RiffChunk>> Riff::ReadListChunk(std::strings
     return {};
 }
 
-} //End FileUtils
+} // namespace FileUtils

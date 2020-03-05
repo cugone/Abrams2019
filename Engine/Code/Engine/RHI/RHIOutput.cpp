@@ -4,25 +4,20 @@
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/Rgba.hpp"
 #include "Engine/Core/StringUtils.hpp"
-
-#include "Engine/Renderer/DirectX/DX11.hpp"
-#include "Engine/Renderer/Renderer.hpp"
-
+#include "Engine/Math/IntVector2.hpp"
 #include "Engine/RHI/RHIDevice.hpp"
 #include "Engine/RHI/RHIDeviceContext.hpp"
-
-#include "Engine/Renderer/Window.hpp"
-
-#include "Engine/Math/IntVector2.hpp"
+#include "Engine/Renderer/DirectX/DX11.hpp"
+#include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/Texture2D.hpp"
+#include "Engine/Renderer/Window.hpp"
 
 #include <sstream>
 
 RHIOutput::RHIOutput(const RHIDevice& parent, std::unique_ptr<Window> wnd) noexcept
-    : _parent_device(parent)
-    , _window(std::move(wnd))
-{
+: _parent_device(parent)
+, _window(std::move(wnd)) {
     CreateBuffers();
 }
 
@@ -90,12 +85,12 @@ void RHIOutput::Present(bool vsync) noexcept {
     unsigned int sync_interval = use_no_sync_interval ? 0u : 1u;
     unsigned int present_flags = use_no_sync_interval ? DXGI_PRESENT_ALLOW_TEARING : 0;
     auto hr_present = _parent_device.GetDxSwapChain()->Present1(sync_interval, present_flags, &present_params);
-    #ifdef RENDER_DEBUG
+#ifdef RENDER_DEBUG
     const auto err_str = std::string{"Present call failed: "} + StringUtils::FormatWindowsMessage(hr_present);
     GUARANTEE_OR_DIE(SUCCEEDED(hr_present), err_str.c_str());
-    #else
+#else
     GUARANTEE_OR_DIE(SUCCEEDED(hr_present), "Present call failed.");
-    #endif
+#endif
 }
 
 void RHIOutput::CreateBuffers() noexcept {
@@ -175,7 +170,7 @@ std::unique_ptr<Texture> RHIOutput::CreateFullscreenTexture() noexcept {
 
     // Setup Initial Data
     D3D11_SUBRESOURCE_DATA subresource_data{};
-    auto data = std::vector<Rgba>(static_cast<std::size_t>(dims.x)* static_cast<std::size_t>(dims.y), Rgba::Magenta);
+    auto data = std::vector<Rgba>(static_cast<std::size_t>(dims.x) * static_cast<std::size_t>(dims.y), Rgba::Magenta);
     subresource_data.pSysMem = data.data();
     subresource_data.SysMemPitch = width * sizeof(Rgba);
     subresource_data.SysMemSlicePitch = width * height * sizeof(Rgba);

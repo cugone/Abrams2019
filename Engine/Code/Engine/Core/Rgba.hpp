@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Engine/Math/Vector4.hpp"
 #include "Engine/Math/Vector3.hpp"
+#include "Engine/Math/Vector4.hpp"
 
 #include <ostream>
 #include <string>
@@ -9,7 +9,6 @@
 
 class Rgba {
 public:
-
     static const Rgba White;
     static const Rgba Black;
     static const Rgba Red;
@@ -105,5 +104,5 @@ private:
 };
 
 namespace StringUtils {
-    std::string to_string(const Rgba& clr) noexcept;
+std::string to_string(const Rgba& clr) noexcept;
 }

@@ -3,13 +3,11 @@
 #include "Engine/Core/BuildConfig.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/StringUtils.hpp"
-
 #include "Engine/RHI/RHIDevice.hpp"
 
 Texture1D::Texture1D(const RHIDevice& device, Microsoft::WRL::ComPtr<ID3D11Texture1D> dxTexture) noexcept
-    : Texture(device)
-    , _dx_tex(dxTexture)
-{
+: Texture(device)
+, _dx_tex(dxTexture) {
     SetTexture();
 }
 
@@ -24,9 +22,8 @@ ID3D11Resource* Texture1D::GetDxResource() const noexcept {
 }
 
 Texture1D::Texture1D(Texture1D&& r_other) noexcept
-    : Texture(std::move(r_other))
-    , _dx_tex(std::move(r_other._dx_tex))
-{
+: Texture(std::move(r_other))
+, _dx_tex(std::move(r_other._dx_tex)) {
     r_other._dx_tex = nullptr;
 }
 
@@ -59,7 +56,7 @@ void Texture1D::SetTexture() noexcept {
         desc.Flags = 0u;
         bool is_renderable_depthstencil = is_depthstencil && (t_desc.BindFlags & D3D11_BIND_SHADER_RESOURCE);
         desc.Format = is_renderable_depthstencil ? ImageFormatToDxgiFormat(ImageFormat::D32_Float)
-            : ImageFormatToDxgiFormat(ImageFormat::D24_UNorm_S8_UInt);
+                                                 : ImageFormatToDxgiFormat(ImageFormat::D24_UNorm_S8_UInt);
         auto hr = _device.GetDxDevice()->CreateDepthStencilView(_dx_tex.Get(), &desc, &_dsv);
         if(FAILED(hr)) {
             success &= false;
@@ -101,10 +98,18 @@ void Texture1D::SetTexture() noexcept {
     }
 
     if(!success) {
-        if(_dsv) { _dsv = nullptr; }
-        if(_rtv) { _rtv = nullptr; }
-        if(_srv) { _srv = nullptr; }
-        if(_uav) { _uav = nullptr; }
+        if(_dsv) {
+            _dsv = nullptr;
+        }
+        if(_rtv) {
+            _rtv = nullptr;
+        }
+        if(_srv) {
+            _srv = nullptr;
+        }
+        if(_uav) {
+            _uav = nullptr;
+        }
         ERROR_AND_DIE(error_str.c_str());
     }
 }

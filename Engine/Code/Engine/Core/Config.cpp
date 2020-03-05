@@ -1,8 +1,8 @@
 #include "Engine/Core/Config.hpp"
 
 #include "Engine/Core/ArgumentParser.hpp"
-#include "Engine/Core/KeyValueParser.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
+#include "Engine/Core/KeyValueParser.hpp"
 #include "Engine/Core/StringUtils.hpp"
 
 #include <algorithm>
@@ -10,25 +10,20 @@
 #include <sstream>
 
 Config::Config(KeyValueParser&& kvp) noexcept
-    : _config(std::move(kvp.Release()))
-{
+: _config(std::move(kvp.Release())) {
     /* DO NOTHING */
 }
 
-
 Config::Config(Config&& other) noexcept
-    : _config(std::move(other._config))
-{
+: _config(std::move(other._config)) {
     other._config = {};
 }
-
 
 Config& Config::operator=(Config&& rhs) noexcept {
     _config = rhs._config;
     rhs._config = {};
     return *this;
 }
-
 
 bool Config::LoadFromFile(const std::filesystem::path& filepath) noexcept {
     if(std::filesystem::exists(filepath)) {

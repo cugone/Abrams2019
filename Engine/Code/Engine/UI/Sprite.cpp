@@ -6,13 +6,12 @@
 namespace UI {
 
 Sprite::Sprite(Canvas* parent_canvas, AnimatedSprite* sprite)
-    : Element(parent_canvas)
-    , _sprite(sprite)
-{
+: Element(parent_canvas)
+, _sprite(sprite) {
     auto dims = _sprite->GetFrameDimensions();
     auto w = static_cast<float>(dims.x);
     auto h = static_cast<float>(dims.y);
-    SetSize(UI::Metric{ UI::Ratio{}, Vector2(w, h) });
+    SetSize(UI::Metric{UI::Ratio{}, Vector2(w, h)});
 }
 
 Sprite::~Sprite() {
@@ -42,4 +41,4 @@ void Sprite::DebugRender(Renderer& renderer, bool showSortOrder /*= false*/) con
     Element::DebugRender(renderer, showSortOrder);
 }
 
-}
+} // namespace UI

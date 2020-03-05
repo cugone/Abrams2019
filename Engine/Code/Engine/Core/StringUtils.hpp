@@ -75,130 +75,128 @@ std::string CaesarShift(std::string_view text, bool encode = true) noexcept;
 //NOT USEFUL AS TRUE ENCRYPTION!! DO NOT USE IF SERIOUS ENCRYPTION IS NEEDED!!!
 std::string ShiftCipher(int key, std::string_view text) noexcept;
 
-} //End Encryption
+} // namespace Encryption
 
-} //End StringUtils
-
+} // namespace StringUtils
 
 namespace detail {
 
-    template<typename First, typename... Rest>
-    First Join(const First& first) noexcept {
-        return first;
-    }
+template<typename First, typename... Rest>
+First Join(const First& first) noexcept {
+    return first;
+}
 
-    template<typename First, typename... Rest>
-    First Join(const First& first, const Rest& ... rest) noexcept {
-        return first + detail::Join(rest...);
-    }
+template<typename First, typename... Rest>
+First Join(const First& first, const Rest&... rest) noexcept {
+    return first + detail::Join(rest...);
+}
 
-    template<typename First, typename... Rest>
-    First Join([[maybe_unused]]char delim, const First& first) noexcept {
-        return first;
-    }
+template<typename First, typename... Rest>
+First Join([[maybe_unused]] char delim, const First& first) noexcept {
+    return first;
+}
 
-    template<typename First, typename... Rest>
-    First Join(char delim, const First& first, const Rest& ... rest) noexcept {
-        return first + First{ delim } + detail::Join(delim, rest...);
-    }
+template<typename First, typename... Rest>
+First Join(char delim, const First& first, const Rest&... rest) noexcept {
+    return first + First{delim} + detail::Join(delim, rest...);
+}
 
-    template<typename First, typename... Rest>
-    First Join([[maybe_unused]]wchar_t delim, const First& first) noexcept {
-        return first;
-    }
+template<typename First, typename... Rest>
+First Join([[maybe_unused]] wchar_t delim, const First& first) noexcept {
+    return first;
+}
 
-    template<typename First, typename... Rest>
-    First Join(wchar_t delim, const First& first, const Rest& ... rest) noexcept {
-        return first + First{ delim } + detail::Join(delim, rest...);
-    }
+template<typename First, typename... Rest>
+First Join(wchar_t delim, const First& first, const Rest&... rest) noexcept {
+    return first + First{delim} + detail::Join(delim, rest...);
+}
 
-    template<typename First, typename... Rest>
-    First JoinSkipEmpty(const First& first) noexcept {
-        return first;
-    }
+template<typename First, typename... Rest>
+First JoinSkipEmpty(const First& first) noexcept {
+    return first;
+}
 
-    template<typename First, typename... Rest>
-    First JoinSkipEmpty(const First& first, const Rest& ... rest) noexcept {
-        return first + detail::JoinSkipEmpty(rest...);
-    }
+template<typename First, typename... Rest>
+First JoinSkipEmpty(const First& first, const Rest&... rest) noexcept {
+    return first + detail::JoinSkipEmpty(rest...);
+}
 
-    template<typename First, typename... Rest>
-    First JoinSkipEmpty(char delim, const First& first) noexcept {
-        return first;
-    }
+template<typename First, typename... Rest>
+First JoinSkipEmpty(char delim, const First& first) noexcept {
+    return first;
+}
 
-    template<typename First, typename... Rest>
-    First JoinSkipEmpty(char delim, const First& first, const Rest& ... rest) noexcept {
-        if (first.empty()) {
-            return detail::JoinSkipEmpty(delim, rest...);
+template<typename First, typename... Rest>
+First JoinSkipEmpty(char delim, const First& first, const Rest&... rest) noexcept {
+    if(first.empty()) {
+        return detail::JoinSkipEmpty(delim, rest...);
+    }
+    if(sizeof...(rest) == 1) {
+        auto t = std::make_tuple(rest...);
+        auto last = std::get<0>(t);
+        if(last.empty()) {
+            return first;
         }
-        if(sizeof...(rest) == 1) {
-            auto t = std::make_tuple(rest...);
-            auto last = std::get<0>(t);
-            if(last.empty()) {
-                return first;
-            }
+    }
+    return first + First{delim} + detail::JoinSkipEmpty(delim, rest...);
+}
+
+template<typename First, typename... Rest>
+First JoinSkipEmpty([maybe_unused] wchar_t delim) noexcept {
+    return First{};
+}
+
+template<typename First, typename... Rest>
+First JoinSkipEmpty(wchar_t delim, const First& first) noexcept {
+    return first;
+}
+
+template<typename First, typename... Rest>
+First JoinSkipEmpty(wchar_t delim, const First& first, const Rest&... rest) noexcept {
+    if(first.empty()) {
+        return detail::JoinSkipEmpty(delim, rest...);
+    }
+    if(sizeof...(rest) == 1) {
+        auto t = std::make_tuple(rest...);
+        auto last = std::get<0>(t);
+        if(last.empty()) {
+            return first;
         }
-        return first + First{delim} + detail::JoinSkipEmpty(delim, rest...);
     }
-    
-    template<typename First, typename... Rest>
-    First JoinSkipEmpty([maybe_unused]wchar_t delim) noexcept {
-        return First{};
-    }
+    return first + First{delim} + detail::JoinSkipEmpty(delim, rest...);
+}
 
-    template<typename First, typename... Rest>
-    First JoinSkipEmpty(wchar_t delim, const First& first) noexcept {
-        return first;
-    }
+struct encode_tag {};
+struct decode_tag {};
 
-    template<typename First, typename... Rest>
-    First JoinSkipEmpty(wchar_t delim, const First& first, const Rest& ... rest) noexcept {
-        if (first.empty()) {
-            return detail::JoinSkipEmpty(delim, rest...);
-        }
-        if (sizeof...(rest) == 1) {
-            auto t = std::make_tuple(rest...);
-            auto last = std::get<0>(t);
-            if (last.empty()) {
-                return first;
-            }
-        }
-        return first + First{ delim } +detail::JoinSkipEmpty(delim, rest...);
-    }
-
-    struct encode_tag {};
-    struct decode_tag {};
-
-} //End detail
-
+} // namespace detail
 
 template<typename T, typename... U>
-T Join(char delim, const T& arg, const U& ... args) noexcept {
-    return detail::Join(delim, arg, args ...);
+T Join(char delim, const T& arg, const U&... args) noexcept {
+    return detail::Join(delim, arg, args...);
 }
 
 template<typename T, typename... U>
-T JoinSkipEmpty(char delim, const T& arg, const U& ... args) noexcept {
-    return detail::JoinSkipEmpty(delim, arg, args ...);
+T JoinSkipEmpty(char delim, const T& arg, const U&... args) noexcept {
+    return detail::JoinSkipEmpty(delim, arg, args...);
 }
 
 template<typename T, typename... U>
-T Join(wchar_t delim, const T& arg, const U& ... args) noexcept {
-    return detail::Join(delim, arg, args ...);
+T Join(wchar_t delim, const T& arg, const U&... args) noexcept {
+    return detail::Join(delim, arg, args...);
 }
 
 template<typename T, typename... U>
-T JoinSkipEmpty(wchar_t delim, const T& arg, const U& ... args) noexcept {
-    return detail::JoinSkipEmpty(delim, arg, args ...);
+T JoinSkipEmpty(wchar_t delim, const T& arg, const U&... args) noexcept {
+    return detail::JoinSkipEmpty(delim, arg, args...);
 }
 
 template<typename T, typename... U>
-T Join(const T& arg, const U& ... args) noexcept {
-    return detail::Join(arg, args ...);
+T Join(const T& arg, const U&... args) noexcept {
+    return detail::Join(arg, args...);
 }
 
 template<typename T, typename... U>
-T JoinSkipEmpty(const T& arg, const U& ... args) noexcept {
-    return detail::JoinSkipEmpty(arg, args ...);
+T JoinSkipEmpty(const T& arg, const U&... args) noexcept {
+    return detail::JoinSkipEmpty(arg, args...);
 }

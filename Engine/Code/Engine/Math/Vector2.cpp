@@ -1,7 +1,6 @@
 #include "Engine/Math/Vector2.hpp"
 
 #include "Engine/Core/StringUtils.hpp"
-
 #include "Engine/Math/IntVector2.hpp"
 #include "Engine/Math/MathUtils.hpp"
 
@@ -17,22 +16,19 @@ const Vector2 Vector2::YX_AXIS(1.0f, 1.0);
 
 Vector2::Vector2(float initialX, float initialY) noexcept
 : x(initialX)
-, y(initialY)
-{
+, y(initialY) {
     /* DO NOTHING */
 }
 
 Vector2::Vector2(const Vector3& rhs) noexcept
-    : x(rhs.x)
-    , y(rhs.y)
-{
+: x(rhs.x)
+, y(rhs.y) {
     /* DO NOTHING */
 }
 
 Vector2::Vector2(const std::string& value) noexcept
-    : x(0.0f)
-    , y(0.0f)
-{
+: x(0.0f)
+, y(0.0f) {
     if(value[0] == '[') {
         if(value.back() == ']') {
             std::string contents_str = value.substr(1, value.size() - 1);
@@ -40,20 +36,18 @@ Vector2::Vector2(const std::string& value) noexcept
             auto s = values.size();
             for(std::size_t i = 0; i < s; ++i) {
                 switch(i) {
-                    case 0: x = std::stof(values[i]); break;
-                    case 1: y = std::stof(values[i]); break;
-                    default: break;
+                case 0: x = std::stof(values[i]); break;
+                case 1: y = std::stof(values[i]); break;
+                default: break;
                 }
             }
         }
     }
 }
 
-
 Vector2::Vector2(const IntVector2& intvec2) noexcept
-    : x(static_cast<float>(intvec2.x))
-    , y(static_cast<float>(intvec2.y))
-{
+: x(static_cast<float>(intvec2.x))
+, y(static_cast<float>(intvec2.y)) {
     /* DO NOTHING */
 }
 
@@ -133,7 +127,6 @@ bool Vector2::operator!=(const Vector2& rhs) const noexcept {
     return !(*this == rhs);
 }
 
-
 std::ostream& operator<<(std::ostream& out_stream, const Vector2& v) noexcept {
     out_stream << '[' << v.x << ',' << v.y << ']';
     return out_stream;
@@ -154,7 +147,6 @@ std::istream& operator>>(std::istream& in_stream, Vector2& v) noexcept {
 
     return in_stream;
 }
-
 
 void Vector2::GetXY(float& outX, float& outY) const noexcept {
     outX = x;
@@ -206,7 +198,7 @@ float Vector2::SetLength(float length) noexcept {
     float theta = CalcHeadingRadians();
     x = length * std::cos(theta);
     y = length * std::sin(theta);
-    return R;    
+    return R;
 }
 
 void Vector2::SetLengthAndHeadingDegrees(float headingDegrees, float length) noexcept {
@@ -247,13 +239,11 @@ Vector2 Vector2::GetNormalize() const noexcept {
     return Vector2::ZERO;
 }
 
-
 Vector2 Vector2::GetLeftHandNormal() const noexcept {
     Vector2 result = *this;
     result.Rotate90Degrees();
     return result;
 }
-
 
 Vector2 Vector2::GetRightHandNormal() const noexcept {
     Vector2 result = *this;
@@ -273,7 +263,6 @@ void Vector2::SetXY(float newX, float newY) noexcept {
     x = newX;
     y = newY;
 }
-
 
 void swap(Vector2& a, Vector2& b) noexcept {
     std::swap(a.x, b.y);

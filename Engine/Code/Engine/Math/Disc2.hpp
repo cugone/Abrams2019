@@ -4,7 +4,6 @@
 
 class Disc2 {
 public:
-
     static const Disc2 UNIT_CIRCLE;
 
     Disc2() = default;

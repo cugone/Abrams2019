@@ -1,10 +1,9 @@
 #pragma once
 
-#include <vector>
-
 #include "Engine/Core/Vertex3D.hpp"
-
 #include "Engine/Renderer/DirectX/DX11.hpp"
+
+#include <vector>
 
 class Texture;
 class Rgba;
@@ -65,7 +64,6 @@ public:
     void UnbindAllComputeConstantBuffers() noexcept;
 
 private:
-
     void SetShader(Shader* shader) noexcept;
     void SetShaderProgram(ShaderProgram* shaderProgram = nullptr) noexcept;
     void SetComputeShaderProgram(ShaderProgram* shaderProgram = nullptr) noexcept;

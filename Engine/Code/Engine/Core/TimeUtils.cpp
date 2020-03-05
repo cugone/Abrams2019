@@ -3,15 +3,15 @@
 #include "Engine/Core/Win.hpp"
 
 #include <ctime>
-#include <sstream>
 #include <iomanip>
+#include <sstream>
 
 namespace TimeUtils {
 
 enum class FormatType {
-    Date
-    ,Time
-    ,Both
+    Date,
+    Time,
+    Both
 };
 
 std::string GetFormatStringFromOptions(const DateTimeStampOptions& options, FormatType type);
@@ -83,4 +83,4 @@ void AppendMilliseconds(std::ostringstream& msg, const DateTimeStampOptions& opt
     }
 }
 
-}
+} // namespace TimeUtils

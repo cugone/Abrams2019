@@ -1,17 +1,14 @@
 #include "Engine/Renderer/StructuredBuffer.hpp"
 
 #include "Engine/Core/ErrorWarningAssert.hpp"
-
 #include "Engine/RHI/RHIDevice.hpp"
 #include "Engine/RHI/RHIDeviceContext.hpp"
 
-
 StructuredBuffer::StructuredBuffer(const RHIDevice& owner, const buffer_t& buffer, std::size_t element_size, std::size_t element_count, const BufferUsage& usage, const BufferBindUsage& bindUsage) noexcept
-    : Buffer<void*>()
-    , _element_count(element_count)
-    , _element_size(element_size)
-    , _buffer_size(element_size * element_count)
-{
+: Buffer<void*>()
+, _element_count(element_count)
+, _element_size(element_size)
+, _buffer_size(element_size * element_count) {
     D3D11_BUFFER_DESC buffer_desc{};
     buffer_desc.Usage = BufferUsageToD3DUsage(usage);
     buffer_desc.BindFlags = BufferBindUsageToD3DBindFlags(bindUsage);
@@ -39,7 +36,6 @@ StructuredBuffer::StructuredBuffer(const RHIDevice& owner, const buffer_t& buffe
     if(FAILED(hr)) {
         ERROR_AND_DIE("Failed to create StructuredBuffer's SRV.");
     }
-
 }
 
 StructuredBuffer::~StructuredBuffer() noexcept {

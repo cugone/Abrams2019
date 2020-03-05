@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Engine/Core/DataUtils.hpp"
-
 #include "Engine/Renderer/BlendState.hpp"
 #include "Engine/Renderer/DepthStencilState.hpp"
 

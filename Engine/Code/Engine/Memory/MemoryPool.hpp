@@ -5,19 +5,18 @@
 template<typename T, std::size_t maxSize>
 class MemoryPool {
 public:
-	MemoryPool() noexcept;
+    MemoryPool() noexcept;
     MemoryPool(const MemoryPool& other) = delete;
     MemoryPool(MemoryPool&& other) = delete;
     MemoryPool& operator=(const MemoryPool& rhs) = delete;
     MemoryPool& operator=(MemoryPool&& rhs) = delete;
-	~MemoryPool() noexcept;
+    ~MemoryPool() noexcept;
 
     [[nodiscard]] void* allocate(std::size_t size) noexcept;
     void deallocate(void* ptr, std::size_t size) noexcept;
 
 protected:
 private:
-
     std::size_t _count = 0;
     std::size_t _max = 0;
     T* _data = nullptr;

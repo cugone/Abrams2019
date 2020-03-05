@@ -15,8 +15,8 @@ struct joinable_thread : public std::thread {
 using jthread = joinable_thread;
 
 namespace ThreadUtils {
-    void SetThreadDescription(std::thread& thread, const std::string& description) noexcept;
-    void SetThreadDescription(std::thread& thread, const std::wstring& description) noexcept;
-    void GetThreadDescription(std::thread& thread, std::string& description) noexcept;
-    void GetThreadDescription(std::thread& thread, std::wstring& description) noexcept;
-}
+void SetThreadDescription(std::thread& thread, const std::string& description) noexcept;
+void SetThreadDescription(std::thread& thread, const std::wstring& description) noexcept;
+void GetThreadDescription(std::thread& thread, std::string& description) noexcept;
+void GetThreadDescription(std::thread& thread, std::wstring& description) noexcept;
+} // namespace ThreadUtils

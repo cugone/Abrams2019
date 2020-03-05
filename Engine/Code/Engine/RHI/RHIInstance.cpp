@@ -3,11 +3,9 @@
 #include "Engine/Core/BuildConfig.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/StringUtils.hpp"
-
-#include "Engine/Renderer/Window.hpp"
-
 #include "Engine/RHI/RHIDevice.hpp"
 #include "Engine/RHI/RHIOutput.hpp"
+#include "Engine/Renderer/Window.hpp"
 
 RHIInstance* const RHIInstance::CreateInstance() noexcept {
     if(_instance) {
@@ -25,8 +23,8 @@ RHIInstance* const RHIInstance::CreateInstance() noexcept {
 
     debug_module = ::LoadLibraryA("Dxgidebug.dll");
     if(debug_module) {
-        using GetDebugModuleCB = HRESULT(WINAPI *)(REFIID, void**);
-        GetDebugModuleCB cb = (GetDebugModuleCB) ::GetProcAddress(debug_module, "DXGIGetDebugInterface");
+        using GetDebugModuleCB = HRESULT(WINAPI*)(REFIID, void**);
+        GetDebugModuleCB cb = (GetDebugModuleCB)::GetProcAddress(debug_module, "DXGIGetDebugInterface");
         HRESULT hr = cb(__uuidof(IDXGIDebug), reinterpret_cast<void**>(_instance->_debuggerInstance.GetAddressOf()));
         bool succeeded = SUCCEEDED(hr);
         ASSERT_OR_DIE(succeeded, "DXGIDugger failed to initialize.");

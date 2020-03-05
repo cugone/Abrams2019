@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Engine/Core/EngineSubsystem.hpp"
 #include "Engine/Core/BuildConfig.hpp"
+#include "Engine/Core/EngineSubsystem.hpp"
 
 #ifndef UI_DEBUG
-#define IMGUI_DISABLE_DEMO_WINDOWS
+    #define IMGUI_DISABLE_DEMO_WINDOWS
 #endif
 
 #include "Thirdparty/Imgui/imgui.h"
@@ -40,6 +40,7 @@ public:
     bool WantsInputMouseCapture() const noexcept;
 
     void ToggleImguiDemoWindow() noexcept;
+
 protected:
 private:
     FileLogger& _fileLogger;
@@ -55,12 +56,12 @@ class Vector2;
 class Vector4;
 //Custom ImGui overloads
 namespace ImGui {
-    void Image(const Texture* texture, const Vector2& size, const Vector2& uv0, const Vector2& uv1, const Rgba& tint_col, const Rgba& border_col) noexcept;
-    void Image(Texture* texture, const Vector2& size, const Vector2& uv0, const Vector2& uv1, const Rgba& tint_col, const Rgba& border_col) noexcept;
-    bool ColorEdit3(const char* label, Rgba& color, ImGuiColorEditFlags flags = 0) noexcept;
-    bool ColorEdit4(const char* label, Rgba& color, ImGuiColorEditFlags flags = 0) noexcept;
-    bool ColorPicker3(const char* label, Rgba& color, ImGuiColorEditFlags flags = 0) noexcept;
-    bool ColorPicker4(const char* label, Rgba& color, ImGuiColorEditFlags flags = 0, Rgba* refColor = nullptr) noexcept;
-    bool ColorButton(const char* desc_id, Rgba& color, ImGuiColorEditFlags flags = 0, Vector2 size = Vector2::ZERO) noexcept;
-    void TextColored(const Rgba& color, const char* fmt, ...) noexcept;
-}
+void Image(const Texture* texture, const Vector2& size, const Vector2& uv0, const Vector2& uv1, const Rgba& tint_col, const Rgba& border_col) noexcept;
+void Image(Texture* texture, const Vector2& size, const Vector2& uv0, const Vector2& uv1, const Rgba& tint_col, const Rgba& border_col) noexcept;
+bool ColorEdit3(const char* label, Rgba& color, ImGuiColorEditFlags flags = 0) noexcept;
+bool ColorEdit4(const char* label, Rgba& color, ImGuiColorEditFlags flags = 0) noexcept;
+bool ColorPicker3(const char* label, Rgba& color, ImGuiColorEditFlags flags = 0) noexcept;
+bool ColorPicker4(const char* label, Rgba& color, ImGuiColorEditFlags flags = 0, Rgba* refColor = nullptr) noexcept;
+bool ColorButton(const char* desc_id, Rgba& color, ImGuiColorEditFlags flags = 0, Vector2 size = Vector2::ZERO) noexcept;
+void TextColored(const Rgba& color, const char* fmt, ...) noexcept;
+} // namespace ImGui

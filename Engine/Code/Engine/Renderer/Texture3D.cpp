@@ -3,16 +3,12 @@
 #include "Engine/Core/BuildConfig.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/StringUtils.hpp"
-
+#include "Engine/RHI/RHIDevice.hpp"
 #include "Engine/Renderer/DirectX/DX11.hpp"
 
-#include "Engine/RHI/RHIDevice.hpp"
-
-
 Texture3D::Texture3D(const RHIDevice& device, Microsoft::WRL::ComPtr<ID3D11Texture3D> dxTexture) noexcept
-    : Texture(device)
-    , _dx_tex(dxTexture)
-{
+: Texture(device)
+, _dx_tex(dxTexture) {
     SetTexture();
 }
 
@@ -25,7 +21,6 @@ void Texture3D::SetDebugName([[maybe_unused]] const std::string& name) const noe
 ID3D11Resource* Texture3D::GetDxResource() const noexcept {
     return _dx_tex.Get();
 }
-
 
 void Texture3D::SetTexture() {
     D3D11_TEXTURE3D_DESC t_desc{};
@@ -80,18 +75,25 @@ void Texture3D::SetTexture() {
         }
     }
     if(!success) {
-        if(_dsv) { _dsv = nullptr; }
-        if(_rtv) { _rtv = nullptr; }
-        if(_srv) { _srv = nullptr; }
-        if(_uav) { _uav = nullptr; }
+        if(_dsv) {
+            _dsv = nullptr;
+        }
+        if(_rtv) {
+            _rtv = nullptr;
+        }
+        if(_srv) {
+            _srv = nullptr;
+        }
+        if(_uav) {
+            _uav = nullptr;
+        }
         ERROR_AND_DIE(error_str.c_str());
     }
 }
 
 Texture3D::Texture3D(Texture3D&& r_other) noexcept
-    : Texture(std::move(r_other))
-    , _dx_tex(std::move(r_other._dx_tex))
-{
+: Texture(std::move(r_other))
+, _dx_tex(std::move(r_other._dx_tex)) {
     r_other._dx_tex = nullptr;
 }
 

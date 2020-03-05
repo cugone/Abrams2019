@@ -3,21 +3,20 @@
 #include "Engine/Core/Riff.hpp"
 #include "Engine/Core/StringUtils.hpp"
 
-#include <string>
 #include <filesystem>
+#include <string>
 
 namespace FileUtils {
 
 namespace WavChunkID {
-    constexpr const uint32_t FMT = StringUtils::FourCC("fmt ");
-    constexpr const uint32_t FACT = StringUtils::FourCC("fact");
-    constexpr const uint32_t DATA = StringUtils::FourCC("data");
-    constexpr const bool IsValid(const char* id) noexcept;
-} //End WavChunkID
+constexpr const uint32_t FMT = StringUtils::FourCC("fmt ");
+constexpr const uint32_t FACT = StringUtils::FourCC("fact");
+constexpr const uint32_t DATA = StringUtils::FourCC("data");
+constexpr const bool IsValid(const char* id) noexcept;
+} // namespace WavChunkID
 
 class Wav {
 public:
-
     struct WavHeader {
         char fourcc[4]{};
         uint32_t length{};
@@ -55,12 +54,12 @@ public:
     const WavFormatChunk& GetFormatChunk() const noexcept;
     const WavDataChunk& GetDataChunk() const noexcept;
     uint32_t GetDataBufferSize() const noexcept;
+
 protected:
 private:
     WavFormatChunk _fmt{};
     WavFactChunk _fact{};
     WavDataChunk _data{};
-
 };
 
-} //End FileUtils
+} // namespace FileUtils

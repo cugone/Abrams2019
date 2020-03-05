@@ -4,9 +4,7 @@
 #include "Engine/Core/FileUtils.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Core/Win.hpp"
-
 #include "Engine/Math/MathUtils.hpp"
-
 #include "ThirdParty/stb/stb_image.h"
 #include "ThirdParty/stb/stb_image_write.h"
 
@@ -14,9 +12,7 @@
 #include <vector>
 
 Image::Image(std::filesystem::path filepath) noexcept
-: m_filepath(filepath)
-{
-
+: m_filepath(filepath) {
     namespace FS = std::filesystem;
     if(!FS::exists(filepath)) {
         const auto ss = std::string{"Failed to load image. Could not find file: "} + filepath.string() + ".\n";
@@ -40,7 +36,7 @@ Image::Image(std::filesystem::path filepath) noexcept
                 m_gifDelays[i] = delays[i];
             }
             m_dimensions.y *= depth;
-            m_texelBytes = std::vector<unsigned char>(texel_bytes, texel_bytes + (static_cast<std::size_t>(m_dimensions.x)* m_dimensions.y* m_bytesPerTexel));
+            m_texelBytes = std::vector<unsigned char>(texel_bytes, texel_bytes + (static_cast<std::size_t>(m_dimensions.x) * m_dimensions.y * m_bytesPerTexel));
             stbi_image_free(texel_bytes);
         } else {
             int comp = 0;
@@ -56,56 +52,49 @@ Image::Image(std::filesystem::path filepath) noexcept
     }
 }
 Image::Image(unsigned int width, unsigned int height) noexcept
-    : m_dimensions(width, height)
-    , m_bytesPerTexel(4)
-    , m_texelBytes(static_cast<std::size_t>(width) * height * m_bytesPerTexel, 0u)
-{
+: m_dimensions(width, height)
+, m_bytesPerTexel(4)
+, m_texelBytes(static_cast<std::size_t>(width) * height * m_bytesPerTexel, 0u) {
     /* DO NOTHING */
 }
 
 Image::Image(unsigned char* data, unsigned int width, unsigned int height) noexcept
-    : m_dimensions(width, height)
-    , m_bytesPerTexel(4)
-    , m_texelBytes(data, data + (static_cast<std::size_t>(width) * height * m_bytesPerTexel))
-{
+: m_dimensions(width, height)
+, m_bytesPerTexel(4)
+, m_texelBytes(data, data + (static_cast<std::size_t>(width) * height * m_bytesPerTexel)) {
     /* DO NOTHING */
 }
 
 Image::Image(Rgba* data, unsigned int width, unsigned int height) noexcept
-    : m_dimensions(width, height)
-    , m_bytesPerTexel(4)
-    , m_texelBytes(reinterpret_cast<unsigned char*>(data), reinterpret_cast<unsigned char*>(data) + static_cast<std::size_t>(width) * height * m_bytesPerTexel)
-{
+: m_dimensions(width, height)
+, m_bytesPerTexel(4)
+, m_texelBytes(reinterpret_cast<unsigned char*>(data), reinterpret_cast<unsigned char*>(data) + static_cast<std::size_t>(width) * height * m_bytesPerTexel) {
     /* DO NOTHING */
 }
 
 Image::Image(const std::vector<Rgba>& data, unsigned int width, unsigned int height) noexcept
-    : m_dimensions(width, height)
-    , m_bytesPerTexel(4)
-    , m_texelBytes(reinterpret_cast<const unsigned char*>(data.data()), reinterpret_cast<const unsigned char*>(data.data()) + static_cast<std::size_t>(width) * height * m_bytesPerTexel)
-{
+: m_dimensions(width, height)
+, m_bytesPerTexel(4)
+, m_texelBytes(reinterpret_cast<const unsigned char*>(data.data()), reinterpret_cast<const unsigned char*>(data.data()) + static_cast<std::size_t>(width) * height * m_bytesPerTexel) {
     /* DO NOTHING */
 }
 
 Image::Image(const std::vector<unsigned char>& data, unsigned int width, unsigned int height) noexcept
-    : m_dimensions(width, height)
-    , m_bytesPerTexel(4)
-    , m_texelBytes(data.data(), data.data() + static_cast<std::size_t>(width) * height * m_bytesPerTexel)
-{
+: m_dimensions(width, height)
+, m_bytesPerTexel(4)
+, m_texelBytes(data.data(), data.data() + static_cast<std::size_t>(width) * height * m_bytesPerTexel) {
     /* DO NOTHING */
 }
 
 Image::Image(Image&& img) noexcept
-    : m_dimensions(std::move(img.m_dimensions))
-    , m_bytesPerTexel(std::move(img.m_bytesPerTexel))
-    , m_gifDelays(std::move(img.m_gifDelays))
-    , m_filepath(std::move(img.m_filepath))
-    , m_isGif(std::move(m_isGif))
-{
+: m_dimensions(std::move(img.m_dimensions))
+, m_bytesPerTexel(std::move(img.m_bytesPerTexel))
+, m_gifDelays(std::move(img.m_gifDelays))
+, m_filepath(std::move(img.m_filepath))
+, m_isGif(std::move(m_isGif)) {
     std::scoped_lock<std::mutex, std::mutex> lock(_cs, img._cs);
     m_texelBytes = std::move(img.m_texelBytes);
 }
-
 
 Image& Image::operator=(Image&& rhs) noexcept {
     std::scoped_lock<std::mutex, std::mutex> lock(_cs, rhs._cs);
@@ -220,7 +209,7 @@ bool Image::Export(std::filesystem::path filepath, int bytes_per_pixel /*= 4*/, 
 Image Image::CreateImageFromFileBuffer(const std::vector<unsigned char>& data) noexcept {
     if(data.empty()) {
         DebuggerPrintf("Attempting to create image from empty data buffer.\n");
-        return{};
+        return {};
     }
     int dim_x = 0;
     int dim_y = 0;
@@ -231,7 +220,7 @@ Image Image::CreateImageFromFileBuffer(const std::vector<unsigned char>& data) n
         auto* bytes = stbi_load_from_memory(data.data(), static_cast<int>(data.size()), &dim_x, &dim_y, &comp, req_comp);
         if(!bytes) {
             DebuggerPrintf("Data does not represent an image.\n");
-            return{};
+            return {};
         }
         std::size_t size = dim_x * dim_y * comp;
         texel_bytes.assign(bytes, bytes + size);
@@ -251,7 +240,7 @@ Image Image::CreateImageFromFileBuffer(const std::vector<unsigned char>& data) n
         comp = 0;
         auto* bytes = stbi_load_gif_from_memory(data.data(), static_cast<int>(data.size()), &delays, &dim_x, &dim_y, &depth, &comp, req_comp);
         if(!bytes) {
-            return{};
+            return {};
         }
         auto size = std::size_t(dim_x) * dim_y * comp;
         result.m_gifDelays.assign(delays, delays + depth);
@@ -270,7 +259,6 @@ Image Image::CreateImageFromFileBuffer(const std::vector<unsigned char>& data) n
 
 std::string Image::GetSupportedExtensionsList() noexcept {
     return std::string(".png,.bmp,.tga,.jpg");
-
 }
 
 void swap(Image& a, Image& b) noexcept {

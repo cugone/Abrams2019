@@ -3,17 +3,14 @@
 #include "Engine/Core/EngineBase.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/StringUtils.hpp"
-
 #include "Engine/Math/IntVector2.hpp"
-
 #include "Engine/RHI/RHITypes.hpp"
 
 #include <algorithm>
 
 Window::Window() noexcept
-    : _styleFlags{_defaultBorderlessStyleFlags}
-    , _styleFlagsEx{_defaultStyleFlagsEx}
-{
+: _styleFlags{_defaultBorderlessStyleFlags}
+, _styleFlagsEx{_defaultStyleFlagsEx} {
     if(_refCount == 0) {
         if(Register()) {
             ++_refCount;
@@ -27,9 +24,8 @@ Window::Window() noexcept
 }
 
 Window::Window(const IntVector2& position, const IntVector2& dimensions) noexcept
-    : _styleFlags{_defaultWindowedStyleFlags}
-    , _styleFlagsEx{_defaultStyleFlagsEx}
-{
+: _styleFlags{_defaultWindowedStyleFlags}
+, _styleFlagsEx{_defaultStyleFlagsEx} {
     if(_refCount == 0) {
         if(Register()) {
             ++_refCount;
@@ -129,7 +125,7 @@ void Window::SetDimensionsAndPosition(const IntVector2& new_position, const IntV
     _positionY = r.top;
     _width = r.right - r.left;
     _height = r.bottom - r.top;
-    _oldclientWidth  = _clientWidth;
+    _oldclientWidth = _clientWidth;
     _oldclientHeight = _clientHeight;
     _clientWidth = new_size.x;
     _clientHeight = new_size.y;
@@ -159,7 +155,6 @@ void Window::SetWindowHandle(void* hWnd) noexcept {
     _hWnd = reinterpret_cast<HWND>(hWnd);
 }
 
-
 HDC Window::GetWindowDeviceContext() const noexcept {
     return _hdc;
 }
@@ -178,33 +173,28 @@ void Window::SetDisplayMode(const RHIOutputMode& display_mode) noexcept {
 
     _currentDisplayMode = display_mode;
     switch(_currentDisplayMode) {
-        case RHIOutputMode::Windowed:
-        {
-            ::SetWindowLongPtr(_hWnd, GWL_STYLE, dwStyle | WS_OVERLAPPEDWINDOW);
-            ::SetWindowPlacement(_hWnd, &g_wpPrev);
-            ::SetWindowPos(_hWnd, nullptr, 0, 0, 0, 0,
-                SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER |
-                SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
-            break;
+    case RHIOutputMode::Windowed: {
+        ::SetWindowLongPtr(_hWnd, GWL_STYLE, dwStyle | WS_OVERLAPPEDWINDOW);
+        ::SetWindowPlacement(_hWnd, &g_wpPrev);
+        ::SetWindowPos(_hWnd, nullptr, 0, 0, 0, 0,
+                       SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
+        break;
+    }
+    case RHIOutputMode::Borderless_Fullscreen: {
+        MONITORINFO mi = {sizeof(mi)};
+        if(::GetWindowPlacement(_hWnd, &g_wpPrev) && ::GetMonitorInfo(::MonitorFromWindow(_hWnd, MONITOR_DEFAULTTOPRIMARY), &mi)) {
+            ::SetWindowLongPtr(_hWnd, GWL_STYLE,
+                               dwStyle & ~WS_OVERLAPPEDWINDOW);
+            ::SetWindowPos(_hWnd, HWND_TOP,
+                           mi.rcMonitor.left, mi.rcMonitor.top,
+                           mi.rcMonitor.right - mi.rcMonitor.left,
+                           mi.rcMonitor.bottom - mi.rcMonitor.top,
+                           SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
         }
-        case RHIOutputMode::Borderless_Fullscreen:
-        {
-            MONITORINFO mi = {sizeof(mi)};
-            if(::GetWindowPlacement(_hWnd, &g_wpPrev) &&
-                ::GetMonitorInfo(::MonitorFromWindow(_hWnd,
-                    MONITOR_DEFAULTTOPRIMARY), &mi)) {
-                ::SetWindowLongPtr(_hWnd, GWL_STYLE,
-                    dwStyle & ~WS_OVERLAPPEDWINDOW);
-                ::SetWindowPos(_hWnd, HWND_TOP,
-                    mi.rcMonitor.left, mi.rcMonitor.top,
-                    mi.rcMonitor.right - mi.rcMonitor.left,
-                    mi.rcMonitor.bottom - mi.rcMonitor.top,
-                    SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
-            }
-            break;
-        }
-        default:
-            break;
+        break;
+    }
+    default:
+        break;
     }
     Show();
 }
@@ -239,19 +229,18 @@ bool Window::Unregister() noexcept {
 
 bool Window::Create() noexcept {
     _hWnd = ::CreateWindowEx(
-        _styleFlagsEx,                              // Optional window styles.
-        _wc.lpszClassName,              // Window class
-        "Created with Abrams 2019 (c) Casey Ugone",     // Window text
-        _styleFlags,            // Window style
-        _positionX, _positionY,                           //Position XY
-        _width, _height,    //Size WH
-        nullptr,       // Parent window    
-        nullptr,       // Menu
-        _hInstance,     // Instance handle
-        this        // Additional application data
+    _styleFlagsEx,                              // Optional window styles.
+    _wc.lpszClassName,                          // Window class
+    "Created with Abrams 2019 (c) Casey Ugone", // Window text
+    _styleFlags,                                // Window style
+    _positionX, _positionY,                     //Position XY
+    _width, _height,                            //Size WH
+    nullptr,                                    // Parent window
+    nullptr,                                    // Menu
+    _hInstance,                                 // Instance handle
+    this                                        // Additional application data
     );
     _hdc = ::GetDCEx(_hWnd, nullptr, 0);
 
     return _hWnd != nullptr;
 }
-

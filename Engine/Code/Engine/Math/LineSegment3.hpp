@@ -4,7 +4,6 @@
 
 class LineSegment3 {
 public:
-
     Vector3 start = Vector3::ZERO;
     Vector3 end = Vector3::ZERO;
 
@@ -49,6 +48,5 @@ public:
 
 protected:
 private:
-
     friend class Capsule3;
 };

@@ -9,4 +9,4 @@ Address GetIpv4(Address& addy) noexcept;
 Address GetIpv6(Address& addy) noexcept;
 void Shutdown() noexcept;
 
-}
+} // namespace Net

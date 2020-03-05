@@ -8,28 +8,24 @@ const LineSegment2 LineSegment2::UNIT_CENTERED_HORIZONTAL(-0.5f, 0.0f, 0.5f, 0.0
 const LineSegment2 LineSegment2::UNIT_CENTERED_VERTICAL(0.0f, -0.5f, 0.0f, 0.5f);
 
 LineSegment2::LineSegment2(float startX, float startY, float endX, float endY) noexcept
-    : start(startX, startY)
-    , end(endX, endY)
-{
+: start(startX, startY)
+, end(endX, endY) {
     /* DO NOTHING */
 }
 
 LineSegment2::LineSegment2(const Vector2& startPosition, const Vector2& endPosition) noexcept
-    : start(startPosition)
-    , end(endPosition)
-{
+: start(startPosition)
+, end(endPosition) {
     /* DO NOTHING */
 }
 
 LineSegment2::LineSegment2(const Vector2& startPosition, const Vector2& direction, float length) noexcept
-    :start(startPosition)
-    , end(startPosition + direction.GetNormalize() * length)
-{
+: start(startPosition)
+, end(startPosition + direction.GetNormalize() * length) {
     /* DO NOTHING */
 }
 
-LineSegment2::LineSegment2(const Vector2& startPosition, float angleDegrees, float length) noexcept
-{
+LineSegment2::LineSegment2(const Vector2& startPosition, float angleDegrees, float length) noexcept {
     end.SetXY(length * MathUtils::CosDegrees(angleDegrees), length * MathUtils::SinDegrees(angleDegrees));
     start += startPosition;
     end += startPosition;
@@ -37,8 +33,7 @@ LineSegment2::LineSegment2(const Vector2& startPosition, float angleDegrees, flo
 
 void LineSegment2::SetLengthFromStart(float length) noexcept {
     float angleDegrees = CalcDisplacement().CalcHeadingDegrees();
-    end = start + Vector2(length * MathUtils::CosDegrees(angleDegrees),
-                          length * MathUtils::SinDegrees(angleDegrees));
+    end = start + Vector2(length * MathUtils::CosDegrees(angleDegrees), length * MathUtils::SinDegrees(angleDegrees));
 }
 
 void LineSegment2::SetLengthFromCenter(float length) noexcept {
@@ -55,8 +50,7 @@ void LineSegment2::SetLengthFromCenter(float length) noexcept {
 
 void LineSegment2::SetLengthFromEnd(float length) noexcept {
     float angleDegrees = CalcDisplacement().CalcHeadingDegrees();
-    start = end - Vector2(length * MathUtils::CosDegrees(angleDegrees),
-                          length * MathUtils::SinDegrees(angleDegrees));
+    start = end - Vector2(length * MathUtils::CosDegrees(angleDegrees), length * MathUtils::SinDegrees(angleDegrees));
 }
 
 Vector2 LineSegment2::CalcCenter() const noexcept {
@@ -183,11 +177,10 @@ void LineSegment2::SetAngle(float angleDegrees) noexcept {
 
     start.x = oldX * c - oldY * s;
     start.y = oldX * s + oldY * c;
-    
+
     oldX = end.y;
     oldY = end.y;
 
     end.x = oldX * c - oldY * s;
     end.y = oldX * c + oldY * s;
-
 }

@@ -8,30 +8,26 @@ const Capsule3 Capsule3::UNIT_CENTERED_VERTICAL(0.0f, -0.5f, 0.0f, 0.5f, 0.0f, 0
 const Capsule3 Capsule3::UNIT_CENTERED_DEPTH(0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.5f, 1.0f);
 
 Capsule3::Capsule3(const LineSegment3& line, float radius) noexcept
-    : line(line)
-    , radius(radius)
-{
+: line(line)
+, radius(radius) {
     /* DO NOTHING */
 }
 
 Capsule3::Capsule3(float startX, float startY, float startZ, float endX, float endY, float endZ, float radius) noexcept
-    : line(startX, startY, startZ, endX, endY, endZ)
-    , radius(radius)
-{
+: line(startX, startY, startZ, endX, endY, endZ)
+, radius(radius) {
     /* DO NOTHING */
 }
 
 Capsule3::Capsule3(const Vector3& start_position, const Vector3& end_position, float radius) noexcept
-    : line(start_position, end_position)
-    , radius(radius)
-{
+: line(start_position, end_position)
+, radius(radius) {
     /* DO NOTHING */
 }
 
 Capsule3::Capsule3(const Vector3& start_position, const Vector3& direction, float length, float radius) noexcept
-    : line(start_position, direction.GetNormalize(), length)
-    , radius(radius)
-{
+: line(start_position, direction.GetNormalize(), length)
+, radius(radius) {
     /* DO NOTHING */
 }
 

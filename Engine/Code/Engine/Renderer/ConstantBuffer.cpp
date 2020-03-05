@@ -1,16 +1,14 @@
 #include "Engine/Renderer/ConstantBuffer.hpp"
 
 #include "Engine/Core/ErrorWarningAssert.hpp"
-
 #include "Engine/RHI/RHIDevice.hpp"
 #include "Engine/RHI/RHIDeviceContext.hpp"
 
 #include <sstream>
 
 ConstantBuffer::ConstantBuffer(const RHIDevice& owner, const buffer_t& buffer, const std::size_t& buffer_size, const BufferUsage& usage, const BufferBindUsage& bindUsage) noexcept
-    : Buffer<void*>()
-    , _buffer_size(buffer_size)
-{
+: Buffer<void*>()
+, _buffer_size(buffer_size) {
     if(_buffer_size % 16) {
         ERROR_AND_DIE("Constant Buffer size not a multiple of 16.")
     }

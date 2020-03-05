@@ -5,36 +5,38 @@
 #include <XInput.h>
 #pragma comment(lib, "Xinput.lib")
 
-#include <bitset>
-
 #include "Engine/Math/Vector2.hpp"
+
+#include <bitset>
 
 class XboxController {
 public:
     enum class Button : unsigned char {
         First_ /* Internal use only. */
-        , A = First_
-        , B
-        , X
-        , Y
-        , Start
-        , Back
-        , Up
-        , Down
-        , Left
-        , Right
-        , LeftThumb
-        , RightThumb
-        , RightBumper
-        , LeftBumper
-        , Last_ /* Internal use only. */
-        , Max = Last_ /* Internal use only. */
+        ,
+        A = First_,
+        B,
+        X,
+        Y,
+        Start,
+        Back,
+        Up,
+        Down,
+        Left,
+        Right,
+        LeftThumb,
+        RightThumb,
+        RightBumper,
+        LeftBumper,
+        Last_ /* Internal use only. */
+        ,
+        Max = Last_ /* Internal use only. */
     };
 
     enum class Motor {
-        Left
-        ,Right
-        ,Both
+        Left,
+        Right,
+        Both
     };
     const Vector2& GetLeftThumbPosition() const noexcept;
     const Vector2& GetRightThumbPosition() const noexcept;
@@ -84,9 +86,9 @@ private:
     bool DidMotorStateChange() const noexcept;
 
     enum class ActiveState {
-        Connected
-        , Motor
-        , Max
+        Connected,
+        Motor,
+        Max
     };
 
     Vector2 _leftThumbDistance = Vector2::ZERO;

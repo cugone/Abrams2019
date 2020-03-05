@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Engine/Core/TimeUtils.hpp"
-
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Matrix4.hpp"
 #include "Engine/Math/Quaternion.hpp"
@@ -78,6 +77,7 @@ public:
 
     float trauma = 0.0f;
     float trauma_recovery_rate = 1.0f;
+
 protected:
 private:
     void CalcViewMatrix() noexcept;
@@ -106,5 +106,4 @@ private:
     float rotationPitch = 0.0f;
     float rotationYaw = 0.0f;
     float rotationRoll = 0.0f;
-
 };
