@@ -16,7 +16,7 @@ A clear and concise description of what you expected to happen.
 **Actual behavior**
 A clear and concise description of what actually happens.
 
-**To Reproduce**
+**Repro Steps**
 Steps to reproduce the behavior:
 1. Go to '...'
 2. Click on '....'
