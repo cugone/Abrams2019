@@ -16,6 +16,11 @@
 #include <set>
 #include <vector>
 
+#if defined(_MSC_VER)
+#pragma warning (push)
+#pragma warning (disable : 26812) // The enum type 'xxx' is unscoped. Prefer 'enum class' over 'enum'.
+#endif
+
 class RHIDeviceContext;
 class RHIFactory;
 class IntVector2;
@@ -83,3 +88,8 @@ private:
 
     void SetupDebuggingInfo([[maybe_unused]] bool breakOnWarningSeverityOrLower = true) noexcept;
 };
+
+#if defined(_MSC_VER)
+#pragma warning (pop)
+#endif
+

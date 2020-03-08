@@ -5,6 +5,12 @@
 #include "Engine/Renderer/Window.hpp"
 #include "Engine/Rhi/RHIDevice.hpp"
 
+
+#if defined(_MSC_VER)
+#pragma warning (push)
+#pragma warning (disable : 26812) // The enum type 'xxx' is unscoped. Prefer 'enum class' over 'enum'.
+#endif
+
 RHIFactory::RHIFactory() noexcept {
 #ifdef RENDER_DEBUG
     auto hr_factory = ::CreateDXGIFactory2(DXGI_CREATE_FACTORY_DEBUG, __uuidof(IDXGIFactory6), &_dxgi_factory);
@@ -83,3 +89,8 @@ std::vector<AdapterInfo> RHIFactory::GetAdaptersByMinimumPowerPreference() const
 std::vector<AdapterInfo> RHIFactory::GetAdaptersByUnspecifiedPreference() const noexcept {
     return GetAdaptersByPreference(AdapterPreference::Unspecified);
 }
+
+#if defined(_MSC_VER)
+#pragma warning (pop)
+#endif
+

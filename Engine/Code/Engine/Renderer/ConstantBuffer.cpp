@@ -6,6 +6,12 @@
 
 #include <sstream>
 
+
+#if defined(_MSC_VER)
+#pragma warning (push)
+#pragma warning (disable : 26812) // The enum type 'xxx' is unscoped. Prefer 'enum class' over 'enum'.
+#endif
+
 ConstantBuffer::ConstantBuffer(const RHIDevice& owner, const buffer_t& buffer, const std::size_t& buffer_size, const BufferUsage& usage, const BufferBindUsage& bindUsage) noexcept
 : Buffer<void*>()
 , _buffer_size(buffer_size) {
@@ -52,3 +58,8 @@ void ConstantBuffer::Update(RHIDeviceContext& context, const buffer_t& buffer) n
         dx_context->Unmap(_dx_buffer.Get(), 0);
     }
 }
+
+#if defined(_MSC_VER)
+#pragma warning (pop)
+#endif
+

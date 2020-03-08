@@ -6,6 +6,12 @@
 #include "Engine/RHI/RHIDevice.hpp"
 #include "Engine/Renderer/DirectX/DX11.hpp"
 
+
+#if defined(_MSC_VER)
+#pragma warning (push)
+#pragma warning (disable : 26812) // The enum type 'xxx' is unscoped. Prefer 'enum class' over 'enum'.
+#endif
+
 Texture2D::Texture2D(const RHIDevice& device, Microsoft::WRL::ComPtr<ID3D11Texture2D> dxTexture) noexcept
 : Texture(device)
 , _dx_tex(dxTexture) {
@@ -122,3 +128,8 @@ void Texture2D::SetTexture() noexcept {
         ERROR_AND_DIE(error_str.c_str());
     }
 }
+
+
+#if defined(_MSC_VER)
+#pragma warning (pop)
+#endif
