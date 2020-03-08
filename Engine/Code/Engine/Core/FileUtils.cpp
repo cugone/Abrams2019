@@ -394,7 +394,9 @@ bool IsSafeReadPath(const std::filesystem::path& p) noexcept {
         const auto safe = is_in_working_dir || is_in_gamedata_dir || is_in_enginedata_dir || is_next_to_exe || is_known_OS_dir;
         return safe;
     } catch(const std::filesystem::filesystem_error& e) {
-        DebuggerPrintf("\nFilesystem Error:\nWhat: %s\nCode: %i\nPath1: %s\nPath2: %s\n", e.what(), e.code().value(), e.path1().string().c_str(), e.path2().string().c_str());
+        const auto path1_str = e.path1().string();
+        const auto path2_str = e.path1().string();
+        DebuggerPrintf("\nFilesystem Error:\nWhat: %s\nCode: %i\nPath1: %s\nPath2: %s\n", e.what(), e.code().value(), path1_str.c_str(), path2_str.c_str());
         return false;
     }
 }
