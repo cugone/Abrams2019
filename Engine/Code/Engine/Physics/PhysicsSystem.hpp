@@ -130,6 +130,11 @@ struct PhysicsMaterial {
     float density = 1.0f;
 };
 
+#if defined (_MSC_VER)
+#pragma warning (push)
+#pragma warning (disable: 26444 ) // 143 Avoid unnamed objects with custom construction and destruction (es.84).
+#endif
+
 struct RigidBodyDesc {
     PhysicsMaterial physicsMaterial = PhysicsMaterial{};
     Vector2 initialPosition = Vector2::ZERO;
@@ -141,6 +146,10 @@ struct RigidBodyDesc {
     RigidBodyDesc& operator=(const RigidBodyDesc& other) = delete;
     RigidBodyDesc& operator=(RigidBodyDesc&& other) = default;
 };
+
+#if defined(_MSC_VER)
+#pragma warning (pop)
+#endif
 
 class RigidBody {
 public:
