@@ -117,8 +117,8 @@ Image& Image::operator=(Image&& rhs) noexcept {
 }
 
 Rgba Image::GetTexel(const IntVector2& texelPos) const noexcept {
-    int index = texelPos.x + texelPos.y * m_dimensions.x;
-    int byteOffset = index * m_bytesPerTexel;
+    std::size_t index = static_cast<std::size_t>(texelPos.x) + static_cast<std::size_t>(texelPos.y) * m_dimensions.x;
+    std::size_t byteOffset = index * m_bytesPerTexel;
     Rgba color;
     color.r = m_texelBytes[byteOffset + 0];
     color.g = m_texelBytes[byteOffset + 1];
@@ -132,8 +132,8 @@ Rgba Image::GetTexel(const IntVector2& texelPos) const noexcept {
 }
 void Image::SetTexel(const IntVector2& texelPos, const Rgba& color) noexcept {
     Rgba oldColor = GetTexel(texelPos);
-    int index = texelPos.x + texelPos.y * m_dimensions.x;
-    int byteOffset = index * m_bytesPerTexel;
+    std::size_t index = static_cast<std::size_t>(texelPos.x) + static_cast<std::size_t>(texelPos.y) * m_dimensions.x;
+    std::size_t byteOffset = index * m_bytesPerTexel;
     m_texelBytes[byteOffset + 0] = color.r;
     m_texelBytes[byteOffset + 1] = color.g;
     m_texelBytes[byteOffset + 2] = color.b;
@@ -222,7 +222,7 @@ Image Image::CreateImageFromFileBuffer(const std::vector<unsigned char>& data) n
             DebuggerPrintf("Data does not represent an image.\n");
             return {};
         }
-        std::size_t size = dim_x * dim_y * comp;
+        std::size_t size = static_cast<std::size_t>(dim_x) * dim_y * comp;
         texel_bytes.assign(bytes, bytes + size);
         stbi_image_free(bytes);
         bytes = nullptr;
