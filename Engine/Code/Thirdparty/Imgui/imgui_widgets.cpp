@@ -46,12 +46,18 @@ Index of this file:
 
 // Visual Studio warnings
 #ifdef _MSC_VER
+#pragma warning (push)
 #pragma warning (disable: 4127) // condition expression is constant
 #pragma warning (disable: 4996) // 'This function or variable may be unsafe': strcpy, strdup, sprintf, vsnprintf, sscanf, fopen
+#pragma warning (disable: 26812) // The enum type 'xxx' is unscoped. Prefer 'enum class' over 'enum'. // When CA is turned on.
+#pragma warning (disable: 26451) // Arithmetic overflow: Using operator '+' on a 4 byte value and then casting the result to a 8 byte value. Cast the value to the wider type before calling operator '+' to avoid overflow. // When CA is turned on.
+#pragma warning (disable: 6031) // Return value ignored: 'sscanf'. // When CA is turned on.
+#pragma warning (disable: 6011) // Dereferencing NULL pointer 'window'. See line 5602 for an earlier location where this can occur. // When CA is turned on.
 #endif
 
 // Clang/GCC warnings with -Weverything
 #ifdef __clang__
+#pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wold-style-cast"         // warning : use of old-style cast                              // yes, they are more terse.
 #pragma clang diagnostic ignored "-Wfloat-equal"            // warning : comparing floating point with == or != is unsafe   // storing and comparing against same constants (typically 0.0f) is ok.
 #pragma clang diagnostic ignored "-Wformat-nonliteral"      // warning : format string is not a string literal              // passing non-literal to vsnformat(). yes, user passing incorrect format strings can crash the code.
@@ -63,6 +69,7 @@ Index of this file:
 #pragma clang diagnostic ignored "-Wdouble-promotion"       // warning: implicit conversion from 'float' to 'double' when passing argument to function  // using printf() is a misery with this as C++ va_arg ellipsis changes float to double.
 #endif
 #elif defined(__GNUC__)
+#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-nonliteral"        // warning: format not a string literal, format string not checked
 #if __GNUC__ >= 8
 #pragma GCC diagnostic ignored "-Wclass-memaccess"          // warning: 'memset/memcpy' clearing/writing an object of type 'xxxx' with no trivial copy-assignment; use assignment or value-initialization instead
@@ -6730,3 +6737,14 @@ bool ImGui::TabItemLabelAndCloseButton(ImDrawList* draw_list, const ImRect& bb, 
 
     return close_button_pressed;
 }
+
+#ifdef _MSC_VER
+#pragma warning (pop)
+#endif
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#elif defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
+

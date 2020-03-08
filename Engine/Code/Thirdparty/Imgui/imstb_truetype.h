@@ -269,6 +269,19 @@
 //   Inline sort     :  6.54 s     5.65 s
 //   New rasterizer  :  5.63 s     5.00 s
 
+
+#if defined(__GNUC__) || defined(__clang__)
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wcast-qual"
+#endif
+
+#if defined(_MSC_VER)
+#pragma warning (push)
+#pragma warning (disable: 26451) // Arithmetic overflow: Using operator '*' on a 4 byte value and then casting the result to a 8 byte value. Cast the value to the wider type before calling operator '*' to avoid overflow. // When CA is turned on.
+#pragma warning (disable: 6385) // Reading invalid data from 'buffer':  the readable size is '_Old_3`kernel_width' bytes, but '3' bytes may be read. // When CA is turned on.
+#endif
+
+
 //////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 ////
@@ -4759,11 +4772,6 @@ static int stbtt_FindMatchingFont_internal(unsigned char *font_collection, char 
    }
 }
 
-#if defined(__GNUC__) || defined(__clang__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wcast-qual"
-#endif
-
 STBTT_DEF int stbtt_BakeFontBitmap(const unsigned char *data, int offset,
                                 float pixel_height, unsigned char *pixels, int pw, int ph,
                                 int first_char, int num_chars, stbtt_bakedchar *chardata)
@@ -4796,11 +4804,15 @@ STBTT_DEF int stbtt_CompareUTF8toUTF16_bigendian(const char *s1, int len1, const
    return stbtt_CompareUTF8toUTF16_bigendian_internal((char *) s1, len1, (char *) s2, len2);
 }
 
+#endif // STB_TRUETYPE_IMPLEMENTATION
+
 #if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
 
-#endif // STB_TRUETYPE_IMPLEMENTATION
+#if defined(_MSC_VER)
+#pragma warning (pop)
+#endif
 
 
 // FULL VERSION HISTORY

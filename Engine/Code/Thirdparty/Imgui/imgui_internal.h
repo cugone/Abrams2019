@@ -39,6 +39,9 @@ Index of this file:
 #ifdef _MSC_VER
 #pragma warning (push)
 #pragma warning (disable: 4251) // class 'xxx' needs to have dll-interface to be used by clients of struct 'xxx' // when IMGUI_API is set to__declspec(dllexport)
+#pragma warning (disable: 26812) // The enum type 'xxx' is unscoped. Prefer 'enum class' over 'enum' // when CA is turned on
+#pragma warning (disable: 26495) // Variable 'xxx' is uninitialized. Always initialize a member variable. // when CA is turned on
+#pragma warning (disable: 26451) // Arithmetic overflow: Using operator '+' on a 4 byte value and then casting the result to a 8 byte value. Cast the value to the wider type before calling operator '+' to avoid overflow. // when CA is turned on.
 #endif
 
 #ifdef __clang__

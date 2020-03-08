@@ -31,6 +31,18 @@
 #pragma comment(lib, "d3dcompiler") // Automatically link with d3dcompiler.lib as we are using D3DCompile() below.
 #endif
 
+#ifdef _MSC_VER
+#pragma warning (push)
+#pragma warning (disable: 6387) // 'variable' could be '0':  this does not adhere to the specification for the function 'xxx'. See line 0 for an earlier location where this can occur. // When CA is turned on.
+#endif
+
+#ifdef __clang__
+#pragma clang diagnostic push
+#elif defined(__GNUC__)
+#pragma GCC diagnostic push
+#endif
+
+
 // DirectX data
 static ID3D11Device*            g_pd3dDevice = NULL;
 static ID3D11DeviceContext*     g_pd3dDeviceContext = NULL;
@@ -510,3 +522,15 @@ void ImGui_ImplDX11_NewFrame()
     if (!g_pFontSampler)
         ImGui_ImplDX11_CreateDeviceObjects();
 }
+
+
+#ifdef _MSC_VER
+#pragma warning (pop)
+#endif
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#elif defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
+
