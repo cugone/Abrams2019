@@ -400,6 +400,9 @@
     <ClCompile Include="Math\Polygon2.cpp">
       <Filter>Math</Filter>
     </ClCompile>
+    <ClCompile Include="Audio\Midi.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vector2.hpp">
@@ -770,6 +773,9 @@
     </ClInclude>
     <ClInclude Include="Physics\QuadTree.hpp">
       <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio\Midi.hpp">
+      <Filter>Audio</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
