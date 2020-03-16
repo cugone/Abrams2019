@@ -105,7 +105,9 @@ void XboxController::Update(int controller_number) noexcept {
         _rightThumbDistance.SetLength(rightRadius);
 
         _triggerDistances.x = MathUtils::RangeMap<float>(_triggerDistances.x, static_cast<float>(XINPUT_GAMEPAD_TRIGGER_THRESHOLD), 255.0f, 0.0f, 1.0f);
+        _triggerDistances.x = std::clamp(_triggerDistances.x, 0.0f, 1.0f);
         _triggerDistances.y = MathUtils::RangeMap<float>(_triggerDistances.y, static_cast<float>(XINPUT_GAMEPAD_TRIGGER_THRESHOLD), 255.0f, 0.0f, 1.0f);
+        _triggerDistances.y = std::clamp(_triggerDistances.y, 0.0f, 1.0f);
 
         if(DidMotorStateChange()) {
             SetMotorSpeed(controller_number, Motor::Left, _leftMotorState);
