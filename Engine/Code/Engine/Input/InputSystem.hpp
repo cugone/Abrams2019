@@ -392,6 +392,7 @@ public:
     bool IsKeyUp(const KeyCode& key) const noexcept;
     bool WasKeyJustPressed(const KeyCode& key) const noexcept;
     bool IsKeyDown(const KeyCode& key) const noexcept;
+    bool WasKeyJustPressedOrIsKeyDown(const KeyCode& key) const noexcept;
     bool IsAnyKeyDown() const noexcept;
     bool WasKeyJustReleased(const KeyCode& key) const noexcept;
     bool WasMouseWheelJustScrolledUp() const noexcept;

@@ -1364,6 +1364,10 @@ bool InputSystem::IsKeyDown(const KeyCode& key) const noexcept {
     return _previousKeys[(std::size_t)key] && _currentKeys[(std::size_t)key];
 }
 
+bool InputSystem::WasKeyJustPressedOrIsKeyDown(const KeyCode& key) const noexcept {
+    return WasKeyJustPressed(key) || IsKeyDown(key);
+}
+
 bool InputSystem::IsAnyKeyDown() const noexcept {
     for(KeyCode k = KeyCode::First_; k < KeyCode::Last_; ++k) {
         if(IsKeyDown(k)) {
