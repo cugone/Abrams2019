@@ -15,7 +15,7 @@ namespace FileUtils {
 
 GUID GetKnownPathIdForOS(const KnownPathID& pathid) noexcept;
 
-bool WriteBufferToFile(void* buffer, std::size_t size, std::filesystem::path filepath) noexcept {
+bool WriteBufferToFile(const std::any& buffer, std::size_t size, std::filesystem::path filepath) noexcept {
     namespace FS = std::filesystem;
     filepath = FS::absolute(filepath);
     filepath.make_preferred();
@@ -26,7 +26,7 @@ bool WriteBufferToFile(void* buffer, std::size_t size, std::filesystem::path fil
     }
 
     std::ofstream ofs{filepath, std::ios_base::binary};
-    if(ofs.write(reinterpret_cast<const char*>(buffer), size)) {
+    if(ofs.write(reinterpret_cast<const char*>(&buffer), size)) {
         return true;
     }
     return false;
