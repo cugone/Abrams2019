@@ -942,6 +942,7 @@ void Renderer::DrawAABB2(const AABB2& bounds, const Rgba& edgeColor, const Rgba&
     Vector2 lb_outer(bounds.mins.x - edgeHalfExtents.x, bounds.maxs.y + edgeHalfExtents.y);
     Vector2 rt_outer(bounds.maxs.x + edgeHalfExtents.x, bounds.mins.y - edgeHalfExtents.y);
     Vector2 rb_outer(bounds.maxs.x + edgeHalfExtents.x, bounds.maxs.y + edgeHalfExtents.y);
+
     std::vector<Vertex3D> vbo = {
     Vertex3D(Vector3(rt_outer, 0.0f), edgeColor),
     Vertex3D(Vector3(lt_outer, 0.0f), edgeColor),
@@ -957,38 +958,19 @@ void Renderer::DrawAABB2(const AABB2& bounds, const Rgba& edgeColor, const Rgba&
     Vertex3D(Vector3(rb_inner, 0.0f), fillColor),
     };
 
-    std::vector<unsigned int> ibo = {
-    8,
-    9,
-    10,
-    8,
-    10,
-    11,
-    0,
-    1,
-    2,
-    0,
-    2,
-    3,
-    4,
-    0,
-    3,
-    4,
-    3,
-    5,
-    6,
-    4,
-    5,
-    6,
-    5,
-    7,
-    1,
-    6,
-    7,
-    1,
-    7,
-    2,
+    std::vector<unsigned int> ibo{
+    8, 9, 10,
+    8, 10, 11,
+    0, 1, 2,
+    0, 2, 3,
+    4, 0, 3,
+    4, 3, 5,
+    6, 4, 5,
+    6, 5, 7,
+    1, 6, 7,
+    1, 7, 2,
     };
+
     if(edgeHalfExtents == Vector2::ZERO) {
         DrawIndexed(PrimitiveType::Lines, vbo, ibo, ibo.size() - 6, 6);
     } else {
