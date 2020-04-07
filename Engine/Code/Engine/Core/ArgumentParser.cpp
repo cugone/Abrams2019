@@ -1,6 +1,8 @@
 #include "Engine/Core/ArgumentParser.hpp"
 
 #include "Engine/Core/Rgba.hpp"
+#include "Engine/Core/StringUtils.hpp"
+
 #include "Engine/Math/IntVector2.hpp"
 #include "Engine/Math/IntVector3.hpp"
 #include "Engine/Math/IntVector4.hpp"
@@ -143,7 +145,29 @@ bool ArgumentParser::GetNext(std::string& value) const noexcept {
     SetState(ArgumentParserState::BadBit, true);
     return false;
 }
-
+bool ArgumentParser::GetNext(bool& value) const noexcept {
+    std::string value_str;
+    if(GetNext(value_str)) {
+        try {
+            value = static_cast<bool>(std::stoul(value_str));
+        } catch(std::invalid_argument& /*e*/) {
+            value_str = StringUtils::ToLowerCase(value_str);
+            if(value_str == "true") {
+                value = true;
+                return true;
+            }
+            if(value_str == "false") {
+                value = false;
+                return true;
+            }
+            SetState(ArgumentParserState::BadBit, true);
+            return false;
+        }
+        return true;
+    }
+    SetState(ArgumentParserState::BadBit, true);
+    return false;
+}
 bool ArgumentParser::GetNext(unsigned char& value) const noexcept {
     std::string value_str;
     if(GetNext(value_str)) {

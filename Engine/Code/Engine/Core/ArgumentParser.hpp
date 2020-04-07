@@ -41,6 +41,7 @@ public:
     bool GetNext(IntVector4& value) const noexcept;
     bool GetNext(Matrix4& value) const noexcept;
     bool GetNext(std::string& value) const noexcept;
+    bool GetNext(bool& value) const noexcept;
     bool GetNext(unsigned char& value) const noexcept;
     bool GetNext(signed char& value) const noexcept;
     bool GetNext(char& value) const noexcept;
