@@ -400,6 +400,12 @@
     <ClCompile Include="Math\Polygon2.cpp">
       <Filter>Math</Filter>
     </ClCompile>
+    <ClCompile Include="Math\Ray2.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\Ray3.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vector2.hpp">
@@ -770,6 +776,12 @@
     </ClInclude>
     <ClInclude Include="Physics\QuadTree.hpp">
       <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Ray2.hpp">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Ray3.hpp">
+      <Filter>Math</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

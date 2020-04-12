@@ -74,6 +74,8 @@
     <ClCompile Include="Math\Plane3.cpp" />
     <ClCompile Include="Math\Polygon2.cpp" />
     <ClCompile Include="Math\Quaternion.cpp" />
+    <ClCompile Include="Math\Ray2.cpp" />
+    <ClCompile Include="Math\Ray3.cpp" />
     <ClCompile Include="Math\Sphere3.cpp" />
     <ClCompile Include="Math\Vector2.cpp" />
     <ClCompile Include="Math\Vector3.cpp" />
@@ -195,6 +197,8 @@
     <ClInclude Include="Math\Plane3.hpp" />
     <ClInclude Include="Math\Polygon2.hpp" />
     <ClInclude Include="Math\Quaternion.hpp" />
+    <ClInclude Include="Math\Ray2.hpp" />
+    <ClInclude Include="Math\Ray3.hpp" />
     <ClInclude Include="Math\Sphere3.hpp" />
     <ClInclude Include="Math\Vector2.hpp" />
     <ClInclude Include="Math\Vector3.hpp" />
