@@ -28,6 +28,7 @@ Index of this file:
 
 #pragma warning(push)
 #pragma warning(disable : 26495 )
+#pragma warning(disable : 6011 )
 
 
 // Configuration file (edit imconfig.h or define IMGUI_USER_CONFIG to your own filename)
