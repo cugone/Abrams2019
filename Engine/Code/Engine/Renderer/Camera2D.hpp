@@ -6,6 +6,8 @@
 #include "Engine/Math/Vector2.hpp"
 #include "Engine/Math/Vector3.hpp"
 
+#include "Engine/Renderer/RenderTargetStack.hpp"
+
 class Camera2D {
 public:
     void SetupView(const Vector2& leftBottom, const Vector2& rightTop, const Vector2& nearFar = Vector2(0.0f, 1.0f), float aspectRatio = MathUtils::M_16_BY_9_RATIO) noexcept;
@@ -36,6 +38,9 @@ public:
     const Matrix4& GetInverseProjectionMatrix() const noexcept;
     const Matrix4& GetInverseViewProjectionMatrix() const noexcept;
 
+    const RenderTargetStack::Node& GetRenderTarget() const noexcept;
+    RenderTargetStack::Node& GetRenderTarget() noexcept;
+
     float GetShake() const noexcept;
 
     float trauma = 0.0f;
@@ -60,5 +65,6 @@ private:
     Vector2 leftBottom_view = Vector2{-1.0f, 1.0f};
     Vector2 rightTop_view = Vector2{1.0f, -1.0f};
     Vector2 nearFar_distance = Vector2{0.0f, 1.0f};
+    RenderTargetStack::Node _render_target{};
     float aspect_ratio = MathUtils::M_16_BY_9_RATIO;
 };

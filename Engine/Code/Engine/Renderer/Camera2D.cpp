@@ -116,6 +116,14 @@ const Matrix4& Camera2D::GetInverseViewProjectionMatrix() const noexcept {
     return inv_view_projection_matrix;
 }
 
+const RenderTargetStack::Node& Camera2D::GetRenderTarget() const noexcept {
+    return _render_target;
+}
+
+RenderTargetStack::Node& Camera2D::GetRenderTarget() noexcept {
+    return const_cast<RenderTargetStack::Node&>(std::as_const(*this).GetRenderTarget());
+}
+
 float Camera2D::GetShake() const noexcept {
     return trauma * trauma;
 }
