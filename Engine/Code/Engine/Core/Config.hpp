@@ -23,10 +23,10 @@ public:
 
     bool HasKey(const std::string& key) const noexcept;
 
+    void GetValue(const std::string& key, bool& value) const noexcept;
     void GetValue(const std::string& key, char& value) const noexcept;
     void GetValue(const std::string& key, unsigned char& value) const noexcept;
     void GetValue(const std::string& key, signed char& value) const noexcept;
-    void GetValue(const std::string& key, bool& value) const noexcept;
     void GetValue(const std::string& key, unsigned int& value) const noexcept;
     void GetValue(const std::string& key, int& value) const noexcept;
     void GetValue(const std::string& key, long& value) const noexcept;
@@ -38,10 +38,10 @@ public:
     void GetValue(const std::string& key, long double& value) const noexcept;
     void GetValue(const std::string& key, std::string& value) const noexcept;
 
+    void SetValue(const std::string& key, const bool& value) noexcept;
     void SetValue(const std::string& key, const char& value) noexcept;
     void SetValue(const std::string& key, const unsigned char& value) noexcept;
     void SetValue(const std::string& key, const signed char& value) noexcept;
-    void SetValue(const std::string& key, const bool& value) noexcept;
     void SetValue(const std::string& key, const unsigned int& value) noexcept;
     void SetValue(const std::string& key, const int& value) noexcept;
     void SetValue(const std::string& key, const long& value) noexcept;

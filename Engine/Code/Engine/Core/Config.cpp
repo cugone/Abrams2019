@@ -50,6 +50,25 @@ bool Config::HasKey(const std::string& key) const noexcept {
     return _config.find(key) != _config.end();
 }
 
+void Config::GetValue(const std::string& key, bool& value) const noexcept {
+    auto found = _config.find(key);
+    if(found != _config.end()) {
+        try {
+            int keyAsInt = std::stoi(found->second);
+            value = keyAsInt != 0;
+        } catch(...) {
+            std::string keyAsString = StringUtils::ToLowerCase(found->second);
+            if(keyAsString == "true") {
+                value = true;
+            } else if(keyAsString == "false") {
+                value = false;
+            } else {
+                value = false;
+            }
+        }
+    }
+}
+
 void Config::GetValue(const std::string& key, char& value) const noexcept {
     auto found = _config.find(key);
     if(found != _config.end()) {
@@ -68,25 +87,6 @@ void Config::GetValue(const std::string& key, signed char& value) const noexcept
     auto found = _config.find(key);
     if(found != _config.end()) {
         value = static_cast<signed char>(std::stoi(found->second));
-    }
-}
-
-void Config::GetValue(const std::string& key, bool& value) const noexcept {
-    auto found = _config.find(key);
-    if(found != _config.end()) {
-        try {
-            int keyAsInt = std::stoi(found->second);
-            value = keyAsInt != 0;
-        } catch(...) {
-            std::string keyAsString = StringUtils::ToLowerCase(found->second);
-            if(keyAsString == "true") {
-                value = true;
-            } else if(keyAsString == "false") {
-                value = false;
-            } else {
-                value = false;
-            }
-        }
     }
 }
 
