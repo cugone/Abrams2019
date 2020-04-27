@@ -639,18 +639,18 @@ bool ParseXmlAttribute(const XMLElement& element, const std::string& attributeNa
 
 unsigned char ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, unsigned char defaultValue) noexcept {
     unsigned int retVal = defaultValue;
-    auto attrAsCStr = element.Attribute(attributeName.c_str());
-    auto attr = std::string(attrAsCStr ? attrAsCStr : "");
-    bool is_range = attr.find('~') != std::string::npos;
+    const auto attrAsCStr = element.Attribute(attributeName.c_str());
+    const auto attr = std::string{attrAsCStr ? attrAsCStr : ""};
+    const auto is_range = attr.find('~') != std::string::npos;
     if(!is_range) {
         element.QueryUnsignedAttribute(attributeName.c_str(), &retVal);
     } else {
-        auto values = StringUtils::Split(attr, '~');
+        const auto values = StringUtils::Split(attr, '~');
         if(values.size() == 1) {
             return static_cast<unsigned char>(std::stoul(values[0]));
         }
-        unsigned char lower = static_cast<unsigned char>(std::stoul(values[0]));
-        unsigned char upper = static_cast<unsigned char>(std::stoul(values[1]));
+        const auto lower = static_cast<unsigned char>(std::stoul(values[0]));
+        const auto upper = static_cast<unsigned char>(std::stoul(values[1]));
         retVal = MathUtils::GetRandomIntInRange(lower, upper);
     }
     return static_cast<unsigned char>(retVal);
@@ -658,18 +658,18 @@ unsigned char ParseXmlAttribute(const XMLElement& element, const std::string& at
 
 signed char ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, signed char defaultValue) noexcept {
     signed int retVal = defaultValue;
-    auto attrAsCStr = element.Attribute(attributeName.c_str());
-    auto attr = std::string(attrAsCStr ? attrAsCStr : "");
-    bool is_range = attr.find('~') != std::string::npos;
+    const auto attrAsCStr = element.Attribute(attributeName.c_str());
+    const auto attr = std::string{attrAsCStr ? attrAsCStr : ""};
+    const auto is_range = attr.find('~') != std::string::npos;
     if(!is_range) {
         element.QueryIntAttribute(attributeName.c_str(), &retVal);
     } else {
-        auto values = StringUtils::Split(attr, '~');
+        const auto values = StringUtils::Split(attr, '~');
         if(values.size() == 1) {
             return static_cast<signed char>(std::stoul(values[0]));
         }
-        signed char lower = static_cast<signed char>(std::stoul(values[0]));
-        signed char upper = static_cast<signed char>(std::stoul(values[1]));
+        const auto lower = static_cast<signed char>(std::stoul(values[0]));
+        const auto upper = static_cast<signed char>(std::stoul(values[1]));
         retVal = MathUtils::GetRandomIntInRange(lower, upper);
     }
     return static_cast<signed char>(retVal);
@@ -677,18 +677,18 @@ signed char ParseXmlAttribute(const XMLElement& element, const std::string& attr
 
 char ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, char defaultValue) noexcept {
     char retVal = defaultValue;
-    auto attrAsCStr = element.Attribute(attributeName.c_str());
-    auto attr = std::string(attrAsCStr ? attrAsCStr : "");
-    bool is_range = attr.find('~') != std::string::npos;
+    const auto attrAsCStr = element.Attribute(attributeName.c_str());
+    const auto attr = std::string(attrAsCStr ? attrAsCStr : "");
+    const auto is_range = attr.find('~') != std::string::npos;
     if(!is_range) {
-        auto attrValue = element.Attribute(attributeName.c_str());
-        std::string value(attrValue ? attrValue : "");
+        const auto attrValue = element.Attribute(attributeName.c_str());
+        const auto value = std::string{attrValue ? attrValue : ""};
         if(value.empty()) {
             return retVal;
         }
         return *(value.begin());
     } else {
-        auto values = StringUtils::Split(attr, '~');
+        const auto values = StringUtils::Split(attr, '~');
         //attr string isn't empty, but if Split returns empty vector, the only thing the string contained was a '~'.
         if(values.empty()) {
             return '~';
@@ -696,18 +696,18 @@ char ParseXmlAttribute(const XMLElement& element, const std::string& attributeNa
         if(values.size() == 1) {
             if(attr.front() == '~') {
                 constexpr auto lower = std::numeric_limits<char>::min();
-                auto upper = static_cast<char>(std::stoi(values[1]));
+                const auto upper = static_cast<char>(std::stoi(values[1]));
                 retVal = static_cast<char>(MathUtils::GetRandomIntInRange(lower, upper));
             }
             if(attr.back() == '~') {
-                auto lower = static_cast<char>(std::stoi(values[0]));
+                const auto lower = static_cast<char>(std::stoi(values[0]));
                 constexpr auto upper = std::numeric_limits<char>::max();
                 retVal = static_cast<char>(MathUtils::GetRandomIntInRange(lower, upper));
             }
             return static_cast<char>(std::stoi(values[0]));
         }
-        auto lower = static_cast<char>(std::stoi(values[0]));
-        auto upper = static_cast<char>(std::stoi(values[1]));
+        const auto lower = static_cast<char>(std::stoi(values[0]));
+        const auto upper = static_cast<char>(std::stoi(values[1]));
         retVal = static_cast<char>(MathUtils::GetRandomIntInRange(lower, upper));
     }
     return static_cast<char>(retVal);
@@ -715,18 +715,18 @@ char ParseXmlAttribute(const XMLElement& element, const std::string& attributeNa
 
 unsigned short ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, unsigned short defaultValue) noexcept {
     unsigned int retVal = defaultValue;
-    auto attrAsCStr = element.Attribute(attributeName.c_str());
-    auto attr = std::string(attrAsCStr ? attrAsCStr : "");
-    bool is_range = attr.find('~') != std::string::npos;
+    const auto attrAsCStr = element.Attribute(attributeName.c_str());
+    const auto attr = std::string{attrAsCStr ? attrAsCStr : ""};
+    const auto is_range = attr.find('~') != std::string::npos;
     if(!is_range) {
         element.QueryUnsignedAttribute(attributeName.c_str(), &retVal);
     } else {
-        auto values = StringUtils::Split(attr, '~');
+        const auto values = StringUtils::Split(attr, '~');
         if(values.size() == 1) {
             return static_cast<unsigned short>(std::stoul(values[0]));
         }
-        unsigned short lower = static_cast<unsigned short>(std::stoul(values[0]));
-        unsigned short upper = static_cast<unsigned short>(std::stoul(values[1]));
+        const auto lower = static_cast<unsigned short>(std::stoul(values[0]));
+        const auto upper = static_cast<unsigned short>(std::stoul(values[1]));
         retVal = MathUtils::GetRandomIntInRange(lower, upper);
     }
     return static_cast<unsigned short>(retVal);
@@ -734,18 +734,18 @@ unsigned short ParseXmlAttribute(const XMLElement& element, const std::string& a
 
 short ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, short defaultValue) noexcept {
     int retVal = defaultValue;
-    auto attrAsCStr = element.Attribute(attributeName.c_str());
-    auto attr = std::string(attrAsCStr ? attrAsCStr : "");
-    bool is_range = attr.find('~') != std::string::npos;
+    const auto attrAsCStr = element.Attribute(attributeName.c_str());
+    const auto attr = std::string{attrAsCStr ? attrAsCStr : ""};
+    const auto is_range = attr.find('~') != std::string::npos;
     if(!is_range) {
         element.QueryIntAttribute(attributeName.c_str(), &retVal);
     } else {
-        auto values = StringUtils::Split(attr, '~');
+        const auto values = StringUtils::Split(attr, '~');
         if(values.size() == 1) {
             return static_cast<short>(std::stoi(values[0]));
         }
-        short lower = static_cast<short>(std::stoi(values[0]));
-        short upper = static_cast<short>(std::stoi(values[1]));
+        const auto lower = static_cast<short>(std::stoi(values[0]));
+        const auto upper = static_cast<short>(std::stoi(values[1]));
         retVal = MathUtils::GetRandomIntInRange(lower, upper);
     }
     return static_cast<short>(retVal);
@@ -753,18 +753,18 @@ short ParseXmlAttribute(const XMLElement& element, const std::string& attributeN
 
 unsigned int ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, unsigned int defaultValue) noexcept {
     unsigned int retVal = defaultValue;
-    auto attrAsCStr = element.Attribute(attributeName.c_str());
-    auto attr = std::string(attrAsCStr ? attrAsCStr : "");
-    bool is_range = attr.find('~') != std::string::npos;
+    const auto attrAsCStr = element.Attribute(attributeName.c_str());
+    const auto attr = std::string{attrAsCStr ? attrAsCStr : ""};
+    const auto is_range = attr.find('~') != std::string::npos;
     if(!is_range) {
         element.QueryUnsignedAttribute(attributeName.c_str(), &retVal);
     } else {
-        auto values = StringUtils::Split(attr, '~');
+        const auto values = StringUtils::Split(attr, '~');
         if(values.size() == 1) {
             return static_cast<unsigned short>(std::stoul(values[0]));
         }
-        unsigned int lower = static_cast<unsigned int>(std::stoul(values[0]));
-        unsigned int upper = static_cast<unsigned int>(std::stoul(values[1]));
+        const auto lower = static_cast<unsigned int>(std::stoul(values[0]));
+        const auto upper = static_cast<unsigned int>(std::stoul(values[1]));
         retVal = MathUtils::GetRandomIntInRange(lower, upper);
     }
     return static_cast<unsigned int>(retVal);
@@ -772,18 +772,18 @@ unsigned int ParseXmlAttribute(const XMLElement& element, const std::string& att
 
 int ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, int defaultValue) noexcept {
     int retVal = defaultValue;
-    auto attrAsCStr = element.Attribute(attributeName.c_str());
-    auto attr = std::string(attrAsCStr ? attrAsCStr : "");
-    bool is_range = attr.find('~') != std::string::npos;
+    const auto attrAsCStr = element.Attribute(attributeName.c_str());
+    const auto attr = std::string{attrAsCStr ? attrAsCStr : ""};
+    const auto is_range = attr.find('~') != std::string::npos;
     if(!is_range) {
         element.QueryIntAttribute(attributeName.c_str(), &retVal);
     } else {
-        auto values = StringUtils::Split(attr, '~');
+        const auto values = StringUtils::Split(attr, '~');
         if(values.size() == 1) {
             return std::stoi(values[0]);
         }
-        int lower = std::stoi(values[0]);
-        int upper = std::stoi(values[1]);
+        const auto lower = std::stoi(values[0]);
+        const auto upper = std::stoi(values[1]);
         retVal = MathUtils::GetRandomIntInRange(lower, upper);
     }
     return retVal;
@@ -791,18 +791,18 @@ int ParseXmlAttribute(const XMLElement& element, const std::string& attributeNam
 
 unsigned long ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, unsigned long defaultValue) noexcept {
     long long retVal = defaultValue;
-    auto attrAsCStr = element.Attribute(attributeName.c_str());
-    auto attr = std::string(attrAsCStr ? attrAsCStr : "");
-    bool is_range = attr.find('~') != std::string::npos;
+    const auto attrAsCStr = element.Attribute(attributeName.c_str());
+    const auto attr = std::string{attrAsCStr ? attrAsCStr : ""};
+    const auto is_range = attr.find('~') != std::string::npos;
     if(!is_range) {
         element.QueryInt64Attribute(attributeName.c_str(), &retVal);
     } else {
-        auto values = StringUtils::Split(attr, '~');
+        const auto values = StringUtils::Split(attr, '~');
         if(values.size() == 1) {
             return std::stoul(values[0]);
         }
-        long lower = static_cast<long>(std::stoll(values[0]));
-        long upper = static_cast<long>(std::stoll(values[1]));
+        const auto lower = static_cast<long>(std::stoll(values[0]));
+        const auto upper = static_cast<long>(std::stoll(values[1]));
         retVal = MathUtils::GetRandomLongInRange(lower, upper);
     }
     return static_cast<unsigned long>(retVal);
@@ -810,18 +810,18 @@ unsigned long ParseXmlAttribute(const XMLElement& element, const std::string& at
 
 long ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, long defaultValue) noexcept {
     long long retVal = defaultValue;
-    auto attrAsCStr = element.Attribute(attributeName.c_str());
-    auto attr = std::string(attrAsCStr ? attrAsCStr : "");
-    bool is_range = attr.find('~') != std::string::npos;
+    const auto attrAsCStr = element.Attribute(attributeName.c_str());
+    const auto attr = std::string{attrAsCStr ? attrAsCStr : ""};
+    const auto is_range = attr.find('~') != std::string::npos;
     if(!is_range) {
         element.QueryInt64Attribute(attributeName.c_str(), &retVal);
     } else {
-        auto values = StringUtils::Split(attr, '~');
+        const auto values = StringUtils::Split(attr, '~');
         if(values.size() == 1) {
             return static_cast<long>(std::stoll(values[0]));
         }
-        long lower = static_cast<long>(std::stoll(values[0]));
-        long upper = static_cast<long>(std::stoll(values[1]));
+        const auto lower = static_cast<long>(std::stoll(values[0]));
+        const auto upper = static_cast<long>(std::stoll(values[1]));
         retVal = MathUtils::GetRandomLongInRange(lower, upper);
     }
     return static_cast<long>(retVal);
@@ -829,18 +829,18 @@ long ParseXmlAttribute(const XMLElement& element, const std::string& attributeNa
 
 unsigned long long ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, unsigned long long defaultValue) noexcept {
     unsigned long long retVal = defaultValue;
-    auto attrAsCStr = element.Attribute(attributeName.c_str());
-    auto attr = std::string(attrAsCStr ? attrAsCStr : "");
-    bool is_range = attr.find('~') != std::string::npos;
+    const auto attrAsCStr = element.Attribute(attributeName.c_str());
+    const auto attr = std::string{attrAsCStr ? attrAsCStr : ""};
+    const auto is_range = attr.find('~') != std::string::npos;
     if(!is_range) {
         element.QueryUnsigned64Attribute(attributeName.c_str(), &retVal);
     } else {
-        auto values = StringUtils::Split(attr, '~');
+        const auto values = StringUtils::Split(attr, '~');
         if(values.size() == 1) {
             return std::stoull(values[0]);
         }
-        unsigned long long lower = std::stoull(values[0]);
-        unsigned long long upper = std::stoull(values[1]);
+        const auto lower = std::stoull(values[0]);
+        const auto upper = std::stoull(values[1]);
         retVal = MathUtils::GetRandomLongLongInRange(lower, upper);
     }
     return static_cast<unsigned long long>(retVal);
@@ -848,18 +848,18 @@ unsigned long long ParseXmlAttribute(const XMLElement& element, const std::strin
 
 long long ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, long long defaultValue) noexcept {
     long long retVal = defaultValue;
-    auto attrAsCStr = element.Attribute(attributeName.c_str());
-    auto attr = std::string(attrAsCStr ? attrAsCStr : "");
-    bool is_range = attr.find('~') != std::string::npos;
+    const auto attrAsCStr = element.Attribute(attributeName.c_str());
+    const auto attr = std::string{attrAsCStr ? attrAsCStr : ""};
+    const auto is_range = attr.find('~') != std::string::npos;
     if(!is_range) {
         element.QueryInt64Attribute(attributeName.c_str(), &retVal);
     } else {
-        auto values = StringUtils::Split(attr, '~');
+        const auto values = StringUtils::Split(attr, '~');
         if(values.size() == 1) {
             return std::stoll(values[0]);
         }
-        long long lower = std::stoll(values[0]);
-        long long upper = std::stoll(values[1]);
+        const auto lower = std::stoll(values[0]);
+        const auto upper = std::stoll(values[1]);
         retVal = MathUtils::GetRandomLongLongInRange(lower, upper);
     }
     return static_cast<long long>(retVal);
@@ -867,18 +867,18 @@ long long ParseXmlAttribute(const XMLElement& element, const std::string& attrib
 
 float ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, float defaultValue) noexcept {
     float retVal = defaultValue;
-    auto attrAsCStr = element.Attribute(attributeName.c_str());
-    auto attr = std::string(attrAsCStr ? attrAsCStr : "");
-    bool is_range = attr.find('~') != std::string::npos;
+    const auto attrAsCStr = element.Attribute(attributeName.c_str());
+    const auto attr = std::string{attrAsCStr ? attrAsCStr : ""};
+    const auto is_range = attr.find('~') != std::string::npos;
     if(!is_range) {
         element.QueryFloatAttribute(attributeName.c_str(), &retVal);
     } else {
-        auto values = StringUtils::Split(attr, '~');
+        const auto values = StringUtils::Split(attr, '~');
         if(values.size() == 1) {
             return std::stof(values[0]);
         }
-        float lower = std::stof(values[0]);
-        float upper = std::stof(values[1]);
+        const auto lower = std::stof(values[0]);
+        const auto upper = std::stof(values[1]);
         retVal = MathUtils::GetRandomFloatInRange(lower, upper);
     }
     return retVal;
@@ -886,18 +886,18 @@ float ParseXmlAttribute(const XMLElement& element, const std::string& attributeN
 
 double ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, double defaultValue) noexcept {
     double retVal = defaultValue;
-    auto attrAsCStr = element.Attribute(attributeName.c_str());
-    auto attr = std::string(attrAsCStr ? attrAsCStr : "");
-    bool is_range = attr.find('~') != std::string::npos;
+    const auto attrAsCStr = element.Attribute(attributeName.c_str());
+    const auto attr = std::string{attrAsCStr ? attrAsCStr : ""};
+    const auto is_range = attr.find('~') != std::string::npos;
     if(!is_range) {
         element.QueryDoubleAttribute(attributeName.c_str(), &retVal);
     } else {
-        auto values = StringUtils::Split(attr, '~');
+        const auto values = StringUtils::Split(attr, '~');
         if(values.size() == 1) {
             return std::stod(values[0]);
         }
-        double lower = std::stod(values[0]);
-        double upper = std::stod(values[1]);
+        const auto lower = std::stod(values[0]);
+        const auto upper = std::stod(values[1]);
         retVal = MathUtils::GetRandomDoubleInRange(lower, upper);
     }
     return retVal;
@@ -905,12 +905,12 @@ double ParseXmlAttribute(const XMLElement& element, const std::string& attribute
 
 long double ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, long double defaultValue) noexcept {
     long double retVal = defaultValue;
-    auto attrAsCStr = element.Attribute(attributeName.c_str());
-    auto attr = std::string(attrAsCStr ? attrAsCStr : "");
-    bool is_range = attr.find('~') != std::string::npos;
+    const auto attrAsCStr = element.Attribute(attributeName.c_str());
+    const auto attr = std::string{attrAsCStr ? attrAsCStr : ""};
+    const auto is_range = attr.find('~') != std::string::npos;
     if(!is_range) {
-        auto valueAsCStr = element.Attribute(attr.c_str());
-        std::string value(valueAsCStr ? valueAsCStr : "");
+        const auto valueAsCStr = element.Attribute(attr.c_str());
+        const auto value = std::string{valueAsCStr ? valueAsCStr : ""};
         if(!value.empty()) {
             try {
                 retVal = std::stold(value);
@@ -919,20 +919,20 @@ long double ParseXmlAttribute(const XMLElement& element, const std::string& attr
             }
         }
     } else {
-        auto values = StringUtils::Split(attr, '~');
+        const auto values = StringUtils::Split(attr, '~');
         if(values.size() == 1) {
             return std::stold(values[0]);
         }
-        long double lower = std::stold(values[0]);
-        long double upper = std::stold(values[1]);
+        const auto lower = std::stold(values[0]);
+        const auto upper = std::stold(values[1]);
         retVal = MathUtils::GetRandomLongDoubleInRange(lower, upper);
     }
     return retVal;
 }
 
 Rgba ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const Rgba& defaultValue) noexcept {
-    auto s = element.Attribute(attributeName.c_str()); //returns nullptr when Attribute not found!
-    std::string textVal(s ? s : "");
+    const auto s = element.Attribute(attributeName.c_str()); //returns nullptr when Attribute not found!
+    const auto textVal = std::string{s ? s : ""};
     if(textVal.empty()) {
         return defaultValue;
     } else {
@@ -941,8 +941,8 @@ Rgba ParseXmlAttribute(const XMLElement& element, const std::string& attributeNa
 }
 
 Vector2 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const Vector2& defaultValue) noexcept {
-    auto s = element.Attribute(attributeName.c_str()); //returns nullptr when Attribute not found!
-    std::string textVal(s ? s : "");
+    const auto s = element.Attribute(attributeName.c_str()); //returns nullptr when Attribute not found!
+    const auto textVal = std::string{s ? s : ""};
     if(textVal.empty()) {
         return defaultValue;
     } else {
