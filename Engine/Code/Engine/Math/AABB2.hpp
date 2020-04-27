@@ -3,6 +3,7 @@
 #include "Engine/Math/Vector2.hpp"
 
 class OBB2;
+class Vector4;
 
 class AABB2 {
 public:
@@ -18,14 +19,11 @@ public:
     AABB2& operator=(const AABB2& rhs) = default;
     AABB2& operator=(AABB2&& rhs) = default;
     ~AABB2() = default;
-    AABB2(float initialX, float initialY)
-    noexcept;
-    AABB2(float minX, float minY, float maxX, float maxY)
-    noexcept;
-    AABB2(const Vector2& mins, const Vector2& maxs)
-    noexcept;
-    AABB2(const Vector2& center, float radiusX, float radiusY)
-    noexcept;
+    AABB2(float initialX, float initialY) noexcept;
+    AABB2(float minX, float minY, float maxX, float maxY) noexcept;
+    AABB2(const Vector2& mins, const Vector2& maxs) noexcept;
+    explicit AABB2(const Vector4& minsMaxs) noexcept;
+    AABB2(const Vector2& center, float radiusX, float radiusY) noexcept;
     explicit AABB2(const OBB2& obb) noexcept; //Implicit conversion from OBB2
 
     void StretchToIncludePoint(const Vector2& point) noexcept;

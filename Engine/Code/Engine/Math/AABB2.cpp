@@ -1,6 +1,7 @@
 #include "Engine/Math/AABB2.hpp"
 
 #include "Engine/Math/OBB2.hpp"
+#include "Engine/Math/Vector4.hpp"
 
 #include <algorithm>
 
@@ -25,6 +26,11 @@ AABB2::AABB2(const Vector2& mins, const Vector2& maxs) noexcept
     /* DO NOTHING */
 }
 
+AABB2::AABB2(const Vector4& minsMaxs) noexcept
+: AABB2(minsMaxs.GetXY(), minsMaxs.GetZW())
+{
+    /* DO NOTHING */
+}
 AABB2::AABB2(const Vector2& center, float radiusX, float radiusY) noexcept
 : mins(center.x - radiusX, center.y - radiusY)
 , maxs(center.x + radiusX, center.y + radiusY) {
