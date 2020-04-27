@@ -94,8 +94,7 @@ bool HasSearchPermissions(const std::filesystem::path& p) noexcept;
 bool IsParentOf(const std::filesystem::path& p, const std::filesystem::path& child) noexcept;
 bool IsSiblingOf(const std::filesystem::path& p, const std::filesystem::path& sibling) noexcept;
 bool IsChildOf(const std::filesystem::path& p, const std::filesystem::path& parent) noexcept;
-void ForEachFileInFolder(
-const std::filesystem::path& folderpath, const std::string& validExtensionList = std::string{}, const std::function<void(const std::filesystem::path&)>& callback = [](const std::filesystem::path& /*p*/) { /* DO NOTHING */ }, bool recursive = false) noexcept;
+
 std::size_t CountFilesInFolders(const std::filesystem::path& folderpath, const std::string& validExtensionList = std::string{}, bool recursive = false) noexcept;
 void RemoveExceptMostRecentFiles(const std::filesystem::path& folderpath, std::size_t mostRecentCountToKeep, const std::string& validExtensionList = std::string{}) noexcept;
 std::vector<std::filesystem::path> GetAllPathsInFolders(const std::filesystem::path& folderpath, const std::string& validExtensionList = std::string{}, bool recursive = false) noexcept;
@@ -134,5 +133,25 @@ void ForEachFileInFolders(const std::filesystem::path& preferred_folderpath, con
                   });
 }
 } // namespace detail
+
+template<typename Callable>
+void ForEachFileInFolder(
+const std::filesystem::path& folderpath, const std::string& validExtensionList = std::string{}, Callable&& callback = [](const std::filesystem::path&) {}, bool recursive = false) noexcept {
+    namespace FS = std::filesystem;
+    auto preferred_folderpath = FS::canonical(folderpath);
+    preferred_folderpath.make_preferred();
+    const auto exists = FS::exists(preferred_folderpath);
+    const auto is_directory = FS::is_directory(preferred_folderpath);
+    const auto is_folder = exists && is_directory;
+    if(!is_folder) {
+        return;
+    }
+    auto validExtensions = StringUtils::Split(StringUtils::ToLowerCase(validExtensionList));
+    if(!recursive) {
+        detail::ForEachFileInFolders<FS::directory_iterator>(preferred_folderpath, validExtensions, callback);
+    } else {
+        detail::ForEachFileInFolders<FS::recursive_directory_iterator>(preferred_folderpath, validExtensions, callback);
+    }
+}
 
 } // namespace FileUtils
