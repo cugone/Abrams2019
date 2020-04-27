@@ -107,15 +107,15 @@ uint64_t EndianSwap(uint64_t value) noexcept;
 
 namespace detail {
 
-template<typename DirectoryIteratorType>
-void ForEachFileInFolders(const std::filesystem::path& preferred_folderpath, const std::vector<std::string>& validExtensions, const std::function<void(const std::filesystem::path&)>& callback) noexcept {
+template<typename DirectoryIteratorType, typename Callable>
+void ForEachFileInFolders(const std::filesystem::path& preferred_folderpath, const std::vector<std::string>& validExtensions, Callable&& callback) noexcept {
     if(validExtensions.empty()) {
         std::for_each(DirectoryIteratorType{preferred_folderpath}, DirectoryIteratorType{},
                       [&callback](const std::filesystem::directory_entry& entry) {
                           const auto& cur_path = entry.path();
                           bool is_file = std::filesystem::is_regular_file(cur_path);
                           if(is_file) {
-                              callback(cur_path);
+                              std::invoke(callback, cur_path);
                           }
                       });
         return;
@@ -128,7 +128,7 @@ void ForEachFileInFolders(const std::filesystem::path& preferred_folderpath, con
                       if(is_file) {
                           bool valid_file_by_extension = std::find(std::begin(validExtensions), std::end(validExtensions), my_extension) != std::end(validExtensions);
                           if(valid_file_by_extension) {
-                              callback(cur_path);
+                              std::invoke(callback, cur_path);
                           }
                       }
                   });
