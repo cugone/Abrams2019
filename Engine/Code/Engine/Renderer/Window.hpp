@@ -48,7 +48,7 @@ public:
     std::function<bool(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)> custom_message_handler;
 
     void SetTitle(const std::string& title) noexcept;
-
+    const std::string& GetTitle() const noexcept;
 protected:
     bool Register() noexcept;
     bool Unregister() noexcept;
@@ -59,7 +59,7 @@ private:
     HWND _hWnd{};
     HDC _hdc{};
     HINSTANCE _hInstance{};
-    std::string _title{"DEFAULT WINDOW"};
+    std::string _title{"Created with Abrams 2019 (c) Casey Ugone "};
     INT _cmdShow{};
     WNDCLASSEX _wc{};
     int _positionX{};

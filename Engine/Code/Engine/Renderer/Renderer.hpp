@@ -148,6 +148,7 @@ public:
     void SetFullscreenMode() noexcept;
     void SetWindowedMode() noexcept;
     void SetWindowTitle(const std::string& newTitle) noexcept;
+    std::string GetWindowTitle() const noexcept;
 
     std::unique_ptr<VertexBuffer> CreateVertexBuffer(const VertexBuffer::buffer_t& vbo) const noexcept;
     std::unique_ptr<IndexBuffer> CreateIndexBuffer(const IndexBuffer::buffer_t& ibo) const noexcept;

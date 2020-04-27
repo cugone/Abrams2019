@@ -203,6 +203,9 @@ void Window::SetTitle(const std::string& title) noexcept {
     _title = title;
     ::SetWindowTextA(_hWnd, _title.data());
 }
+const std::string& Window::GetTitle() const noexcept {
+    return _title;
+}
 
 bool Window::Register() noexcept {
     _hInstance = GetModuleHandle(nullptr);
@@ -231,7 +234,7 @@ bool Window::Create() noexcept {
     _hWnd = ::CreateWindowEx(
     _styleFlagsEx,                              // Optional window styles.
     _wc.lpszClassName,                          // Window class
-    "Created with Abrams 2019 (c) Casey Ugone", // Window text
+    _title.c_str(),                             // Window text
     _styleFlags,                                // Window style
     _positionX, _positionY,                     //Position XY
     _width, _height,                            //Size WH

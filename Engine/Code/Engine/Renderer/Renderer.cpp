@@ -2488,6 +2488,16 @@ void Renderer::SetWindowTitle(const std::string& newTitle) noexcept {
     }
 }
 
+std::string Renderer::GetWindowTitle() const noexcept {
+    if(auto output = GetOutput()) {
+        if(auto window = output->GetWindow()) {
+            return window->GetTitle();
+        }
+    }
+    return std::string{};
+}
+
+
 void Renderer::RegisterDepthStencilState(const std::string& name, std::unique_ptr<DepthStencilState> depthstencil) noexcept {
     if(depthstencil == nullptr) {
         return;
