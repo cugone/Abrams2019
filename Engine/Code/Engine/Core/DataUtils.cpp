@@ -748,7 +748,7 @@ short ParseXmlAttribute(const XMLElement& element, const std::string& attributeN
         short upper = static_cast<short>(std::stoi(values[1]));
         retVal = MathUtils::GetRandomIntInRange(lower, upper);
     }
-    return static_cast<unsigned short>(retVal);
+    return static_cast<short>(retVal);
 }
 
 unsigned int ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, unsigned int defaultValue) noexcept {
