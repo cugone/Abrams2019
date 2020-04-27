@@ -1,6 +1,8 @@
 #pragma once
 
+#include "Engine/Core/DataUtils.hpp"
 #include "Engine/Core/Rgba.hpp"
+
 #include "Engine/UI/Element.hpp"
 
 #include <string>
@@ -11,10 +13,11 @@ namespace UI {
 
 class Canvas;
 
-class Label : public UI::Element {
+class Label : public Element {
 public:
-    explicit Label(UI::Canvas* parent_canvas);
-    explicit Label(UI::Canvas* parent_canvas, KerningFont* font, const std::string& text = "Label");
+    explicit Label(Panel* parent);
+    explicit Label(const XMLElement& elem, Panel* parent = nullptr);
+    explicit Label(Panel* parent, KerningFont* font, const std::string& text = "Label");
     virtual ~Label() = default;
 
     virtual void Render(Renderer& renderer) const override;
@@ -37,11 +40,16 @@ public:
     virtual void SetPositionOffset(const Vector2& offset) override;
     virtual void SetPositionRatio(const Vector2& ratio) override;
 
+    Vector4 CalcDesiredSize() const noexcept override;
+
 protected:
-    void CalcBoundsFromFont(KerningFont* font);
+    Vector2 CalcBoundsFromFont(KerningFont* font) const;
 
 private:
+    bool LoadFromXml(const XMLElement& elem) noexcept;
+
     KerningFont* _font = nullptr;
+    std::string _fontname{"System32"};
     std::string _text{};
     Rgba _color = Rgba::White;
     float _scale = 1.0f;

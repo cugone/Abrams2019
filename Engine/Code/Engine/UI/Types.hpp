@@ -5,31 +5,6 @@
 
 namespace UI {
 
-class Ratio {
-public:
-    explicit Ratio(const Vector2& newValue = Vector2::ZERO);
-    Ratio(const Ratio& rhs);
-    Ratio(Ratio&& rhs) noexcept;
-    Ratio& operator=(const Ratio& rhs);
-    Ratio& operator=(Ratio&& rhs) noexcept;
-    ~Ratio() = default;
-    const Vector2& GetValue() const;
-    void SetValue(const Vector2& newValue);
-
-private:
-    Vector2 value{};
-};
-
-struct Metric {
-    Ratio ratio{};
-    Vector2 unit{};
-};
-
-enum class PositionMode {
-    Absolute,
-    Relative,
-};
-
 enum class FillMode {
     Fill,
     Fit,
@@ -59,5 +34,17 @@ PivotPosition operator++(PivotPosition& mode, int);
 
 PivotPosition& operator--(PivotPosition& mode);
 PivotPosition operator--(PivotPosition& mode, int);
+
+enum class InvalidateElementReason : uint8_t {
+    None = 0,
+    Layout = 1 << 0,
+    Order = 1 << 1,
+    Any = Layout | Order,
+};
+
+InvalidateElementReason operator|(InvalidateElementReason a, const InvalidateElementReason& b);
+InvalidateElementReason& operator|=(InvalidateElementReason& a, const InvalidateElementReason& b);
+InvalidateElementReason operator&(InvalidateElementReason a, const InvalidateElementReason& b);
+InvalidateElementReason& operator&=(InvalidateElementReason& a, const InvalidateElementReason& b);
 
 } // namespace UI

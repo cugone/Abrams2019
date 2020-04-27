@@ -32,39 +32,28 @@ PivotPosition operator--(PivotPosition& mode, int) {
     return result;
 }
 
-Ratio::Ratio(const Vector2& newValue /*= Vector2::ZERO*/) {
-    SetValue(newValue);
+InvalidateElementReason operator|(InvalidateElementReason lhs, const InvalidateElementReason& rhs) {
+    lhs |= rhs;
+    return lhs;
 }
 
-Ratio& Ratio::operator=(const Ratio& rhs) {
-    SetValue(rhs.value);
-    return *this;
+InvalidateElementReason& operator|=(InvalidateElementReason& lhs, const InvalidateElementReason& rhs) {
+    auto underlying_lhs = std::underlying_type_t<InvalidateElementReason>(lhs);
+    auto underlying_rhs = std::underlying_type_t<InvalidateElementReason>(rhs);
+    lhs = static_cast<InvalidateElementReason>(underlying_lhs | underlying_rhs);
+    return lhs;
 }
 
-Ratio& Ratio::operator=(Ratio&& rhs) noexcept {
-    SetValue(std::move(rhs.value));
-    rhs.value = Vector2::ZERO;
-    return *this;
+InvalidateElementReason operator&(InvalidateElementReason lhs, const InvalidateElementReason& rhs) {
+    lhs &= rhs;
+    return lhs;
 }
 
-Ratio::Ratio(Ratio&& rhs) noexcept {
-    SetValue(std::move(rhs.value));
-    rhs.value = Vector2::ZERO;
-}
-
-Ratio::Ratio(const Ratio& rhs) {
-    SetValue(rhs.value);
-}
-
-const Vector2& Ratio::GetValue() const {
-    return value;
-}
-
-void Ratio::SetValue(const Vector2& newValue) {
-    auto clamped_newValue = newValue;
-    clamped_newValue.x = std::clamp(clamped_newValue.x, 0.0f, 1.0f);
-    clamped_newValue.y = std::clamp(clamped_newValue.y, 0.0f, 1.0f);
-    value = clamped_newValue;
+InvalidateElementReason& operator&=(InvalidateElementReason& lhs, const InvalidateElementReason& rhs) {
+    auto underlying_lhs = std::underlying_type_t<InvalidateElementReason>(lhs);
+    auto underlying_rhs = std::underlying_type_t<InvalidateElementReason>(rhs);
+    lhs = static_cast<InvalidateElementReason>(underlying_lhs & underlying_rhs);
+    return lhs;
 }
 
 } // namespace UI

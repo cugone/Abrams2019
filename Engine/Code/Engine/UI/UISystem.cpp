@@ -2,9 +2,15 @@
 
 #include "Engine/Core/FileLogger.hpp"
 #include "Engine/Core/FileUtils.hpp"
+#include "Engine/Core/KerningFont.hpp"
+
 #include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/Window.hpp"
+
+#include "Engine/UI/Widget.hpp"
+
+#include <algorithm>
 
 IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -87,6 +93,9 @@ UISystem::~UISystem() noexcept {
     ImGui::DestroyContext(_context);
     _context = nullptr;
     _io = nullptr;
+
+    _widgets.clear();
+
 }
 
 void UISystem::Initialize() {
@@ -100,6 +109,7 @@ void UISystem::Initialize() {
     ImGui_ImplDX11_Init(dx_device, dx_context);
 
     ImGui::StyleColorsDark();
+
 }
 
 void UISystem::BeginFrame() {
@@ -119,6 +129,29 @@ void UISystem::Update(TimeUtils::FPSeconds /*deltaSeconds*/) {
 void UISystem::Render() const {
     ImGui::Render();
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
+    //2D View / HUD
+    const float ui_view_height = _renderer.GetCurrentViewport().height;
+    const float ui_view_width = ui_view_height * _ui_camera.GetAspectRatio();
+    const auto ui_view_extents = Vector2{ui_view_width, ui_view_height};
+    const auto ui_view_half_extents = ui_view_extents * 0.5f;
+    auto ui_leftBottom = Vector2{-ui_view_half_extents.x, ui_view_half_extents.y};
+    auto ui_rightTop = Vector2{ui_view_half_extents.x, -ui_view_half_extents.y};
+    auto ui_nearFar = Vector2{0.0f, 1.0f};
+    auto ui_cam_pos = ui_view_half_extents;
+    _ui_camera.position = ui_cam_pos;
+    _ui_camera.orientation_degrees = 0.0f;
+    _ui_camera.SetupView(ui_leftBottom, ui_rightTop, ui_nearFar, _renderer.GetCurrentViewportAspectRatio());
+    _renderer.SetCamera(_ui_camera);
+
+    for(const auto* cur_widget : _active_widgets) {
+        cur_widget->Render();
+    }
+#if defined(RENDER_DEBUG)
+    for(const auto* cur_widget : _active_widgets) {
+        cur_widget->DebugRender();
+    }
+#endif
 }
 
 void UISystem::EndFrame() {
@@ -153,4 +186,50 @@ void UISystem::ToggleImguiDemoWindow() noexcept {
 #if !defined(IMGUI_DISABLE_DEMO_WINDOWS)
     show_imgui_demo_window = !show_imgui_demo_window;
 #endif
+}
+
+void UISystem::RegisterUiWidgetsFromFolder(std::filesystem::path folderpath, bool recursive /*= false*/) {
+    const auto widgets_lambda = [this](const std::filesystem::path& path) {
+        auto newWidget = std::make_unique<UI::Widget>(_renderer, path);
+        const auto name = newWidget->name;
+        _widgets.try_emplace(name, std::move(newWidget));
+    };
+    FileUtils::ForEachFileInFolder(folderpath, ".ui", widgets_lambda, recursive);
+}
+
+bool UISystem::IsWidgetLoaded(const UI::Widget& widget) const noexcept {
+    return std::find(std::begin(_active_widgets), std::end(_active_widgets), &widget) != std::end(_active_widgets);
+}
+
+void UISystem::LoadUiWidgetsFromFolder(std::filesystem::path path) {
+
+}
+
+void UISystem::LoadUiWidget(const std::string& name) {
+    if(auto* widget = GetWidgetByName(name)) {
+        _active_widgets.push_back(widget);
+    }
+}
+
+void UISystem::UnloadUiWidget(const std::string& name) {
+    _active_widgets.erase(std::remove_if(std::begin(_active_widgets), std::end(_active_widgets), [&name](UI::Widget* widget) { return widget->name == name; }), std::end(_active_widgets));
+}
+
+void UISystem::AddUiWidgetToViewport(UI::Widget& widget) {
+    const auto viewport = _renderer.GetCurrentViewport();
+    const auto viewportDims = Vector2{viewport.width, viewport.height};
+    if(!IsWidgetLoaded(widget)) {
+        LoadUiWidget(widget.name);
+    }
+}
+
+void UISystem::RemoveUiWidgetFromViewport(UI::Widget& widget) {
+    UnloadUiWidget(widget.name);
+}
+
+UI::Widget* UISystem::GetWidgetByName(const std::string& name) const {
+    if(const auto& found = _widgets.find(name); found != std::end(_widgets)) {
+        return found->second.get();
+    }
+    return nullptr;
 }

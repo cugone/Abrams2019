@@ -3,6 +3,8 @@
 #include "Engine/Core/BuildConfig.hpp"
 #include "Engine/Core/EngineSubsystem.hpp"
 
+#include "Engine/Renderer/Camera2D.hpp"
+
 #ifndef UI_DEBUG
     #define IMGUI_DISABLE_DEMO_WINDOWS
 #endif
@@ -12,6 +14,13 @@
 #include "Thirdparty/Imgui/imgui_impl_win32.h"
 #include "Thirdparty/Imgui/imgui_stdlib.h"
 
+#include <map>
+#include <memory>
+#include <filesystem>
+
+namespace UI {
+    class Widget;
+}
 class Renderer;
 class FileLogger;
 
@@ -41,12 +50,27 @@ public:
 
     void ToggleImguiDemoWindow() noexcept;
 
+    void LoadUiWidgetsFromFolder(std::filesystem::path path);
+    void LoadUiWidget(const std::string& name);
+    void UnloadUiWidget(const std::string& name);
+
+    void AddUiWidgetToViewport(UI::Widget& widget);
+    void RemoveUiWidgetFromViewport(UI::Widget& widget);
+    UI::Widget* GetWidgetByName(const std::string& nameOrFilepath) const;
+    void RegisterUiWidgetsFromFolder(std::filesystem::path folderpath, bool recursive = false);
+
 protected:
 private:
+    
+    bool IsWidgetLoaded(const UI::Widget& widget) const noexcept;
+
     FileLogger& _fileLogger;
     Renderer& _renderer;
     ImGuiContext* _context{};
     ImGuiIO* _io{};
+    mutable Camera2D _ui_camera{};
+    std::map<std::string, std::unique_ptr<UI::Widget>> _widgets{};
+    std::vector<UI::Widget*> _active_widgets{};
     bool show_imgui_demo_window = false;
 };
 

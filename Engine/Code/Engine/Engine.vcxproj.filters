@@ -325,9 +325,6 @@
     <ClCompile Include="Core\Base64.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="UI\Sprite.cpp">
-      <Filter>UI</Filter>
-    </ClCompile>
     <ClCompile Include="System\Cpu.cpp">
       <Filter>System</Filter>
     </ClCompile>
@@ -405,6 +402,15 @@
     </ClCompile>
     <ClCompile Include="Math\Ray3.cpp">
       <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Widget.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\PictureBox.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\PanelSlot.cpp">
+      <Filter>UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -681,12 +687,6 @@
     <ClInclude Include="Core\Base64.hpp">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="UI\Sprite.hpp">
-      <Filter>UI</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\UI.hpp">
-      <Filter>UI</Filter>
-    </ClInclude>
     <ClInclude Include="System\Cpu.hpp">
       <Filter>System</Filter>
     </ClInclude>
@@ -782,6 +782,15 @@
     </ClInclude>
     <ClInclude Include="Math\Ray3.hpp">
       <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Widget.hpp">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\PictureBox.hpp">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\PanelSlot.hpp">
+      <Filter>UI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

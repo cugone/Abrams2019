@@ -127,11 +127,13 @@
     <ClCompile Include="System\System.cpp" />
     <ClCompile Include="UI\Canvas.cpp" />
     <ClCompile Include="UI\Element.cpp" />
-    <ClCompile Include="UI\Sprite.cpp" />
+    <ClCompile Include="UI\PanelSlot.cpp" />
+    <ClCompile Include="UI\PictureBox.cpp" />
     <ClCompile Include="UI\Panel.cpp" />
     <ClCompile Include="UI\Label.cpp" />
     <ClCompile Include="UI\Types.cpp" />
     <ClCompile Include="UI\UISystem.cpp" />
+    <ClCompile Include="UI\Widget.cpp" />
     <ClCompile Include="Video\Avi.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -253,12 +255,13 @@
     <ClInclude Include="System\System.hpp" />
     <ClInclude Include="UI\Canvas.hpp" />
     <ClInclude Include="UI\Element.hpp" />
-    <ClInclude Include="UI\Sprite.hpp" />
+    <ClInclude Include="UI\PanelSlot.hpp" />
+    <ClInclude Include="UI\PictureBox.hpp" />
     <ClInclude Include="UI\Panel.hpp" />
     <ClInclude Include="UI\Label.hpp" />
     <ClInclude Include="UI\Types.hpp" />
-    <ClInclude Include="UI\UI.hpp" />
     <ClInclude Include="UI\UISystem.hpp" />
+    <ClInclude Include="UI\Widget.hpp" />
     <ClInclude Include="Video\Avi.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

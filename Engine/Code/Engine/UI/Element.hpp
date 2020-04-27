@@ -6,71 +6,35 @@
 #include "Engine/Math/Matrix4.hpp"
 #include "Engine/Math/Vector2.hpp"
 #include "Engine/UI/Types.hpp"
+#include "Engine/UI/PanelSlot.hpp"
 
 class Renderer;
 
 namespace UI {
 
-class Canvas;
+class Panel;
+struct PanelSlot;
 
 class Element {
 public:
-    Element() = default;
-    explicit Element(UI::Canvas* parent_canvas);
+    explicit Element(Panel* parent = nullptr);
     virtual ~Element() = 0;
 
     virtual void Update(TimeUtils::FPSeconds deltaSeconds);
     virtual void Render(Renderer& renderer) const;
-    virtual void DebugRender(Renderer& renderer, bool showSortOrder = false) const;
-
-    template<typename T>
-    T* CreateChild();
-    template<typename T, typename... Args>
-    T* CreateChild(Args&&... args);
-    template<typename T>
-    T* CreateChild(UI::Canvas* parentCanvas);
-    template<typename T, typename... Args>
-    T* CreateChild(UI::Canvas* parentCanvas, Args&&... args);
-    template<typename T>
-    T* CreateChildBefore(UI::Element* youngerSibling);
-    template<typename T, typename... Args>
-    T* CreateChildBefore(UI::Element* youngerSibling, Args&&... args);
-    template<typename T>
-    T* CreateChildBefore(UI::Canvas* parentCanvas, UI::Element* youngerSibling);
-    template<typename T, typename... Args>
-    T* CreateChildBefore(UI::Canvas* parentCanvas, UI::Element* youngerSibling, Args&&... args);
-    template<typename T>
-    T* CreateChildAfter(UI::Element* olderSibling);
-    template<typename T, typename... Args>
-    T* CreateChildAfter(UI::Element* olderSibling, Args&&... args);
-    template<typename T>
-    T* CreateChildAfter(UI::Canvas* parentCanvas, UI::Element* olderSibling);
-    template<typename T, typename... Args>
-    T* CreateChildAfter(UI::Canvas* parentCanvas, UI::Element* olderSibling, Args&&... args);
-
-    UI::Element* AddChild(UI::Element* child);
-    UI::Element* AddChildBefore(UI::Element* child, UI::Element* younger_sibling);
-    UI::Element* AddChildAfter(UI::Element* child, UI::Element* older_sibling);
-
-    void RemoveChild(Element* child);
-    void RemoveAllChildren();
-    void RemoveSelf();
-
-    void DestroyChild(UI::Element*& child);
-    void DestroyAllChildren();
-
+    virtual void DebugRender(Renderer& renderer) const;
+    virtual void EndFrame();
     void SetBorderColor(const Rgba& color);
     void SetBackgroundColor(const Rgba& color);
     void SetPivotColor(const Rgba& color);
     void SetDebugColors(const Rgba& edge, const Rgba& fill, const Rgba& pivot = Rgba::Red);
 
-    void SetSize(const Metric& size);
-    Vector2 GetSize() const noexcept;
-
     const Vector4& GetPosition() const;
     virtual void SetPosition(const Vector4& position);
     virtual void SetPositionOffset(const Vector2& offset);
     virtual void SetPositionRatio(const Vector2& ratio);
+
+    virtual Vector4 CalcDesiredSize() const noexcept = 0;
 
     void SetPivot(const Vector2& pivotPosition);
     const Vector2& GetPivot() const;
@@ -81,11 +45,10 @@ public:
     float GetOrientationDegrees() const;
     float GetOrientationRadians() const;
 
-    void SetOrder(std::size_t value);
-    std::size_t GetOrder() const;
-
     bool HasParent() const;
     AABB2 GetParentBounds() const noexcept;
+
+    Panel* GetParent() const noexcept;
 
     bool IsHidden() const;
     bool IsVisible() const;
@@ -102,6 +65,17 @@ public:
     void SetEnabled(bool enabled = true);
     void ToggleEnabled();
 
+    const std::string& GetName() const;
+    std::string& GetName();
+
+    void RemoveSelf();
+
+    bool HasSlot() const noexcept;
+    void ResetSlot() noexcept;
+    void SetSlot(PanelSlot* newSlot) noexcept;
+    const PanelSlot* const GetSlot() const noexcept;
+    PanelSlot* GetSlot() noexcept;
+
 protected:
     Vector2 CalcLocalPosition() const;
     Vector2 CalcLocalScale() const;
@@ -114,10 +88,9 @@ protected:
     Vector2 CalcRelativePosition(const Vector2& position) const;
 
     void CalcBounds() noexcept;
+    void CalcBoundsAndPivot() noexcept;
     AABB2 CalcBoundsRelativeToParent() const noexcept;
 
-    void CalcBoundsForChildren() noexcept;
-    void CalcBoundsForMeThenMyChildren() noexcept;
     AABB2 AlignBoundsToContainer(AABB2 bounds, AABB2 container, const Vector2& alignment) const noexcept;
     AABB2 CalcRelativeBounds() const noexcept;
     AABB2 CalcAbsoluteBounds() const noexcept;
@@ -128,27 +101,17 @@ protected:
     Matrix4 GetWorldTransform() const noexcept;
     Matrix4 GetParentWorldTransform() const noexcept;
 
-    void DirtyElement();
-    bool IsDirty() const;
+    void DirtyElement(InvalidateElementReason reason = InvalidateElementReason::Any);
+    bool IsDirty(InvalidateElementReason reason = InvalidateElementReason::Any) const;
     bool IsParent() const;
     bool IsChild() const;
 
-    UI::Canvas* GetParentCanvas() const;
-    void SetParentCanvas(UI::Canvas* canvas);
-
-    void ReorderAllChildren();
-
-    void DebugRenderBottomUp(Renderer& renderer, bool showSortOrder = false) const;
-    void DebugRenderTopDown(Renderer& renderer, bool showSortOrder = false) const;
-    void DebugRenderChildren(Renderer& renderer, bool showSortOrder = false) const;
     void DebugRenderBoundsAndPivot(Renderer& renderer) const;
     void DebugRenderPivot(Renderer& renderer) const;
     void DebugRenderBounds(Renderer& renderer) const;
-    void DebugRenderOrder(Renderer& renderer) const;
+
     AABB2 GetParentLocalBounds() const;
     AABB2 GetParentRelativeBounds() const;
-    void UpdateChildren(TimeUtils::FPSeconds deltaSeconds);
-    void RenderChildren(Renderer& renderer) const;
 
     AABB2 GetBounds(const AABB2& parent, const Vector4& anchors, const Vector4& offsets) const noexcept;
     Vector2 GetSmallestOffset(AABB2 a, AABB2 b) const noexcept;
@@ -162,84 +125,27 @@ protected:
     Vector2 GetBottomLeft() const noexcept;
     Vector2 GetBottomRight() const noexcept;
 
-    Metric _size{};
+    std::string _name{};
     Rgba _fill_color = Rgba::NoAlpha;
     Rgba _edge_color = Rgba::White;
 
 private:
     Vector4 _position{};
     Vector2 _pivot{};
-    PositionMode _mode{};
-    Rgba _pivot_color = Rgba::Red;
-    Element* _parent = nullptr;
-    std::vector<Element*> _children{};
-    UI::Canvas* _parent_canvas = nullptr;
     AABB2 _bounds{};
+    Rgba _pivot_color = Rgba::Red;
+    PanelSlot* _slot = &s_NullPanelSlot;
     float _orientationRadians = 0.0f;
-    std::size_t _order = 0;
-    bool _dirty_bounds = false;
+    InvalidateElementReason _dirty_reason = InvalidateElementReason::None;
     bool _hidden = false;
     bool _enabled = true;
 
     float GetParentOrientationRadians() const;
     float GetParentOrientationDegrees() const;
-    void SortChildren();
-    void SortAllChildren();
+
+    friend class Panel;
+    friend struct PanelSlot;
+    static NullPanelSlot s_NullPanelSlot;
 };
-
-template<typename T>
-T* UI::Element::CreateChild() {
-    return dynamic_cast<T*>(AddChild(new T{}));
-}
-
-template<typename T, typename... Args>
-T* UI::Element::CreateChild(Args&&... args) {
-    return dynamic_cast<T*>(AddChild(new T{std::forward<Args>(args)...}));
-}
-template<typename T>
-T* UI::Element::CreateChild(UI::Canvas* parentCanvas) {
-    return dynamic_cast<T*>(AddChild(new T{parentCanvas}));
-}
-
-template<typename T, typename... Args>
-T* UI::Element::CreateChild(UI::Canvas* parentCanvas, Args&&... args) {
-    return dynamic_cast<T*>(AddChild(new T{parentCanvas, std::forward<Args>(args)...}));
-}
-
-template<typename T>
-T* UI::Element::CreateChildBefore(UI::Element* youngerSibling) {
-    return dynamic_cast<T*>(AddChildBefore(new T{}, youngerSibling));
-}
-
-template<typename T>
-T* UI::Element::CreateChildBefore(UI::Canvas* parentCanvas, UI::Element* youngerSibling) {
-    return dynamic_cast<T*>(AddChildBefore(new T{parentCanvas}, youngerSibling));
-}
-template<typename T, typename... Args>
-T* UI::Element::CreateChildBefore(UI::Element* youngerSibling, Args&&... args) {
-    return dynamic_cast<T*>(AddChildBefore(new T{std::forward<Args>(args)...}, youngerSibling));
-}
-template<typename T, typename... Args>
-T* UI::Element::CreateChildBefore(UI::Canvas* parentCanvas, UI::Element* youngerSibling, Args&&... args) {
-    return dynamic_cast<T*>(AddChildBefore(new T{parentCanvas, std::forward<Args>(args)...}, youngerSibling));
-}
-template<typename T>
-T* UI::Element::CreateChildAfter(UI::Element* olderSibling) {
-    return dynamic_cast<T*>(AddChildAfter(new T{}, olderSibling));
-}
-template<typename T, typename... Args>
-T* UI::Element::CreateChildAfter(UI::Element* olderSibling, Args&&... args) {
-    return dynamic_cast<T*>(AddChildAfter(new T{std::forward<Args>(args)...}, olderSibling));
-}
-
-template<typename T>
-T* UI::Element::CreateChildAfter(UI::Canvas* parentCanvas, UI::Element* olderSibling) {
-    return dynamic_cast<T*>(AddChildAfter(new T{parentCanvas}, olderSibling));
-}
-
-template<typename T, typename... Args>
-T* UI::Element::CreateChildAfter(UI::Canvas* parentCanvas, UI::Element* olderSibling, Args&&... args) {
-    return dynamic_cast<T*>(AddChildAfter(new T{parentCanvas, std::forward<Args>(args)...}, olderSibling));
-}
 
 } // namespace UI

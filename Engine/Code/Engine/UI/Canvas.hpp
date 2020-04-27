@@ -1,76 +1,74 @@
 #pragma once
 
+#include "Engine/Core/DataUtils.hpp"
 #include "Engine/Renderer/Camera2D.hpp"
-#include "Engine/UI/Element.hpp"
+#include "Engine/UI/Panel.hpp"
+
 
 class Texture;
 class Renderer;
 
 namespace UI {
 
-class Canvas : public UI::Element {
+class CanvasSlot : public PanelSlot {
 public:
-    explicit Canvas(Renderer& renderer, float reference_resolution, Texture* target_texture = nullptr, Texture* target_depthStencil = nullptr);
+    CanvasSlot() = default;
+    explicit CanvasSlot(const XMLElement& elem);
+    void LoadFromXml(const XMLElement& elem);
+    AABB2 anchors{};
+    Vector2 position{};
+    Vector2 size{};
+    Vector2 alignment{};
+    int zOrder{};
+    bool autoSize{false};
+    void CalcPivot() override;
+};
+
+class Canvas : public Panel {
+public:
+    explicit Canvas(Widget* owner, Renderer& renderer);
+    explicit Canvas(Widget* owner, Renderer& renderer, const XMLElement& elem);
     virtual ~Canvas() = default;
-    virtual void Update(TimeUtils::FPSeconds deltaSeconds) override;
-    virtual void Render(Renderer& renderer) const override;
+    void Update(TimeUtils::FPSeconds deltaSeconds) override;
+    void Render(Renderer& renderer) const override;
     void SetupMVPFromTargetAndCamera(Renderer& renderer) const;
-    virtual void DebugRender(Renderer& renderer, bool showSortOrder = false) const override;
+    void SetupMVPFromViewportAndCamera(Renderer& renderer) const;
+    void DebugRender(Renderer& renderer) const override;
+    void EndFrame() override;
     const Camera2D& GetUICamera() const;
 
-    template<typename T>
-    T* CreateChild();
-    template<typename T, typename... Args>
-    T* CreateChild(Args&&... args);
-    template<typename T>
-    T* CreateChildBefore(UI::Element* youngerSibling);
-    template<typename T, typename... Args>
-    T* CreateChildBefore(UI::Element* youngerSibling, Args&&... args);
-    template<typename T>
-    T* CreateChildAfter(UI::Element* olderSibling);
-    template<typename T, typename... Args>
-    T* CreateChildAfter(UI::Element* olderSibling, Args&&... args);
+    void UpdateChildren(TimeUtils::FPSeconds deltaSeconds) override;
+    void RenderChildren(Renderer& renderer) const override;
+
+    const Renderer& GetRenderer() const;
+    Renderer& GetRenderer();
+
+    static Vector4 AnchorTextToAnchorValues(const std::string& text) noexcept;
+
+    CanvasSlot* AddChild(Element* child) override;
+    CanvasSlot* AddChildAt(Element* child, std::size_t index) override;
+
+    void RemoveChild(Element* child) override;
+    void RemoveAllChildren() override;
+
+    Vector4 CalcDesiredSize() const noexcept override;
 
 protected:
+    AABB2 CalcChildrenDesiredBounds() override;
+    void ArrangeChildren() noexcept override;
+
 private:
-    void CalcDimensionsAndAspectRatio(Vector2& dimensions, float& aspectRatio);
-    void SetTargetTexture(Texture* target, Texture* depthstencil);
+    void ReorderAllChildren();
+
+    bool LoadFromXml(const XMLElement& elem) noexcept;
+    std::pair<Vector2, float> CalcDimensionsAndAspectRatio() const;
+    AABB2 CalcAlignedAbsoluteBounds() const noexcept;
 
     mutable Camera2D _camera{};
     Renderer& _renderer;
-    Texture* _target_texture = nullptr;
-    Texture* _target_depthstencil = nullptr;
-    float _reference_resolution = 0.0f;
-    float _aspect_ratio = 1.0f;
+
+    friend class CanvasSlot;
+    friend class Widget;
 };
-
-template<typename T>
-T* UI::Canvas::CreateChild() {
-    return dynamic_cast<T*>(Element::CreateChild<T>(this));
-}
-
-template<typename T, typename... Args>
-T* UI::Canvas::CreateChild(Args&&... args) {
-    return dynamic_cast<T*>(Element::CreateChild<T>(this, std::forward<Args>(args)...));
-}
-
-template<typename T>
-T* UI::Canvas::CreateChildBefore(UI::Element* youngerSibling) {
-    return dynamic_cast<T*>(Element::CreateChildBefore<T>(this, youngerSibling));
-}
-
-template<typename T, typename... Args>
-T* UI::Canvas::CreateChildBefore(UI::Element* youngerSibling, Args&&... args) {
-    return dynamic_cast<T*>(Element::CreateChildBefore<T>(this, youngerSibling, std::forward<Args>(args)...));
-}
-
-template<typename T>
-T* UI::Canvas::CreateChildAfter(UI::Element* olderSibling) {
-    return dynamic_cast<T*>(Element::CreateChildAfter<T>(this, olderSibling));
-}
-template<typename T, typename... Args>
-T* UI::Canvas::CreateChildAfter(UI::Element* olderSibling, Args&&... args) {
-    return dynamic_cast<T*>(Element::CreateChildAfter<T>(this, olderSibling, std::forward<Args>(args)...));
-}
 
 } // namespace UI

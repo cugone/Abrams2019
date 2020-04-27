@@ -3,22 +3,30 @@
 #include "Engine/Core/KerningFont.hpp"
 #include "Engine/Renderer/Camera2D.hpp"
 #include "Engine/Renderer/Renderer.hpp"
+#include "Engine/UI/Panel.hpp"
 #include "Engine/UI/Canvas.hpp"
+#include "Engine/UI/Widget.hpp"
 #include "Engine/UI/Types.hpp"
 
 namespace UI {
 
-Label::Label(UI::Canvas* parent_canvas)
-: UI::Element(parent_canvas) {
+Label::Label(Panel* parent)
+: Element(parent) {
     /* DO NOTHING */
 }
 
-Label::Label(UI::Canvas* parent_canvas, KerningFont* font, const std::string& text /*= "Label"*/)
-: UI::Element(parent_canvas)
+Label::Label(Panel* parent, KerningFont* font, const std::string& text /*= "Label"*/)
+: Element(parent)
 , _font(font)
 , _text(text) {
-    DirtyElement();
+    DirtyElement(InvalidateElementReason::Layout);
     CalcBoundsFromFont(_font);
+}
+
+Label::Label(const XMLElement& elem, Panel* parent /*= nullptr*/)
+: Element(parent)
+{
+    LoadFromXml(elem);
 }
 
 void Label::Render(Renderer& renderer) const {
@@ -81,7 +89,7 @@ float Label::GetScale() const {
 }
 
 float Label::GetScale() {
-    return static_cast<const UI::Label&>(*this).GetScale();
+    return static_cast<const Label&>(*this).GetScale();
 }
 
 void Label::SetPosition(const Vector4& position) {
@@ -99,24 +107,34 @@ void Label::SetPositionRatio(const Vector2& ratio) {
     CalcBoundsFromFont(_font);
 }
 
-void Label::CalcBoundsFromFont(KerningFont* font) {
+Vector4 Label::CalcDesiredSize() const noexcept {
+    const auto desired_size = CalcBoundsFromFont(_font);
+    return Vector4{Vector2::ZERO, desired_size};
+}
+
+Vector2 Label::CalcBoundsFromFont(KerningFont* font) const {
     if(font == nullptr) {
-        return;
+        return {};
     }
-    float width = font->CalculateTextWidth(_text, _scale);
-    float height = font->CalculateTextHeight(_text, _scale);
-    auto old_size = GetSize();
-    float old_width = old_size.x;
-    float old_height = old_size.y;
-    if(old_width < width && old_height < height) {
-        SetSize(UI::Metric{UI::Ratio{_size.ratio}, Vector2{width, height}});
-    } else {
-        if(old_width < width) {
-            SetSize(UI::Metric{UI::Ratio{_size.ratio}, Vector2{width, old_height}});
-        } else if(old_height < height) {
-            SetSize(UI::Metric{UI::Ratio{_size.ratio}, Vector2{old_width, height}});
-        }
+    const float width = font->CalculateTextWidth(_text, _scale);
+    const float height = font->CalculateTextHeight(_text, _scale);
+    return Vector2{width, height};
+}
+
+bool Label::LoadFromXml(const XMLElement& elem) noexcept {
+    DataUtils::ValidateXmlElement(elem, "label", "", "name", "canvas,label,panel,picturebox,button,slot", "font,value");
+    _name = DataUtils::ParseXmlAttribute(elem, "name", _name);
+    _fontname = DataUtils::ParseXmlAttribute(elem, "font", _fontname);
+    _font = GetParent()->GetOwningWidget()->GetRenderer().GetFont(_fontname);
+    _text = DataUtils::ParseXmlAttribute(elem, "value", "TEXT");
+
+    if(auto* xml_slot = elem.FirstChildElement("slot")) {
+        auto newSlot = new UI::CanvasSlot{*xml_slot};
+        newSlot->content = this;
+        newSlot->parent = nullptr;
+        SetSlot(newSlot);
     }
+    return true;
 }
 
 } // namespace UI

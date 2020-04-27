@@ -2,103 +2,58 @@
 
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/KerningFont.hpp"
+#include "Engine/Core/StringUtils.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Renderer/Renderer.hpp"
-#include "Engine/UI/Canvas.hpp"
+#include "Engine/UI/Panel.hpp"
 
 #include <sstream>
 
 namespace UI {
 
-Element::Element(UI::Canvas* parent_canvas)
-: _parent_canvas(parent_canvas) {
-    /* DO NOTHING */
+NullPanelSlot Element::s_NullPanelSlot = NullPanelSlot{};
+
+Element::Element(Panel* parent /*= nullptr*/) {
+    if(parent) {
+        _slot = parent->AddChild(this);
+    }
 }
 
 Element::~Element() {
     RemoveSelf();
-    DestroyAllChildren();
-}
-
-Element* Element::AddChild(Element* child) {
-    _dirty_bounds = true;
-    _children.push_back(child);
-    child->_parent = this;
-    child->_order = _children.size();
-    CalcBoundsForMeThenMyChildren();
-    ReorderAllChildren();
-    return child;
-}
-
-UI::Element* Element::AddChildBefore(UI::Element* child, UI::Element* younger_sibling) {
-    auto result = AddChild(child);
-    if(younger_sibling->_order > 0) {
-        result->_order = younger_sibling->_order - static_cast<std::size_t>(1);
-    } else {
-        result->_order = younger_sibling->_order;
-        ++(younger_sibling->_order);
-    }
-    ReorderAllChildren();
-    CalcBoundsForMeThenMyChildren();
-    return child;
-}
-
-UI::Element* Element::AddChildAfter(UI::Element* child, UI::Element* older_sibling) {
-    auto result = AddChild(child);
-    if(older_sibling->_order < _children.size() - 1) {
-        result->_order = older_sibling->_order + static_cast<std::size_t>(1);
-    } else {
-        result->_order = older_sibling->_order;
-        --(older_sibling->_order);
-    }
-    ReorderAllChildren();
-    CalcBoundsForMeThenMyChildren();
-    return child;
-}
-
-void Element::RemoveChild(Element* child) {
-    _dirty_bounds = true;
-    _children.erase(
-    std::remove_if(_children.begin(), _children.end(),
-                   [&child](UI::Element* c) {
-                       return child == c;
-                   }),
-    _children.end());
-    ReorderAllChildren();
-    CalcBoundsForMeThenMyChildren();
-}
-
-void Element::RemoveAllChildren() {
-    _dirty_bounds = true;
-    _children.clear();
-    _children.shrink_to_fit();
-    ReorderAllChildren();
-    CalcBounds();
 }
 
 void Element::RemoveSelf() {
-    if(_parent) {
-        _parent->RemoveChild(this);
-        _parent = nullptr;
+    if(_slot && _slot->parent) {
+        _slot->parent->RemoveChild(this);
+        _slot->parent = nullptr;
+        _slot->content = nullptr;
+        if(_slot != &s_NullPanelSlot) {
+            delete _slot;
+            _slot = &s_NullPanelSlot;
+        }
     }
 }
 
-void Element::DestroyChild(UI::Element*& child) {
-    auto iter = std::find_if(std::begin(_children), std::end(_children), [child](UI::Element* c) { return child == c; });
-    if(iter != std::end(_children)) {
-        delete *iter;
-        *iter = nullptr;
-    }
+bool Element::HasSlot() const noexcept {
+    return _slot != &s_NullPanelSlot;
 }
 
-void Element::DestroyAllChildren() {
-    for(auto& iter : _children) {
-        iter->_parent = nullptr;
-        delete iter;
-        iter = nullptr;
-    }
-    _children.clear();
-    _children.shrink_to_fit();
+void Element::ResetSlot() noexcept {
+    delete _slot;
+    _slot = &s_NullPanelSlot;
+}
+
+void Element::SetSlot(PanelSlot* newSlot) noexcept {
+    _slot = newSlot;
+}
+
+const PanelSlot* const Element::GetSlot() const noexcept {
+    return _slot;
+}
+
+PanelSlot* Element::GetSlot() noexcept {
+    return const_cast<PanelSlot*>(static_cast<const Element&>(*this).GetSlot());
 }
 
 void Element::SetBorderColor(const Rgba& color) {
@@ -139,9 +94,9 @@ const Vector4& Element::GetPosition() const {
 }
 
 void Element::SetPosition(const Vector4& position) {
-    _dirty_bounds = true;
+    DirtyElement(InvalidateElementReason::Layout);
     _position = position;
-    CalcBoundsForMeThenMyChildren();
+    CalcBounds();
 }
 
 void Element::SetPositionRatio(const Vector2& ratio) {
@@ -153,9 +108,9 @@ void Element::SetPositionOffset(const Vector2& offset) {
 }
 
 void Element::SetPivot(const Vector2& pivotPosition) {
-    _dirty_bounds = true;
+    DirtyElement(InvalidateElementReason::Layout);
     _pivot = pivotPosition;
-    CalcBoundsForMeThenMyChildren();
+    CalcBounds();
 }
 
 void Element::SetPivot(const PivotPosition& pivotPosition) {
@@ -206,11 +161,12 @@ void Element::Render(Renderer& /*renderer*/) const {
     /* DO NOTHING */
 }
 
-void Element::DebugRender(Renderer& renderer, bool showSortOrder /*= false*/) const {
+void Element::DebugRender(Renderer& renderer) const {
     DebugRenderBoundsAndPivot(renderer);
-    if(showSortOrder) {
-        DebugRenderOrder(renderer);
-    }
+}
+
+void Element::EndFrame() {
+    /* DO NOTHING */
 }
 
 Matrix4 Element::GetLocalTransform() const noexcept {
@@ -222,15 +178,16 @@ Matrix4 Element::GetLocalTransform() const noexcept {
 }
 
 Vector2 Element::CalcLocalScale() const {
-    auto my_bounds = CalcLocalBounds();
-    auto parent_bounds = GetParentBounds();
-    auto parent_width = parent_bounds.maxs.x - parent_bounds.mins.x;
-    auto my_width = my_bounds.maxs.x - my_bounds.mins.x;
-    auto width_scale = my_width / parent_width;
-    auto parent_height = parent_bounds.maxs.y - parent_bounds.mins.y;
-    auto my_height = my_bounds.maxs.y - my_bounds.mins.y;
-    auto height_scale = my_height / parent_height;
-    return _parent ? Vector2(width_scale, height_scale) : _size.unit;
+    const auto my_bounds = CalcLocalBounds();
+    const auto parent_bounds = GetParentBounds();
+    const auto parent_width = parent_bounds.maxs.x - parent_bounds.mins.x;
+    const auto my_width = my_bounds.maxs.x - my_bounds.mins.x;
+    const auto width_scale = my_width / parent_width;
+    const auto parent_height = parent_bounds.maxs.y - parent_bounds.mins.y;
+    const auto my_height = my_bounds.maxs.y - my_bounds.mins.y;
+    const auto height_scale = my_height / parent_height;
+    const auto* parent = GetParent();
+    return parent ? Vector2(width_scale, height_scale) : Vector2::ONE;
 }
 
 Matrix4 Element::GetWorldTransform() const noexcept {
@@ -238,11 +195,12 @@ Matrix4 Element::GetWorldTransform() const noexcept {
 }
 
 Matrix4 Element::GetParentWorldTransform() const noexcept {
-    return _parent ? _parent->GetWorldTransform() : Matrix4::I;
+    const auto* parent = GetParent();
+    return parent ? parent->GetWorldTransform() : Matrix4::I;
 }
 
-void Element::DirtyElement() {
-    _dirty_bounds = true;
+void Element::DirtyElement(InvalidateElementReason reason /*= InvalidateElementReason::Any*/) {
+    _dirty_reason = reason;
 }
 
 void Element::DebugRenderBoundsAndPivot(Renderer& renderer) const {
@@ -254,7 +212,6 @@ void Element::DebugRenderPivot(Renderer& renderer) const {
     const auto world_transform = GetWorldTransform();
     const auto scale = world_transform.GetScale();
     const auto inv_scale_matrix = Matrix4::CalculateInverse(Matrix4::CreateScaleMatrix(Vector3(scale.x * 0.10f, scale.y * 0.10f, 1.0f)));
-    const auto extents = GetSize();
     const auto pivot_pos = MathUtils::CalcPointFromNormalizedPoint(_pivot, _bounds);
     const auto pivot_pos_matrix = Matrix4::CreateTranslationMatrix(pivot_pos);
     const auto transform = Matrix4::MakeSRT(inv_scale_matrix, world_transform, pivot_pos_matrix);
@@ -270,28 +227,13 @@ void Element::DebugRenderBounds(Renderer& renderer) const {
     renderer.DrawAABB2(_edge_color, _fill_color);
 }
 
-void Element::DebugRenderOrder(Renderer& renderer) const {
-    const auto world_transform = GetWorldTransform();
-    const auto world_transform_scale = world_transform.GetScale();
-    const auto inv_scale_x = 1.0f / world_transform_scale.x;
-    const auto inv_scale_y = 1.0f / world_transform_scale.y;
-    const auto inv_scale_z = 1.0f / world_transform_scale.z;
-    const auto inv_scale = Vector3(inv_scale_x, inv_scale_y, inv_scale_z);
-    const auto inv_scale_matrix = Matrix4::CreateScaleMatrix(inv_scale);
-    const Vector2 extents = GetSize();
-    const Vector2 half_extents = extents * 0.5f;
-    const auto inv_half_extents = Vector2(half_extents.x, -half_extents.y);
-    const auto font = renderer.GetFont("System32");
-    const auto text_height_matrix = Matrix4::CreateTranslationMatrix(Vector2(-16.0f, 32.0f));
-    const auto inv_half_extents_matrix = Matrix4::CreateTranslationMatrix(inv_half_extents);
-    auto text = std::to_string(_order);
-    renderer.SetModelMatrix(Matrix4::MakeRT(Matrix4::MakeSRT(text_height_matrix, inv_half_extents_matrix, inv_scale_matrix), world_transform));
-    renderer.SetMaterial(font->GetMaterial());
-    renderer.DrawTextLine(font, text);
+AABB2 Element::GetParentBounds() const noexcept {
+    const auto* parent = GetParent();
+    return parent ? parent->_bounds : AABB2::ZERO_TO_ONE;
 }
 
-AABB2 Element::GetParentBounds() const noexcept {
-    return _parent ? _parent->_bounds : AABB2{0.0f, 0.0f, _size.unit.x, _size.unit.y};
+Panel* Element::GetParent() const noexcept {
+    return _slot->parent;
 }
 
 bool Element::IsHidden() const {
@@ -346,27 +288,31 @@ void Element::ToggleEnabled() {
     _enabled = !_enabled;
 }
 
+const std::string& Element::GetName() const {
+    return _name;
+}
+
+std::string& Element::GetName() {
+    return const_cast<std::string&>(static_cast<const Element&>(*this).GetName());
+}
+
 void Element::CalcBounds() noexcept {
-    _dirty_bounds = false;
-    switch(_mode) {
-    case UI::PositionMode::Absolute:
-        _bounds = CalcAbsoluteBounds();
-        break;
-    case UI::PositionMode::Relative:
-        _bounds = CalcRelativeBounds();
-        break;
-    default: {
-        const auto ss = std::string{__FUNCTION__} + ": Unhandled positioning mode.";
-        ERROR_AND_DIE(ss.c_str());
-        break;
-    }
-    }
+    DirtyElement(InvalidateElementReason::Layout);
+    const auto desired_size = this->CalcDesiredSize();
+    _bounds.mins = desired_size.GetXY();
+    _bounds.maxs = desired_size.GetZW();
+}
+
+void Element::CalcBoundsAndPivot() noexcept {
+    DirtyElement(InvalidateElementReason::Layout);
+    const auto slot = GetSlot();
+    CalcBounds();
+    slot->CalcPivot();
 }
 
 AABB2 Element::CalcBoundsRelativeToParent() const noexcept {
-    Vector2 my_size = GetSize();
-
-    AABB2 parent_bounds = _parent ? _parent->CalcLocalBounds() : CalcLocalBounds();
+    const auto parent = GetParent();
+    AABB2 parent_bounds = parent ? parent->CalcLocalBounds() : CalcLocalBounds();
     Vector2 parent_size = parent_bounds.CalcDimensions();
 
     Vector2 pivot_position = parent_bounds.mins + (parent_size * _position.GetXY() + _position.GetZW());
@@ -377,21 +323,8 @@ AABB2 Element::CalcBoundsRelativeToParent() const noexcept {
     return my_local_bounds;
 }
 
-void Element::CalcBoundsForChildren() noexcept {
-    for(auto& c : _children) {
-        if(c) {
-            c->CalcBounds();
-        }
-    }
-}
-
-void Element::CalcBoundsForMeThenMyChildren() noexcept {
-    CalcBounds();
-    CalcBoundsForChildren();
-}
-
 AABB2 Element::CalcRelativeBounds() const noexcept {
-    Vector2 size = GetSize();
+    Vector2 size = CalcDesiredSize().GetZW();
     Vector2 pivot_position = size * _pivot;
 
     AABB2 bounds;
@@ -402,12 +335,12 @@ AABB2 Element::CalcRelativeBounds() const noexcept {
 }
 
 AABB2 Element::CalcAbsoluteBounds() const noexcept {
-    auto size = GetSize();
+    auto size = CalcDesiredSize();
     auto parent_bounds = GetParentBounds();
     auto pivot_position = MathUtils::CalcPointFromNormalizedPoint(_pivot, parent_bounds);
     AABB2 bounds;
     bounds.StretchToIncludePoint(Vector2::ZERO);
-    bounds.StretchToIncludePoint(size);
+    bounds.StretchToIncludePoint(size.GetZW());
     return CalcAlignedAbsoluteBounds();
 }
 
@@ -434,82 +367,29 @@ AABB2 Element::CalcAlignedAbsoluteBounds() const noexcept {
 }
 
 AABB2 Element::CalcLocalBounds() const noexcept {
-    return {Vector2::ZERO, GetSize()};
+    return AABB2{CalcDesiredSize()};
 }
 
-bool Element::IsDirty() const {
-    return _dirty_bounds;
+bool Element::IsDirty(InvalidateElementReason reason /*= InvalidateElementReason::Any*/) const {
+    return (_dirty_reason & reason) == reason;
 }
 
 bool Element::IsParent() const {
-    return !_children.empty();
+    return !IsChild();
 }
 
 bool Element::IsChild() const {
-    return _parent;
-}
-
-UI::Canvas* Element::GetParentCanvas() const {
-    return _parent_canvas;
-}
-
-void Element::SetParentCanvas(UI::Canvas* canvas) {
-    _parent_canvas = canvas;
-}
-
-void Element::ReorderAllChildren() {
-    auto i = GetOrder() + 1;
-    for(auto& c : _children) {
-        c->_order = i++;
-    }
-}
-
-void Element::DebugRenderBottomUp(Renderer& renderer, bool showSortOrder /*= false*/) const {
-    DebugRenderBoundsAndPivot(renderer);
-    if(showSortOrder) {
-        DebugRenderOrder(renderer);
-    }
-    DebugRenderChildren(renderer, showSortOrder);
-}
-
-void Element::DebugRenderTopDown(Renderer& renderer, bool showSortOrder /*= false*/) const {
-    DebugRenderChildren(renderer);
-    DebugRenderBoundsAndPivot(renderer);
-    if(showSortOrder) {
-        DebugRenderOrder(renderer);
-    }
-}
-
-void Element::DebugRenderChildren(Renderer& renderer, bool showSortOrder /*= false*/) const {
-    for(auto& child : _children) {
-        if(child) {
-            child->DebugRender(renderer, showSortOrder);
-        }
-    }
+    return GetParent() != nullptr;;
 }
 
 AABB2 Element::GetParentLocalBounds() const {
-    return _parent ? _parent->CalcLocalBounds() : AABB2(Vector2::ZERO, _size.unit);
+    const auto* parent = GetParent();
+    return parent ? parent->CalcLocalBounds() : AABB2(Vector2::ZERO, _bounds.CalcDimensions());
 }
 
 AABB2 Element::GetParentRelativeBounds() const {
-    return _parent ? _parent->CalcBoundsRelativeToParent() : AABB2{0.0f, 0.0f, 0.0f, 0.0f};
-}
-
-void Element::UpdateChildren(TimeUtils::FPSeconds deltaSeconds) {
-    for(auto& child : _children) {
-        if(child) {
-            child->Update(deltaSeconds);
-        }
-    }
-}
-
-void Element::RenderChildren(Renderer& renderer) const {
-    for(auto& child : _children) {
-        if(child) {
-            child->Render(renderer);
-        }
-    }
+    const auto* parent = GetParent();
+    return parent ? parent->CalcBoundsRelativeToParent() : AABB2{0.0f, 0.0f, 0.0f, 0.0f};
 }
 
 AABB2 Element::GetBounds(const AABB2& parent, const Vector4& anchors, const Vector4& offsets) const noexcept {
@@ -554,15 +434,17 @@ Vector2 Element::GetBottomRight() const noexcept {
 }
 
 bool Element::HasParent() const {
-    return _parent != nullptr;
+    return GetParent();
 }
 
 float Element::GetParentOrientationRadians() const {
-    return _parent ? _parent->GetOrientationRadians() : 0.0f;
+    const auto parent = GetParent();
+    return parent ? parent->GetOrientationRadians() : 0.0f;
 }
 
 float Element::GetParentOrientationDegrees() const {
-    return _parent ? _parent->GetOrientationDegrees() : 0.0f;
+    const auto parent = GetParent();
+    return parent ? parent->GetOrientationDegrees() : 0.0f;
 }
 
 void Element::SetOrientationDegrees(float value) {
@@ -581,14 +463,6 @@ float Element::GetOrientationRadians() const {
     return _orientationRadians;
 }
 
-void Element::SetOrder(std::size_t value) {
-    _order = value;
-}
-
-std::size_t Element::GetOrder() const {
-    return _order;
-}
-
 float Element::CalcLocalRotationDegrees() const {
     return MathUtils::ConvertRadiansToDegrees(GetOrientationDegrees());
 }
@@ -605,29 +479,8 @@ float Element::CalcWorldRotationDegrees() const {
     return GetParentOrientationDegrees() + GetOrientationDegrees();
 }
 
-Vector2 Element::GetSize() const noexcept {
-    return _parent ? (_parent->GetSize() * _size.ratio.GetValue() + _size.unit) : _size.unit;
-}
-
 float Element::GetInvAspectRatio() const noexcept {
     return 1.0f / GetAspectRatio();
-}
-
-void Element::SetSize(const Metric& size) {
-    _dirty_bounds = true;
-    _size = size;
-    CalcBoundsForMeThenMyChildren();
-}
-
-void Element::SortChildren() {
-    std::sort(std::begin(_children), std::end(_children), [](UI::Element* a, UI::Element* b) { return a->_order < b->_order; });
-}
-
-void Element::SortAllChildren() {
-    SortChildren();
-    for(auto& c : _children) {
-        c->SortAllChildren();
-    }
 }
 
 } // namespace UI
