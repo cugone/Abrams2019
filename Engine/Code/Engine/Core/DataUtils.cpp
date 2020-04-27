@@ -183,6 +183,21 @@ std::vector<std::string> GetChildElementNames(const XMLElement& element) noexcep
     return childElementNames;
 }
 
+bool HasChild(const XMLElement& elem) noexcept {
+    bool result = false;
+    ForEachChildElement(elem, std::string{}, [&result](const XMLElement&) {
+        result = true;
+    });
+    return result;
+}
+bool HasChild(const XMLElement& elem, const std::string& name) noexcept {
+    bool result = false;
+    ForEachChildElement(elem, name, [&result](const XMLElement&) {
+        result = true;
+    });
+    return result;
+}
+
 bool ParseXmlElementText(const XMLElement& element, bool defaultValue) noexcept {
     auto retVal = defaultValue;
     auto txtAsCStr = element.GetText();

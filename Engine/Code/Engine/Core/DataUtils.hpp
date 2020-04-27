@@ -112,6 +112,9 @@ std::size_t GetChildElementCount(const XMLElement& element, const std::string& e
 
 std::string GetElementName(const XMLElement& elem) noexcept;
 std::vector<std::string> GetChildElementNames(const XMLElement& element) noexcept;
+bool HasChild(const XMLElement& elem) noexcept;
+bool HasChild(const XMLElement& elem, const std::string& name) noexcept;
+
 std::string GetAttributeName(const XMLAttribute& attrib) noexcept;
 std::vector<std::string> GetAttributeNames(const XMLElement& element) noexcept;
 bool HasAttribute(const XMLElement& element) noexcept;
