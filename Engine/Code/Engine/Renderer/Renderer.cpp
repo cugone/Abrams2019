@@ -149,6 +149,14 @@ void Renderer::Initialize(bool headless /*= false*/) {
     CreateAndRegisterDefaultFonts();
 
     _target_stack = std::make_unique<RenderTargetStack>(*this);
+    ViewportDesc view_desc{};
+    view_desc.x = 0.0f;
+    view_desc.y = 0.0f;
+    view_desc.width = static_cast<float>(_rhi_output->GetDimensions().x);
+    view_desc.height = static_cast<float>(_rhi_output->GetDimensions().y);
+    view_desc.minDepth = 0.0f;
+    view_desc.maxDepth = 1.0f;
+    PushRenderTarget(RenderTargetStack::Node{_rhi_output->GetBackBuffer(), _default_depthstencil, view_desc});
 
     SetDepthStencilState(GetDepthStencilState("__default"));
     SetRasterState(GetRasterState("__solid"));
@@ -3512,6 +3520,44 @@ void Renderer::SetRenderTarget(Texture* color_target /*= nullptr*/, Texture* dep
 
 void Renderer::SetRenderTargetsToBackBuffer() noexcept {
     SetRenderTarget();
+}
+
+ViewportDesc Renderer::GetCurrentViewport() const {
+    const auto& render_stack = this->GetRenderTargetStack();
+    return render_stack.top().view_desc;
+}
+
+float Renderer::GetCurrentViewportAspectRatio() const {
+    const auto desc = GetCurrentViewport();
+    const auto width = desc.width;
+    const auto height = desc.height;
+    const auto ratio = width / height;
+    if(MathUtils::IsEquivalentOrLessThan(ratio, 1.0f)) {
+        return 1.0f / ratio;
+    } else {
+        return ratio;
+    }
+}
+
+std::vector<ViewportDesc> Renderer::GetAllViewports() const {
+    unsigned int viewportsCount = 1;
+    //Get actual count bound.
+    _rhi_context->GetDxContext()->RSGetViewports(&viewportsCount, nullptr);
+    std::vector<D3D11_VIEWPORT> viewports(viewportsCount, D3D11_VIEWPORT{});
+    _rhi_context->GetDxContext()->RSGetViewports(&viewportsCount, viewports.data());
+
+    std::vector<ViewportDesc> viewportDescs(viewportsCount, ViewportDesc{});
+    for(std::size_t vpIdx = 0u; vpIdx < viewportsCount; ++vpIdx) {
+        const auto& cur_vp = viewports[vpIdx];
+        auto& cur_desc = viewportDescs[vpIdx];
+        cur_desc.x = cur_vp.TopLeftX;
+        cur_desc.y = cur_vp.TopLeftY;
+        cur_desc.width = cur_vp.Width;
+        cur_desc.height = cur_vp.Height;
+        cur_desc.minDepth = cur_vp.MinDepth;
+        cur_desc.maxDepth = cur_vp.MaxDepth;
+    }
+    return viewportDescs;
 }
 
 void Renderer::SetViewport(const ViewportDesc& desc) noexcept {

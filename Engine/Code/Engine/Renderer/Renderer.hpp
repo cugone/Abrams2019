@@ -199,6 +199,9 @@ public:
     void ClearRenderTargets(const RenderTargetType& rtt) noexcept;
     void SetRenderTarget(Texture* color_target = nullptr, Texture* depthstencil_target = nullptr) noexcept;
     void SetRenderTargetsToBackBuffer() noexcept;
+    ViewportDesc GetCurrentViewport() const;
+    float GetCurrentViewportAspectRatio() const;
+    std::vector<ViewportDesc> GetAllViewports() const;
     void SetViewport(const ViewportDesc& desc) noexcept;
     void SetViewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height) noexcept;
     void SetViewport(const AABB2& viewport) noexcept;
