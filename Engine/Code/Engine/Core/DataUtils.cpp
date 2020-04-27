@@ -21,11 +21,14 @@ void ValidateXmlElement(const XMLElement& element,
     if(name.empty()) {
         ERROR_AND_DIE("Element validation failed. Element name is required.");
     }
-    auto xmlNameAsCStr = element.Name();
-    std::string xml_name = xmlNameAsCStr ? xmlNameAsCStr : "";
-    if(xml_name != name) {
-        const auto err_ss = std::string{"Element validation failed. Element name \""} + xml_name + std::string{"\" does not match valid name \""} + name + "\"\n";
-        ERROR_AND_DIE(err_ss.c_str());
+
+    {
+        const auto* xmlNameAsCStr = element.Name();
+        const auto xml_name = std::string{xmlNameAsCStr ? xmlNameAsCStr : ""};
+        if(xml_name != name) {
+            const auto err_ss = "Element validation failed. Element name \"" + xml_name + "\" does not match valid name \"" + name + "\"\n";
+            ERROR_AND_DIE(err_ss.c_str());
+        }
     }
 
     //Get list of required/optional attributes/children
@@ -79,7 +82,7 @@ void ValidateXmlElement(const XMLElement& element,
 
     if(!missingRequiredAttributes.empty()) {
         auto err_ss = std::string{"Attribute validation failed. Missing required attribute(s):"};
-        for(auto& c : missingRequiredAttributes) {
+        for(const auto& c : missingRequiredAttributes) {
             err_ss += '\t' + c + '\n';
         }
         ERROR_AND_DIE(err_ss.c_str());
@@ -93,7 +96,7 @@ void ValidateXmlElement(const XMLElement& element,
 
     if(!missingRequiredChildren.empty()) {
         auto err_ss = std::string{"Child Element validation failed. Missing required child element(s) "};
-        for(auto& c : missingRequiredChildren) {
+        for(const auto& c : missingRequiredChildren) {
             err_ss += '\t' + c + '\n';
         }
         ERROR_AND_DIE(err_ss.c_str());
@@ -108,7 +111,7 @@ void ValidateXmlElement(const XMLElement& element,
 
     if(!extraOptionalAttributes.empty()) {
         std::string err_ss = "\nOptional Attribute validation failed. Verify attributes are correct. Found unknown attributes:\n";
-        for(auto& c : extraOptionalAttributes) {
+        for(const auto& c : extraOptionalAttributes) {
             err_ss += "\t\"" + c + "\"\n";
         }
         DebuggerPrintf(err_ss.c_str());
@@ -122,7 +125,7 @@ void ValidateXmlElement(const XMLElement& element,
 
     if(!extraOptionalChildren.empty()) {
         std::string err_ss = "Optional Child validation failed. Verify attributes are correct. Found unknown children:\n";
-        for(auto& c : extraOptionalChildren) {
+        for(const auto& c : extraOptionalChildren) {
             err_ss += "\t\"" + c + "\"\n";
         }
         DebuggerPrintf(err_ss.c_str());
