@@ -412,6 +412,9 @@
     <ClCompile Include="UI\PanelSlot.cpp">
       <Filter>UI</Filter>
     </ClCompile>
+    <ClCompile Include="Renderer\Camera.cpp">
+      <Filter>Renderer\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vector2.hpp">
@@ -791,6 +794,9 @@
     </ClInclude>
     <ClInclude Include="UI\PanelSlot.hpp">
       <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\Camera.hpp">
+      <Filter>Renderer\Core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
