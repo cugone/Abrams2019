@@ -3533,8 +3533,7 @@ void Renderer::SetRenderTargetsToBackBuffer() noexcept {
 }
 
 ViewportDesc Renderer::GetCurrentViewport() const {
-    const auto& render_stack = this->GetRenderTargetStack();
-    return render_stack.top().view_desc;
+    return this->GetRenderTargetStack().top().view_desc;
 }
 
 float Renderer::GetCurrentViewportAspectRatio() const {
