@@ -6,7 +6,6 @@
 #include "Engine/Math/Quaternion.hpp"
 #include "Engine/Math/Vector2.hpp"
 #include "Engine/Math/Vector3.hpp"
-
 #include "Engine/Renderer/RenderTargetStack.hpp"
 
 enum class ProjectionMode {
@@ -16,8 +15,9 @@ enum class ProjectionMode {
 
 class Camera {
 public:
+
     void SetProjectionMode(ProjectionMode newProjectionMode) noexcept;
-    const ProjectionMode& GetProjectionMode() const noexcept;
+    ProjectionMode GetProjectionMode() const noexcept;
 
     void Update(TimeUtils::FPSeconds deltaSeconds) noexcept;
 
@@ -55,6 +55,7 @@ public:
     Matrix4 CreateReverseBillboardMatrix(const Matrix4& rotationMatrix) noexcept;
 
     Vector3 GetEulerAngles() const noexcept;
+    Vector3 GetEulerAnglesDegrees() const noexcept;
     void SetEulerAnglesDegrees(const Vector3& eulerAnglesDegrees) noexcept;
     void SetEulerAngles(const Vector3& eulerAngles) noexcept;
     void SetForwardFromTarget(const Vector3& lookAtPosition) noexcept;
@@ -76,14 +77,14 @@ public:
 
 protected:
 private:
-
     float aspect_ratio = MathUtils::M_16_BY_9_RATIO;
     float fovH = 60.0f;
-    float orthoWidth = 1600.0f;
+    float fovOffset = 0.0f;
+    float orthoWidth = 8.0f;
     float near_distance = 0.01f;
     float far_distance = 1.0f;
     Vector3 position = Vector3::ZERO;
-    Vector3 offset = Vector3::ZERO;
+    Vector3 positionOffset = Vector3::ZERO;
     Vector3 world_up = Vector3::Y_AXIS;
 
     Matrix4 view_matrix = Matrix4::I;
@@ -96,14 +97,14 @@ private:
 
     Quaternion rotation = Quaternion::I;
     float rotationPitch = 0.0f;
-    float pitchOffset = 0.0f;
+    float rotationPitchOffset = 0.0f;
     float rotationYaw = 0.0f;
-    float yawOffset = 0.0f;
+    float rotationYawOffset = 0.0f;
     float rotationRoll = 0.0f;
-    float rollOffset = 0.0f;
+    float rotationRollOffset = 0.0f;
 
-    Vector3 leftBottomNear_view = Vector3{-1.0f, 1.0f, 0.01f};
+    Vector3 leftBottomNear_view = Vector3{-1.0f, 1.0f, 0.0f};
     Vector3 rightTopFar_view = Vector3{1.0f, -1.0f, 1.0f};
-    ProjectionMode perspective_mode = ProjectionMode::Orthographic;
+    ProjectionMode projection_mode = ProjectionMode::Orthographic;
     RenderTargetStack::Node _render_target{};
 };
