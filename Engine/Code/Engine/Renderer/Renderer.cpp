@@ -3541,11 +3541,7 @@ float Renderer::GetCurrentViewportAspectRatio() const {
     const auto width = desc.width;
     const auto height = desc.height;
     const auto ratio = width / height;
-    if(MathUtils::IsEquivalentOrLessThan(ratio, 1.0f)) {
-        return 1.0f / ratio;
-    } else {
-        return ratio;
-    }
+    return width / height;
 }
 
 std::vector<ViewportDesc> Renderer::GetAllViewports() const {
