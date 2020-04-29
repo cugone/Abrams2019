@@ -201,8 +201,17 @@ bool UISystem::IsWidgetLoaded(const UI::Widget& widget) const noexcept {
     return std::find(std::begin(_active_widgets), std::end(_active_widgets), &widget) != std::end(_active_widgets);
 }
 
-void UISystem::LoadUiWidgetsFromFolder(std::filesystem::path path) {
-
+void UISystem::LoadUiWidgetsFromFolder(std::filesystem::path path, bool recursive /*= false*/) {
+    const auto widgets_lambda = [this](const std::filesystem::path& path) {
+        if(tinyxml2::XMLDocument doc; tinyxml2::XML_SUCCESS == doc.LoadFile(path.string().c_str())) {
+            if(const auto* root = doc.RootElement(); DataUtils::HasAttribute(*root, "name")) {
+                if(const auto name = DataUtils::ParseXmlAttribute(*root, "name", ""); !name.empty()) {
+                    LoadUiWidget(name);
+                }
+            }
+        }
+    };
+    FileUtils::ForEachFileInFolder(path, ".ui", widgets_lambda, recursive);
 }
 
 void UISystem::LoadUiWidget(const std::string& name) {

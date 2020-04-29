@@ -50,7 +50,7 @@ public:
 
     void ToggleImguiDemoWindow() noexcept;
 
-    void LoadUiWidgetsFromFolder(std::filesystem::path path);
+    void LoadUiWidgetsFromFolder(std::filesystem::path path, bool recursive = false);
     void LoadUiWidget(const std::string& name);
     void UnloadUiWidget(const std::string& name);
 
