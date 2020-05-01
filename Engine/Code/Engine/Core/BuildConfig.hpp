@@ -39,7 +39,6 @@
     #endif
 
     #if defined(__APPLE__) || defined(__MACH__)
-        #pragma message("WARNING: Compilers shipped with Xcode by default are not supported due to being horribly out-of-date. Have Xcode reference up-to-date compiler back-ends or proceed at your own risk.")
         #if defined(__clang__)
             #define PLATFORM_CLANG
             #define PLATFORM_APPLE
@@ -59,9 +58,6 @@
     #if defined(_WIN64) || defined(_WIN32)
         #ifndef PLATFORM_WINDOWS
             #define PLATFORM_WINDOWS
-        #endif
-        #if !defined(_MSC_VER)
-            #pragma message("There's no reason you shouldn't be using Visual Studio!")
         #endif
     #endif
 
