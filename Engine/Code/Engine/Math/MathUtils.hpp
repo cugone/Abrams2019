@@ -184,6 +184,14 @@ unsigned int CalculateManhattanDistance(const IntVector2& start, const IntVector
 unsigned int CalculateManhattanDistance(const IntVector3& start, const IntVector3& end) noexcept;
 unsigned int CalculateManhattanDistance(const IntVector4& start, const IntVector4& end) noexcept;
 
+unsigned int CalculateChebyshevDistance(const IntVector2& start, const IntVector2& end) noexcept;
+unsigned int CalculateChebyshevDistance(const IntVector3& start, const IntVector3& end) noexcept;
+unsigned int CalculateChebyshevDistance(const IntVector4& start, const IntVector4& end) noexcept;
+
+unsigned int CalculateChessboardDistance(const IntVector2& start, const IntVector2& end) noexcept;
+unsigned int CalculateChessboardDistance(const IntVector3& start, const IntVector3& end) noexcept;
+unsigned int CalculateChessboardDistance(const IntVector4& start, const IntVector4& end) noexcept;
+
 Vector2 GetRandomPointOn(const AABB2& aabb) noexcept;
 Vector2 GetRandomPointOn(const Disc2& disc) noexcept;
 Vector2 GetRandomPointOn(const LineSegment2& line) noexcept;

@@ -449,6 +449,28 @@ unsigned int CalculateManhattanDistance(const IntVector4& start, const IntVector
     return std::abs(end.x - start.x) + std::abs(end.y - start.y) + std::abs(end.z - start.z) + std::abs(end.w - start.w);
 }
 
+unsigned int CalculateChebyshevDistance(const IntVector2& start, const IntVector2& end) noexcept {
+    return (std::max)({std::abs(end.x - start.x), std::abs(end.y - start.y)});
+}
+
+unsigned int CalculateChebyshevDistance(const IntVector3& start, const IntVector3& end) noexcept {
+    return (std::max)({std::abs(end.x - start.x), std::abs(end.y - start.y), std::abs(end.z - start.z)});
+}
+
+unsigned int CalculateChebyshevDistance(const IntVector4& start, const IntVector4& end) noexcept {
+    return (std::max)({std::abs(end.x - start.x), std::abs(end.y - start.y), std::abs(end.z - start.z), std::abs(end.w - start.w)});
+}
+
+unsigned int CalculateChessboardDistance(const IntVector2& start, const IntVector2& end) noexcept {
+    return CalculateChebyshevDistance(start, end);
+}
+unsigned int CalculateChessboardDistance(const IntVector3& start, const IntVector3& end) noexcept {
+    return CalculateChebyshevDistance(start, end);
+}
+unsigned int CalculateChessboardDistance(const IntVector4& start, const IntVector4& end) noexcept {
+    return CalculateChebyshevDistance(start, end);
+}
+
 Vector2 GetRandomPointOn(const AABB2& aabb) noexcept {
     float result[2]{0.0f, 0.0f};
     int s = MathUtils::GetRandomIntLessThan(4);
