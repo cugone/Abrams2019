@@ -56,7 +56,7 @@ StackTrace::StackTrace([[maybe_unused]] unsigned long framesToSkip,
         Initialize();
     }
     ++_refs;
-    unsigned long count = ::CaptureStackBackTrace(1ul + framesToSkip, framesToCapture, _frames, &hash);
+    unsigned long count = ::CaptureStackBackTrace(1ul + framesToSkip, framesToCapture, _frames.data(), &hash);
     if(!count) {
         DebuggerPrintf("StackTrace unavailable. All frames were skipped.\n");
         return;
@@ -65,7 +65,7 @@ StackTrace::StackTrace([[maybe_unused]] unsigned long framesToSkip,
 
     GetLines(this, MAX_CALLSTACK_LINES);
 #else
-    DebuggerPrintf("StackTrace unavailable. Attempting to call StackTrace in non-profile build. \n");
+    DebuggerPrintf("StackTrace unavailable. Attempting to call StackTrace in non-profile-able build. \n");
 #endif
 }
 

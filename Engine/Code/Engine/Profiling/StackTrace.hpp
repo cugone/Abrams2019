@@ -3,6 +3,7 @@
 #include "Engine/Core/BuildConfig.hpp"
 
 #include <atomic>
+#include <array>
 #include <shared_mutex>
 #include <string>
 #include <vector>
@@ -24,7 +25,7 @@ private:
     unsigned long hash = 0;
     unsigned long _frame_count = 0;
     static constexpr auto MAX_FRAMES_PER_CALLSTACK = 128ul;
-    void* _frames[MAX_FRAMES_PER_CALLSTACK];
+    std::array<void*, MAX_FRAMES_PER_CALLSTACK> _frames{};
     static std::shared_mutex _cs;
     static std::atomic_uint64_t _refs;
     static std::atomic_bool _did_init;
