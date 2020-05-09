@@ -175,9 +175,7 @@ Vector4 Canvas::AnchorTextToAnchorValues(const std::string& text) noexcept {
 
 CanvasSlot* Canvas::AddChild(Element* child) {
     DirtyElement(InvalidateElementReason::Layout);
-    auto newSlot = std::make_shared<CanvasSlot>();
-    newSlot->content = child;
-    newSlot->parent = this;
+    auto newSlot = std::make_shared<CanvasSlot>(child, this);
     auto ptr = newSlot.get();
     _slots.emplace_back(newSlot);
     child->SetSlot(ptr);
@@ -186,9 +184,31 @@ CanvasSlot* Canvas::AddChild(Element* child) {
 
 CanvasSlot* Canvas::AddChildAt(Element* child, std::size_t index) {
     DirtyElement(InvalidateElementReason::Layout);
-    auto newSlot = std::make_shared<CanvasSlot>();
-    newSlot->content = child;
-    newSlot->parent = this;
+    auto newSlot = std::make_shared<CanvasSlot>(child, this);
+    CalcBoundsForMeThenMyChildren();
+    auto ptr = newSlot.get();
+    _slots[index] = std::move(newSlot);
+    if(IsDirty(InvalidateElementReason::Layout)) {
+        ReorderAllChildren();
+    }
+    return ptr;
+}
+
+CanvasSlot* Canvas::AddChildFromXml(const XMLElement& elem, Element* child) {
+    DirtyElement(InvalidateElementReason::Layout);
+    auto newSlot = std::make_shared<CanvasSlot>(elem, child, this);
+    auto ptr = newSlot.get();
+    _slots.emplace_back(newSlot);
+    child->SetSlot(ptr);
+    if(IsDirty(InvalidateElementReason::Layout)) {
+        ReorderAllChildren();
+    }
+    return ptr;
+}
+
+CanvasSlot* Canvas::AddChildFromXml(const XMLElement& elem, Element* child, std::size_t index) {
+    DirtyElement(InvalidateElementReason::Layout);
+    auto newSlot = std::make_shared<CanvasSlot>(elem, child, this);
     CalcBoundsForMeThenMyChildren();
     auto ptr = newSlot.get();
     _slots[index] = std::move(newSlot);
@@ -218,11 +238,18 @@ void Canvas::RemoveAllChildren() {
 }
 
 Vector4 Canvas::CalcDesiredSize() const noexcept {
-    return {};
+    const auto childBounds = CalcChildrenDesiredBounds();
+    return Vector4{childBounds.mins, childBounds.maxs};
 }
 
-AABB2 Canvas::CalcChildrenDesiredBounds() {
-    return {};
+AABB2 Canvas::CalcChildrenDesiredBounds() const {
+    AABB2 result;
+    for(const auto& slot : _slots) {
+        const auto desired_size = slot->content->CalcDesiredSize();
+        result.StretchToIncludePoint(slot->CalcPosition());
+        result.StretchToIncludePoint(desired_size.GetZW());
+    }
+    return result;
 }
 
 void Canvas::ArrangeChildren() noexcept {
@@ -287,8 +314,14 @@ bool Canvas::LoadFromXml(const XMLElement& elem) noexcept {
     return true;
 }
 
-CanvasSlot::CanvasSlot(const XMLElement& elem)
-: PanelSlot()
+CanvasSlot::CanvasSlot(Element* content /*= nullptr*/, Panel* parent /*= nullptr*/)
+: PanelSlot(content, parent)
+{}
+
+CanvasSlot::CanvasSlot(const XMLElement& elem,
+                       Element* content /*= nullptr*/,
+                       Panel* parent /*= nullptr*/)
+: PanelSlot(content, parent)
 {
     LoadFromXml(elem);
 }
@@ -301,9 +334,6 @@ void CanvasSlot::LoadFromXml(const XMLElement& elem) {
     autoSize = DataUtils::ParseXmlAttribute(elem, "autosize", autoSize);
     size = autoSize ? content->CalcDesiredSize().GetZW() : DataUtils::ParseXmlAttribute(elem, "size", Vector2::ZERO);
     position = DataUtils::ParseXmlAttribute(elem, "position", Vector2{0.5f, 0.5f});
-    if(auto* xml_parent = elem.Parent()->ToElement()) {
-        
-    }
 }
 
 void CanvasSlot::CalcPivot() {
@@ -312,6 +342,10 @@ void CanvasSlot::CalcPivot() {
     const auto pivot_position = MathUtils::CalcPointFromNormalizedPoint(content->GetPivot(), parent_bounds);
     this->size = desired_size.GetZW();
     content->SetPivot(pivot_position);
+}
+
+Vector2 CanvasSlot::CalcPosition() const {
+    return position;
 }
 
 } // namespace UI

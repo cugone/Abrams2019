@@ -28,10 +28,7 @@ void Element::RemoveSelf() {
         _slot->parent->RemoveChild(this);
         _slot->parent = nullptr;
         _slot->content = nullptr;
-        if(_slot != &s_NullPanelSlot) {
-            delete _slot;
-            _slot = &s_NullPanelSlot;
-        }
+        _slot = &s_NullPanelSlot;
     }
 }
 
@@ -40,7 +37,6 @@ bool Element::HasSlot() const noexcept {
 }
 
 void Element::ResetSlot() noexcept {
-    delete _slot;
     _slot = &s_NullPanelSlot;
 }
 

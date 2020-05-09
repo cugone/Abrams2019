@@ -14,7 +14,7 @@ class Panel;
 class PictureBox : public Element {
 public:
     explicit PictureBox(Panel* parent = nullptr);
-    explicit PictureBox(const XMLElement& elem);
+    explicit PictureBox(const XMLElement& elem, Panel* parent = nullptr);
     virtual ~PictureBox() = default;
 
     void SetImage(std::unique_ptr<AnimatedSprite> sprite) noexcept;

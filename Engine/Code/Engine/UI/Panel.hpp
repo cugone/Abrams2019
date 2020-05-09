@@ -28,6 +28,8 @@ public:
     void EndFrame() override;
     virtual PanelSlot* AddChild(Element* child)=0;
     virtual PanelSlot* AddChildAt(Element* child, std::size_t index) = 0;
+    virtual PanelSlot* AddChildFromXml(const XMLElement& elem, Element* child) = 0;
+    virtual PanelSlot* AddChildFromXml(const XMLElement& elem, Element* child, std::size_t index) = 0;
     virtual void RemoveChild(Element* child) = 0;
     virtual void RemoveAllChildren() = 0;
 
@@ -41,7 +43,7 @@ public:
     void DebugRenderChildren(Renderer& renderer) const;
 protected:
 
-    virtual AABB2 CalcChildrenDesiredBounds() = 0;
+    virtual AABB2 CalcChildrenDesiredBounds() const = 0;
     virtual void ArrangeChildren() noexcept = 0;
     virtual bool LoadFromXml(const XMLElement& elem) noexcept = 0;
     virtual void UpdateChildren(TimeUtils::FPSeconds);

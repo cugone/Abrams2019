@@ -12,8 +12,11 @@ namespace UI {
 
 class CanvasSlot : public PanelSlot {
 public:
-    CanvasSlot() = default;
-    explicit CanvasSlot(const XMLElement& elem);
+    explicit CanvasSlot(Element* content = nullptr,
+                        Panel* parent = nullptr);
+    explicit CanvasSlot(const XMLElement& elem,
+                        Element* content = nullptr,
+                        Panel* parent = nullptr);
     void LoadFromXml(const XMLElement& elem);
     AABB2 anchors{};
     Vector2 position{};
@@ -22,6 +25,7 @@ public:
     int zOrder{};
     bool autoSize{false};
     void CalcPivot() override;
+    Vector2 CalcPosition() const override;
 };
 
 class Canvas : public Panel {
@@ -48,13 +52,16 @@ public:
     CanvasSlot* AddChild(Element* child) override;
     CanvasSlot* AddChildAt(Element* child, std::size_t index) override;
 
+    CanvasSlot* AddChildFromXml(const XMLElement& elem, Element* child) override;
+    CanvasSlot* AddChildFromXml(const XMLElement& elem, Element* child, std::size_t index) override;
+
     void RemoveChild(Element* child) override;
     void RemoveAllChildren() override;
 
     Vector4 CalcDesiredSize() const noexcept override;
 
 protected:
-    AABB2 CalcChildrenDesiredBounds() override;
+    AABB2 CalcChildrenDesiredBounds() const override;
     void ArrangeChildren() noexcept override;
 
 private:

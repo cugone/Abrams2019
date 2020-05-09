@@ -22,7 +22,7 @@ namespace UI {
 Widget::Widget(Renderer& renderer, const std::filesystem::path& path)
 : _renderer(renderer) {
     {
-        auto err_msg{"Failed loading Widget:\n" + path.string() + "\nis ill-formed."};
+        auto err_msg{"Failed loading Widget:\n" + path.string() + "\n is ill-formed."};
         GUARANTEE_OR_DIE(LoadFromXML(path), err_msg.c_str());
     }
 }
@@ -107,10 +107,10 @@ std::shared_ptr<Element> Widget::CreateWigetTypeFromTypename(std::string nameStr
             const auto parent_name = DataUtils::ParseXmlAttribute(*parent->ToElement(), "name", "");
             const auto found = std::find_if(std::begin(_elements), std::end(_elements), [&parent_name](std::shared_ptr<Element>& element) { return element->GetName() == parent_name; });
             if(found != std::end(_elements)) {
-                auto lbl = std::make_shared<Label>(elem, _panel);
-                const auto new_elem = lbl.get();
-                _panel->AddChild(new_elem);
-                return lbl;
+                if(auto* foundAsPanel = dynamic_cast<Panel*>(found->get())) {
+                    auto lbl = std::make_shared<Label>(elem, foundAsPanel);
+                    return lbl;
+                }
             }
         }
         return std::make_shared<Label>(elem);
@@ -119,10 +119,10 @@ std::shared_ptr<Element> Widget::CreateWigetTypeFromTypename(std::string nameStr
             const auto parent_name = DataUtils::ParseXmlAttribute(*parent->ToElement(), "name", "");
             const auto found = std::find_if(std::begin(_elements), std::end(_elements), [&parent_name](std::shared_ptr<Element>& element) { return element->GetName() == parent_name; });
             if(found != std::end(_elements)) {
-                auto pic = std::make_shared<PictureBox>(elem);
-                const auto new_elem = pic.get();
-                _panel->AddChild(new_elem);
-                return pic;
+                if(auto* foundAsPanel = dynamic_cast<Panel*>(found->get())) {
+                    auto pic = std::make_shared<PictureBox>(elem, foundAsPanel);
+                    return pic;
+                }
             }
         }
         return std::make_shared<PictureBox>(elem);

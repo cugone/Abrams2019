@@ -129,10 +129,9 @@ bool Label::LoadFromXml(const XMLElement& elem) noexcept {
     _text = DataUtils::ParseXmlAttribute(elem, "value", "TEXT");
 
     if(auto* xml_slot = elem.FirstChildElement("slot")) {
-        auto newSlot = new UI::CanvasSlot{*xml_slot};
-        newSlot->content = this;
-        newSlot->parent = nullptr;
-        SetSlot(newSlot);
+        auto* parent = GetParent();
+        parent->RemoveChild(this);
+        parent->AddChildFromXml(*xml_slot, this);
     }
     return true;
 }

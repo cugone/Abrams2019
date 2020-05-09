@@ -15,7 +15,8 @@ PictureBox::PictureBox(Panel* parent /*= nullptr*/)
 {
     /* DO NOTHING */
 }
-PictureBox::PictureBox(const XMLElement& elem)
+PictureBox::PictureBox(const XMLElement& elem, Panel* parent /*= nullptr*/)
+: Element(parent)
 {
     LoadFromXml(elem);
 }
