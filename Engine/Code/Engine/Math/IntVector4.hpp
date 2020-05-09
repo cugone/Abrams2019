@@ -60,6 +60,9 @@ public:
     bool operator==(const IntVector4& rhs) noexcept;
     bool operator!=(const IntVector4& rhs) noexcept;
 
+    IntVector2 GetXY() const noexcept;
+    IntVector2 GetZW() const noexcept;
+
     void SetXYZW(int newX, int newY, int newZ, int newW) noexcept;
     std::tuple<int, int, int, int> GetXYZW() const noexcept;
 

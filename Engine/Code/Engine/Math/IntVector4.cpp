@@ -124,6 +124,14 @@ IntVector4::IntVector4(const std::string& value) noexcept
     }
 }
 
+IntVector2 IntVector4::GetXY() const noexcept {
+    return IntVector2{x, y};
+}
+
+IntVector2 IntVector4::GetZW() const noexcept {
+    return IntVector2{z, w};
+}
+
 void IntVector4::SetXYZW(int newX, int newY, int newZ, int newW) noexcept {
     x = newX;
     y = newY;
