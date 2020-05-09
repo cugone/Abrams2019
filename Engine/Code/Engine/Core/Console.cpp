@@ -322,6 +322,9 @@ bool Console::HandleTabKey() noexcept {
 }
 
 void Console::AutoCompleteEntryline() noexcept {
+    if(_entryline.empty()) {
+        return;
+    }
     for(const auto& entry : _commands) {
         if(StringUtils::StartsWith(entry.first, _entryline)) {
             _entryline = entry.first;
