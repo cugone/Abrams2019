@@ -129,10 +129,10 @@ void Frustum::CalcPoints(float aspectRatio, float vfovDegrees, const Vector3& fo
     _points[2] = forward * Vector3{near_view_half_width, near_view_half_height, near_distance};
     _points[3] = forward * Vector3{near_view_half_width, -near_view_half_height, near_distance};
 
-    _points[4] = forward * Vector3{-far_view_half_width, -far_view_half_height, near_distance};
-    _points[5] = forward * Vector3{-far_view_half_width, far_view_half_height, near_distance};
-    _points[6] = forward * Vector3{far_view_half_width, far_view_half_height, near_distance};
-    _points[7] = forward * Vector3{far_view_half_width, -far_view_half_height, near_distance};
+    _points[4] = forward * Vector3{-far_view_half_width, -far_view_half_height, far_distance};
+    _points[5] = forward * Vector3{-far_view_half_width, far_view_half_height, far_distance};
+    _points[6] = forward * Vector3{far_view_half_width, far_view_half_height, far_distance};
+    _points[7] = forward * Vector3{far_view_half_width, -far_view_half_height, far_distance};
 }
 
 const Plane3& Frustum::GetLeft() const noexcept {
