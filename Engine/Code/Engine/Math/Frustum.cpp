@@ -115,14 +115,14 @@ void Frustum::SetFar(const Plane3& far) noexcept {
 }
 
 void Frustum::CalcPoints(float aspectRatio, float vfovDegrees, const Vector3& forward, float near, float far) noexcept {
-    float aspect_ratio = aspectRatio;
-    float fov_vertical_degrees = vfovDegrees;
-    float near_distance = near;
-    float far_distance = far;
-    float near_view_half_height = near_distance * std::tan(0.5f * fov_vertical_degrees);
-    float near_view_half_width = aspect_ratio * near_view_half_height;
-    float far_view_half_height = far_distance * std::tan(0.5f * fov_vertical_degrees);
-    float far_view_half_width = aspect_ratio * far_view_half_height;
+    const float aspect_ratio = aspectRatio;
+    const float fov_vertical_degrees = vfovDegrees;
+    const float near_distance = near;
+    const float far_distance = far;
+    const float near_view_half_height = near_distance * std::tan(0.5f * fov_vertical_degrees);
+    const float near_view_half_width = aspect_ratio * near_view_half_height;
+    const float far_view_half_height = far_distance * std::tan(0.5f * fov_vertical_degrees);
+    const float far_view_half_width = aspect_ratio * far_view_half_height;
 
     _points[0] = forward * Vector3{-near_view_half_width, -near_view_half_height, near_distance};
     _points[1] = forward * Vector3{-near_view_half_width, near_view_half_height, near_distance};
