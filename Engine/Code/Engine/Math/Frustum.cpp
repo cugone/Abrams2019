@@ -57,6 +57,7 @@ Frustum::Frustum(const Matrix4& viewProjectionMatrix, float aspectRatio, float v
         if(normalize) {
             result.Normalize();
         }
+        SetBottom(result);
     }
     {
         auto a_t = x.w - x.y;
@@ -67,6 +68,7 @@ Frustum::Frustum(const Matrix4& viewProjectionMatrix, float aspectRatio, float v
         if(normalize) {
             result.Normalize();
         }
+        SetTop(result);
     }
     {
         auto a_n = z.x;
@@ -77,6 +79,7 @@ Frustum::Frustum(const Matrix4& viewProjectionMatrix, float aspectRatio, float v
         if(normalize) {
             result.Normalize();
         }
+        SetNear(result);
     }
     {
         auto a_f = w.x - z.x;
@@ -87,6 +90,7 @@ Frustum::Frustum(const Matrix4& viewProjectionMatrix, float aspectRatio, float v
         if(normalize) {
             result.Normalize();
         }
+        SetFar(result);
     }
 }
 
