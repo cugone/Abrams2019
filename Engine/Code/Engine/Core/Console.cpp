@@ -728,9 +728,9 @@ void Console::Render() const {
         return;
     }
 
-    _renderer.SetModelMatrix(Matrix4::I);
-    _renderer.SetViewMatrix(Matrix4::I);
-    _renderer.SetProjectionMatrix(Matrix4::I);
+    _renderer.ResetModelViewProjection();
+    _renderer.SetRenderTarget();
+    _renderer.SetViewportAsPercent(0.0f, 0.0f, 1.0f, 0.957f);
 
     auto view_half_extents = SetupViewFromCamera();
     DrawBackground(view_half_extents);
