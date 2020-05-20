@@ -41,8 +41,8 @@ struct OsDesc {
     OperatingSystem type{};
     OperatingSystemArchitecture architecture{};
     std::string VersionFriendly{};
-    friend std::ostream& operator<<(std::ostream& out, const OsDesc& cpu) noexcept;
 };
+std::ostream& operator<<(std::ostream& out, const OsDesc& cpu) noexcept;
 
 OsDesc GetOsDesc() noexcept;
 
@@ -50,4 +50,4 @@ OperatingSystem GetOperatingSystemType() noexcept;
 OperatingSystemArchitecture GetOperatingSystemArchitecture() noexcept;
 std::string GetFriendlyStringFromOperatingSystemType(System::OS::OperatingSystem type) noexcept;
 
-} // namespace System::OS
+} // namespace System:OS
