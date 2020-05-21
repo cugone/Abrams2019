@@ -2594,7 +2594,9 @@ bool Renderer::RegisterShader(std::filesystem::path filepath) noexcept {
     }
     filepath.make_preferred();
     if(doc.LoadFile(filepath.string().c_str()) == tinyxml2::XML_SUCCESS) {
-        RegisterShader(filepath.string(), std::make_unique<Shader>(*this, *doc.RootElement()));
+        auto s = std::make_unique<Shader>(*this, *doc.RootElement());
+        const auto name = s->GetName();
+        RegisterShader(name, std::move(s));
         return true;
     }
     return false;
