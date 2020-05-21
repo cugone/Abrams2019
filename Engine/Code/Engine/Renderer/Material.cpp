@@ -76,7 +76,11 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
                 return false;
             }
             DebuggerPrintf("done.\n");
-            _shader = _renderer.GetShader(p.string());
+            if(shader = _renderer.GetShader(p.string()); shader == nullptr) {
+                if(shader = _renderer.GetShader(_name); shader != nullptr) {
+                    _shader = shader;
+                }
+            }
         }
     }
 
