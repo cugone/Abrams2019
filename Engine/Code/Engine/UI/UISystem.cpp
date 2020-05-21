@@ -89,7 +89,6 @@ UISystem::UISystem(FileLogger& fileLogger, Renderer& renderer) noexcept
 }
 
 UISystem::~UISystem() noexcept {
-    PROFILE_LOG_SCOPE_FUNCTION();
     ImGui_ImplDX11_Shutdown();
     ImGui_ImplWin32_Shutdown();
 
@@ -102,7 +101,6 @@ UISystem::~UISystem() noexcept {
 }
 
 void UISystem::Initialize() {
-    PROFILE_LOG_SCOPE_FUNCTION();
     _io->IniFilename = nullptr;
     _io->LogFilename = nullptr;
 
@@ -117,7 +115,6 @@ void UISystem::Initialize() {
 }
 
 void UISystem::BeginFrame() {
-    PROFILE_LOG_SCOPE_FUNCTION();
     ImGui_ImplDX11_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
@@ -132,14 +129,9 @@ void UISystem::Update(TimeUtils::FPSeconds /*deltaSeconds*/) {
 }
 
 void UISystem::Render() const {
-    {
-        PROFILE_LOG_SCOPE("Imgui Render and Draw");
         ImGui::Render();
         ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-    }
 
-    {
-        PROFILE_LOG_SCOPE("UISystem Post-Imgui Render");
         //2D View / HUD
         const float ui_view_height = _renderer.GetCurrentViewport().height;
         const float ui_view_width = ui_view_height * _ui_camera.GetAspectRatio();
@@ -162,11 +154,10 @@ void UISystem::Render() const {
             cur_widget->DebugRender();
         }
 #endif
-    }
+
 }
 
 void UISystem::EndFrame() {
-    PROFILE_LOG_SCOPE_FUNCTION();
     ImGui::EndFrame();
 }
 
