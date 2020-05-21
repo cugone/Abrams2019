@@ -4137,6 +4137,54 @@ std::unique_ptr<Texture> Renderer::Create2DTextureFromMemory(const unsigned char
     }
 }
 
+std::unique_ptr<Texture> Renderer::Create2DTextureFromMemory(const void* data, std::size_t elementSize, unsigned int width /*= 1*/, unsigned int height /*= 1*/, const BufferUsage& bufferUsage /*= BufferUsage::STATIC*/, const BufferBindUsage& bindUsage /*= BufferBindUsage::SHADER_RESOURCE*/, const ImageFormat& imageFormat /*= ImageFormat::R8G8B8A8_UNORM*/) noexcept {
+    D3D11_TEXTURE2D_DESC tex_desc{};
+
+    tex_desc.Width = width;
+    tex_desc.Height = height;
+    tex_desc.MipLevels = 1;
+    tex_desc.ArraySize = 1;
+    tex_desc.Usage = BufferUsageToD3DUsage(bufferUsage);
+    tex_desc.Format = ImageFormatToDxgiFormat(imageFormat);
+    tex_desc.BindFlags = BufferBindUsageToD3DBindFlags(bindUsage);
+    //Make every texture a target and shader resource
+    tex_desc.BindFlags |= BufferBindUsageToD3DBindFlags(BufferBindUsage::Shader_Resource);
+    tex_desc.CPUAccessFlags = CPUAccessFlagFromUsage(bufferUsage);
+    //Force specific usages for unordered access
+    if((bindUsage & BufferBindUsage::Unordered_Access) == BufferBindUsage::Unordered_Access) {
+        tex_desc.Usage = BufferUsageToD3DUsage(BufferUsage::Gpu);
+        tex_desc.CPUAccessFlags = CPUAccessFlagFromUsage(BufferUsage::Staging);
+    }
+    if((bufferUsage & BufferUsage::Staging) == BufferUsage::Staging) {
+        tex_desc.BindFlags = 0;
+    }
+    tex_desc.MiscFlags = 0;
+    tex_desc.SampleDesc.Count = 1;
+    tex_desc.SampleDesc.Quality = 0;
+
+    // Setup Initial Data
+    D3D11_SUBRESOURCE_DATA subresource_data = {};
+
+    subresource_data.pSysMem = data;
+    subresource_data.SysMemPitch = width * static_cast<unsigned int>(elementSize);
+    subresource_data.SysMemSlicePitch = width * height * static_cast<unsigned int>(elementSize);
+
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> dx_tex{};
+
+    //If IMMUTABLE or not multi-sampled, must use initial data.
+    bool isMultiSampled = tex_desc.SampleDesc.Count != 1 || tex_desc.SampleDesc.Quality != 0;
+    bool isImmutable = bufferUsage == BufferUsage::Static;
+    bool mustUseInitialData = isImmutable || isMultiSampled;
+
+    HRESULT hr = _rhi_device->GetDxDevice()->CreateTexture2D(&tex_desc, (mustUseInitialData ? &subresource_data : nullptr), &dx_tex);
+    bool succeeded = SUCCEEDED(hr);
+    if(succeeded) {
+        return std::make_unique<Texture2D>(*_rhi_device, dx_tex);
+    } else {
+        return nullptr;
+    }
+}
+
 std::unique_ptr<Texture> Renderer::Create2DTextureFromMemory(const std::vector<Rgba>& data, unsigned int width /*= 1*/, unsigned int height /*= 1*/, const BufferUsage& bufferUsage /*= BufferUsage::STATIC*/, const BufferBindUsage& bindUsage /*= BufferBindUsage::SHADER_RESOURCE*/, const ImageFormat& imageFormat /*= ImageFormat::R8G8B8A8_UNORM*/) noexcept {
     D3D11_TEXTURE2D_DESC tex_desc{};
 
