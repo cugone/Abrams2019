@@ -572,6 +572,23 @@ void Matrix4::OrthoNormalizeIJK() noexcept {
     SetKBasis(k);
 }
 
+void Matrix4::OrthoNormalizeKIJ() noexcept {
+    Vector4 i = GetIBasis();
+    Vector4 k = GetKBasis();
+    Vector4 j = GetJBasis();
+
+    k.Normalize3D();
+    i -= MathUtils::Project(i, k);
+    i.Normalize3D();
+    j -= MathUtils::Project(j, k);
+    j -= MathUtils::Project(k, i);
+    j.Normalize3D();
+
+    SetIBasis(i);
+    SetJBasis(j);
+    SetKBasis(k);
+}
+
 float Matrix4::CalculateDeterminant(const Matrix4& mat) noexcept {
     //[00 01 02 03] [0   1  2  3]
     //[10 11 12 13] [4   5  6  7]

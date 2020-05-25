@@ -78,6 +78,7 @@ public:
 
     void OrthoNormalizeIKJ() noexcept;
     void OrthoNormalizeIJK() noexcept;
+    void OrthoNormalizeKIJ() noexcept;
 
     void Translate(const Vector2& translation2D) noexcept;
     void Translate(const Vector3& translation3D) noexcept;
