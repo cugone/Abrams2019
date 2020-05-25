@@ -107,7 +107,8 @@ void Camera3D::CalcRotationMatrix() noexcept {
     Rz.SetJBasis(Vector4(-s_z_theta, c_z_theta, 0.0f, 0.0f));
     Rz.SetKBasis(Vector4(0.0f, 0.0f, 1.0f, 0.0f));
 
-    Matrix4 R = Matrix4::MakeSRT(Ry, Rx, Rz);
+    //Matrix4 R = Matrix4::MakeSRT(Ry, Rx, Rz);
+    Matrix4 R = Matrix4::MakeSRT(Rz, Rx, Ry);
     rotation_matrix = R;
 }
 
