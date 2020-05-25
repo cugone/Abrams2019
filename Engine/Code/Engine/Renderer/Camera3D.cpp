@@ -221,7 +221,7 @@ const Matrix4& Camera3D::GetInverseViewProjectionMatrix() const noexcept {
 }
 
 void Camera3D::SetEulerAngles(const Vector3& eulerAngles) noexcept {
-    rotationPitch = eulerAngles.x;
+    rotationPitch = std::clamp(eulerAngles.x, -89.0f, 89.0f);
     rotationYaw = eulerAngles.y;
     rotationRoll = eulerAngles.z;
 }
