@@ -292,6 +292,8 @@ public:
 
     std::size_t GetShaderCount() const noexcept;
     Shader* GetShader(const std::string& nameOrFile) noexcept;
+    std::string GetShaderName(const std::filesystem::path filepath) noexcept;
+
     void SetComputeShader(Shader* shader) noexcept;
     void DispatchComputeJob(const ComputeJob& job) noexcept;
 

@@ -3256,6 +3256,17 @@ Shader* Renderer::GetShader(const std::string& nameOrFile) noexcept {
     return found_iter->second.get();
 }
 
+std::string Renderer::GetShaderName(const std::filesystem::path filepath) noexcept {
+    namespace FS = std::filesystem;
+    tinyxml2::XMLDocument doc;
+    if(auto load_result = doc.LoadFile(filepath.string().c_str()); load_result == tinyxml2::XML_SUCCESS) {
+        const auto* element = doc.RootElement();
+        DataUtils::ValidateXmlElement(*element, "shader", "shaderprogram", "name", "depth,stencil,blends,raster,sampler,cbuffers");
+        return DataUtils::ParseXmlAttribute(*element, std::string("name"), std::string{});
+    }
+    return {};
+}
+
 void Renderer::RegisterShadersFromFolder(std::filesystem::path folderpath, bool recursive /*= false*/) noexcept {
     namespace FS = std::filesystem;
     if(!FS::exists(folderpath)) {
