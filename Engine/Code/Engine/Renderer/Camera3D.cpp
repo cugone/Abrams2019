@@ -318,7 +318,8 @@ Vector3 Camera3D::GetForward() const noexcept {
     float sin_yaw = MathUtils::SinDegrees(rotationYaw);
     float sin_pitch = MathUtils::SinDegrees(rotationPitch);
 
-    return Vector3(-sin_yaw * cos_pitch, sin_pitch, cos_yaw * cos_pitch);
+    //return Vector3(-sin_yaw * cos_pitch, sin_pitch, cos_yaw * cos_pitch);
+    return Vector3(sin_yaw * cos_pitch, sin_pitch, cos_yaw * cos_pitch);
 }
 
 float Camera3D::GetYawDegrees() const noexcept {
