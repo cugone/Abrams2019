@@ -3695,39 +3695,35 @@ void Renderer::SetViewportAndScissorAsPercent(float x /*= 0.0f*/, float y /*= 0.
 }
 
 void Renderer::EnableScissorTest() {
-    ID3D11RasterizerState* state{};
+    Microsoft::WRL::ComPtr<ID3D11RasterizerState> state{};
     auto dc = GetDeviceContext();
     auto dx_dc = dc->GetDxContext();
-    dx_dc->RSGetState(&state);
+    dx_dc->RSGetState(state.GetAddressOf());
 
     D3D11_RASTERIZER_DESC desc{};
     state->GetDesc(&desc);
     if(!desc.ScissorEnable) {
         desc.ScissorEnable = true;
-        auto hr = GetDevice()->GetDxDevice()->CreateRasterizerState(&desc, &state);
+        auto hr = GetDevice()->GetDxDevice()->CreateRasterizerState(&desc, state.GetAddressOf());
         if(SUCCEEDED(hr)) {
-            dx_dc->RSSetState(state);
+            dx_dc->RSSetState(state.Get());
         }
     }
-    state->Release();
-    state = nullptr;
 }
 
 void Renderer::DisableScissorTest() {
-    ID3D11RasterizerState* state{};
+    Microsoft::WRL::ComPtr<ID3D11RasterizerState> state{};
     auto dc = GetDeviceContext();
     auto dx_dc = dc->GetDxContext();
-    dx_dc->RSGetState(&state);
+    dx_dc->RSGetState(state.GetAddressOf());
 
     D3D11_RASTERIZER_DESC desc{};
     state->GetDesc(&desc);
     if(desc.ScissorEnable) {
         desc.ScissorEnable = false;
-        GetDevice()->GetDxDevice()->CreateRasterizerState(&desc, &state);
-        dx_dc->RSSetState(state);
+        GetDevice()->GetDxDevice()->CreateRasterizerState(&desc, state.GetAddressOf());
+        dx_dc->RSSetState(state.Get());
     }
-    state->Release();
-    state = nullptr;
 }
 
 void Renderer::ClearColor(const Rgba& color) noexcept {
@@ -3880,28 +3876,28 @@ void Renderer::EnableDepth() noexcept {
     auto dx = GetDeviceContext();
     auto dx_dc = dx->GetDxContext();
     unsigned int stencil_value = 0;
-    ID3D11DepthStencilState* state{};
-    dx_dc->OMGetDepthStencilState(&state, &stencil_value);
+    Microsoft::WRL::ComPtr<ID3D11DepthStencilState> state{};
+    dx_dc->OMGetDepthStencilState(state.GetAddressOf(), &stencil_value);
     D3D11_DEPTH_STENCIL_DESC desc{};
     state->GetDesc(&desc);
     desc.DepthEnable = true;
     GetDevice()->GetDxDevice()->CreateDepthStencilState(&desc, &state);
-    dx_dc->OMSetDepthStencilState(state, stencil_value);
-    state->Release();
+    dx_dc->OMSetDepthStencilState(state.Get(), stencil_value);
 }
 
 void Renderer::DisableDepth() noexcept {
     auto dx = GetDeviceContext();
     auto dx_dc = dx->GetDxContext();
     unsigned int stencil_value = 0;
-    ID3D11DepthStencilState* state{};
-    dx_dc->OMGetDepthStencilState(&state, &stencil_value);
+    Microsoft::WRL::ComPtr<ID3D11DepthStencilState> state{};
+    dx_dc->OMGetDepthStencilState(state.GetAddressOf(), &stencil_value);
     D3D11_DEPTH_STENCIL_DESC desc{};
     state->GetDesc(&desc);
     desc.DepthEnable = false;
     GetDevice()->GetDxDevice()->CreateDepthStencilState(&desc, &state);
-    dx_dc->OMSetDepthStencilState(state, stencil_value);
-    state->Release();
+    dx_dc->OMSetDepthStencilState(state.Get(), stencil_value);
+}
+
 }
 
 Texture* Renderer::Create1DTexture(std::filesystem::path filepath, const BufferUsage& bufferUsage, const BufferBindUsage& bindUsage, const ImageFormat& imageFormat) noexcept {
