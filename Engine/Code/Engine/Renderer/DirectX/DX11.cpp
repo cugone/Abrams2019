@@ -288,6 +288,20 @@ D3D11_COMPARISON_FUNC ComparisonFunctionToD3DComparisonFunction(const Comparison
     }
 }
 
+ComparisonFunction D3DComparisonFunctionToComparisonFunction(D3D11_COMPARISON_FUNC d3dcompareFunc) noexcept {
+    switch(d3dcompareFunc) {
+    case D3D11_COMPARISON_NEVER: return ComparisonFunction::Never;
+    case D3D11_COMPARISON_LESS: return ComparisonFunction::Less;
+    case D3D11_COMPARISON_EQUAL: return ComparisonFunction::Equal;
+    case D3D11_COMPARISON_LESS_EQUAL: return ComparisonFunction::Less_Equal;
+    case D3D11_COMPARISON_GREATER: return ComparisonFunction::Greater;
+    case D3D11_COMPARISON_NOT_EQUAL: return ComparisonFunction::Not_Equal;
+    case D3D11_COMPARISON_GREATER_EQUAL: return ComparisonFunction::Greater_Equal;
+    case D3D11_COMPARISON_ALWAYS: return ComparisonFunction::Always;
+    default: return ComparisonFunction::Never;
+    }
+}
+
 ComparisonFunction ComparisonFunctionFromString(const char* str) noexcept {
     return ComparisonFunctionFromString(std::string(str ? str : ""));
 }

@@ -72,6 +72,7 @@ TextureAddressMode TextureAddressModeFromString(const char* str) noexcept;
 TextureAddressMode TextureAddressModeFromString(std::string str) noexcept;
 
 D3D11_COMPARISON_FUNC ComparisonFunctionToD3DComparisonFunction(const ComparisonFunction& compareFunc) noexcept;
+ComparisonFunction D3DComparisonFunctionToComparisonFunction(D3D11_COMPARISON_FUNC d3dcompareFunc) noexcept;
 ComparisonFunction ComparisonFunctionFromString(std::string str) noexcept;
 ComparisonFunction ComparisonFunctionFromString(const char* str) noexcept;
 
