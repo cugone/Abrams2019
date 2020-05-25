@@ -4,6 +4,7 @@
 #include "Engine/Core/FileLogger.hpp"
 #include "Engine/Core/Win.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Renderer/Window.hpp"
 
 #include <algorithm>
@@ -457,6 +458,11 @@ Vector2 InputSystem::GetCursorWindowPosition(const Window& window_ref) const noe
     return Vector2::ZERO;
 }
 
+Vector2 InputSystem::GetCursorWindowPosition() noexcept {
+    const auto* window = _renderer->GetOutput()->GetWindow();
+    return GetCursorWindowPosition(*window);
+}
+
 Vector2 InputSystem::GetCursorScreenPosition() const noexcept {
     POINT p;
     if(::GetCursorPos(&p)) {
@@ -482,6 +488,21 @@ void InputSystem::SetCursorToWindowCenter(const Window& window_ref) noexcept {
         float center_y = (client_area.top + client_area.bottom) * 0.5f;
         SetCursorWindowPosition(window_ref, Vector2{center_x, center_y});
     }
+}
+
+void InputSystem::SetCursorToWindowCenter() noexcept {
+    const auto* window = _renderer->GetOutput()->GetWindow();
+    SetCursorToWindowCenter(*window);
+}
+
+Vector2 InputSystem::GetMouseDeltaFromWindowCenter() const noexcept {
+    const auto* window = _renderer->GetOutput()->GetWindow();
+    return GetMouseDeltaFromWindowCenter(*window);
+}
+
+Vector2 InputSystem::GetMouseDeltaFromWindowCenter(const Window& window_ref) const noexcept {
+    const auto window_center = Vector2{window_ref.GetDimensions() * 0.5f};
+    return GetMouseCoords() - window_center;
 }
 
 void InputSystem::SetCursorScreenPosition(const Vector2& screen_pos) noexcept {
@@ -545,6 +566,11 @@ void InputSystem::SetCursorWindowPosition(const Window& window, const Vector2& w
     if(::ClientToScreen(reinterpret_cast<HWND>(window.GetWindowHandle()), &p)) {
         SetCursorScreenPosition(Vector2{static_cast<float>(p.x), static_cast<float>(p.y)});
     }
+}
+
+void InputSystem::SetCursorWindowPosition(const Vector2& window_pos) noexcept {
+    const auto* window = _renderer->GetOutput()->GetWindow();
+    SetCursorWindowPosition(*window, window_pos);
 }
 
 const Vector2& InputSystem::GetMouseCoords() const noexcept {
@@ -1258,9 +1284,10 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
     return false;
 }
 
-InputSystem::InputSystem(FileLogger& fileLogger) noexcept
+InputSystem::InputSystem(FileLogger& fileLogger, Renderer& renderer) noexcept
 : EngineSubsystem()
-, _fileLogger(&fileLogger) {
+, _fileLogger(&fileLogger)
+, _renderer(&renderer) {
     ::GetClipCursor(&_initialClippingArea);
 }
 

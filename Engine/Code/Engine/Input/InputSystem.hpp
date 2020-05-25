@@ -12,6 +12,7 @@
 #include <bitset>
 
 class FileLogger;
+class Renderer;
 class Window;
 
 enum class KeyCode : int {
@@ -371,7 +372,7 @@ KeyCode operator++(KeyCode& keycode, int) noexcept;
 
 class InputSystem : public EngineSubsystem {
 public:
-    explicit InputSystem(FileLogger& fileLogger) noexcept;
+    explicit InputSystem(FileLogger& fileLogger, Renderer& renderer) noexcept;
     InputSystem(const InputSystem& other) noexcept = delete;
     InputSystem(InputSystem&& r_other) noexcept = delete;
     InputSystem& operator=(const InputSystem& rhs) noexcept = delete;
@@ -418,8 +419,15 @@ public:
     void SetCursorWindowPosition(const Window& window, const Vector2& window_pos) noexcept;
     Vector2 GetCursorWindowPosition(const Window& window_ref) const noexcept;
 
+    void SetCursorWindowPosition(const Vector2& window_pos) noexcept;
+    Vector2 GetCursorWindowPosition() noexcept;
+
     void SetCursorToScreenCenter() noexcept;
     void SetCursorToWindowCenter(const Window& window_ref) noexcept;
+    void SetCursorToWindowCenter() noexcept;
+
+    Vector2 GetMouseDeltaFromWindowCenter() const noexcept;
+    Vector2 GetMouseDeltaFromWindowCenter(const Window& window_ref) const noexcept;
     const Vector2& GetMouseCoords() const noexcept;
     const Vector2& GetMouseDelta() const noexcept;
 
@@ -443,6 +451,7 @@ private:
     Vector2 GetWindowCenter(const Window& window) const noexcept;
 
     FileLogger* _fileLogger = nullptr;
+    Renderer* _renderer = nullptr;
     std::array<XboxController, 4> _xboxControllers{};
     std::bitset<(std::size_t)KeyCode::Max> _previousKeys{};
     std::bitset<(std::size_t)KeyCode::Max> _currentKeys{};
