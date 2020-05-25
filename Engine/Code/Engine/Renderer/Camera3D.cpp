@@ -232,14 +232,20 @@ void Camera3D::SetEulerAnglesDegrees(const Vector3& eulerAnglesDegrees) noexcept
 
 void Camera3D::SetForwardFromTarget(const Vector3& lookAtPosition) noexcept {
     Vector3 forward = (lookAtPosition - position).GetNormalize();
-    Vector3 right = MathUtils::CrossProduct(world_up.GetNormalize(), forward);
-    Vector3 up = MathUtils::CrossProduct(forward, right);
+    Vector3 right = MathUtils::CrossProduct(world_up.GetNormalize(), forward).GetNormalize();
+    Vector3 up = MathUtils::CrossProduct(forward, right).GetNormalize();
     Matrix4 m;
     m.SetIBasis(Vector4(right, 0.0f));
     m.SetJBasis(Vector4(up, 0.0f));
     m.SetKBasis(Vector4(forward, 0.0f));
+    m.OrthoNormalizeIJK();
     rotation = Quaternion(m);
     auto eulerangles = rotation.CalcEulerAnglesDegrees();
+    rotationPitch = std::clamp(eulerangles.x, -89.0f, 89.0f);
+    rotationYaw = eulerangles.y;
+    rotationRoll = eulerangles.z;
+}
+
 void Camera3D::RotateBy(const Vector3& eulerAngles) noexcept {
     const auto p = MathUtils::ConvertRadiansToDegrees(eulerAngles.x);
     const auto y = MathUtils::ConvertRadiansToDegrees(eulerAngles.y);
