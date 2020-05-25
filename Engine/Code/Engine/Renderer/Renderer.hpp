@@ -173,6 +173,13 @@ public:
     void EnableDepth() noexcept;
     void DisableDepth() noexcept;
 
+    void SetDepthComparison(ComparisonFunction cf) noexcept;
+    ComparisonFunction GetDepthComparison() const noexcept;
+    void SetStencilFrontComparison(ComparisonFunction cf) noexcept;
+    void SetStencilBackComparison(ComparisonFunction cf) noexcept;
+    void EnableStencilWrite() noexcept;
+    void DisableStencilWrite() noexcept;
+
     Texture* Create1DTexture(std::filesystem::path filepath, const BufferUsage& bufferUsage, const BufferBindUsage& bindUsage, const ImageFormat& imageFormat) noexcept;
     std::unique_ptr<Texture> Create1DTextureFromMemory(const unsigned char* data, unsigned int width = 1, const BufferUsage& bufferUsage = BufferUsage::Static, const BufferBindUsage& bindUsage = BufferBindUsage::Shader_Resource, const ImageFormat& imageFormat = ImageFormat::R8G8B8A8_UNorm) noexcept;
     std::unique_ptr<Texture> Create1DTextureFromMemory(const std::vector<Rgba>& data, unsigned int width = 1, const BufferUsage& bufferUsage = BufferUsage::Static, const BufferBindUsage& bindUsage = BufferBindUsage::Shader_Resource, const ImageFormat& imageFormat = ImageFormat::R8G8B8A8_UNorm) noexcept;

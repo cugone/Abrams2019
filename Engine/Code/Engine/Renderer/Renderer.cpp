@@ -191,6 +191,82 @@ void Renderer::LogAvailableDisplays() noexcept {
     _fileLogger.LogLineAndFlush(ss.str());
 }
 
+void Renderer::SetDepthComparison(ComparisonFunction cf) noexcept {
+    auto dx = GetDeviceContext();
+    auto dx_dc = dx->GetDxContext();
+    unsigned int stencil_value = 0;
+    Microsoft::WRL::ComPtr<ID3D11DepthStencilState> state{};
+    dx_dc->OMGetDepthStencilState(state.GetAddressOf(), &stencil_value);
+    D3D11_DEPTH_STENCIL_DESC desc{};
+    state->GetDesc(&desc);
+    desc.DepthFunc = ComparisonFunctionToD3DComparisonFunction(cf);
+    GetDevice()->GetDxDevice()->CreateDepthStencilState(&desc, &state);
+    dx_dc->OMSetDepthStencilState(state.Get(), stencil_value);
+}
+
+ComparisonFunction Renderer::GetDepthComparison() const noexcept {
+    auto dx = GetDeviceContext();
+    auto dx_dc = dx->GetDxContext();
+    unsigned int stencil_value = 0;
+    Microsoft::WRL::ComPtr<ID3D11DepthStencilState> state{};
+    dx_dc->OMGetDepthStencilState(state.GetAddressOf(), &stencil_value);
+    D3D11_DEPTH_STENCIL_DESC desc{};
+    state->GetDesc(&desc);
+    return D3DComparisonFunctionToComparisonFunction(desc.DepthFunc);
+}
+
+void Renderer::SetStencilFrontComparison(ComparisonFunction cf) noexcept {
+    auto dx = GetDeviceContext();
+    auto dx_dc = dx->GetDxContext();
+    unsigned int stencil_value = 0;
+    Microsoft::WRL::ComPtr<ID3D11DepthStencilState> state{};
+    dx_dc->OMGetDepthStencilState(state.GetAddressOf(), &stencil_value);
+    D3D11_DEPTH_STENCIL_DESC desc{};
+    state->GetDesc(&desc);
+    desc.FrontFace.StencilFunc = ComparisonFunctionToD3DComparisonFunction(cf);
+    GetDevice()->GetDxDevice()->CreateDepthStencilState(&desc, &state);
+    dx_dc->OMSetDepthStencilState(state.Get(), stencil_value);
+}
+
+void Renderer::SetStencilBackComparison(ComparisonFunction cf) noexcept {
+    auto dx = GetDeviceContext();
+    auto dx_dc = dx->GetDxContext();
+    unsigned int stencil_value = 0;
+    Microsoft::WRL::ComPtr<ID3D11DepthStencilState> state{};
+    dx_dc->OMGetDepthStencilState(state.GetAddressOf(), &stencil_value);
+    D3D11_DEPTH_STENCIL_DESC desc{};
+    state->GetDesc(&desc);
+    desc.BackFace.StencilFunc = ComparisonFunctionToD3DComparisonFunction(cf);
+    GetDevice()->GetDxDevice()->CreateDepthStencilState(&desc, &state);
+    dx_dc->OMSetDepthStencilState(state.Get(), stencil_value);
+}
+
+void Renderer::EnableStencilWrite() noexcept {
+    auto dx = GetDeviceContext();
+    auto dx_dc = dx->GetDxContext();
+    unsigned int stencil_value = 0;
+    Microsoft::WRL::ComPtr<ID3D11DepthStencilState> state{};
+    dx_dc->OMGetDepthStencilState(state.GetAddressOf(), &stencil_value);
+    D3D11_DEPTH_STENCIL_DESC desc{};
+    state->GetDesc(&desc);
+    desc.StencilEnable = true;
+    GetDevice()->GetDxDevice()->CreateDepthStencilState(&desc, &state);
+    dx_dc->OMSetDepthStencilState(state.Get(), stencil_value);
+}
+
+void Renderer::DisableStencilWrite() noexcept {
+    auto dx = GetDeviceContext();
+    auto dx_dc = dx->GetDxContext();
+    unsigned int stencil_value = 0;
+    Microsoft::WRL::ComPtr<ID3D11DepthStencilState> state{};
+    dx_dc->OMGetDepthStencilState(state.GetAddressOf(), &stencil_value);
+    D3D11_DEPTH_STENCIL_DESC desc{};
+    state->GetDesc(&desc);
+    desc.StencilEnable = false;
+    GetDevice()->GetDxDevice()->CreateDepthStencilState(&desc, &state);
+    dx_dc->OMSetDepthStencilState(state.Get(), stencil_value);
+}
+
 void Renderer::BeginFrame() {
     UnbindAllShaderResources();
 }
