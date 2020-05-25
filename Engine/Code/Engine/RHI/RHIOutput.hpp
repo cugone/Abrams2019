@@ -27,6 +27,7 @@ public:
     void ResetBackbuffer() noexcept;
 
     IntVector2 GetDimensions() const noexcept;
+    IntVector2 GetCenter() const noexcept;
     float GetAspectRatio() const noexcept;
 
     void SetDisplayMode(const RHIOutputMode& newMode) noexcept;

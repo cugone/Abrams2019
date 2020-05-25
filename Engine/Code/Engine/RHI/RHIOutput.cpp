@@ -53,6 +53,11 @@ IntVector2 RHIOutput::GetDimensions() const noexcept {
     }
 }
 
+IntVector2 RHIOutput::GetCenter() const noexcept {
+    const auto dims = GetDimensions();
+    return dims / 2.0f;
+}
+
 float RHIOutput::GetAspectRatio() const noexcept {
     if(_window) {
         const auto& dims = GetDimensions();
