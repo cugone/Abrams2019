@@ -551,6 +551,10 @@ const Vector2& InputSystem::GetMouseCoords() const noexcept {
     return _mouseCoords;
 }
 
+const Vector2& InputSystem::GetMouseDelta() const noexcept {
+    return _mouseDelta;
+}
+
 int InputSystem::GetMouseWheelPosition() const noexcept {
     return _mouseWheelPosition;
 }
@@ -1011,11 +1015,6 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         if(wp & lbutton_mask) {
             unsigned char key = ConvertKeyCodeToWinVK(KeyCode::LButton);
             RegisterKeyDown(key);
-            LPARAM lp = msg.lparam;
-            POINTS p = MAKEPOINTS(lp);
-            _mouseDelta = _mouseCoords;
-            _mouseCoords = Vector2(p.x, p.y);
-            _mouseDelta = _mouseCoords - _mouseDelta;
             return true;
         }
     }
@@ -1031,11 +1030,6 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         if(!(wp & lbutton_mask)) {
             unsigned char key = ConvertKeyCodeToWinVK(KeyCode::LButton);
             RegisterKeyUp(key);
-            LPARAM lp = msg.lparam;
-            POINTS p = MAKEPOINTS(lp);
-            _mouseDelta = _mouseCoords;
-            _mouseCoords = Vector2(p.x, p.y);
-            _mouseDelta = _mouseCoords - _mouseDelta;
             return true;
         }
     }
@@ -1051,11 +1045,6 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         if(wp & rbutton_mask) {
             unsigned char key = ConvertKeyCodeToWinVK(KeyCode::RButton);
             RegisterKeyDown(key);
-            LPARAM lp = msg.lparam;
-            POINTS p = MAKEPOINTS(lp);
-            _mouseDelta = _mouseCoords;
-            _mouseCoords = Vector2(p.x, p.y);
-            _mouseDelta = _mouseCoords - _mouseDelta;
             return true;
         }
     }
@@ -1071,11 +1060,6 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         if(!(wp & rbutton_mask)) {
             unsigned char key = ConvertKeyCodeToWinVK(KeyCode::RButton);
             RegisterKeyUp(key);
-            LPARAM lp = msg.lparam;
-            POINTS p = MAKEPOINTS(lp);
-            _mouseDelta = _mouseCoords;
-            _mouseCoords = Vector2(p.x, p.y);
-            _mouseDelta = _mouseCoords - _mouseDelta;
             return true;
         }
     }
@@ -1091,11 +1075,6 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         if(wp & mbutton_mask) {
             unsigned char key = ConvertKeyCodeToWinVK(KeyCode::MButton);
             RegisterKeyDown(key);
-            LPARAM lp = msg.lparam;
-            POINTS p = MAKEPOINTS(lp);
-            _mouseDelta = _mouseCoords;
-            _mouseCoords = Vector2(p.x, p.y);
-            _mouseDelta = _mouseCoords - _mouseDelta;
             return true;
         }
     }
@@ -1111,11 +1090,6 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         if(!(wp & mbutton_mask)) {
             unsigned char key = ConvertKeyCodeToWinVK(KeyCode::MButton);
             RegisterKeyUp(key);
-            LPARAM lp = msg.lparam;
-            POINTS p = MAKEPOINTS(lp);
-            _mouseDelta = _mouseCoords;
-            _mouseCoords = Vector2(p.x, p.y);
-            _mouseDelta = _mouseCoords - _mouseDelta;
             return true;
         }
     }
@@ -1139,11 +1113,6 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
             key = ConvertKeyCodeToWinVK(KeyCode::XButton2);
         }
         RegisterKeyDown(key);
-        LPARAM lp = msg.lparam;
-        POINTS p = MAKEPOINTS(lp);
-        _mouseDelta = _mouseCoords;
-        _mouseCoords = Vector2(p.x, p.y);
-        _mouseDelta = _mouseCoords - _mouseDelta;
         return true;
     }
     case WindowsSystemMessage::Mouse_XButtonUp: {
@@ -1166,11 +1135,6 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
             key = ConvertKeyCodeToWinVK(KeyCode::XButton2);
         }
         RegisterKeyUp(key);
-        LPARAM lp = msg.lparam;
-        POINTS p = MAKEPOINTS(lp);
-        _mouseDelta = _mouseCoords;
-        _mouseCoords = Vector2(p.x, p.y);
-        _mouseDelta = _mouseCoords - _mouseDelta;
         return true;
     }
     case WindowsSystemMessage::Mouse_MouseMove: {
@@ -1183,9 +1147,9 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         constexpr uint16_t xbutton2_down_mask = 0b0000'0000'0100'0000; //0x0040
         LPARAM lp = msg.lparam;
         POINTS p = MAKEPOINTS(lp);
-        _mouseDelta = _mouseCoords;
+        _mousePrevCoords = _mouseCoords;
         _mouseCoords = Vector2(p.x, p.y);
-        _mouseDelta = _mouseCoords - _mouseDelta;
+        _mouseDelta = _mouseCoords - _mousePrevCoords;
         return true;
     }
     case WindowsSystemMessage::Mouse_MouseWheel: {
@@ -1197,11 +1161,6 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         constexpr uint16_t mbutton_mask = 0b0000'0000'0001'0000;       //0x0010
         constexpr uint16_t xbutton1_down_mask = 0b0000'0000'0010'0000; //0x0020
         constexpr uint16_t xbutton2_down_mask = 0b0000'0000'0100'0000; //0x0040
-        LPARAM lp = msg.lparam;
-        POINTS p = MAKEPOINTS(lp);
-        _mouseDelta = _mouseCoords;
-        _mouseCoords = Vector2(p.x, p.y);
-        _mouseDelta = _mouseCoords - _mouseDelta;
         WPARAM wp = msg.wparam;
         _mouseWheelPosition = GET_WHEEL_DELTA_WPARAM(wp);
         return true;
@@ -1215,11 +1174,6 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         constexpr uint16_t mbutton_mask = 0b0000'0000'0001'0000;       //0x0010
         constexpr uint16_t xbutton1_down_mask = 0b0000'0000'0010'0000; //0x0020
         constexpr uint16_t xbutton2_down_mask = 0b0000'0000'0100'0000; //0x0040
-        LPARAM lp = msg.lparam;
-        POINTS p = MAKEPOINTS(lp);
-        _mouseDelta = _mouseCoords;
-        _mouseCoords = Vector2(p.x, p.y);
-        _mouseDelta = _mouseCoords - _mouseDelta;
         WPARAM wp = msg.wparam;
         _mouseWheelHPosition = GET_WHEEL_DELTA_WPARAM(wp);
         return true;
@@ -1338,6 +1292,8 @@ void InputSystem::Render() const {
 }
 
 void InputSystem::EndFrame() {
+    _mouseDelta = Vector2::ZERO;
+    _mousePrevCoords = _mouseCoords;
     _previousKeys = _currentKeys;
     _mouseWheelPosition = 0;
     _mouseWheelHPosition = 0;

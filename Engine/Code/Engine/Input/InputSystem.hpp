@@ -421,6 +421,7 @@ public:
     void SetCursorToScreenCenter() noexcept;
     void SetCursorToWindowCenter(const Window& window_ref) noexcept;
     const Vector2& GetMouseCoords() const noexcept;
+    const Vector2& GetMouseDelta() const noexcept;
 
     int GetMouseWheelPosition() const noexcept;
     int GetMouseWheelPositionNormalized() const noexcept;
@@ -446,6 +447,7 @@ private:
     std::bitset<(std::size_t)KeyCode::Max> _previousKeys{};
     std::bitset<(std::size_t)KeyCode::Max> _currentKeys{};
     Vector2 _mouseCoords = Vector2::ZERO;
+    Vector2 _mousePrevCoords = Vector2::ZERO;
     Vector2 _mouseDelta = Vector2::ZERO;
     mutable RECT _initialClippingArea{};
     mutable RECT _currentClippingArea{};
