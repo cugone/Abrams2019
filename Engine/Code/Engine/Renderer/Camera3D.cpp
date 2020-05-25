@@ -240,9 +240,55 @@ void Camera3D::SetForwardFromTarget(const Vector3& lookAtPosition) noexcept {
     m.SetKBasis(Vector4(forward, 0.0f));
     rotation = Quaternion(m);
     auto eulerangles = rotation.CalcEulerAnglesDegrees();
+void Camera3D::RotateBy(const Vector3& eulerAngles) noexcept {
+    const auto p = MathUtils::ConvertRadiansToDegrees(eulerAngles.x);
+    const auto y = MathUtils::ConvertRadiansToDegrees(eulerAngles.y);
+    const auto r = MathUtils::ConvertRadiansToDegrees(eulerAngles.z);
+    RotateDegreesBy(Vector3{p, y, r});
+}
+
+void Camera3D::RotateDegreesBy(const Vector3& eulerAnglesDegrees) noexcept {
+    rotationPitch += eulerAnglesDegrees.x;
+    rotationYaw += eulerAnglesDegrees.y;
+    rotationRoll += eulerAnglesDegrees.z;
+    rotation = Quaternion::CreateFromEulerAngles(rotationPitch, rotationYaw, rotationRoll, true);
+}
+
+void Camera3D::RotatePitchDegreesBy(float angleDegrees) noexcept {
+    rotationPitch += angleDegrees;
+}
+
+void Camera3D::RotateYawDegreesBy(float angleDegrees) noexcept {
+    rotationYaw += angleDegrees;
+}
+
+void Camera3D::RotateRollDegreesBy(float angleDegrees) noexcept {
+    rotationRoll += angleDegrees;
+}
+
+void Camera3D::RotatePitchBy(float angleRadians) noexcept {
+    RotatePitchDegreesBy(MathUtils::ConvertRadiansToDegrees(angleRadians));
+}
+
+void Camera3D::RotateYawBy(float angleRadians) noexcept {
+    RotateYawDegreesBy(MathUtils::ConvertRadiansToDegrees(angleRadians));
+}
+
+void Camera3D::RotateRollBy(float angleRadians) noexcept {
+    RotateRollDegreesBy(MathUtils::ConvertRadiansToDegrees(angleRadians));
+}
+
+void Camera3D::Rotate(const Vector3& axis, const float angle) noexcept {
+    rotation = Quaternion::CreateFromAxisAngle(axis, angle);
+    auto eulerangles = rotation.CalcEulerAnglesDegrees();
     rotationPitch = eulerangles.x;
     rotationYaw = eulerangles.y;
     rotationRoll = eulerangles.z;
+}
+
+void Camera3D::RotateDegrees(const Vector3& axis, const float angleDegrees) noexcept {
+    const auto radians = MathUtils::ConvertDegreesToRadians(angleDegrees);
+    Rotate(axis, radians);
 }
 
 Vector3 Camera3D::GetRight() const noexcept {

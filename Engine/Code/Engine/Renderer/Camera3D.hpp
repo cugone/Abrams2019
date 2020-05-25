@@ -63,6 +63,20 @@ public:
     void SetEulerAngles(const Vector3& eulerAngles) noexcept;
     void SetForwardFromTarget(const Vector3& lookAtPosition) noexcept;
 
+    void Rotate(const Vector3& axis, const float angle) noexcept;
+    void RotateDegrees(const Vector3& axis, const float angleDegrees) noexcept;
+
+    void RotateBy(const Vector3& eulerAngles) noexcept;
+    void RotateDegreesBy(const Vector3& eulerAnglesDegrees) noexcept;
+
+    void RotatePitchDegreesBy(float angleDegrees) noexcept;
+    void RotateYawDegreesBy(float angleDegrees) noexcept;
+    void RotateRollDegreesBy(float angleDegrees) noexcept;
+    
+    void RotatePitchBy(float angleDegrees) noexcept;
+    void RotateYawBy(float angleDegrees) noexcept;
+    void RotateRollBy(float angleDegrees) noexcept;
+
     Vector3 GetRight() const noexcept;
     Vector3 GetUp() const noexcept;
     Vector3 GetForward() const noexcept;
