@@ -3974,6 +3974,36 @@ void Renderer::DisableDepth() noexcept {
     dx_dc->OMSetDepthStencilState(state.Get(), stencil_value);
 }
 
+void Renderer::SetWireframeRaster(CullMode cullmode /* = CullMode::Back */) noexcept {
+    switch(cullmode) {
+    case CullMode::None:
+        SetRasterState(GetRasterState("__wireframenc"));
+        break;
+    case CullMode::Front:
+        SetRasterState(GetRasterState("__wireframefc"));
+        break;
+    case CullMode::Back:
+        SetRasterState(GetRasterState("__wireframe"));
+        break;
+    default:
+        break;
+    }
+}
+
+void Renderer::SetSolidRaster(CullMode cullmode /* = CullMode::Back */) noexcept {
+    switch(cullmode) {
+    case CullMode::None:
+        SetRasterState(GetRasterState("__solidnc"));
+        break;
+    case CullMode::Front:
+        SetRasterState(GetRasterState("__solidfc"));
+        break;
+    case CullMode::Back:
+        SetRasterState(GetRasterState("__solid"));
+        break;
+    default:
+        break;
+    }
 }
 
 Texture* Renderer::Create1DTexture(std::filesystem::path filepath, const BufferUsage& bufferUsage, const BufferBindUsage& bindUsage, const ImageFormat& imageFormat) noexcept {

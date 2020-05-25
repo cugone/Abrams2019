@@ -276,6 +276,9 @@ public:
     void SetRasterState(RasterState* raster) noexcept;
     RasterState* GetRasterState(const std::string& name) noexcept;
 
+    void SetWireframeRaster(CullMode cullmode = CullMode::Back) noexcept;
+    void SetSolidRaster(CullMode cullmode = CullMode::Back) noexcept;
+
     void CreateAndRegisterSamplerFromSamplerDescription(const std::string& name, const SamplerDesc& desc) noexcept;
     Sampler* GetSampler(const std::string& name) noexcept;
     void SetSampler(Sampler* sampler) noexcept;
