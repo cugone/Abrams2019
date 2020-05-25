@@ -51,10 +51,10 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
         auto xml_shader = element.FirstChildElement("shader");
         DataUtils::ValidateXmlElement(*xml_shader, "shader", "", "src");
         auto file = DataUtils::ParseXmlAttribute(*xml_shader, "src", "");
-        FS::path p(file);
-        if(!StringUtils::StartsWith(p.string(), "__")) {
+        FS::path shader_src(file);
+        if(!StringUtils::StartsWith(shader_src.string(), "__")) {
             std::error_code ec{};
-            p = FS::canonical(p, ec);
+            shader_src = FS::canonical(shader_src, ec);
             if(ec) {
                 std::ostringstream ss;
                 ss << "Shader:\n";
@@ -66,18 +66,18 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
                 return false;
             }
         }
-        p.make_preferred();
-        if(auto shader = _renderer.GetShader(p.string())) {
+        shader_src.make_preferred();
+        if(auto shader = _renderer.GetShader(shader_src.string())) {
             _shader = shader;
         } else {
-            DebuggerPrintf("Shader: %s\n referenced in Material file \"%s\" did not already exist. Attempting to create from source...", p.string().c_str(), _name.c_str());
-            if(!_renderer.RegisterShader(p.string())) {
+            DebuggerPrintf("Shader: %s\n referenced in Material file \"%s\" did not already exist. Attempting to create from source...", shader_src.string().c_str(), _name.c_str());
+            if(!_renderer.RegisterShader(shader_src.string())) {
                 DebuggerPrintf("failed.\n");
                 return false;
             }
             DebuggerPrintf("done.\n");
-            if(shader = _renderer.GetShader(p.string()); shader == nullptr) {
-                if(shader = _renderer.GetShader(_name); shader != nullptr) {
+            if(shader = _renderer.GetShader(shader_src.string()); shader == nullptr) {
+                if(shader = _renderer.GetShader(_renderer.GetShaderName(shader_src)); shader != nullptr) {
                     _shader = shader;
                 }
             }
