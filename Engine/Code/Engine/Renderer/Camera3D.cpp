@@ -293,7 +293,8 @@ void Camera3D::RotateDegrees(const Vector3& axis, const float angleDegrees) noex
 
 Vector3 Camera3D::GetRight() const noexcept {
     auto forward = GetForward();
-    return MathUtils::CrossProduct(world_up, forward);
+    auto right = MathUtils::CrossProduct(world_up, forward);
+    return right.GetNormalize();
 }
 
 Vector3 Camera3D::GetUp() const noexcept {
