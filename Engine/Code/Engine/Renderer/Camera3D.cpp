@@ -300,7 +300,8 @@ Vector3 Camera3D::GetRight() const noexcept {
 Vector3 Camera3D::GetUp() const noexcept {
     auto forward = GetForward();
     auto right = GetRight();
-    return MathUtils::CrossProduct(forward, right);
+    auto up = MathUtils::CrossProduct(forward, right);
+    return up.GetNormalize();
 }
 
 Vector3 Camera3D::GetForward() const noexcept {
