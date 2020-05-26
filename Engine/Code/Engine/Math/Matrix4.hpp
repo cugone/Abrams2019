@@ -24,6 +24,24 @@ public:
     static Matrix4 Create3DYRotationDegreesMatrix(float angleDegrees) noexcept;
     static Matrix4 Create3DZRotationDegreesMatrix(float angleDegrees) noexcept;
 
+    static Matrix4 CreateZYXRotationMatrix(const Vector3& pitchYawRollRadians) noexcept;
+    static Matrix4 CreateZYXRotationMatrix(float pitchRadians, float yawRadians, float rollRadians) noexcept;
+    static Matrix4 CreateZYXRotationMatrixDegrees(const Vector3& anglesDegrees) noexcept;
+    static Matrix4 CreateZYXRotationMatrixDegrees(float pitchDegrees, float yawDegrees, float rollDegrees) noexcept;
+    static Matrix4 CreateRotationRollYawPitchMatrix(const Vector3& pitchYawRollRadians) noexcept;
+    static Matrix4 CreateRotationRollYawPitchMatrix(float pitchRadians, float yawRadians, float rollRadians) noexcept;
+    static Matrix4 CreateRotationRollYawPitchMatrixDegrees(const Vector3& pitchYawRollDegrees) noexcept;
+    static Matrix4 CreateRotationRollYawPitchMatrixDegrees(float pitchDegrees, float yawDegrees, float rollDegrees) noexcept;
+
+    static Matrix4 CreateZXYRotationMatrix(const Vector3& pitchYawRollRadians) noexcept;
+    static Matrix4 CreateZXYRotationMatrix(float pitchRadians, float yawRadians, float rollRadians) noexcept;
+    static Matrix4 CreateZXYRotationMatrixDegrees(const Vector3& anglesDegrees) noexcept;
+    static Matrix4 CreateZXYRotationMatrixDegrees(float pitchDegrees, float yawDegrees, float rollDegrees) noexcept;
+    static Matrix4 CreateRotationRollPitchYawMatrix(const Vector3& pitchYawRollRadians) noexcept;
+    static Matrix4 CreateRotationRollPitchYawMatrix(float pitchRadians, float yawRadians, float rollRadians) noexcept;
+    static Matrix4 CreateRotationRollPitchYawMatrixDegrees(const Vector3& pitchYawRollDegrees) noexcept;
+    static Matrix4 CreateRotationRollPitchYawMatrixDegrees(float pitchDegrees, float yawDegrees, float rollDegrees) noexcept;
+
     static Matrix4 Create2DRotationMatrix(float angleRadians) noexcept;
     static Matrix4 Create3DXRotationMatrix(float angleRadians) noexcept;
     static Matrix4 Create3DYRotationMatrix(float angleRadians) noexcept;
