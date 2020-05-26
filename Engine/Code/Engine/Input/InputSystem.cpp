@@ -532,6 +532,11 @@ Vector2 InputSystem::GetScreenCenter() const noexcept {
     return Vector2::ZERO;
 }
 
+Vector2 InputSystem::GetWindowCenter() const noexcept {
+    const auto& window = *_renderer->GetOutput()->GetWindow();
+    return GetWindowCenter(window);
+}
+
 Vector2 InputSystem::GetWindowCenter(const Window& window) const noexcept {
     RECT rect;
     HWND windowHandle = reinterpret_cast<HWND>(window.GetWindowHandle());

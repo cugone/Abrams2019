@@ -443,12 +443,12 @@ public:
     void LockMouseToViewport(const Window& window) const noexcept;
     void UnlockMouseFromViewport() const noexcept;
 
+    Vector2 GetScreenCenter() const noexcept;
+    Vector2 GetWindowCenter() const noexcept;
+    Vector2 GetWindowCenter(const Window& window) const noexcept;
 protected:
 private:
     void UpdateXboxConnectedState() noexcept;
-
-    Vector2 GetScreenCenter() const noexcept;
-    Vector2 GetWindowCenter(const Window& window) const noexcept;
 
     FileLogger* _fileLogger = nullptr;
     Renderer* _renderer = nullptr;
