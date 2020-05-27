@@ -3961,6 +3961,7 @@ void Renderer::EnableDepth() noexcept {
     D3D11_DEPTH_STENCIL_DESC desc{};
     state->GetDesc(&desc);
     desc.DepthEnable = true;
+    desc.DepthFunc = D3D11_COMPARISON_LESS;
     GetDevice()->GetDxDevice()->CreateDepthStencilState(&desc, &state);
     dx_dc->OMSetDepthStencilState(state.Get(), stencil_value);
 }
@@ -3974,6 +3975,7 @@ void Renderer::DisableDepth() noexcept {
     D3D11_DEPTH_STENCIL_DESC desc{};
     state->GetDesc(&desc);
     desc.DepthEnable = false;
+    desc.DepthFunc = D3D11_COMPARISON_ALWAYS;
     GetDevice()->GetDxDevice()->CreateDepthStencilState(&desc, &state);
     dx_dc->OMSetDepthStencilState(state.Get(), stencil_value);
 }
