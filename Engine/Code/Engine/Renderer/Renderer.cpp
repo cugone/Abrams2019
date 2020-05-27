@@ -3527,6 +3527,43 @@ void Renderer::SetComputeStructuredBuffer(unsigned int index, StructuredBuffer* 
     _rhi_context->SetComputeStructuredBuffer(index, buffer);
 }
 
+void Renderer::DrawCube(const Vector3& position /*= Vector3::ZERO*/, const Vector3& halfExtents /*= Vector3::ONE * 0.5f*/, const Rgba& /*color*/ /*= Rgba::White*/) {
+    const auto left = Vector3{-halfExtents.x, 0.0f, 0.0f};
+    const auto right = Vector3{halfExtents.x, 0.0f, 0.0f};
+    const auto up = Vector3{0.0f, halfExtents.y, 0.0f};
+    const auto down = Vector3{0.0f, -halfExtents.y, 0.0f};
+    const auto forward = Vector3{0.0f, 0.0f, -halfExtents.z};
+    const auto back = Vector3{0.0f, 0.0f, halfExtents.z};
+
+    const Vector3 v_ldf = (position + left + down + forward);
+    const Vector3 v_ldb = (position + left + down + back);
+    const Vector3 v_luf = (position + left + up + forward);
+    const Vector3 v_lub = (position + left + up + back);
+    const Vector3 v_ruf = (position + right + up + forward);
+    const Vector3 v_rub = (position + right + up + back);
+    const Vector3 v_rdf = (position + right + down + forward);
+    const Vector3 v_rdb = (position + right + down + back);
+
+    std::vector<Vertex3D> vbo
+    {
+        {v_rdf, Rgba::Yellow}, {v_ldf, Rgba::Yellow}, {v_luf, Rgba::Yellow}, {v_ruf, Rgba::Yellow}, //Front
+        {v_ldb, Rgba::Blue}, {v_rdb, Rgba::Blue}, {v_rub, Rgba::Blue}, {v_lub, Rgba::Blue}, //Back
+        {v_ldf, Rgba::Cyan}, {v_ldb, Rgba::Cyan}, {v_lub, Rgba::Cyan}, {v_luf, Rgba::Cyan}, //Left
+        {v_rdb, Rgba::Red}, {v_rdf, Rgba::Red}, {v_ruf, Rgba::Red}, {v_rub, Rgba::Red}, //Right
+        {v_ruf, Rgba::Green}, {v_luf, Rgba::Green}, {v_lub, Rgba::Green}, {v_rub, Rgba::Green}, //Top
+        {v_rdb, Rgba::Magenta}, {v_ldb, Rgba::Magenta}, {v_ldf, Rgba::Magenta}, {v_rdf, Rgba::Magenta}, //Bottom
+    };
+    std::vector<unsigned int> ibo{
+        0, 1, 2, 0, 2, 3, //Front
+        4, 5, 6, 4, 6, 7, //Back
+        8, 9, 10, 8, 10, 11, //Left
+        12, 13, 14, 12, 14, 15, //Right
+        16, 17, 18, 16, 18, 19, //Top
+        20, 21, 22, 20, 22, 23, //Bottom
+    };
+    DrawIndexed(PrimitiveType::Triangles, vbo, ibo);
+}
+
 void Renderer::DrawQuad(const Vector3& position /*= Vector3::ZERO*/, const Vector3& halfExtents /*= Vector3::XY_AXIS * 0.5f*/, const Rgba& color /*= Rgba::WHITE*/, const Vector4& texCoords /*= Vector4::ZW_AXIS*/, const Vector3& normalFront /*= Vector3::Z_AXIS*/, const Vector3& worldUp /*= Vector3::Y_AXIS*/) noexcept {
     Vector3 right = MathUtils::CrossProduct(worldUp, normalFront).GetNormalize();
     Vector3 up = MathUtils::CrossProduct(normalFront, right).GetNormalize();

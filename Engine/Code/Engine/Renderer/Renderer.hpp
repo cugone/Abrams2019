@@ -349,6 +349,7 @@ public:
     void SetComputeConstantBuffer(unsigned int index, ConstantBuffer* buffer) noexcept;
     void SetComputeStructuredBuffer(unsigned int index, StructuredBuffer* buffer) noexcept;
 
+    void DrawCube(const Vector3& position = Vector3::ZERO, const Vector3& halfExtents = Vector3::ONE * 0.5f, const Rgba& color = Rgba::White);
     void DrawQuad(const Vector3& position = Vector3::ZERO, const Vector3& halfExtents = Vector3::XY_AXIS * 0.5f, const Rgba& color = Rgba::White, const Vector4& texCoords = Vector4::ZW_AXIS, const Vector3& normalFront = Vector3::Z_AXIS, const Vector3& worldUp = Vector3::Y_AXIS) noexcept;
     void DrawQuad(const Rgba& frontColor, const Rgba& backColor, const Vector3& position = Vector3::ZERO, const Vector3& halfExtents = Vector3::XY_AXIS * 0.5f, const Vector4& texCoords = Vector4::ZW_AXIS, const Vector3& normalFront = Vector3::Z_AXIS, const Vector3& worldUp = Vector3::Y_AXIS) noexcept;
     void DrawPoint2D(float pointX, float pointY, const Rgba& color = Rgba::White) noexcept;
