@@ -3948,6 +3948,10 @@ void Renderer::CreateAndRegisterDepthStencilStateFromDepthStencilDescription(con
     RegisterDepthStencilState(name, std::make_unique<DepthStencilState>(_rhi_device.get(), desc));
 }
 
+void Renderer::EnableDepth(bool isDepthEnabled) noexcept {
+    isDepthEnabled ? EnableDepth() : DisableDepth();
+}
+
 void Renderer::EnableDepth() noexcept {
     auto dx = GetDeviceContext();
     auto dx_dc = dx->GetDxContext();

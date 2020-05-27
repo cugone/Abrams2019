@@ -170,6 +170,7 @@ public:
     void SetDepthStencilState(DepthStencilState* depthstencil) noexcept;
     DepthStencilState* GetDepthStencilState(const std::string& name) noexcept;
     void CreateAndRegisterDepthStencilStateFromDepthStencilDescription(const std::string& name, const DepthStencilDesc& desc) noexcept;
+    void EnableDepth(bool isDepthEnabled) noexcept;
     void EnableDepth() noexcept;
     void DisableDepth() noexcept;
 
