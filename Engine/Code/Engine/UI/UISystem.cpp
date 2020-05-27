@@ -109,7 +109,9 @@ void UISystem::Initialize() {
     auto* dx_context = _renderer.GetDeviceContext()->GetDxContext();
     ImGui_ImplWin32_Init(hwnd);
     ImGui_ImplDX11_Init(dx_device, dx_context);
-
+    const auto dims = Vector2{_renderer.GetOutput()->GetDimensions()};
+    _io->DisplaySize.x = dims.x;
+    _io->DisplaySize.y = dims.y;
     ImGui::StyleColorsDark();
 
 }
