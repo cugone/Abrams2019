@@ -304,6 +304,12 @@ Vector3 Camera3D::GetRight() const noexcept {
     return right.GetNormalize();
 }
 
+Vector3 Camera3D::GetRightXY() const noexcept {
+    const auto forward = GetForwardXY();
+    const auto right = MathUtils::CrossProduct(world_up, forward).GetNormalize();
+    return Vector3{right.x, right.y, 0.0f};
+}
+
 Vector3 Camera3D::GetUp() const noexcept {
     auto forward = GetForward();
     auto right = GetRight();

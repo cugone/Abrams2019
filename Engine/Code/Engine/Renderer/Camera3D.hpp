@@ -78,6 +78,7 @@ public:
     void RotateRollBy(float angleDegrees) noexcept;
 
     Vector3 GetRight() const noexcept;
+    Vector3 GetRightXY() const noexcept;
     Vector3 GetUp() const noexcept;
     Vector3 GetForward() const noexcept;
     Vector3 GetForwardXY() const noexcept;
