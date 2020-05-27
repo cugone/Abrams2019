@@ -475,8 +475,8 @@ void InputSystem::SetCursorToScreenCenter() noexcept {
     HWND desktop_window = ::GetDesktopWindow();
     RECT desktop_client;
     if(::GetClientRect(desktop_window, &desktop_client)) {
-        float center_x = (desktop_client.left + desktop_client.right) * 0.5f;
-        float center_y = (desktop_client.top + desktop_client.bottom) * 0.5f;
+        float center_x = desktop_client.left + (desktop_client.right - desktop_client.left) * 0.5f;
+        float center_y = desktop_client.top + (desktop_client.bottom - desktop_client.top) * 0.5f;
         SetCursorScreenPosition(Vector2{center_x, center_y});
     }
 }
@@ -484,8 +484,8 @@ void InputSystem::SetCursorToScreenCenter() noexcept {
 void InputSystem::SetCursorToWindowCenter(const Window& window_ref) noexcept {
     RECT client_area;
     if(::GetClientRect(reinterpret_cast<HWND>(window_ref.GetWindowHandle()), &client_area)) {
-        float center_x = (client_area.left + client_area.right) * 0.5f;
-        float center_y = (client_area.top + client_area.bottom) * 0.5f;
+        float center_x = client_area.left + (client_area.right - client_area.left) * 0.5f;
+        float center_y = client_area.top + (client_area.bottom - client_area.top) * 0.5f;
         SetCursorWindowPosition(window_ref, Vector2{center_x, center_y});
     }
 }
@@ -525,8 +525,8 @@ Vector2 InputSystem::GetScreenCenter() const noexcept {
     RECT desktopRect;
     HWND desktopWindowHandle = ::GetDesktopWindow();
     if(::GetClientRect(desktopWindowHandle, &desktopRect)) {
-        float center_x = (desktopRect.right + desktopRect.left) * 0.50f;
-        float center_y = (desktopRect.bottom + desktopRect.top) * 0.50f;
+        float center_x = desktopRect.left + (desktopRect.right - desktopRect.left) * 0.5f;
+        float center_y = desktopRect.top + (desktopRect.bottom - desktopRect.top) * 0.5f;
         return Vector2{center_x, center_y};
     }
     return Vector2::ZERO;
@@ -541,8 +541,8 @@ Vector2 InputSystem::GetWindowCenter(const Window& window) const noexcept {
     RECT rect;
     HWND windowHandle = reinterpret_cast<HWND>(window.GetWindowHandle());
     if(::GetClientRect(windowHandle, &rect)) {
-        float center_x = (rect.right + rect.left) * 0.50f;
-        float center_y = (rect.bottom + rect.top) * 0.50f;
+        float center_x = rect.left + (rect.right - rect.left) * 0.50f;
+        float center_y = rect.top + (rect.bottom - rect.top) * 0.50f;
         return Vector2{center_x, center_y};
     }
     return Vector2::ZERO;
