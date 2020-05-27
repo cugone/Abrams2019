@@ -3980,6 +3980,37 @@ void Renderer::DisableDepth() noexcept {
     dx_dc->OMSetDepthStencilState(state.Get(), stencil_value);
 }
 
+void Renderer::EnableDepthWrite(bool isDepthWriteEnabled) noexcept {
+    isDepthWriteEnabled ? EnableDepthWrite() : DisableDepthWrite();
+}
+
+void Renderer::EnableDepthWrite() noexcept {
+    auto dx = GetDeviceContext();
+    auto dx_dc = dx->GetDxContext();
+    unsigned int stencil_value = 0;
+    Microsoft::WRL::ComPtr<ID3D11DepthStencilState> state{};
+    dx_dc->OMGetDepthStencilState(state.GetAddressOf(), &stencil_value);
+    D3D11_DEPTH_STENCIL_DESC desc{};
+    state->GetDesc(&desc);
+    desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+    GetDevice()->GetDxDevice()->CreateDepthStencilState(&desc, &state);
+    dx_dc->OMSetDepthStencilState(state.Get(), stencil_value);
+}
+
+void Renderer::DisableDepthWrite() noexcept {
+    auto dx = GetDeviceContext();
+    auto dx_dc = dx->GetDxContext();
+    unsigned int stencil_value = 0;
+    Microsoft::WRL::ComPtr<ID3D11DepthStencilState> state{};
+    dx_dc->OMGetDepthStencilState(state.GetAddressOf(), &stencil_value);
+    D3D11_DEPTH_STENCIL_DESC desc{};
+    state->GetDesc(&desc);
+    desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+    GetDevice()->GetDxDevice()->CreateDepthStencilState(&desc, &state);
+    dx_dc->OMSetDepthStencilState(state.Get(), stencil_value);
+}
+
+
 void Renderer::SetWireframeRaster(CullMode cullmode /* = CullMode::Back */) noexcept {
     switch(cullmode) {
     case CullMode::None:

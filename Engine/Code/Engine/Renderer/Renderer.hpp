@@ -173,6 +173,9 @@ public:
     void EnableDepth(bool isDepthEnabled) noexcept;
     void EnableDepth() noexcept;
     void DisableDepth() noexcept;
+    void EnableDepthWrite(bool isDepthWriteEnabled) noexcept;
+    void EnableDepthWrite() noexcept;
+    void DisableDepthWrite() noexcept;
 
     void SetDepthComparison(ComparisonFunction cf) noexcept;
     ComparisonFunction GetDepthComparison() const noexcept;
