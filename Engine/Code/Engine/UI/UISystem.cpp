@@ -104,9 +104,9 @@ void UISystem::Initialize() {
     _io->IniFilename = nullptr;
     _io->LogFilename = nullptr;
 
-    auto hwnd = reinterpret_cast<HWND>(_renderer.GetOutput()->GetWindow()->GetWindowHandle());
-    auto dx_device = _renderer.GetDevice()->GetDxDevice();
-    auto dx_context = _renderer.GetDeviceContext()->GetDxContext();
+    auto* hwnd = _renderer.GetOutput()->GetWindow()->GetWindowHandle();
+    auto* dx_device = _renderer.GetDevice()->GetDxDevice();
+    auto* dx_context = _renderer.GetDeviceContext()->GetDxContext();
     ImGui_ImplWin32_Init(hwnd);
     ImGui_ImplDX11_Init(dx_device, dx_context);
 
