@@ -1,30 +1,27 @@
 #include "Engine/Renderer/Mesh.hpp"
 
-bool operator==(const draw_instruction& a, const draw_instruction& b) noexcept {
-    return a.type == b.type && a.uses_index_buffer == b.uses_index_buffer;
-}
-
-bool operator!=(const draw_instruction& a, const draw_instruction& b) noexcept {
-    return !(a == b);
-}
-
 Mesh::Builder::Builder(const std::vector<Vertex3D>& verts, const std::vector<unsigned int>& indcs) noexcept
 : verticies{verts}
 , indicies{indcs} {
     /* DO NOTHING */
 }
 
-void Mesh::Builder::Begin(const PrimitiveType& type, bool hasIndexBuffer /*= true*/) noexcept {
+void Mesh::Builder::Begin(const PrimitiveType& type) noexcept {
     _current_draw_instruction.type = type;
-    _current_draw_instruction.uses_index_buffer = hasIndexBuffer;
-    _current_draw_instruction.start_index = verticies.size();
+    _current_draw_instruction.start = verticies.size();
 }
 
-void Mesh::Builder::End() noexcept {
-    _current_draw_instruction.count = verticies.size() - _current_draw_instruction.start_index;
-    auto& last_inst = draw_instructions.back();
-    if(!draw_instructions.empty() && last_inst == _current_draw_instruction) {
-        last_inst.count += _current_draw_instruction.count;
+void Mesh::Builder::End(Material* mat /* = nullptr */) noexcept {
+    _current_draw_instruction.material = mat;
+    _current_draw_instruction.count = verticies.size() - _current_draw_instruction.start;
+    if(!draw_instructions.empty()) {
+        auto& last_inst = draw_instructions.back();
+        if(!mat) {
+            _current_draw_instruction.material = last_inst.material;
+        }
+        if(last_inst == _current_draw_instruction) {
+            last_inst.count += _current_draw_instruction.count;
+        }
     } else {
         draw_instructions.push_back(_current_draw_instruction);
     }
@@ -64,4 +61,41 @@ std::size_t Mesh::Builder::AddVertex(const Vector3& position) noexcept {
     _vertex_prototype.position = position;
     verticies.push_back(_vertex_prototype);
     return verticies.size() - 1;
+}
+
+std::size_t Mesh::Builder::AddIndicies(const Primitive& type) noexcept {
+    switch(type) {
+    case Primitive::Point:
+        indicies.push_back(static_cast<unsigned int>(verticies.size()) - 1u);
+        break;
+    case Primitive::Line:
+    {
+        const auto v_s = verticies.size();
+        indicies.push_back(static_cast<unsigned int>(v_s) - 2);
+        indicies.push_back(static_cast<unsigned int>(v_s) - 1);
+        break;
+    }
+    case Primitive::Triangle:
+    {
+        const auto v_s = verticies.size();
+        indicies.push_back(static_cast<unsigned int>(v_s) - 3u);
+        indicies.push_back(static_cast<unsigned int>(v_s) - 2u);
+        indicies.push_back(static_cast<unsigned int>(v_s) - 1u);
+        break;
+    }
+    case Primitive::Quad:
+    {
+        const auto v_s = verticies.size();
+        indicies.push_back(static_cast<unsigned int>(v_s) - 4u);
+        indicies.push_back(static_cast<unsigned int>(v_s) - 3u);
+        indicies.push_back(static_cast<unsigned int>(v_s) - 2u);
+        indicies.push_back(static_cast<unsigned int>(v_s) - 4u);
+        indicies.push_back(static_cast<unsigned int>(v_s) - 2u);
+        indicies.push_back(static_cast<unsigned int>(v_s) - 1u);
+        break;
+    }
+    default:
+        break;
+    }
+    return indicies.size() - 1;
 }
