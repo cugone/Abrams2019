@@ -304,6 +304,10 @@ void RHIDevice::ResetSwapChainForHWnd() const noexcept {
     GUARANTEE_OR_DIE(SUCCEEDED(hr), StringUtils::FormatWindowsMessage(hr).c_str());
 }
 
+Renderer& RHIDevice::GetRenderer() const noexcept {
+    return _parent_renderer;
+}
+
 std::vector<std::unique_ptr<ConstantBuffer>> RHIDevice::CreateConstantBuffersUsingReflection(ID3D11ShaderReflection& cbufferReflection) const noexcept {
     D3D11_SHADER_DESC shader_desc{};
     if(FAILED(cbufferReflection.GetDesc(&shader_desc))) {

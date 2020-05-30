@@ -60,6 +60,7 @@ public:
     mutable std::set<DisplayDesc, DisplayDescGTComparator> displayModes{};
 
     void ResetSwapChainForHWnd() const noexcept;
+    Renderer& GetRenderer() const noexcept;
 
 private:
     std::pair<std::unique_ptr<RHIOutput>, std::unique_ptr<RHIDeviceContext>> CreateOutputAndContextFromWindow(std::unique_ptr<Window> window) noexcept;
