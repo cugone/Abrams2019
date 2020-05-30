@@ -98,6 +98,7 @@
     <ClCompile Include="Renderer\DirectX\DX11.cpp" />
     <ClCompile Include="Renderer\IndexBuffer.cpp" />
     <ClCompile Include="Renderer\InputLayout.cpp" />
+    <ClCompile Include="Renderer\InputLayoutInstanced.cpp" />
     <ClCompile Include="Renderer\Material.cpp" />
     <ClCompile Include="Renderer\Mesh.cpp" />
     <ClCompile Include="Renderer\Model.cpp" />
@@ -226,6 +227,7 @@
     <ClInclude Include="Renderer\DirectX\DX11.hpp" />
     <ClInclude Include="Renderer\IndexBuffer.hpp" />
     <ClInclude Include="Renderer\InputLayout.hpp" />
+    <ClInclude Include="Renderer\InputLayoutInstanced.hpp" />
     <ClInclude Include="Renderer\Material.hpp" />
     <ClInclude Include="Renderer\Mesh.hpp" />
     <ClInclude Include="Renderer\Model.hpp" />
