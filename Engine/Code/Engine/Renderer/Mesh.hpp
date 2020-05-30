@@ -52,6 +52,8 @@ public:
         Renderer::DrawInstruction _current_draw_instruction{};
     };
 
+    static void Render(Renderer& renderer, const Mesh::Builder& builder) noexcept;
+
 protected:
 private:
 };

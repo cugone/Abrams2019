@@ -99,3 +99,10 @@ std::size_t Mesh::Builder::AddIndicies(const Primitive& type) noexcept {
     }
     return indicies.size() - 1;
 }
+
+void Mesh::Render(Renderer& renderer, const Mesh::Builder& builder) noexcept {
+    for(const auto& draw_inst : builder.draw_instructions) {
+        renderer.SetMaterial(draw_inst.material);
+        renderer.DrawIndexed(draw_inst.type, builder.verticies, builder.indicies, draw_inst.count, draw_inst.start, draw_inst.baseVertexLocation);
+    }
+}
