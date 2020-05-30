@@ -42,6 +42,15 @@ public:
     static Matrix4 CreateRotationRollPitchYawMatrixDegrees(const Vector3& pitchYawRollDegrees) noexcept;
     static Matrix4 CreateRotationRollPitchYawMatrixDegrees(float pitchDegrees, float yawDegrees, float rollDegrees) noexcept;
 
+    static Matrix4 CreateYZXRotationMatrix(const Vector3& pitchYawRollRadians) noexcept;
+    static Matrix4 CreateYZXRotationMatrix(float pitchRadians, float yawRadians, float rollRadians) noexcept;
+    static Matrix4 CreateYZXRotationMatrixDegrees(const Vector3& anglesDegrees) noexcept;
+    static Matrix4 CreateYZXRotationMatrixDegrees(float pitchDegrees, float yawDegrees, float rollDegrees) noexcept;
+    static Matrix4 CreateRotationYawRollPitchMatrix(const Vector3& pitchYawRollRadians) noexcept;
+    static Matrix4 CreateRotationYawRollPitchMatrix(float pitchRadians, float yawRadians, float rollRadians) noexcept;
+    static Matrix4 CreateRotationYawRollPitchMatrixDegrees(const Vector3& pitchYawRollDegrees) noexcept;
+    static Matrix4 CreateRotationYawRollPitchMatrixDegrees(float pitchDegrees, float yawDegrees, float rollDegrees) noexcept;
+
     static Matrix4 Create2DRotationMatrix(float angleRadians) noexcept;
     static Matrix4 Create3DXRotationMatrix(float angleRadians) noexcept;
     static Matrix4 Create3DYRotationMatrix(float angleRadians) noexcept;

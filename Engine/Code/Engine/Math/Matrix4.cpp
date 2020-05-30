@@ -254,6 +254,46 @@ Matrix4 Matrix4::CreateRotationRollPitchYawMatrixDegrees(float pitchDegrees, flo
     return CreateRotationRollPitchYawMatrixDegrees(Vector3{pitchDegrees, yawDegrees, rollDegrees});
 }
 
+Matrix4 Matrix4::CreateYZXRotationMatrix(const Vector3& pitchYawRollRadians) noexcept {
+    const auto S = Matrix4::Create3DYRotationMatrix(pitchYawRollRadians.y);
+    const auto R = Matrix4::Create3DZRotationMatrix(pitchYawRollRadians.z);
+    const auto T = Matrix4::Create3DXRotationMatrix(pitchYawRollRadians.x);
+    return Matrix4::MakeSRT(S, R, T);
+}
+
+Matrix4 Matrix4::CreateYZXRotationMatrix(float pitchRadians, float yawRadians, float rollRadians) noexcept {
+    return CreateYZXRotationMatrix(Vector3{pitchRadians, yawRadians, rollRadians});
+}
+
+Matrix4 Matrix4::CreateYZXRotationMatrixDegrees(const Vector3& anglesDegrees) noexcept {
+    const auto angles = Vector3{MathUtils::ConvertDegreesToRadians(anglesDegrees.x),
+                        MathUtils::ConvertDegreesToRadians(anglesDegrees.y),
+                        MathUtils::ConvertDegreesToRadians(anglesDegrees.z)};
+    return CreateYZXRotationMatrix(angles);
+}
+
+Matrix4 Matrix4::CreateYZXRotationMatrixDegrees(float pitchDegrees, float yawDegrees, float rollDegrees) noexcept {
+    return CreateYZXRotationMatrix(MathUtils::ConvertDegreesToRadians(pitchDegrees),
+                                   MathUtils::ConvertDegreesToRadians(yawDegrees),
+                                   MathUtils::ConvertDegreesToRadians(rollDegrees));
+}
+
+Matrix4 Matrix4::CreateRotationYawRollPitchMatrix(const Vector3& pitchYawRollRadians) noexcept {
+    return CreateYZXRotationMatrix(pitchYawRollRadians);
+}
+
+Matrix4 Matrix4::CreateRotationYawRollPitchMatrix(float pitchRadians, float yawRadians, float rollRadians) noexcept {
+    return CreateYZXRotationMatrix(pitchRadians, yawRadians, rollRadians);
+}
+
+Matrix4 Matrix4::CreateRotationYawRollPitchMatrixDegrees(const Vector3& pitchYawRollDegrees) noexcept {
+    return CreateYZXRotationMatrixDegrees(pitchYawRollDegrees);
+}
+
+Matrix4 Matrix4::CreateRotationYawRollPitchMatrixDegrees(float pitchDegrees, float yawDegrees, float rollDegrees) noexcept {
+    return CreateYZXRotationMatrixDegrees(pitchDegrees, yawDegrees, rollDegrees);
+}
+
 Matrix4 Matrix4::Create2DRotationMatrix(float angleRadians) noexcept {
     return Create3DZRotationMatrix(angleRadians);
 }
