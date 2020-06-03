@@ -60,6 +60,13 @@ public:
 
     void Update(int controller_number) noexcept;
 
+    void StartLeftMotor(unsigned short speed) noexcept;
+    void StartRightMotor(unsigned short speed) noexcept;
+    void StartMotors(unsigned short speed) noexcept;
+    void StartLeftMotor(float percent) noexcept;
+    void StartRightMotor(float percent) noexcept;
+    void StartMotors(float percent) noexcept;
+
     void StopLeftMotor() noexcept;
     void StopRightMotor() noexcept;
     void StopMotors() noexcept;

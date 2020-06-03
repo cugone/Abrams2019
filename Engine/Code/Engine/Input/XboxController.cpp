@@ -116,6 +116,31 @@ void XboxController::Update(int controller_number) noexcept {
     }
 }
 
+void XboxController::StartLeftMotor(unsigned short speed) noexcept {
+    SetLeftMotorSpeed(speed);
+}
+
+void XboxController::StartRightMotor(unsigned short speed) noexcept {
+    SetRightMotorSpeed(speed);
+}
+
+void XboxController::StartMotors(unsigned short speed) noexcept {
+    SetBothMotorSpeed(speed);
+}
+
+void XboxController::StartLeftMotor(float percent) noexcept {
+    StartLeftMotor(static_cast<unsigned short>(percent * (std::numeric_limits<unsigned short>::max)()));
+}
+
+void XboxController::StartRightMotor(float percent) noexcept {
+    StartRightMotor(static_cast<unsigned short>(percent * (std::numeric_limits<unsigned short>::max)()));
+}
+
+void XboxController::StartMotors(float percent) noexcept {
+    StartLeftMotor(percent);
+    StartRightMotor(percent);
+}
+
 void XboxController::StopLeftMotor() noexcept {
     SetLeftMotorSpeed(0);
     _currentActiveState[(std::size_t)ActiveState::LMotor] = false;
