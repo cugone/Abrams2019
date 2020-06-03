@@ -71,6 +71,14 @@ void AABB2::AddPaddingToSides(float paddingX, float paddingY) noexcept {
 
     maxs.x += paddingX;
     maxs.y += paddingY;
+
+    if(maxs.x < mins.x) {
+        std::swap(maxs.x, mins.x);
+    }
+    if(maxs.y < mins.y) {
+        std::swap(maxs.y, mins.y);
+    }
+
 }
 
 void AABB2::AddPaddingToSidesClamped(float paddingX, float paddingY) noexcept {
