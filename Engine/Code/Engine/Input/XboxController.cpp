@@ -76,7 +76,7 @@ void XboxController::Update(int controller_number) noexcept {
     }
 
     if(error_status == ERROR_SUCCESS) {
-        _previousActiveState = _currentActiveState;
+        _previousActiveState[(std::size_t)ActiveState::Connected] = _currentActiveState[(std::size_t)ActiveState::Connected];
         if(!_currentActiveState[(std::size_t)ActiveState::Connected]) {
             _currentActiveState[(std::size_t)ActiveState::Connected] = true;
         }
@@ -118,10 +118,12 @@ void XboxController::Update(int controller_number) noexcept {
 
 void XboxController::StopLeftMotor() noexcept {
     SetLeftMotorSpeed(0);
+    _currentActiveState[(std::size_t)ActiveState::LMotor] = false;
 }
 
 void XboxController::StopRightMotor() noexcept {
     SetRightMotorSpeed(0);
+    _currentActiveState[(std::size_t)ActiveState::RMotor] = false;
 }
 
 void XboxController::StopMotors() noexcept {
@@ -134,7 +136,8 @@ void XboxController::SetLeftMotorSpeed(unsigned short speed) noexcept {
         return;
     }
     _leftMotorState = speed;
-    _currentActiveState[(std::size_t)ActiveState::Motor] = true;
+    _previousActiveState[(std::size_t)ActiveState::LMotor] = _currentActiveState[(std::size_t)ActiveState::LMotor];
+    _currentActiveState[(std::size_t)ActiveState::LMotor] = true;
 }
 
 void XboxController::SetRightMotorSpeed(unsigned short speed) noexcept {
@@ -142,7 +145,8 @@ void XboxController::SetRightMotorSpeed(unsigned short speed) noexcept {
         return;
     }
     _rightMotorState = speed;
-    _currentActiveState[(std::size_t)ActiveState::Motor] = true;
+    _previousActiveState[(std::size_t)ActiveState::RMotor] = _currentActiveState[(std::size_t)ActiveState::RMotor];
+    _currentActiveState[(std::size_t)ActiveState::RMotor] = true;
 }
 
 void XboxController::SetBothMotorSpeed(unsigned short speed) noexcept {
@@ -188,13 +192,13 @@ void XboxController::UpdateConnectedState(int controller_number) noexcept {
     }
 
     if(error_status == ERROR_DEVICE_NOT_CONNECTED) {
-        _previousActiveState = _currentActiveState;
+        _previousActiveState[(std::size_t)ActiveState::Connected] = _currentActiveState[(std::size_t)ActiveState::Connected];
         _currentActiveState[(std::size_t)ActiveState::Connected] = false;
         return;
     }
 
     if(error_status == ERROR_SUCCESS) {
-        _previousActiveState = _currentActiveState;
+        _previousActiveState[(std::size_t)ActiveState::Connected] = _currentActiveState[(std::size_t)ActiveState::Connected];
         if(!_currentActiveState[(std::size_t)ActiveState::Connected]) {
             _currentActiveState[(std::size_t)ActiveState::Connected] = true;
         }
@@ -228,9 +232,11 @@ void XboxController::SetMotorSpeed(int controller_number, const Motor& motor, un
     switch(motor) {
     case Motor::Left:
         vibration.wLeftMotorSpeed = value;
+        vibration.wRightMotorSpeed = _rightMotorState;
         break;
     case Motor::Right:
         vibration.wRightMotorSpeed = value;
+        vibration.wLeftMotorSpeed = _leftMotorState;
         break;
     case Motor::Both:
         vibration.wLeftMotorSpeed = value;
@@ -242,7 +248,6 @@ void XboxController::SetMotorSpeed(int controller_number, const Motor& motor, un
     if(errorStatus == ERROR_SUCCESS) {
         return;
     } else if(errorStatus == ERROR_DEVICE_NOT_CONNECTED) {
-        _previousActiveState = _currentActiveState;
         _currentActiveState[(std::size_t)ActiveState::Connected] = false;
         return;
     } else {
@@ -251,5 +256,7 @@ void XboxController::SetMotorSpeed(int controller_number, const Motor& motor, un
 }
 
 bool XboxController::DidMotorStateChange() const noexcept {
-    return _previousActiveState[(std::size_t)ActiveState::Motor] ^ _currentActiveState[(std::size_t)ActiveState::Motor];
+    const bool r = _previousActiveState[(std::size_t)ActiveState::RMotor] ^ _currentActiveState[(std::size_t)ActiveState::RMotor];
+    const bool l = _previousActiveState[(std::size_t)ActiveState::LMotor] ^ _currentActiveState[(std::size_t)ActiveState::LMotor];
+    return r || l;
 }

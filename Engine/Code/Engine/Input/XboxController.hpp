@@ -87,7 +87,8 @@ private:
 
     enum class ActiveState {
         Connected,
-        Motor,
+        LMotor,
+        RMotor,
         Max
     };
 
