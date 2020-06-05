@@ -3,6 +3,7 @@
 #include "Engine/RHI/RHIDevice.hpp"
 #include "Engine/Renderer/DirectX/DX11.hpp"
 #include "Engine/Renderer/InputLayout.hpp"
+#include "Engine/Renderer/InputLayoutInstanced.hpp"
 
 ShaderProgram::ShaderProgram(ShaderProgramDesc&& desc) noexcept
 : _desc(std::move(desc)) {
@@ -53,6 +54,10 @@ InputLayout* ShaderProgram::GetInputLayout() const noexcept {
     return _desc.input_layout.get();
 }
 
+InputLayoutInstanced* ShaderProgram::GetInputLayoutInstanced() const noexcept {
+    return _desc.input_layout_instanced.get();
+}
+
 ID3D11VertexShader* ShaderProgram::GetVS() const noexcept {
     return _desc.vs;
 }
@@ -85,6 +90,9 @@ ShaderProgramDesc::ShaderProgramDesc(ShaderProgramDesc&& other) noexcept {
 
     input_layout = std::move(other.input_layout);
     other.input_layout = nullptr;
+    
+    input_layout_instanced = std::move(other.input_layout_instanced);
+    other.input_layout_instanced = nullptr;
 
     vs = other.vs;
     vs_bytecode = other.vs_bytecode;
@@ -125,6 +133,9 @@ ShaderProgramDesc& ShaderProgramDesc::operator=(ShaderProgramDesc&& other) noexc
 
     input_layout = std::move(other.input_layout);
     other.input_layout = nullptr;
+    
+    input_layout_instanced = std::move(other.input_layout_instanced);
+    other.input_layout_instanced = nullptr;
 
     vs = other.vs;
     vs_bytecode = other.vs_bytecode;
@@ -186,6 +197,7 @@ ShaderProgramDesc::~ShaderProgramDesc() noexcept {
     }
 
     input_layout.reset();
+    input_layout_instanced.reset();
 
     if(vs) {
         vs->Release();

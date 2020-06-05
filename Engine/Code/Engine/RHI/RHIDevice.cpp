@@ -12,6 +12,7 @@
 #include "Engine/RHI/RHIOutput.hpp"
 #include "Engine/Renderer/DepthStencilState.hpp"
 #include "Engine/Renderer/InputLayout.hpp"
+#include "Engine/Renderer/InputLayoutInstanced.hpp"
 #include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Renderer/ShaderProgram.hpp"
 #include "Engine/Renderer/Window.hpp"
@@ -388,7 +389,17 @@ std::unique_ptr<InputLayout> RHIDevice::CreateInputLayoutFromByteCode(ID3DBlob* 
     return std::move(il);
 }
 
-//TODO: CreateShaderProgramFromMemory
+std::unique_ptr<InputLayoutInstanced> RHIDevice::CreateInputLayoutInstancedFromByteCode(ID3DBlob* vs_bytecode) const noexcept {
+    ID3D11ShaderReflection* vertexReflection = nullptr;
+    if(FAILED(::D3DReflect(vs_bytecode->GetBufferPointer(), vs_bytecode->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&vertexReflection))) {
+        return nullptr;
+    }
+    auto il = std::make_unique<InputLayoutInstanced>(*this);
+    il->PopulateInputLayoutUsingReflection(*vertexReflection);
+    il->CreateInputLayout(vs_bytecode->GetBufferPointer(), vs_bytecode->GetBufferSize());
+    return std::move(il);
+}
+
 std::unique_ptr<ShaderProgram> RHIDevice::CreateShaderProgramFromHlslString(const std::string& name, const std::string& hlslString, const std::string& entryPointList, std::unique_ptr<InputLayout> inputLayout, const PipelineStage& target) const noexcept {
     bool uses_vs_stage = static_cast<unsigned char>(target & PipelineStage::Vs) != 0;
     bool uses_hs_stage = static_cast<unsigned char>(target & PipelineStage::Hs) != 0;
@@ -504,6 +515,100 @@ std::unique_ptr<ShaderProgram> RHIDevice::CreateShaderProgramFromHlslFile(std::f
         }
     } while(retry_requested);
     ERROR_AND_DIE("Unrecoverable error. Cannot continue with malformed shader file.");
+}
+
+std::unique_ptr<ShaderProgram> RHIDevice::CreateShaderProgramFromCsoBinaryBuffer(std::vector<uint8_t>& compiledShader, const std::string& name, const PipelineStage& target) const noexcept {
+    bool uses_vs_stage = static_cast<unsigned char>(target & PipelineStage::Vs) != 0;
+    bool uses_hs_stage = static_cast<unsigned char>(target & PipelineStage::Hs) != 0;
+    bool uses_ds_stage = static_cast<unsigned char>(target & PipelineStage::Ds) != 0;
+    bool uses_gs_stage = static_cast<unsigned char>(target & PipelineStage::Gs) != 0;
+    bool uses_ps_stage = static_cast<unsigned char>(target & PipelineStage::Ps) != 0;
+    bool uses_cs_stage = static_cast<unsigned char>(target & PipelineStage::Cs) != 0;
+
+    ShaderProgramDesc desc{};
+    desc.device = this;
+    desc.name = name;
+    if(uses_vs_stage) {
+        ID3D11VertexShader* vs = nullptr;
+        auto hr = _dx_device->CreateVertexShader(compiledShader.data(), compiledShader.size(), nullptr, &vs);
+        if(FAILED(hr) || !vs) {
+            const auto error = StringUtils::FormatWindowsMessage(hr);
+            ERROR_AND_DIE(error);
+        }
+        auto inputLayout = CreateInputLayoutFromByteCode(reinterpret_cast<ID3DBlob*>(compiledShader.data()));
+        desc.vs = vs;
+        desc.vs_bytecode = reinterpret_cast<ID3DBlob*>(compiledShader.data());
+        desc.input_layout = std::move(inputLayout);
+    }
+
+    if(uses_ps_stage) {
+        ID3D11PixelShader* ps = nullptr;
+        auto hr = _dx_device->CreatePixelShader(compiledShader.data(), compiledShader.size(), nullptr, &ps);
+        if(FAILED(hr) || !ps) {
+            const auto error = StringUtils::FormatWindowsMessage(hr);
+            ERROR_AND_DIE(error);
+        }
+        desc.ps = ps;
+        desc.ps_bytecode = reinterpret_cast<ID3DBlob*>(compiledShader.data());
+    }
+
+    if(uses_hs_stage) {
+        ID3D11HullShader* hs = nullptr;
+        auto hr = _dx_device->CreateHullShader(compiledShader.data(), compiledShader.size(), nullptr, &hs);
+        if(FAILED(hr) || !hs) {
+            const auto error = StringUtils::FormatWindowsMessage(hr);
+            ERROR_AND_DIE(error);
+        }
+        desc.hs = hs;
+        desc.hs_bytecode = reinterpret_cast<ID3DBlob*>(compiledShader.data());
+    }
+
+    if(uses_ds_stage) {
+        ID3D11DomainShader* ds = nullptr;
+        auto hr = _dx_device->CreateDomainShader(compiledShader.data(), compiledShader.size(), nullptr, &ds);
+        if(FAILED(hr) || !ds) {
+            const auto error = StringUtils::FormatWindowsMessage(hr);
+            ERROR_AND_DIE(error);
+        }
+        desc.ds = ds;
+        desc.ds_bytecode = reinterpret_cast<ID3DBlob*>(compiledShader.data());
+    }
+
+    if(uses_gs_stage) {
+        ID3D11GeometryShader* gs = nullptr;
+        auto hr = _dx_device->CreateGeometryShader(compiledShader.data(), compiledShader.size(), nullptr, &gs);
+        if(FAILED(hr) || !gs) {
+            const auto error = StringUtils::FormatWindowsMessage(hr);
+            ERROR_AND_DIE(error);
+        }
+        desc.gs = gs;
+        desc.gs_bytecode = reinterpret_cast<ID3DBlob*>(compiledShader.data());
+    }
+
+    if(uses_cs_stage) {
+        ID3D11ComputeShader* cs = nullptr;
+        auto hr = _dx_device->CreateComputeShader(compiledShader.data(), compiledShader.size(), nullptr, &cs);
+        if(FAILED(hr) || !cs) {
+            const auto error = StringUtils::FormatWindowsMessage(hr);
+            ERROR_AND_DIE(error);
+        }
+        desc.cs = cs;
+        desc.cs_bytecode = reinterpret_cast<ID3DBlob*>(compiledShader.data());
+    }
+    return std::move(std::make_unique<ShaderProgram>(std::move(desc)));
+}
+
+std::unique_ptr<ShaderProgram> RHIDevice::CreateShaderProgramFromCsoFile(std::filesystem::path filepath, const PipelineStage& target) const noexcept {
+    if(auto compiled_source = FileUtils::ReadBinaryBufferFromFile(filepath)) {
+        if(compiled_source) {
+            auto sp = CreateShaderProgramFromCsoBinaryBuffer(compiled_source.value(), filepath.string(), target);
+            if(sp) {
+                return sp;
+            }
+            ERROR_AND_DIE("Unrecoverable error. Cannot continue with malformed shader file.");
+        }
+    }
+    return nullptr;
 }
 
 ID3DBlob* RHIDevice::CompileShader(const std::string& name, const void* sourceCode, std::size_t sourceCodeSize, const std::string& entryPoint, const PipelineStage& target) const noexcept {

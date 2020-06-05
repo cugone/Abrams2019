@@ -28,6 +28,7 @@ class Window;
 class RHIOutput;
 class DepthStencilState;
 class InputLayout;
+class InputLayoutInstanced;
 struct Vertex3D;
 class ShaderProgram;
 class Renderer;
@@ -53,6 +54,10 @@ public:
 
     std::unique_ptr<ShaderProgram> CreateShaderProgramFromHlslString(const std::string& name, const std::string& hlslString, const std::string& entryPoint, std::unique_ptr<InputLayout> inputLayout, const PipelineStage& target) const noexcept;
     std::unique_ptr<ShaderProgram> CreateShaderProgramFromHlslFile(std::filesystem::path filepath, const std::string& entryPoint, const PipelineStage& target) const noexcept;
+    std::unique_ptr<ShaderProgram> CreateShaderProgramFromCsoBinaryBuffer(std::vector<uint8_t>& compiledShader, const std::string& name, const PipelineStage& target) const noexcept;
+    std::unique_ptr<ShaderProgram> CreateShaderProgramFromCsoFile(std::filesystem::path filepath, const PipelineStage& target) const noexcept;
+    
+    std::unique_ptr<InputLayout> CreateInputLayoutFromByteCode(ID3DBlob* bytecode) const noexcept;
 
     ID3DBlob* CompileShader(const std::string& name, const void* sourceCode, std::size_t sourceCodeSize, const std::string& entryPoint, const PipelineStage& target) const noexcept;
     std::vector<std::unique_ptr<ConstantBuffer>> CreateConstantBuffersFromByteCode(ID3DBlob* bytecode) const noexcept;
@@ -73,7 +78,7 @@ private:
     Microsoft::WRL::ComPtr<IDXGISwapChain4> RecreateSwapChain(const Window& window) noexcept;
 
     std::vector<std::unique_ptr<ConstantBuffer>> CreateConstantBuffersUsingReflection(ID3D11ShaderReflection& cbufferReflection) const noexcept;
-    std::unique_ptr<InputLayout> CreateInputLayoutFromByteCode(ID3DBlob* bytecode) const noexcept;
+    std::unique_ptr<InputLayoutInstanced> CreateInputLayoutInstancedFromByteCode(ID3DBlob* vs_bytecode) const noexcept;
 
     std::vector<OutputInfo> GetOutputsFromAdapter(const AdapterInfo& a) const noexcept;
     void GetPrimaryDisplayModeDescriptions(const AdapterInfo& adapter, decltype(displayModes)& descriptions) const noexcept;

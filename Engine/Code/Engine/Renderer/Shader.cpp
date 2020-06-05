@@ -2,12 +2,15 @@
 
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/StringUtils.hpp"
+#include "Engine/Core/FileUtils.hpp"
 #include "Engine/RHI/RHIDevice.hpp"
 #include "Engine/Renderer/ConstantBuffer.hpp"
 #include "Engine/Renderer/RasterState.hpp"
 #include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Renderer/Sampler.hpp"
 #include "Engine/Renderer/ShaderProgram.hpp"
+#include "Engine/Renderer/InputLayout.hpp"
+#include "Engine/Renderer/InputLayoutInstanced.hpp"
 
 #include <algorithm>
 #include <filesystem>
@@ -77,12 +80,14 @@ bool Shader::LoadFromXml(const XMLElement& element) noexcept {
     auto xml_SP = element.FirstChildElement("shaderprogram");
     DataUtils::ValidateXmlElement(*xml_SP, "shaderprogram", "", "src", "pipelinestages");
 
-    std::string sp_src = DataUtils::ParseXmlAttribute(*xml_SP, "src", "");
-    if(sp_src.empty()) {
-        ERROR_AND_DIE("shaderprogram element has empty src attribute.");
+    FS::path p;
+    {
+        const std::string sp_src = DataUtils::ParseXmlAttribute(*xml_SP, "src", "");
+        if(sp_src.empty()) {
+            ERROR_AND_DIE("shaderprogram element has empty src attribute.");
+        }
+        p = FS::path(sp_src);
     }
-
-    FS::path p(sp_src);
     if(!StringUtils::StartsWith(p.string(), "__")) {
         std::error_code ec{};
         p = FS::canonical(p, ec);
@@ -93,23 +98,128 @@ bool Shader::LoadFromXml(const XMLElement& element) noexcept {
     }
     p.make_preferred();
     if(nullptr == (_shader_program = _renderer.GetShaderProgram(p.string()))) {
+        const bool is_hlsl = p.has_extension() && StringUtils::ToLowerCase(p.extension().string()) == ".hlsl";
+        const bool is_cso = p.has_extension() && StringUtils::ToLowerCase(p.extension().string()) == ".cso";
         if(StringUtils::StartsWith(p.string(), "__")) {
             const auto ss = std::string{"Intrinsic ShaderProgram referenced in Shader file \""} + _name + "\" does not already exist.";
             ERROR_AND_DIE(ss.c_str());
         } else {
-            const auto& children = DataUtils::GetChildElementNames(*xml_SP);
-            if(std::find(std::begin(children), std::end(children), "pipelinestages") == std::end(children)) {
-                const auto ss = std::string{"User-defined ShaderProgram referenced in Shader file \""} + _name + "\" must declare pipelinestages in use.";
-                ERROR_AND_DIE(ss.c_str());
+            if(is_hlsl) {
+                const auto& children = DataUtils::GetChildElementNames(*xml_SP);
+                if(std::find(std::begin(children), std::end(children), "pipelinestages") == std::end(children)) {
+                    const auto ss = std::string{"User-defined ShaderProgram referenced in Shader file \""} + _name + "\" must declare pipelinestages in use.";
+                    ERROR_AND_DIE(ss.c_str());
+                }
             }
         }
-        bool is_hlsl = p.has_extension() && StringUtils::ToLowerCase(p.extension().string()) == ".hlsl";
         if(is_hlsl) {
             if(auto xml_pipelinestages = xml_SP->FirstChildElement("pipelinestages")) {
                 DataUtils::ValidateXmlElement(*xml_pipelinestages, "pipelinestages", "", "", "vertex,hull,domain,geometry,pixel,compute", "");
                 _renderer.CreateAndRegisterShaderProgramFromHlslFile(p.string(), ParseEntrypointList(*xml_pipelinestages), ParseTargets(*xml_pipelinestages));
                 _shader_program = _renderer.GetShaderProgram(p.string());
             }
+        } else if(is_cso) {
+            ShaderProgramDesc desc{};
+            desc.device = _renderer.GetDevice();
+            desc.name = _name;
+            DataUtils::ForEachChildElement(element, "shaderprogram", [this, &desc](const XMLElement& elem) {
+                const auto sp_src = DataUtils::ParseXmlAttribute(elem, "src", "");
+                auto p = FS::path(sp_src);
+                std::error_code ec;
+                p = FS::canonical(p, ec);
+                GUARANTEE_OR_DIE(!ec, "Compiled shader source path is invalid:\n" + p.string());
+                const auto has_filename = p.has_filename();
+                GUARANTEE_OR_DIE(has_filename, "Not a file.");
+                const auto filename = p.stem();
+                const auto fn_str = filename.string();
+                const auto is_vs = has_filename && StringUtils::EndsWith(fn_str, "_VS");
+                const auto is_hs = has_filename && StringUtils::EndsWith(fn_str, "_HS");
+                const auto is_ds = has_filename && StringUtils::EndsWith(fn_str, "_DS");
+                const auto is_gs = has_filename && StringUtils::EndsWith(fn_str, "_GS");
+                const auto is_ps = has_filename && StringUtils::EndsWith(fn_str, "_PS");
+                const auto is_cs = has_filename && StringUtils::EndsWith(fn_str, "_CS");
+                auto buffer = FileUtils::ReadBinaryBufferFromFile(p);
+                if(is_vs && buffer.has_value()) {
+                    ID3DBlob* blob = nullptr;
+                    auto hr = ::D3DCreateBlob(buffer->size(), &blob);
+                    if(FAILED(hr)) {
+                        DebuggerPrintf(StringUtils::FormatWindowsMessage(hr).c_str());
+                        ERROR_AND_DIE("VS Blob creation failed.");
+                    }
+                    std::memcpy(blob->GetBufferPointer(), buffer->data(), blob->GetBufferSize());
+                    buffer->clear();
+                    buffer->shrink_to_fit();
+                    desc.vs_bytecode = blob;
+                    desc.device->GetDxDevice()->CreateVertexShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &desc.vs);
+                    desc.input_layout = desc.device->CreateInputLayoutFromByteCode(desc.vs_bytecode);
+                } else if(is_hs && buffer.has_value()) {
+                    ID3DBlob* blob = nullptr;
+                    auto hr = ::D3DCreateBlob(buffer->size(), &blob);
+                    if(FAILED(hr)) {
+                        DebuggerPrintf(StringUtils::FormatWindowsMessage(hr).c_str());
+                        ERROR_AND_DIE("HS Blob creation failed.");
+                    }
+                    std::memcpy(blob->GetBufferPointer(), buffer->data(), blob->GetBufferSize());
+                    buffer->clear();
+                    buffer->shrink_to_fit();
+                    desc.hs_bytecode = blob;
+                    desc.device->GetDxDevice()->CreateHullShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &desc.hs);
+                } else if(is_ds && buffer.has_value()) {
+                    ID3DBlob* blob = nullptr;
+                    auto hr = ::D3DCreateBlob(buffer->size(), &blob);
+                    if(FAILED(hr)) {
+                        DebuggerPrintf(StringUtils::FormatWindowsMessage(hr).c_str());
+                        ERROR_AND_DIE("DS Blob creation failed.");
+                    }
+                    std::memcpy(blob->GetBufferPointer(), buffer->data(), blob->GetBufferSize());
+                    buffer->clear();
+                    buffer->shrink_to_fit();
+                    desc.ds_bytecode = blob;
+                    desc.device->GetDxDevice()->CreateDomainShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &desc.ds);
+                } else if(is_gs && buffer.has_value()) {
+                    ID3DBlob* blob = nullptr;
+                    auto hr = ::D3DCreateBlob(buffer->size(), &blob);
+                    if(FAILED(hr)) {
+                        DebuggerPrintf(StringUtils::FormatWindowsMessage(hr).c_str());
+                        ERROR_AND_DIE("GS Blob creation failed.");
+                    }
+                    std::memcpy(blob->GetBufferPointer(), buffer->data(), blob->GetBufferSize());
+                    buffer->clear();
+                    buffer->shrink_to_fit();
+                    desc.gs_bytecode = blob;
+                    desc.device->GetDxDevice()->CreateGeometryShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &desc.gs);
+                } else if(is_ps && buffer.has_value()) {
+                    ID3DBlob* blob = nullptr;
+                    auto hr = ::D3DCreateBlob(buffer->size(), &blob);
+                    if(FAILED(hr)) {
+                        DebuggerPrintf(StringUtils::FormatWindowsMessage(hr).c_str());
+                        ERROR_AND_DIE("PS Blob creation failed.");
+                    }
+                    std::memcpy(blob->GetBufferPointer(), buffer->data(), blob->GetBufferSize());
+                    buffer->clear();
+                    buffer->shrink_to_fit();
+                    desc.ps_bytecode = blob;
+                    desc.device->GetDxDevice()->CreatePixelShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &desc.ps);
+                } else if(is_cs && buffer.has_value()) {
+                    ID3DBlob* blob = nullptr;
+                    auto hr = ::D3DCreateBlob(buffer->size(), &blob);
+                    if(FAILED(hr)) {
+                        DebuggerPrintf(StringUtils::FormatWindowsMessage(hr).c_str());
+                        ERROR_AND_DIE("CS Blob creation failed.");
+                    }
+                    std::memcpy(blob->GetBufferPointer(), buffer->data(), blob->GetBufferSize());
+                    buffer->clear();
+                    buffer->shrink_to_fit();
+                    desc.cs_bytecode = blob;
+                    desc.device->GetDxDevice()->CreateComputeShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &desc.cs);
+                } else {
+                    ERROR_AND_DIE("Could not determine shader type. Filename must end in _VS, _PS, _HS, _DS, _GS, or _CS.");
+                }
+            });
+            auto sp = _renderer.CreateShaderProgramFromDesc(std::move(desc));
+            auto* sp_ptr = sp.get();
+            _renderer.RegisterShaderProgram(_name, std::move(sp));
+            _shader_program = sp_ptr;
         }
     }
     _cbuffers = std::move(_renderer.CreateConstantBuffersFromShaderProgram(_shader_program));

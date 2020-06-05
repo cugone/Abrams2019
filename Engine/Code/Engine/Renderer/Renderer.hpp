@@ -43,6 +43,7 @@ class Sampler;
 struct SamplerDesc;
 class Shader;
 class ShaderProgram;
+struct ShaderProgramDesc;
 class SpriteSheet;
 class StructuredBuffer;
 class Texture;
@@ -289,7 +290,10 @@ public:
 
     ShaderProgram* GetShaderProgram(const std::string& nameOrFile) noexcept;
     std::unique_ptr<ShaderProgram> CreateShaderProgramFromHlslFile(std::filesystem::path filepath, const std::string& entryPointList, const PipelineStage& target) const noexcept;
+    std::unique_ptr<ShaderProgram> CreateShaderProgramFromCsoFile(std::filesystem::path filepath, const PipelineStage& target) const noexcept;
+    std::unique_ptr<ShaderProgram> CreateShaderProgramFromDesc(ShaderProgramDesc&& desc) const noexcept;
     void CreateAndRegisterShaderProgramFromHlslFile(std::filesystem::path filepath, const std::string& entryPointList, const PipelineStage& target) noexcept;
+    void CreateAndRegisterShaderProgramFromCsoFile(std::filesystem::path filepath, const PipelineStage& target) noexcept;
     void CreateAndRegisterRasterStateFromRasterDescription(const std::string& name, const RasterDesc& desc) noexcept;
     void SetRasterState(RasterState* raster) noexcept;
     RasterState* GetRasterState(const std::string& name) noexcept;
@@ -311,6 +315,7 @@ public:
     std::size_t GetMaterialCount() noexcept;
     Material* GetMaterial(const std::string& nameOrFile) noexcept;
     void SetMaterial(Material* material) noexcept;
+    void SetMaterial(const std::string& nameOrFile) noexcept;
 
     bool IsTextureLoaded(const std::string& nameOrFile) const noexcept;
     bool IsTextureNotLoaded(const std::string& nameOrFile) const noexcept;

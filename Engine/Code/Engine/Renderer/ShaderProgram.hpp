@@ -5,6 +5,7 @@
 #include <memory>
 
 class InputLayout;
+class InputLayoutInstanced;
 class RHIDevice;
 
 struct ShaderProgramDesc {
@@ -15,6 +16,7 @@ struct ShaderProgramDesc {
     ID3DBlob* vs_bytecode = nullptr;
     ID3DBlob* ps_bytecode = nullptr;
     std::unique_ptr<InputLayout> input_layout = nullptr;
+    std::unique_ptr<InputLayoutInstanced> input_layout_instanced = nullptr;
     ID3D11HullShader* hs = nullptr;
     ID3DBlob* hs_bytecode = nullptr;
     ID3D11DomainShader* ds = nullptr;
@@ -52,6 +54,7 @@ public:
     ID3DBlob* GetPSByteCode() const noexcept;
     ID3DBlob* GetCSByteCode() const noexcept;
     InputLayout* GetInputLayout() const noexcept;
+    InputLayoutInstanced* GetInputLayoutInstanced() const noexcept;
     ID3D11VertexShader* GetVS() const noexcept;
     ID3D11HullShader* GetHS() const noexcept;
     ID3D11DomainShader* GetDS() const noexcept;
