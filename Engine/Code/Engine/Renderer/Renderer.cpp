@@ -3388,6 +3388,19 @@ void Renderer::SetRasterState(RasterState* raster) noexcept {
     _current_raster_state = raster;
 }
 
+void Renderer::SetRasterState(FillMode fillmode, CullMode cullmode) noexcept {
+    switch(fillmode) {
+    case FillMode::Solid:
+        SetSolidRaster(cullmode);
+        break;
+    case FillMode::Wireframe:
+        SetWireframeRaster(cullmode);
+        break;
+    default:
+        ERROR_AND_DIE("SetRasterState: Invalid fill mode");
+    }
+}
+
 void Renderer::SetVSync(bool value) noexcept {
     _vsync = value;
 }

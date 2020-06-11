@@ -298,6 +298,7 @@ public:
     void CreateAndRegisterShaderProgramFromCsoFile(std::filesystem::path filepath, const PipelineStage& target) noexcept;
     void CreateAndRegisterRasterStateFromRasterDescription(const std::string& name, const RasterDesc& desc) noexcept;
     void SetRasterState(RasterState* raster) noexcept;
+    void SetRasterState(FillMode fillmode, CullMode cullmode) noexcept;
     RasterState* GetRasterState(const std::string& name) noexcept;
 
     void SetWireframeRaster(CullMode cullmode = CullMode::Back) noexcept;
