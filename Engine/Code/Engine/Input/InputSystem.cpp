@@ -657,6 +657,7 @@ void InputSystem::LockMouseToWindowViewport() const noexcept {
 void InputSystem::UnlockMouseFromViewport() const noexcept {
     ::ClipCursor(nullptr);
     _should_clip_cursor = false;
+    _currentClippingArea = _initialClippingArea;
 }
 
 void InputSystem::RegisterKeyDown(unsigned char keyIndex) noexcept {
