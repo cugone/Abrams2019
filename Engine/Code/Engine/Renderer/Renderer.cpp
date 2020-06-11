@@ -3641,6 +3641,20 @@ Vector2 Renderer::ConvertScreenToWorldCoords(const Camera2D& camera, const Vecto
     return Vector2{ConvertScreenToWorldCoords(Camera3D{camera}, mouseCoords)};
 }
 
+Vector3 Renderer::ConvertScreenToNdcCoords(const Camera3D& /*camera*/, const Vector2& mouseCoords) const noexcept {
+    auto ndc = 2.0f * mouseCoords / Vector2(GetOutput()->GetDimensions()) - Vector2::ONE;
+    auto ndc3 = Vector3(ndc.x, -ndc.y, 1.0f);
+    return ndc3;
+}
+
+Vector2 Renderer::ConvertScreenToNdcCoords(const Camera2D& camera, const Vector2& mouseCoords) const noexcept {
+    return Vector2{ConvertScreenToNdcCoords(Camera3D{camera}, mouseCoords)};
+}
+
+Vector3 Renderer::ConvertScreenToNdcCoords(const Vector2& mouseCoords) const noexcept {
+    return ConvertScreenToNdcCoords(_camera, mouseCoords);
+}
+
 void Renderer::SetConstantBuffer(unsigned int index, ConstantBuffer* buffer) noexcept {
     _rhi_context->SetConstantBuffer(index, buffer);
 }

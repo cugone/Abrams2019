@@ -366,6 +366,11 @@ public:
     Vector3 ConvertScreenToWorldCoords(const Camera3D& camera, const Vector2& mouseCoords) const noexcept;
     Vector2 ConvertScreenToWorldCoords(const Camera2D& camera, const Vector2& mouseCoords) const noexcept;
 
+    Vector3 ConvertScreenToNdcCoords(const Camera3D& camera, const Vector2& mouseCoords) const noexcept;
+    Vector2 ConvertScreenToNdcCoords(const Camera2D& camera, const Vector2& mouseCoords) const noexcept;
+    Vector3 ConvertScreenToNdcCoords(const Vector2& mouseCoords) const noexcept;
+
+
     void SetConstantBuffer(unsigned int index, ConstantBuffer* buffer) noexcept;
     void SetStructuredBuffer(unsigned int index, StructuredBuffer* buffer) noexcept;
     void SetComputeConstantBuffer(unsigned int index, ConstantBuffer* buffer) noexcept;
