@@ -222,13 +222,13 @@ const Matrix4& Camera3D::GetInverseViewProjectionMatrix() const noexcept {
 }
 
 void Camera3D::SetEulerAngles(const Vector3& eulerAngles) noexcept {
-    rotationPitch = std::clamp(eulerAngles.x, -89.0f, 89.0f);
-    rotationYaw = eulerAngles.y;
-    rotationRoll = eulerAngles.z;
+    SetEulerAnglesDegrees(Vector3{MathUtils::ConvertRadiansToDegrees(eulerAngles.x), MathUtils::ConvertRadiansToDegrees(eulerAngles.y), MathUtils::ConvertRadiansToDegrees(eulerAngles.z)});
 }
 
 void Camera3D::SetEulerAnglesDegrees(const Vector3& eulerAnglesDegrees) noexcept {
-    SetEulerAngles(Vector3{MathUtils::ConvertDegreesToRadians(eulerAnglesDegrees.x), MathUtils::ConvertDegreesToRadians(eulerAnglesDegrees.y), MathUtils::ConvertDegreesToRadians(eulerAnglesDegrees.z)});
+    rotationPitch = std::clamp(eulerAnglesDegrees.x, -89.0f, 89.0f);
+    rotationYaw = MathUtils::Wrap(eulerAnglesDegrees.y, 0.0f, 360.0f);
+    rotationRoll = MathUtils::Wrap(eulerAnglesDegrees.z, 0.0f, 360.f);
 }
 
 void Camera3D::SetForwardFromTarget(const Vector3& lookAtPosition) noexcept {
@@ -243,8 +243,8 @@ void Camera3D::SetForwardFromTarget(const Vector3& lookAtPosition) noexcept {
     rotation = Quaternion(m);
     auto eulerangles = rotation.CalcEulerAnglesDegrees();
     rotationPitch = std::clamp(eulerangles.x, -89.0f, 89.0f);
-    rotationYaw = eulerangles.y;
-    rotationRoll = eulerangles.z;
+    rotationYaw = MathUtils::Wrap(eulerangles.y, 0.0f, 360.0f);
+    rotationRoll = MathUtils::Wrap(eulerangles.z, 0.0f, 360.0f);
 }
 
 void Camera3D::RotateBy(const Vector3& eulerAngles) noexcept {
@@ -256,21 +256,27 @@ void Camera3D::RotateBy(const Vector3& eulerAngles) noexcept {
 
 void Camera3D::RotateDegreesBy(const Vector3& eulerAnglesDegrees) noexcept {
     rotationPitch += eulerAnglesDegrees.x;
-    rotationYaw += eulerAnglesDegrees.y;
+    rotationPitch = std::clamp(rotationPitch, -89.9f, 89.9f);
+    rotationYaw += -eulerAnglesDegrees.y;
+    rotationYaw = MathUtils::Wrap(rotationYaw, 0.0f, 360.0f);
     rotationRoll += eulerAnglesDegrees.z;
+    rotationRoll = MathUtils::Wrap(rotationRoll, 0.0f, 360.0f);
     rotation = Quaternion::CreateFromEulerAngles(rotationPitch, rotationYaw, rotationRoll, true);
 }
 
 void Camera3D::RotatePitchDegreesBy(float angleDegrees) noexcept {
     rotationPitch += angleDegrees;
+    rotationPitch = std::clamp(rotationPitch, -89.0f, 89.0f);
 }
 
 void Camera3D::RotateYawDegreesBy(float angleDegrees) noexcept {
     rotationYaw += angleDegrees;
+    rotationYaw = MathUtils::Wrap(rotationYaw, 0.0f, 360.0f);
 }
 
 void Camera3D::RotateRollDegreesBy(float angleDegrees) noexcept {
     rotationRoll += angleDegrees;
+    rotationRoll = MathUtils::Wrap(rotationRoll, 0.0f, 360.0f);
 }
 
 void Camera3D::RotatePitchBy(float angleRadians) noexcept {
@@ -286,16 +292,16 @@ void Camera3D::RotateRollBy(float angleRadians) noexcept {
 }
 
 void Camera3D::Rotate(const Vector3& axis, const float angle) noexcept {
-    rotation = Quaternion::CreateFromAxisAngle(axis, angle);
-    auto eulerangles = rotation.CalcEulerAnglesDegrees();
-    rotationPitch = eulerangles.x;
-    rotationYaw = eulerangles.y;
-    rotationRoll = eulerangles.z;
+    const auto degrees = MathUtils::ConvertRadiansToDegrees(angle);
+    RotateDegrees(axis, degrees);
 }
 
 void Camera3D::RotateDegrees(const Vector3& axis, const float angleDegrees) noexcept {
-    const auto radians = MathUtils::ConvertDegreesToRadians(angleDegrees);
-    Rotate(axis, radians);
+    rotation = Quaternion::CreateFromAxisAngle(axis, angleDegrees);
+    auto eulerangles = rotation.CalcEulerAnglesDegrees();
+    rotationPitch = std::clamp(eulerangles.x, -89.0f, 89.0f);
+    rotationYaw = MathUtils::Wrap(eulerangles.y, 0.0f, 360.0f);
+    rotationRoll = MathUtils::Wrap(eulerangles.z, 0.0f, 360.0f);
 }
 
 Vector3 Camera3D::GetRight() const noexcept {
