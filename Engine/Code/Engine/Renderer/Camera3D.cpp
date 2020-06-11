@@ -86,30 +86,38 @@ void Camera3D::CalcViewMatrix() noexcept {
 }
 
 void Camera3D::CalcRotationMatrix() noexcept {
-    float c_x_theta = MathUtils::CosDegrees(rotationPitch);
-    float s_x_theta = MathUtils::SinDegrees(rotationPitch);
-    Matrix4 Rx;
-    Rx.SetIBasis(Vector4(1.0f, 0.0f, 0.0f, 0.0f));
-    Rx.SetJBasis(Vector4(0.0f, c_x_theta, s_x_theta, 0.0f));
-    Rx.SetKBasis(Vector4(0.0f, -s_x_theta, c_x_theta, 0.0f));
+    auto rot = Matrix4::CreateRotationYawRollPitchMatrixDegrees(rotationPitch, rotationYaw, rotationRoll);
+    rot.OrthoNormalizeKIJ();
+    const auto lookVector = rot.TransformDirection(Vector3::Z_AXIS);
 
-    float c_y_theta = MathUtils::CosDegrees(rotationYaw);
-    float s_y_theta = MathUtils::SinDegrees(rotationYaw);
-    Matrix4 Ry;
-    Ry.SetIBasis(Vector4(c_y_theta, 0.0f, -s_y_theta, 0.0f));
-    Ry.SetJBasis(Vector4(0.0f, 1.0f, 0.0f, 0.0f));
-    Ry.SetKBasis(Vector4(s_y_theta, 0.0f, c_y_theta, 0.0f));
+    const auto camPos = position;
+    const auto camTarget = camPos + lookVector;
+    rotation_matrix = Matrix4::CreateLookAtMatrix(camPos, camTarget, Vector3::Y_AXIS);
 
-    float c_z_theta = MathUtils::CosDegrees(rotationRoll);
-    float s_z_theta = MathUtils::SinDegrees(rotationRoll);
-    Matrix4 Rz;
-    Rz.SetIBasis(Vector4(c_z_theta, s_z_theta, 0.0f, 0.0f));
-    Rz.SetJBasis(Vector4(-s_z_theta, c_z_theta, 0.0f, 0.0f));
-    Rz.SetKBasis(Vector4(0.0f, 0.0f, 1.0f, 0.0f));
+    //float c_x_theta = MathUtils::CosDegrees(rotationPitch);
+    //float s_x_theta = MathUtils::SinDegrees(rotationPitch);
+    //Matrix4 Rx;
+    //Rx.SetIBasis(Vector4(1.0f, 0.0f, 0.0f, 0.0f));
+    //Rx.SetJBasis(Vector4(0.0f, c_x_theta, s_x_theta, 0.0f));
+    //Rx.SetKBasis(Vector4(0.0f, -s_x_theta, c_x_theta, 0.0f));
 
-    //Matrix4 R = Matrix4::MakeSRT(Ry, Rx, Rz);
-    Matrix4 R = Matrix4::MakeSRT(Rz, Rx, Ry);
-    rotation_matrix = R;
+    //float c_y_theta = MathUtils::CosDegrees(rotationYaw);
+    //float s_y_theta = MathUtils::SinDegrees(rotationYaw);
+    //Matrix4 Ry;
+    //Ry.SetIBasis(Vector4(c_y_theta, 0.0f, -s_y_theta, 0.0f));
+    //Ry.SetJBasis(Vector4(0.0f, 1.0f, 0.0f, 0.0f));
+    //Ry.SetKBasis(Vector4(s_y_theta, 0.0f, c_y_theta, 0.0f));
+
+    //float c_z_theta = MathUtils::CosDegrees(rotationRoll);
+    //float s_z_theta = MathUtils::SinDegrees(rotationRoll);
+    //Matrix4 Rz;
+    //Rz.SetIBasis(Vector4(c_z_theta, s_z_theta, 0.0f, 0.0f));
+    //Rz.SetJBasis(Vector4(-s_z_theta, c_z_theta, 0.0f, 0.0f));
+    //Rz.SetKBasis(Vector4(0.0f, 0.0f, 1.0f, 0.0f));
+
+    ////Matrix4 R = Matrix4::MakeSRT(Ry, Rx, Rz);
+    //Matrix4 R = Matrix4::MakeSRT(Rz, Rx, Ry);
+    //rotation_matrix = R;
 }
 
 void Camera3D::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
