@@ -342,14 +342,15 @@ Vector3 Camera3D::GetUpXZ() const noexcept {
 }
 
 Vector3 Camera3D::GetForward() const noexcept {
-    float cos_yaw = MathUtils::CosDegrees(rotationYaw);
-    float cos_pitch = MathUtils::CosDegrees(rotationPitch);
+    return Vector3::Z_AXIS * Matrix4{rotation};
+    //float cos_yaw = MathUtils::CosDegrees(rotationYaw);
+    //float cos_pitch = MathUtils::CosDegrees(rotationPitch);
 
-    float sin_yaw = MathUtils::SinDegrees(rotationYaw);
-    float sin_pitch = MathUtils::SinDegrees(rotationPitch);
+    //float sin_yaw = MathUtils::SinDegrees(rotationYaw);
+    //float sin_pitch = MathUtils::SinDegrees(rotationPitch);
 
     //return Vector3(-sin_yaw * cos_pitch, sin_pitch, cos_yaw * cos_pitch);
-    return Vector3(sin_yaw * cos_pitch, sin_pitch, cos_yaw * cos_pitch);
+    //return Vector3(sin_yaw * cos_pitch, sin_pitch, cos_yaw * cos_pitch);
 }
 
 Vector3 Camera3D::GetForwardXY() const noexcept {
