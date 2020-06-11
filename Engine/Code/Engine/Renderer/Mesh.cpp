@@ -87,6 +87,15 @@ std::size_t Mesh::Builder::AddIndicies(const Primitive& type) noexcept {
         indicies.push_back(static_cast<unsigned int>(v_s) - 1u);
         break;
     }
+    case Primitive::TriangleStrip:
+    {
+        const auto v_s = verticies.size();
+        indicies.push_back(static_cast<unsigned int>(v_s) - 4u);
+        indicies.push_back(static_cast<unsigned int>(v_s) - 3u);
+        indicies.push_back(static_cast<unsigned int>(v_s) - 2u);
+        indicies.push_back(static_cast<unsigned int>(v_s) - 1u);
+        break;
+    }
     case Primitive::Quad:
     {
         const auto v_s = verticies.size();

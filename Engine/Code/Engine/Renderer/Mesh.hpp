@@ -19,7 +19,7 @@ public:
     class Builder {
     public:
         enum class Primitive {
-            Point, Line, Triangle, Quad
+            Point, Line, Triangle, TriangleStrip, Quad
         };
 
         Builder() = default;
