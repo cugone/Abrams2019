@@ -367,25 +367,25 @@ Vector3 Camera3D::GetForwardXZ() const noexcept {
 }
 
 float Camera3D::GetYawDegrees() const noexcept {
-    return MathUtils::ConvertRadiansToDegrees(GetYaw());
-}
-
-float Camera3D::GetPitchDegrees() const noexcept {
-    return MathUtils::ConvertRadiansToDegrees(GetPitch());
-}
-
-float Camera3D::GetRollDegrees() const noexcept {
-    return MathUtils::ConvertRadiansToDegrees(GetRoll());
-}
-
-float Camera3D::GetYaw() const noexcept {
     return rotationYaw;
 }
 
-float Camera3D::GetPitch() const noexcept {
+float Camera3D::GetPitchDegrees() const noexcept {
     return rotationPitch;
 }
 
-float Camera3D::GetRoll() const noexcept {
+float Camera3D::GetRollDegrees() const noexcept {
     return rotationRoll;
+}
+
+float Camera3D::GetYaw() const noexcept {
+    return MathUtils::ConvertDegreesToRadians(GetYawDegrees());
+}
+
+float Camera3D::GetPitch() const noexcept {
+    return MathUtils::ConvertDegreesToRadians(GetPitchDegrees());
+}
+
+float Camera3D::GetRoll() const noexcept {
+    return MathUtils::ConvertDegreesToRadians(GetRollDegrees());
 }
