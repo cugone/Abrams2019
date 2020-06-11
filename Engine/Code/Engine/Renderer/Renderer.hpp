@@ -131,7 +131,8 @@ class Renderer {
 public:
     struct DrawInstruction {
         PrimitiveType type;
-        std::size_t start;
+        std::size_t vertexStart;
+        std::size_t indexStart;
         std::size_t count;
         std::size_t baseVertexLocation;
         Material* material;
@@ -271,7 +272,7 @@ public:
     void Draw(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo) noexcept;
     void Draw(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo, std::size_t vertex_count) noexcept;
     void DrawIndexed(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo, const std::vector<unsigned int>& ibo) noexcept;
-    void DrawIndexed(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo, const std::vector<unsigned int>& ibo, std::size_t vertex_count, std::size_t startVertex = 0, std::size_t baseVertexLocation = 0) noexcept;
+    void DrawIndexed(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo, const std::vector<unsigned int>& ibo, std::size_t index_count, std::size_t startVertex = 0, std::size_t baseVertexLocation = 0) noexcept;
 
     void SetLightingEyePosition(const Vector3& position) noexcept;
     void SetAmbientLight(const Rgba& ambient) noexcept;

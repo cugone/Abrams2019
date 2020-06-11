@@ -8,12 +8,13 @@ Mesh::Builder::Builder(const std::vector<Vertex3D>& verts, const std::vector<uns
 
 void Mesh::Builder::Begin(const PrimitiveType& type) noexcept {
     _current_draw_instruction.type = type;
-    _current_draw_instruction.start = verticies.size();
+    _current_draw_instruction.vertexStart = verticies.size();
+    _current_draw_instruction.indexStart = indicies.size();
 }
 
 void Mesh::Builder::End(Material* mat /* = nullptr */) noexcept {
     _current_draw_instruction.material = mat;
-    _current_draw_instruction.count = verticies.size() - _current_draw_instruction.start;
+    _current_draw_instruction.count = indicies.size() - _current_draw_instruction.indexStart;
     if(!draw_instructions.empty()) {
         auto& last_inst = draw_instructions.back();
         if(!mat) {
@@ -116,6 +117,6 @@ std::size_t Mesh::Builder::AddIndicies(const Primitive& type) noexcept {
 void Mesh::Render(Renderer& renderer, const Mesh::Builder& builder) noexcept {
     for(const auto& draw_inst : builder.draw_instructions) {
         renderer.SetMaterial(draw_inst.material);
-        renderer.DrawIndexed(draw_inst.type, builder.verticies, builder.indicies, draw_inst.count, draw_inst.start, draw_inst.baseVertexLocation);
+        renderer.DrawIndexed(draw_inst.type, builder.verticies, builder.indicies, draw_inst.count, draw_inst.vertexStart, draw_inst.baseVertexLocation);
     }
 }

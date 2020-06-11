@@ -653,10 +653,10 @@ void Renderer::DrawIndexed(const PrimitiveType& topology, const std::vector<Vert
     DrawIndexed(topology, _temp_vbo.get(), _temp_ibo.get(), ibo.size());
 }
 
-void Renderer::DrawIndexed(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo, const std::vector<unsigned int>& ibo, std::size_t vertex_count, std::size_t startVertex /*= 0*/, std::size_t baseVertexLocation /*= 0*/) noexcept {
+void Renderer::DrawIndexed(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo, const std::vector<unsigned int>& ibo, std::size_t index_count, std::size_t startVertex /*= 0*/, std::size_t baseVertexLocation /*= 0*/) noexcept {
     UpdateVbo(vbo);
     UpdateIbo(ibo);
-    DrawIndexed(topology, _temp_vbo.get(), _temp_ibo.get(), vertex_count, startVertex, baseVertexLocation);
+    DrawIndexed(topology, _temp_vbo.get(), _temp_ibo.get(), index_count, startVertex, baseVertexLocation);
 }
 
 void Renderer::SetLightingEyePosition(const Vector3& position) noexcept {
