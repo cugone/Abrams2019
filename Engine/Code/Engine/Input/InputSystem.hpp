@@ -449,6 +449,7 @@ public:
     Vector2 GetScreenCenter() const noexcept;
     Vector2 GetWindowCenter() const noexcept;
     Vector2 GetWindowCenter(const Window& window) const noexcept;
+    bool WasAnyControllerJustUsed() const noexcept;
 protected:
 private:
     void UpdateXboxConnectedState() noexcept;

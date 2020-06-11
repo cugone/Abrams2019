@@ -551,6 +551,19 @@ Vector2 InputSystem::GetWindowCenter(const Window& window) const noexcept {
     return Vector2::ZERO;
 }
 
+bool InputSystem::WasAnyControllerJustUsed() const noexcept {
+    bool result = false;
+    for(int i = 0; i < _connected_controller_count; ++i) {
+        result |= _xboxControllers[i].IsAnyButtonDown();
+        result |= _xboxControllers[i].GetLeftThumbPosition().CalcLengthSquared() > 0.0f;
+        result |= _xboxControllers[i].GetRightThumbPosition().CalcLengthSquared() > 0.0f;
+        result |= _xboxControllers[i].GetLeftTriggerPosition() > 0.0f;
+        result |= _xboxControllers[i].GetRightTriggerPosition() > 0.0f;
+        if(result) break;
+    }
+    return result;
+}
+
 void InputSystem::HideMouseCursor() noexcept {
     while(::ShowCursor(FALSE) >= 0)
         ;
