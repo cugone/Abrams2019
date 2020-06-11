@@ -382,7 +382,6 @@ enum class CullMode {
     None,
     Front,
     Back,
-    Both,
 };
 
 enum class WindingOrder {
