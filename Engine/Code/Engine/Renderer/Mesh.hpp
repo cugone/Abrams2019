@@ -46,6 +46,7 @@ public:
         void SetUV(const Vector2& uv) noexcept;
 
         std::size_t AddVertex(const Vector3& position) noexcept;
+        std::size_t AddVertex(const Vector2& position) noexcept;
         std::size_t AddIndicies(const Primitive& type) noexcept;
     private:
         Vertex3D _vertex_prototype{};

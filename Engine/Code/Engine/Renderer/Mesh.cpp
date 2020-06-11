@@ -63,6 +63,10 @@ std::size_t Mesh::Builder::AddVertex(const Vector3& position) noexcept {
     return verticies.size() - 1;
 }
 
+std::size_t Mesh::Builder::AddVertex(const Vector2& position) noexcept {
+    return AddVertex(Vector3{position, 0.0f});
+}
+
 std::size_t Mesh::Builder::AddIndicies(const Primitive& type) noexcept {
     switch(type) {
     case Primitive::Point:
