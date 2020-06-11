@@ -390,6 +390,9 @@ public:
     virtual void EndFrame() override;
 
     bool WasAnyKeyPressed() const noexcept;
+    bool WasAnyMouseButtonPressed() const noexcept;
+    bool WasMouseMoved() const noexcept;
+    bool WasMouseJustUsed() const noexcept;
     bool IsKeyUp(const KeyCode& key) const noexcept;
     bool WasKeyJustPressed(const KeyCode& key) const noexcept;
     bool IsKeyDown(const KeyCode& key) const noexcept;

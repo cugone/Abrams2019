@@ -1403,6 +1403,23 @@ bool InputSystem::WasAnyKeyPressed() const noexcept {
     return false;
 }
 
+bool InputSystem::WasAnyMouseButtonPressed() const noexcept {
+    for(KeyCode k = KeyCode::FirstMouseButton_; k < KeyCode::LastMouseButton_; ++k) {
+        if(WasKeyJustPressed(k)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool InputSystem::WasMouseMoved() const noexcept {
+    return GetMouseDelta().CalcLengthSquared() > 0.0f;
+}
+
+bool InputSystem::WasMouseJustUsed() const noexcept {
+    return WasMouseMoved() || WasAnyMouseButtonPressed();
+}
+
 bool InputSystem::IsKeyUp(const KeyCode& key) const noexcept {
     return !_previousKeys[(std::size_t)key] && !_currentKeys[(std::size_t)key];
 }
