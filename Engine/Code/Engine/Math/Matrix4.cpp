@@ -120,7 +120,7 @@ Matrix4::Matrix4(const Quaternion& q) noexcept {
     right.m_indicies[14] = -z;
     right.m_indicies[15] = w;
 
-    m_indicies = (left * right).m_indicies;
+    m_indicies = Matrix4::MakeRT(left, right).m_indicies;
 }
 Matrix4::Matrix4(const Vector2& iBasis, const Vector2& jBasis, const Vector2& translation /*= Vector2::ZERO*/) noexcept
 : m_indicies{iBasis.x, jBasis.x, 0.0f, translation.x,
