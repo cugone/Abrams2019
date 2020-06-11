@@ -306,13 +306,31 @@ Vector3 Camera3D::GetRight() const noexcept {
 
 Vector3 Camera3D::GetRightXY() const noexcept {
     const auto forward = GetForwardXY();
-    const auto right = MathUtils::CrossProduct(world_up, forward).GetNormalize();
-    return Vector3{right.x, right.y, 0.0f};
+    return Vector3{forward.y, forward.x, 0.0f};
+}
+
+Vector3 Camera3D::GetRightXZ() const noexcept {
+    const auto forward = GetForwardXZ();
+    return Vector3{-forward.y, 0.0f, forward.x};
 }
 
 Vector3 Camera3D::GetUp() const noexcept {
     auto forward = GetForward();
     auto right = GetRight();
+    auto up = MathUtils::CrossProduct(forward, right);
+    return up.GetNormalize();
+}
+
+Vector3 Camera3D::GetUpXY() const noexcept {
+    auto forward = GetForwardXY();
+    auto right = GetRightXY();
+    auto up = MathUtils::CrossProduct(forward, right);
+    return up.GetNormalize();
+}
+
+Vector3 Camera3D::GetUpXZ() const noexcept {
+    auto forward = GetForwardXZ();
+    auto right = GetRightXZ();
     auto up = MathUtils::CrossProduct(forward, right);
     return up.GetNormalize();
 }
@@ -329,12 +347,17 @@ Vector3 Camera3D::GetForward() const noexcept {
 }
 
 Vector3 Camera3D::GetForwardXY() const noexcept {
-    float cos_pitch = MathUtils::CosDegrees(rotationPitch);
-
+    float cos_yaw = MathUtils::CosDegrees(rotationYaw);
     float sin_yaw = MathUtils::SinDegrees(rotationYaw);
-    float sin_pitch = MathUtils::SinDegrees(rotationPitch);
 
-    return Vector3(sin_yaw * cos_pitch, sin_pitch, 0.0f);
+    return Vector3(cos_yaw, sin_yaw, 0.0f);
+}
+
+Vector3 Camera3D::GetForwardXZ() const noexcept {
+    float cos_yaw = MathUtils::CosDegrees(rotationYaw);
+    float sin_yaw = MathUtils::SinDegrees(rotationYaw);
+
+    return Vector3(-sin_yaw, 0.0f, cos_yaw);
 }
 
 float Camera3D::GetYawDegrees() const noexcept {

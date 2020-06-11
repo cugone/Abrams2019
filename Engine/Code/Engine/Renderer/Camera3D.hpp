@@ -79,9 +79,13 @@ public:
 
     Vector3 GetRight() const noexcept;
     Vector3 GetRightXY() const noexcept;
+    Vector3 GetRightXZ() const noexcept;
     Vector3 GetUp() const noexcept;
+    Vector3 GetUpXY() const noexcept;
+    Vector3 GetUpXZ() const noexcept;
     Vector3 GetForward() const noexcept;
     Vector3 GetForwardXY() const noexcept;
+    Vector3 GetForwardXZ() const noexcept;
 
     float GetYawDegrees() const noexcept;
     float GetPitchDegrees() const noexcept;
