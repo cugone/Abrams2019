@@ -649,6 +649,11 @@ void InputSystem::LockMouseToViewport(const Window& window) const noexcept {
     }
 }
 
+void InputSystem::LockMouseToWindowViewport() const noexcept {
+    const auto& window = *_renderer->GetOutput()->GetWindow();
+    LockMouseToViewport(window);
+}
+
 void InputSystem::UnlockMouseFromViewport() const noexcept {
     ::ClipCursor(nullptr);
     _should_clip_cursor = false;

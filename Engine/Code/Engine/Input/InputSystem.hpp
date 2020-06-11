@@ -444,6 +444,7 @@ public:
 
     bool IsMouseLockedToViewport() const noexcept;
     void LockMouseToViewport(const Window& window) const noexcept;
+    void LockMouseToWindowViewport() const noexcept;
     void UnlockMouseFromViewport() const noexcept;
 
     Vector2 GetScreenCenter() const noexcept;
