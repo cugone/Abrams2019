@@ -786,6 +786,10 @@ std::unique_ptr<AnimatedSprite> Renderer::CreateAnimatedSprite(std::weak_ptr<Spr
     return std::move(std::make_unique<AnimatedSprite>(*this, sheet, startSpriteCoords));
 }
 
+std::unique_ptr<AnimatedSprite> Renderer::CreateAnimatedSprite(const AnimatedSpriteDesc& desc) noexcept {
+    return std::move(std::make_unique<AnimatedSprite>(*this, desc));
+}
+
 const RenderTargetStack& Renderer::GetRenderTargetStack() const noexcept {
     return *_target_stack;
 }

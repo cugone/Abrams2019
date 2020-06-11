@@ -8,6 +8,7 @@
 #include "Engine/Math/IntVector2.hpp"
 #include "Engine/Math/Matrix4.hpp"
 #include "Engine/RHI/RHI.hpp"
+#include "Engine/Renderer/AnimatedSprite.hpp"
 #include "Engine/Renderer/Camera3D.hpp"
 #include "Engine/Renderer/IndexBuffer.hpp"
 #include "Engine/Renderer/RenderTargetStack.hpp"
@@ -21,7 +22,6 @@
 #include <vector>
 
 class AABB2;
-class AnimatedSprite;
 class BlendState;
 class ConstantBuffer;
 class DepthStencilState;
@@ -217,6 +217,7 @@ public:
     std::shared_ptr<SpriteSheet> CreateSpriteSheet(const std::filesystem::path& filepath, unsigned int width = 1, unsigned int height = 1) noexcept;
     std::shared_ptr<SpriteSheet> CreateSpriteSheet(const XMLElement& elem) noexcept;
     std::unique_ptr<AnimatedSprite> CreateAnimatedSprite(std::filesystem::path filepath) noexcept;
+    std::unique_ptr<AnimatedSprite> CreateAnimatedSprite(const AnimatedSpriteDesc& desc) noexcept;
     std::unique_ptr<AnimatedSprite> CreateAnimatedSprite(std::weak_ptr<SpriteSheet> sheet, const IntVector2& startSpriteCoords = IntVector2::ZERO) noexcept;
     std::unique_ptr<AnimatedSprite> CreateAnimatedSprite(std::weak_ptr<SpriteSheet> sheet, const XMLElement& elem) noexcept;
     std::unique_ptr<AnimatedSprite> CreateAnimatedSprite(const XMLElement& elem) noexcept;

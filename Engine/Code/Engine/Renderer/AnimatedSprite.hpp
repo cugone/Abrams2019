@@ -3,11 +3,13 @@
 #include "Engine/Core/DataUtils.hpp"
 #include "Engine/Core/TimeUtils.hpp"
 #include "Engine/Math/AABB2.hpp"
+#include "Engine/Math/IntVector2.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
 
 class Material;
 class Renderer;
 class Texture;
+struct AnimatedSpriteDesc;
 
 class AnimatedSprite {
 public:
@@ -21,6 +23,7 @@ public:
     };
 
     AnimatedSprite(Renderer& renderer, const XMLElement& elem) noexcept;
+    AnimatedSprite(Renderer& renderer, const AnimatedSpriteDesc& desc) noexcept;
     AnimatedSprite(Renderer& renderer, std::weak_ptr<SpriteSheet> sheet, const XMLElement& elem) noexcept;
     AnimatedSprite(Renderer& renderer, std::weak_ptr<SpriteSheet> sheet, const IntVector2& startSpriteCoords) noexcept;
     ~AnimatedSprite() noexcept;
@@ -43,6 +46,7 @@ public:
     float GetFractionRemaining() const noexcept;
     void SetSecondsElapsed(TimeUtils::FPSeconds secondsElapsed) noexcept; // Jump to specific time
     void SetFractionElapsed(float fractionElapsed) noexcept;              // e.g. 0.33f for one-third in
+    void SetDuration(TimeUtils::FPSeconds durationSeconds) noexcept;
     void SetMaterial(Material* mat) noexcept;
     Material* GetMaterial() const noexcept;
 
@@ -69,3 +73,14 @@ private:
 
     friend class Renderer;
 };
+
+struct AnimatedSpriteDesc {
+    Material* material{};
+    std::weak_ptr<SpriteSheet> spriteSheet{};
+    TimeUtils::FPSeconds durationSeconds{TimeUtils::FPFrames{1.0f}};
+    int startSpriteIndex{-1};
+    IntVector2 startSpriteCoords{-1,-1};
+    int frameLength{1};
+    AnimatedSprite::SpriteAnimMode playbackMode = AnimatedSprite::SpriteAnimMode::Looping;
+};
+

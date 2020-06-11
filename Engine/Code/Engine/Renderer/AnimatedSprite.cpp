@@ -50,6 +50,18 @@ AnimatedSprite::AnimatedSprite(Renderer& renderer, std::weak_ptr<SpriteSheet> sh
     /* DO NOTHING */
 }
 
+AnimatedSprite::AnimatedSprite(Renderer& renderer, const AnimatedSpriteDesc& desc) noexcept
+: _renderer(renderer)
+, _material(desc.material)
+, _sheet(desc.spriteSheet)
+, _duration_seconds(desc.durationSeconds)
+, _playback_mode(desc.playbackMode)
+, _start_index(desc.startSpriteIndex > -1 ? desc.startSpriteIndex : (desc.startSpriteCoords.x > -1 && desc.startSpriteCoords.y > -1 ? (desc.startSpriteCoords.x + desc.startSpriteCoords.y * _sheet.lock()->GetLayout().x) : 0))
+, _end_index(desc.startSpriteIndex + desc.frameLength) {
+    bool has_frames = desc.frameLength > 0;
+    _max_seconds_per_frame = TimeUtils::FPSeconds{_duration_seconds / (has_frames ? static_cast<float>(_end_index - _start_index) : 1.0f)};
+}
+
 AnimatedSprite::~AnimatedSprite() noexcept {
     _sheet.reset();
 }
@@ -230,6 +242,12 @@ void AnimatedSprite::SetSecondsElapsed(TimeUtils::FPSeconds secondsElapsed) noex
 
 void AnimatedSprite::SetFractionElapsed(float fractionElapsed) noexcept {
     _elapsed_seconds = _duration_seconds * fractionElapsed;
+}
+
+void AnimatedSprite::SetDuration(TimeUtils::FPSeconds durationSeconds) noexcept {
+    _duration_seconds = durationSeconds;
+    bool has_frames = _end_index - _start_index > 0;
+    _max_seconds_per_frame = TimeUtils::FPSeconds{_duration_seconds / (has_frames ? static_cast<float>(_end_index - _start_index) : 1.0f)};
 }
 
 void AnimatedSprite::SetMaterial(Material* mat) noexcept {
