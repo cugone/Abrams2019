@@ -100,6 +100,8 @@ bool Shader::LoadFromXml(const XMLElement& element) noexcept {
     if(nullptr == (_shader_program = _renderer.GetShaderProgram(p.string()))) {
         const bool is_hlsl = p.has_extension() && StringUtils::ToLowerCase(p.extension().string()) == ".hlsl";
         const bool is_cso = p.has_extension() && StringUtils::ToLowerCase(p.extension().string()) == ".cso";
+        const bool is_valid_extension = is_hlsl || is_cso;
+        GUARANTEE_OR_DIE(is_valid_extension, "ShaderProgram source path must be of type '.hlsl' or '.cso'");
         if(StringUtils::StartsWith(p.string(), "__")) {
             const auto ss = std::string{"Intrinsic ShaderProgram referenced in Shader file \""} + _name + "\" does not already exist.";
             ERROR_AND_DIE(ss.c_str());
@@ -129,7 +131,7 @@ bool Shader::LoadFromXml(const XMLElement& element) noexcept {
                 p = FS::canonical(p, ec);
                 GUARANTEE_OR_DIE(!ec, "Compiled shader source path is invalid:\n" + p.string());
                 const auto has_filename = p.has_filename();
-                GUARANTEE_OR_DIE(has_filename, "Not a file.");
+                GUARANTEE_OR_DIE(has_filename, "Compiled shader source path is not a file.");
                 const auto filename = p.stem();
                 const auto fn_str = filename.string();
                 const auto is_vs = has_filename && StringUtils::EndsWith(fn_str, "_VS");
@@ -138,6 +140,8 @@ bool Shader::LoadFromXml(const XMLElement& element) noexcept {
                 const auto is_gs = has_filename && StringUtils::EndsWith(fn_str, "_GS");
                 const auto is_ps = has_filename && StringUtils::EndsWith(fn_str, "_PS");
                 const auto is_cs = has_filename && StringUtils::EndsWith(fn_str, "_CS");
+                const auto has_valid_staged_filename = is_vs || is_hs || is_ds || is_gs || is_ps || is_cs;
+                GUARANTEE_OR_DIE(has_valid_staged_filename, "Compiled shader source filename must end in '_VS' '_HS' '_DS' '_GS' '_PS' or '_CS'");
                 auto buffer = FileUtils::ReadBinaryBufferFromFile(p);
                 if(is_vs && buffer.has_value()) {
                     ID3DBlob* blob = nullptr;
