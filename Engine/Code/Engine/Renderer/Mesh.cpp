@@ -1,5 +1,12 @@
 #include "Engine/Renderer/Mesh.hpp"
 
+#include "Engine/Renderer/ConstantBuffer.hpp"
+#include "Engine/Renderer/Material.hpp"
+#include "Engine/Renderer/Shader.hpp"
+
+#include <vector>
+#include <type_traits>
+
 Mesh::Builder::Builder(const std::vector<Vertex3D>& verts, const std::vector<unsigned int>& indcs) noexcept
 : verticies{verts}
 , indicies{indcs} {
@@ -117,6 +124,14 @@ std::size_t Mesh::Builder::AddIndicies(const Primitive& type) noexcept {
 void Mesh::Render(Renderer& renderer, const Mesh::Builder& builder) noexcept {
     for(const auto& draw_inst : builder.draw_instructions) {
         renderer.SetMaterial(draw_inst.material);
+        auto cbs = draw_inst.material->GetShader()->GetConstantBuffers();
+        const auto cb_size = cbs.size();
+        for(int i = 0; i < cb_size; ++i) {
+            renderer.SetConstantBuffer(3 + i, &(cbs.begin() + i)->get());
+        }
         renderer.DrawIndexed(draw_inst.type, builder.verticies, builder.indicies, draw_inst.count, draw_inst.vertexStart, draw_inst.baseVertexLocation);
+        for(int i = 0; i < cb_size; ++i) {
+            renderer.SetConstantBuffer(3 + i, nullptr);
+        }
     }
 }
