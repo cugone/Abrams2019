@@ -339,7 +339,6 @@ void RigidBody::ApplyTorqueAt(const Vector2& position_on_object, const Vector2& 
 }
 
 void RigidBody::ApplyTorqueAt(const Vector2& position_on_object, const Vector2& force, bool asImpulse /*= false*/) {
-    //TODO: Start Here
     const auto point_of_collision = MathUtils::CalcClosestPoint(position_on_object, static_cast<const Collider&>(*collider.get()));
     const auto r = position - point_of_collision;
     const auto torque = MathUtils::CrossProduct(force, r);
