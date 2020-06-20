@@ -270,6 +270,21 @@ bool Console::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         default: return false;
         }
     }
+    case WindowsSystemMessage::Mouse_MouseWheel: {
+        if(IsClosed()) {
+            return false;
+        }
+        constexpr uint16_t wheeldelta_mask = 0b1111'1111'0000'0000;    //FF00
+        constexpr uint16_t lbutton_mask = 0b0000'0000'0000'0001;       //0x0001
+        constexpr uint16_t rbutton_mask = 0b0000'0000'0000'0010;       //0x0002
+        constexpr uint16_t shift_mask = 0b0000'0000'0000'0100;         //0x0004
+        constexpr uint16_t ctrl_mask = 0b0000'0000'0000'1000;          //0x0008
+        constexpr uint16_t mbutton_mask = 0b0000'0000'0001'0000;       //0x0010
+        constexpr uint16_t xbutton1_down_mask = 0b0000'0000'0010'0000; //0x0020
+        constexpr uint16_t xbutton2_down_mask = 0b0000'0000'0100'0000; //0x0040
+        _mouseWheelPosition = GET_WHEEL_DELTA_WPARAM(wp);
+        return true;
+    }
     default: {
         return false;
     }
@@ -360,6 +375,8 @@ bool Console::HandleReturnKey() noexcept {
 bool Console::HandleTildeKey() noexcept {
     ToggleConsole();
     if(IsOpen()) {
+        _mouseWheelPosition = 0;
+        _outputStartPosition = Vector2::ZERO;
         _non_rendering_char = true;
         _entryline.clear();
     }
@@ -764,22 +781,29 @@ void Console::DrawOutput(const Vector2& view_half_extents) const noexcept {
     std::vector<Vertex3D> vbo{};
     std::vector<unsigned int> ibo{};
     auto font = _renderer.GetFont("System32");
+    const auto max_vertical_start_position = (_output_buffer.size() * (1 + font->GetLineHeight()) - view_half_extents.y * 2.0f);
+    if(_outputStartPosition.y <= max_vertical_start_position && WasMouseWheelJustScrolledUp()) {
+        _outputStartPosition.y += font->GetLineHeight();
+    }
+    if(_outputStartPosition.y && WasMouseWheelJustScrolledDown()) {
+        _outputStartPosition.y -= font->GetLineHeight();
+    }
     {
         auto draw_x = -view_half_extents.x;
         auto draw_y = view_half_extents.y;
-        auto draw_loc = Vector2(draw_x * 0.99f, draw_y * 0.99f);
-        for(auto iter = _output_buffer.rbegin(); iter != _output_buffer.rend(); ++iter) {
+        auto draw_loc = _outputStartPosition + Vector2(draw_x * 0.99f, draw_y * 0.99f);
+        for(auto iter = _output_buffer.cbegin(); iter != _output_buffer.cend(); ++iter) {
             draw_loc.y -= font->CalculateTextHeight(iter->str);
             _renderer.AppendMultiLineTextBuffer(font, iter->str, draw_loc, iter->color, vbo, ibo);
         }
     }
     _renderer.SetMaterial(font->GetMaterial());
-    //TODO: Uncomment when fixed.
-    //_renderer.EnableScissorTest();
-    //_renderer.SetScissorAsPercent();
+    _renderer.EnableScissorTest();
+    _renderer.SetScissorAsPercent(0.0f, 0.0f, 1.0f, 0.921f);
     _renderer.SetModelMatrix(Matrix4::I);
     _renderer.DrawIndexed(PrimitiveType::Triangles, vbo, ibo);
-    //_renderer.DisableScissorTest();
+    _renderer.DisableScissorTest();
+    _renderer.SetScissorAsPercent();
 }
 
 void Console::OutputMsg(const std::string& msg, const Rgba& color) noexcept {
@@ -956,8 +980,23 @@ Vector2 Console::SetupViewFromCamera() const noexcept {
     return Vector2(view_half_width, view_half_height);
 }
 
+int Console::GetMouseWheelPositionNormalized() const noexcept {
+    if(_mouseWheelPosition) {
+        return _mouseWheelPosition / std::abs(_mouseWheelPosition);
+    }
+    return 0;
+}
+
+bool Console::WasMouseWheelJustScrolledUp() const noexcept {
+    return GetMouseWheelPositionNormalized() > 0;
+}
+
+bool Console::WasMouseWheelJustScrolledDown() const noexcept {
+    return GetMouseWheelPositionNormalized() < 0;
+}
+
 void Console::EndFrame() {
-    /* DO NOTHING */
+    _mouseWheelPosition = 0;
 }
 
 Console::CommandList::CommandList(Console* console /*= nullptr*/) noexcept

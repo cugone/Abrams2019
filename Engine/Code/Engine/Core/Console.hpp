@@ -136,6 +136,11 @@ private:
 
     Vector2 SetupViewFromCamera() const noexcept;
 
+    int GetMouseWheelPositionNormalized() const noexcept;
+
+    bool WasMouseWheelJustScrolledUp() const noexcept;
+    bool WasMouseWheelJustScrolledDown() const noexcept;
+
     FileLogger& _fileLogger;
     Renderer& _renderer;
     Camera2D* _camera = nullptr;
@@ -148,6 +153,8 @@ private:
     decltype(_entryline_buffer)::const_iterator _current_history_position{};
     unsigned int _default_blink_rate = 4u;
     unsigned int _blink_rate = _default_blink_rate;
+    int _mouseWheelPosition{0};
+    mutable Vector2 _outputStartPosition{};
     Stopwatch _cursor_timer = Stopwatch(_blink_rate);
     uint8_t _show_cursor : 1;
     uint8_t _is_open : 1;
