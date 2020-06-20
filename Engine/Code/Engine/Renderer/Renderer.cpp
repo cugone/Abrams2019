@@ -161,6 +161,8 @@ void Renderer::Initialize(bool headless /*= false*/) {
 
     SetDepthStencilState(GetDepthStencilState("__default"));
     SetRasterState(GetRasterState("__solid"));
+    const auto dims = GetOutput()->GetDimensions();
+    SetScissorAndViewport(0, 0, dims.x, dims.y);
     SetSampler(GetSampler("__default"));
     SetRenderTarget(_current_target, _current_depthstencil);
     _current_material = nullptr; //User must explicitly set to avoid defaulting to full lighting material.
