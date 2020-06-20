@@ -127,11 +127,11 @@ void Mesh::Render(Renderer& renderer, const Mesh::Builder& builder) noexcept {
         auto cbs = draw_inst.material->GetShader()->GetConstantBuffers();
         const auto cb_size = cbs.size();
         for(int i = 0; i < cb_size; ++i) {
-            renderer.SetConstantBuffer(3 + i, &(cbs.begin() + i)->get());
+            renderer.SetConstantBuffer(renderer.CONSTANT_BUFFER_START_INDEX + i, &(cbs.begin() + i)->get());
         }
         renderer.DrawIndexed(draw_inst.type, builder.verticies, builder.indicies, draw_inst.count, draw_inst.vertexStart, draw_inst.baseVertexLocation);
         for(int i = 0; i < cb_size; ++i) {
-            renderer.SetConstantBuffer(3 + i, nullptr);
+            renderer.SetConstantBuffer(renderer.CONSTANT_BUFFER_START_INDEX + i, nullptr);
         }
     }
 }
