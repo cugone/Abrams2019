@@ -3919,6 +3919,10 @@ void Renderer::SetScissorAndViewport(const AABB2& scissor_and_viewport) noexcept
     SetScissorAndViewport(static_cast<unsigned int>(scissor_and_viewport.mins.x), static_cast<unsigned int>(scissor_and_viewport.mins.y), static_cast<unsigned int>(scissor_and_viewport.maxs.x - scissor_and_viewport.mins.x), static_cast<unsigned int>(scissor_and_viewport.maxs.y - scissor_and_viewport.mins.y));
 }
 
+void Renderer::SetScissorAndViewportAsPercent(float x /*= 0.0f*/, float y /*= 0.0f*/, float w /*= 1.0f*/, float h /*= 1.0f*/) noexcept {
+    SetViewportAndScissorAsPercent(x, y, w, h);
+}
+
 void Renderer::SetScissors(const std::vector<AABB2>& scissors) noexcept {
     std::vector<D3D11_RECT> dxScissors{};
     dxScissors.resize(scissors.size());
@@ -3961,9 +3965,10 @@ void Renderer::EnableScissorTest() {
     state->GetDesc(&desc);
     if(!desc.ScissorEnable) {
         desc.ScissorEnable = true;
-        auto hr = GetDevice()->GetDxDevice()->CreateRasterizerState(&desc, state.GetAddressOf());
+        Microsoft::WRL::ComPtr<ID3D11RasterizerState> newState{};
+        auto hr = GetDevice()->GetDxDevice()->CreateRasterizerState(&desc, newState.GetAddressOf());
         if(SUCCEEDED(hr)) {
-            dx_dc->RSSetState(state.Get());
+            dx_dc->RSSetState(newState.Get());
         }
     }
 }
@@ -3978,8 +3983,9 @@ void Renderer::DisableScissorTest() {
     state->GetDesc(&desc);
     if(desc.ScissorEnable) {
         desc.ScissorEnable = false;
-        GetDevice()->GetDxDevice()->CreateRasterizerState(&desc, state.GetAddressOf());
-        dx_dc->RSSetState(state.Get());
+        Microsoft::WRL::ComPtr<ID3D11RasterizerState> newState{};
+        GetDevice()->GetDxDevice()->CreateRasterizerState(&desc, newState.GetAddressOf());
+        dx_dc->RSSetState(newState.Get());
     }
 }
 

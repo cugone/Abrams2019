@@ -241,7 +241,6 @@ public:
     void SetViewportAsPercent(float x = 0.0f, float y = 0.0f, float w = 1.0f, float h = 1.0f) noexcept;
     void SetViewportAndScissorAsPercent(float x = 0.0f, float y = 0.0f, float w = 1.0f, float h = 1.0f) noexcept;
 
-    //TODO: Currently not working.
     void EnableScissorTest();
     void DisableScissorTest();
 
@@ -250,6 +249,7 @@ public:
     void SetScissorAsPercent(float x = 0.0f, float y = 0.0f, float w = 1.0f, float h = 1.0f) noexcept;
     void SetScissorAndViewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height) noexcept;
     void SetScissorAndViewport(const AABB2& scissor_and_viewport) noexcept;
+    void SetScissorAndViewportAsPercent(float x = 0.0f, float y = 0.0f, float w = 1.0f, float h = 1.0f) noexcept;
     void SetScissors(const std::vector<AABB2>& scissors) noexcept;
 
     void ClearColor(const Rgba& color) noexcept;
