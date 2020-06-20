@@ -97,7 +97,7 @@ RasterDesc::RasterDesc(const XMLElement& element) noexcept {
             depthClipEnable = DataUtils::ParseXmlElementText(*xml_depthclip, depthClipEnable);
         }
 
-        scissorEnable = false;
+        scissorEnable = true;
         if(auto xml_scissor = xml_raster->FirstChildElement("scissor")) {
             DataUtils::ValidateXmlElement(*xml_scissor, "scissor", "", "");
             scissorEnable = DataUtils::ParseXmlElementText(*xml_scissor, scissorEnable);
