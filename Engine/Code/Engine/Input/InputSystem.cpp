@@ -1191,7 +1191,7 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         return true;
     }
     case WindowsSystemMessage::Mouse_RawInput: {
-        if(!_enableRawInput) {
+        if(!IsMouseRawInputEnabled()) {
             return false;
         }
         WPARAM wp = msg.wparam;
@@ -1486,6 +1486,26 @@ bool InputSystem::WasMouseWheelJustScrolledLeft() const noexcept {
 
 bool InputSystem::WasMouseWheelJustScrolledRight() const noexcept {
     return GetMouseWheelHorizontalPositionNormalized() > 0;
+}
+
+const bool InputSystem::IsMouseRawInputEnabled() const noexcept {
+    return _enableRawInput;
+}
+
+void InputSystem::SetMouseRawInput(bool value) noexcept {
+    _enableRawInput = value;
+}
+
+void InputSystem::ToggleMouseRawInput() noexcept {
+    _enableRawInput = !_enableRawInput;
+}
+
+void InputSystem::EnableMouseRawInput() noexcept {
+    _enableRawInput = true;
+}
+
+void InputSystem::DisableMouseRawInput() noexcept {
+    _enableRawInput = false;
 }
 
 std::size_t InputSystem::GetConnectedControllerCount() const noexcept {

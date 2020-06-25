@@ -404,6 +404,12 @@ public:
     bool WasMouseWheelJustScrolledLeft() const noexcept;
     bool WasMouseWheelJustScrolledRight() const noexcept;
 
+    const bool IsMouseRawInputEnabled() const noexcept;
+    void SetMouseRawInput(bool value) noexcept;
+    void ToggleMouseRawInput() noexcept;
+    void EnableMouseRawInput() noexcept;
+    void DisableMouseRawInput() noexcept;
+
     std::size_t GetConnectedControllerCount() const noexcept;
     bool IsAnyControllerConnected() const noexcept;
     const XboxController& GetXboxController(const std::size_t& controllerIndex) const noexcept;
