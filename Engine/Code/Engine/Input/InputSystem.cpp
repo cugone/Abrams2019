@@ -1374,7 +1374,7 @@ InputSystem::~InputSystem() noexcept {
     ::ClipCursor(&_initialClippingArea);
 }
 
-void InputSystem::Initialize() {
+void InputSystem::InitializeMouseRawInput() noexcept {
     RAWINPUTDEVICE rid{};
     rid.hwndTarget = reinterpret_cast<HWND>(_renderer->GetOutput()->GetWindow()->GetWindowHandle());
     rid.usUsagePage = HID_USAGE_PAGE_GENERIC;
@@ -1383,6 +1383,10 @@ void InputSystem::Initialize() {
     if(::RegisterRawInputDevices(&rid, 1, sizeof(rid)) == FALSE) {
         _fileLogger->LogAndFlush("Failed to register raw input device. Error Message:\n" + StringUtils::FormatWindowsLastErrorMessage());
     }
+}
+
+void InputSystem::Initialize() {
+    InitializeMouseRawInput();
     UpdateXboxConnectedState();
     auto ss = std::to_string(_connected_controller_count) + " Xbox controllers detected!";
     _fileLogger->LogLineAndFlush(ss);

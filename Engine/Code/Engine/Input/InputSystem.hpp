@@ -453,6 +453,7 @@ public:
     bool WasAnyControllerJustUsed() const noexcept;
 protected:
 private:
+    void InitializeMouseRawInput() noexcept;
     void UpdateXboxConnectedState() noexcept;
 
     FileLogger* _fileLogger = nullptr;
