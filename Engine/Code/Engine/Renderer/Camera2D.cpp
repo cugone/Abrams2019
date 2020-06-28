@@ -1,5 +1,7 @@
 #include "Engine/Renderer/Camera2D.hpp"
 
+#include <algorithm>
+
 void Camera2D::SetupView(const Vector2& leftBottom, const Vector2& rightTop, const Vector2& nearFar /*= Vector2(0.0f, 1.0f)*/, float aspectRatio /*= MathUtils::M_16_BY_9_RATIO*/) noexcept {
     leftBottom_view = leftBottom;
     rightTop_view = rightTop;
@@ -29,9 +31,7 @@ void Camera2D::CalcViewMatrix() noexcept {
 
 void Camera2D::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
     trauma -= trauma_recovery_rate * deltaSeconds.count();
-    if(trauma < 0.0f) {
-        trauma = 0.0f;
-    }
+    trauma = (std::max)(trauma, 0.0f);
 }
 
 const Vector2& Camera2D::GetPosition() const noexcept {
