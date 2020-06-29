@@ -41,6 +41,10 @@ public:
     const RenderTargetStack::Node& GetRenderTarget() const noexcept;
     RenderTargetStack::Node& GetRenderTarget() noexcept;
 
+    Vector2 GetViewDimensions() const noexcept;
+    float GetViewHeight() const noexcept;
+    float GetViewWidth() const noexcept;
+
     float GetShake() const noexcept;
 
     float trauma = 0.0f;

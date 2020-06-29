@@ -126,6 +126,18 @@ RenderTargetStack::Node& Camera2D::GetRenderTarget() noexcept {
     return const_cast<RenderTargetStack::Node&>(std::as_const(*this).GetRenderTarget());
 }
 
+Vector2 Camera2D::GetViewDimensions() const noexcept {
+    return Vector2{GetViewWidth(), GetViewHeight()};
+}
+
+float Camera2D::GetViewHeight() const noexcept {
+    return leftBottom_view.y - rightTop_view.y;
+}
+
+float Camera2D::GetViewWidth() const noexcept {
+    return rightTop_view.x - leftBottom_view.x;
+}
+
 float Camera2D::GetShake() const noexcept {
     return trauma * trauma;
 }
