@@ -418,6 +418,9 @@
     <ClCompile Include="Renderer\InputLayoutInstanced.cpp">
       <Filter>Renderer\Core</Filter>
     </ClCompile>
+    <ClCompile Include="Core\OrthographicCameraController.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vector2.hpp">
@@ -803,6 +806,9 @@
     </ClInclude>
     <ClInclude Include="Renderer\InputLayoutInstanced.hpp">
       <Filter>Renderer\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\OrthographicCameraController.hpp">
+      <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
