@@ -30,9 +30,9 @@ void OrthographicCameraController::Update([[maybe_unused]] TimeUtils::FPSeconds 
             Translate(right);
         }
         if(m_inputSystem->WasMouseWheelJustScrolledUp()) {
-            m_zoomLevel -= (m_zoomSpeed / m_maxZoomSpeed) * MathUtils::EasingFunctions::SmoothStop<3>(deltaSeconds.count());
+            ZoomIn();
         } else if(m_inputSystem->WasMouseWheelJustScrolledDown()) {
-            m_zoomLevel += (m_zoomSpeed / m_maxZoomSpeed) * MathUtils::EasingFunctions::SmoothStop<3>(deltaSeconds.count());
+            ZoomOut();
         }
     }
     m_zoomLevel = std::clamp(m_zoomLevel, m_minZoomLevel, m_maxZoomLevel);
@@ -59,6 +59,14 @@ void OrthographicCameraController::SetRotationDegrees(float newRotation) noexcep
 
 void OrthographicCameraController::SetRotationRadians(float newRotation) noexcept {
     m_Camera.SetOrientation(newRotation);
+}
+
+void OrthographicCameraController::ZoomOut() {
+    m_zoomLevel += m_zoomSpeed;
+}
+
+void OrthographicCameraController::ZoomIn() {
+    m_zoomLevel -= m_zoomSpeed;
 }
 
 void OrthographicCameraController::Translate(const Vector2& offset) noexcept {

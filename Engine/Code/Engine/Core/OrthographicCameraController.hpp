@@ -25,6 +25,9 @@ public:
     void RotateDegrees(float offset) noexcept;
     void RotateRadians(float offset) noexcept;
 
+    void ZoomIn();
+    void ZoomOut();
+
     void ResetZoomLevelRange() noexcept;
     void SetZoomLevel(float zoom) noexcept;
     void SetZoomLevelRange(const Vector2& minmaxZoomLevel) noexcept;
