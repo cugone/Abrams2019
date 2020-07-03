@@ -1236,6 +1236,7 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
                     }
                 }
             }
+            return true;
         }
         return false;
     }
