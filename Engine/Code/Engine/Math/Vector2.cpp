@@ -219,6 +219,10 @@ void Vector2::RotateRadians(float radians) noexcept {
     y = R * std::sin(new_angle);
 }
 
+void Vector2::RotateDegrees(float degrees) noexcept {
+    RotateRadians(MathUtils::ConvertDegreesToRadians(degrees));
+}
+
 float Vector2::Normalize() noexcept {
     float length = CalcLength();
     if(length > 0.0f) {

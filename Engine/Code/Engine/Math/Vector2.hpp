@@ -69,7 +69,7 @@ public:
     void Rotate90Degrees() noexcept;
     void RotateNegative90Degrees() noexcept;
     void RotateRadians(float radians) noexcept;
-
+    void RotateDegrees(float degrees) noexcept;
     void SetXY(float newX, float newY) noexcept;
 
     float x = 0.0f;
