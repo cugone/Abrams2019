@@ -37,6 +37,13 @@ public:
     const Camera2D& GetCamera() const noexcept;
     Camera2D& GetCamera() noexcept;
 
+    float GetShake() const noexcept;
+
+    template<typename F>
+    void DoCameraShake(F&& f) {
+        m_Camera.trauma = f();
+    }
+
 protected:
 private:
     Renderer* m_renderer{};

@@ -109,3 +109,7 @@ const Camera2D& OrthographicCameraController::GetCamera() const noexcept {
 Camera2D& OrthographicCameraController::GetCamera() noexcept {
     return m_Camera;
 }
+
+float OrthographicCameraController::GetShake() const noexcept {
+    return m_Camera.trauma * m_Camera.trauma;
+}
