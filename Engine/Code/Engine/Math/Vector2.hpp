@@ -44,6 +44,9 @@ public:
     friend std::ostream& operator<<(std::ostream& out_stream, const Vector2& v) noexcept;
     friend std::istream& operator>>(std::istream& in_stream, Vector2& v) noexcept;
 
+    static Vector2 CreateFromPolarCoordinatesDegrees(float length, float directionDegrees);
+    static Vector2 CreateFromPolarCoordinatesRadians(float length, float directionRadians);
+
     void GetXY(float& outX, float& outY) const noexcept;
     float* GetAsFloatArray() noexcept;
 

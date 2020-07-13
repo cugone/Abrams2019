@@ -148,6 +148,14 @@ std::istream& operator>>(std::istream& in_stream, Vector2& v) noexcept {
     return in_stream;
 }
 
+Vector2 Vector2::CreateFromPolarCoordinatesDegrees(float length, float directionDegrees) {
+    return CreateFromPolarCoordinatesRadians(length, MathUtils::ConvertDegreesToRadians(directionDegrees));
+}
+
+Vector2 Vector2::CreateFromPolarCoordinatesRadians(float length, float directionRadians) {
+    return Vector2{length * std::cos(directionRadians), length * std::sin(directionRadians)};
+}
+
 void Vector2::GetXY(float& outX, float& outY) const noexcept {
     outX = x;
     outY = y;
