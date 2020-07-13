@@ -14,6 +14,9 @@ public:
     static const Vector2 XY_AXIS;
     static const Vector2 YX_AXIS;
 
+    static Vector2 CreateFromPolarCoordinatesDegrees(float length, float directionDegrees);
+    static Vector2 CreateFromPolarCoordinatesRadians(float length, float directionRadians);
+
     Vector2() noexcept = default;
     explicit Vector2(const std::string& value) noexcept;
     explicit Vector2(float initialX, float initialY) noexcept;
@@ -43,9 +46,6 @@ public:
 
     friend std::ostream& operator<<(std::ostream& out_stream, const Vector2& v) noexcept;
     friend std::istream& operator>>(std::istream& in_stream, Vector2& v) noexcept;
-
-    static Vector2 CreateFromPolarCoordinatesDegrees(float length, float directionDegrees);
-    static Vector2 CreateFromPolarCoordinatesRadians(float length, float directionRadians);
 
     void GetXY(float& outX, float& outY) const noexcept;
     float* GetAsFloatArray() noexcept;
