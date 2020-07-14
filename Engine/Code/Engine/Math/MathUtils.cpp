@@ -828,6 +828,11 @@ bool DoDiscsOverlap(const Disc2& a, const Capsule2& b) noexcept {
     return CalcDistanceSquared(a.center, b.line) < (a.radius + b.radius) * (a.radius + b.radius);
 }
 
+bool DoDiscsOverlap(const Disc2& a, const AABB2& b) noexcept {
+    const auto closest_point = CalcClosestPoint(a.center, b);
+    return IsPointInside(a, closest_point);
+}
+
 bool DoSpheresOverlap(const Sphere3& a, const Sphere3& b) noexcept {
     return DoSpheresOverlap(a.center, a.radius, b.center, b.radius);
 }
@@ -838,6 +843,11 @@ bool DoSpheresOverlap(const Vector3& centerA, float radiusA, const Vector3& cent
 
 bool DoSpheresOverlap(const Sphere3& a, const Capsule3& b) noexcept {
     return CalcDistanceSquared(a.center, b.line) < (a.radius + b.radius) * (a.radius + b.radius);
+}
+
+bool DoSpheresOverlap(const Sphere3& a, const AABB3& b) noexcept {
+    const auto closest_point = CalcClosestPoint(a.center, b);
+    return IsPointInside(a, closest_point);
 }
 
 bool DoAABBsOverlap(const AABB2& a, const AABB2& b) noexcept {
@@ -866,6 +876,14 @@ bool DoAABBsOverlap(const AABB3& a, const AABB3& b) noexcept {
     if(b.maxs.z < a.mins.z)
         return false;
     return true;
+}
+
+bool DoAABBsOverlap(const AABB2& a, const Disc2& b) noexcept {
+    return DoDiscsOverlap(b, a);
+}
+
+bool DoAABBsOverlap(const AABB3& a, const Sphere3& b) noexcept {
+    return DoSpheresOverlap(b, a);
 }
 
 bool DoOBBsOverlap(const OBB2& a, const OBB2& b) noexcept {

@@ -247,13 +247,17 @@ Vector2 CalcPointFromNormalizedHalfExtents(const Vector2& uv, const AABB2& bound
 bool DoDiscsOverlap(const Disc2& a, const Disc2& b) noexcept;
 bool DoDiscsOverlap(const Vector2& centerA, float radiusA, const Vector2& centerB, float radiusB) noexcept;
 bool DoDiscsOverlap(const Disc2& a, const Capsule2& b) noexcept;
+bool DoDiscsOverlap(const Disc2& a, const AABB2& b) noexcept;
 
 bool DoSpheresOverlap(const Sphere3& a, const Sphere3& b) noexcept;
 bool DoSpheresOverlap(const Vector3& centerA, float radiusA, const Vector3& centerB, float radiusB) noexcept;
 bool DoSpheresOverlap(const Sphere3& a, const Capsule3& b) noexcept;
+bool DoSpheresOverlap(const Sphere3& a, const AABB3& b) noexcept;
 
 bool DoAABBsOverlap(const AABB2& a, const AABB2& b) noexcept;
 bool DoAABBsOverlap(const AABB3& a, const AABB3& b) noexcept;
+bool DoAABBsOverlap(const AABB2& a, const Disc2& b) noexcept;
+bool DoAABBsOverlap(const AABB3& a, const Sphere3& b) noexcept;
 bool DoOBBsOverlap(const OBB2& a, const OBB2& b) noexcept;
 bool DoPolygonsOverlap(const Polygon2& a, const Polygon2& b) noexcept;
 
