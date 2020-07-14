@@ -46,6 +46,12 @@ void OrthographicCameraController::Update([[maybe_unused]] TimeUtils::FPSeconds 
     m_renderer->SetCamera(m_ShakyCamera);
 }
 
+void OrthographicCameraController::SetupCameraShake(float maxShakeOffsetHorizontal, float maxShakeOffsetVertical, float maxShakeAngleDegrees) {
+    m_maxShakeOffsetHorizontal = maxShakeOffsetHorizontal;
+    m_maxShakeOffsetVertical = maxShakeOffsetVertical;
+    m_maxShakeAngle = maxShakeAngleDegrees;
+}
+
 void OrthographicCameraController::SetAspectRatio(float aspectRatio) noexcept {
     m_aspectRatio = aspectRatio;
 }

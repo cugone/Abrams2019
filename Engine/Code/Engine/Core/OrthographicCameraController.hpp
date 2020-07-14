@@ -14,6 +14,8 @@ public:
 
     void Update([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept;
 
+    void SetupCameraShake(float maxShakeOffsetHorizontal, float maxShakeOffsetVertical, float maxShakeAngleDegrees);
+
     void SetAspectRatio(float aspectRatio) noexcept;
     float GetAspectRatio() const noexcept;
 
