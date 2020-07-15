@@ -1,6 +1,7 @@
 #pragma once
 
 #include <type_traits>
+#include <utility>
 
 namespace TypeUtils {
 
@@ -48,6 +49,20 @@ namespace TypeUtils {
     template<typename E>
     constexpr bool is_decrementable_enum_v = is_decrementable_enum<E>::value;
 
+    namespace detail {
+        template<typename E, typename = std::enable_if_t<TypeUtils::is_scoped_enum_v<E>>>
+        const auto GetUnderlyingValue(E a) {
+            using underlying = std::underlying_type_t<E>;
+            return static_cast<underlying>(a);
+        }
+
+        template<typename E, typename = std::enable_if_t<TypeUtils::is_scoped_enum_v<E>>>
+        const auto GetUnderlyingValues(E a, E b) {
+            using underlying = std::underlying_type_t<E>;
+            return std::make_pair(static_cast<underlying>(a), static_cast<underlying>(b));
+        }
+    }
+
 } // namespace TypeUtils
 
 
@@ -57,9 +72,7 @@ namespace TypeUtils {
 
 template<typename E, typename = std::enable_if_t<TypeUtils::is_bitflag_enum_v<E>>>
 E& operator|=(E& a, const E& b) noexcept {
-    using underlying = std::underlying_type_t<E>;
-    auto underlying_a = static_cast<underlying>(a);
-    auto underlying_b = static_cast<underlying>(b);
+    const auto [underlying_a, underlying_b] = TypeUtils::detail::GetUnderlyingValues(a, b);
     a = static_cast<E>(underlying_a | underlying_b);
     return a;
 }
@@ -72,9 +85,7 @@ E operator|(E a, const E& b) noexcept {
 
 template<typename E, typename = std::enable_if_t<TypeUtils::is_bitflag_enum_v<E>>>
 E& operator&=(E& a, const E& b) noexcept {
-    using underlying = std::underlying_type_t<E>;
-    auto underlying_a = static_cast<underlying>(a);
-    auto underlying_b = static_cast<underlying>(b);
+    const auto [underlying_a, underlying_b] = TypeUtils::detail::GetUnderlyingValues(a, b);
     a = static_cast<E>(underlying_a & underlying_b);
     return a;
 }
@@ -87,9 +98,7 @@ E operator&(E a, const E& b) noexcept {
 
 template<typename E, typename = std::enable_if_t<TypeUtils::is_bitflag_enum_v<E>>>
 E& operator^=(E& a, const E& b) noexcept {
-    using underlying = std::underlying_type_t<E>;
-    auto underlying_a = static_cast<underlying>(a);
-    auto underlying_b = static_cast<underlying>(b);
+    const auto [underlying_a, underlying_b] = TypeUtils::detail::GetUnderlyingValues(a, b);
     a = static_cast<E>(underlying_a ^ underlying_b);
     return a;
 }
@@ -102,8 +111,7 @@ E operator^(E a, const E& b) noexcept {
 
 template<typename E, typename = std::enable_if_t<TypeUtils::is_bitflag_enum_v<E>>>
 E operator~(E a) noexcept {
-    using underlying = std::underlying_type_t<E>;
-    auto underlying_a = static_cast<underlying>(a);
+    const auto underlying_a = TypeUtils::detail::GetUnderlyingValue(a);
     a = static_cast<E>(~underlying_a);
     return a;
 }
