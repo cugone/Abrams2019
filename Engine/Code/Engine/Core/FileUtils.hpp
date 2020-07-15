@@ -99,11 +99,6 @@ std::size_t CountFilesInFolders(const std::filesystem::path& folderpath, const s
 void RemoveExceptMostRecentFiles(const std::filesystem::path& folderpath, std::size_t mostRecentCountToKeep, const std::string& validExtensionList = std::string{}) noexcept;
 std::vector<std::filesystem::path> GetAllPathsInFolders(const std::filesystem::path& folderpath, const std::string& validExtensionList = std::string{}, bool recursive = false) noexcept;
 
-//Unconditional byte order swap.
-uint16_t EndianSwap(uint16_t value) noexcept;
-uint32_t EndianSwap(uint32_t value) noexcept;
-uint64_t EndianSwap(uint64_t value) noexcept;
-
 namespace detail {
 
 template<typename DirectoryIteratorType, typename Callable>
