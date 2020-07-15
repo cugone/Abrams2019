@@ -810,5 +810,8 @@
     <ClInclude Include="Core\OrthographicCameraController.hpp">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="Core\TypeUtils.hpp">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

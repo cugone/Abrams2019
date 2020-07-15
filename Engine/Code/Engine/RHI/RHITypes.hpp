@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Engine/Core/TypeUtils.hpp"
+
 #include <cstdint>
 #include <ratio>
 #include <string>
@@ -82,6 +84,9 @@ enum class PipelineStage : uint8_t {
     Cs = 0b00100000,
     All = Vs | Hs | Ds | Gs | Ps | Cs
 };
+
+template<>
+struct is_bitflag_enum_type<PipelineStage> : std::true_type {};
 
 enum class ComparisonFunction {
     Never,
@@ -277,6 +282,9 @@ enum class BufferUsage : uint8_t {
     Staging = 0b00001000
 };
 
+template<>
+struct is_bitflag_enum_type<BufferUsage> : std::true_type {};
+
 enum class BufferBindUsage : uint32_t {
     Vertex_Buffer = 0x001,
     Index_Buffer = 0x002,
@@ -289,6 +297,9 @@ enum class BufferBindUsage : uint32_t {
     Decoder = 0x100,
     Video_Encoder = 0x200
 };
+
+template<>
+struct is_bitflag_enum_type<BufferBindUsage> : std::true_type {};
 
 enum class FilterMode {
     Point,
@@ -348,6 +359,9 @@ enum class BlendColorWriteEnable : unsigned char {
     All = 0x0F
 };
 
+template<>
+struct is_bitflag_enum_type<BlendColorWriteEnable> : std::true_type {};
+
 enum class FillMode {
     Solid,
     Wireframe,
@@ -384,89 +398,6 @@ enum class ResourceMiscFlag : long {
     Hw_Protected = 0x80000L
 };
 
-template<typename E>
-using is_scoped_enum = std::integral_constant<bool, std::is_enum<E>::value && !std::is_convertible<E, int>::value>;
-
-template<typename E>
-constexpr bool is_scoped_enum_v = is_scoped_enum<E>::value;
-
-template<typename E>
-struct is_bitflag_enum_type : std::false_type {};
-
 template<>
 struct is_bitflag_enum_type<ResourceMiscFlag> : std::true_type {};
-
-template<>
-struct is_bitflag_enum_type<BlendColorWriteEnable> : std::true_type {};
-
-template<>
-struct is_bitflag_enum_type<BufferBindUsage> : std::true_type {};
-
-template<>
-struct is_bitflag_enum_type<BufferUsage> : std::true_type {};
-
-template<>
-struct is_bitflag_enum_type<PipelineStage> : std::true_type {};
-
-template<typename E>
-constexpr bool is_bitflag_enum_type_v = is_bitflag_enum_type<E>::value;
-
-template<typename E>
-using is_bitflag_enum = std::integral_constant<bool, is_scoped_enum_v<E> && is_bitflag_enum_type_v<E>>;
-
-template<typename E>
-constexpr bool is_bitflag_enum_v = is_bitflag_enum<E>::value;
-
-template<typename E, typename = std::enable_if_t<is_bitflag_enum_v<E>>>
-E& operator|=(E& a, const E& b) noexcept {
-    using underlying = std::underlying_type_t<E>;
-    auto underlying_a = static_cast<underlying>(a);
-    auto underlying_b = static_cast<underlying>(b);
-    a = static_cast<E>(underlying_a | underlying_b);
-    return a;
-}
-
-template<typename E, typename = std::enable_if_t<is_bitflag_enum_v<E>>>
-E operator|(E a, const E& b) noexcept {
-    a |= b;
-    return a;
-}
-
-template<typename E, typename = std::enable_if_t<is_bitflag_enum_v<E>>>
-E& operator&=(E& a, const E& b) noexcept {
-    using underlying = std::underlying_type_t<E>;
-    auto underlying_a = static_cast<underlying>(a);
-    auto underlying_b = static_cast<underlying>(b);
-    a = static_cast<E>(underlying_a & underlying_b);
-    return a;
-}
-
-template<typename E, typename = std::enable_if_t<is_bitflag_enum_v<E>>>
-E operator&(E a, const E& b) noexcept {
-    a &= b;
-    return a;
-}
-
-template<typename E, typename = std::enable_if_t<is_bitflag_enum_v<E>>>
-E& operator^=(E& a, const E& b) noexcept {
-    using underlying = std::underlying_type_t<E>;
-    auto underlying_a = static_cast<underlying>(a);
-    auto underlying_b = static_cast<underlying>(b);
-    a = static_cast<E>(underlying_a ^ underlying_b);
-    return a;
-}
-
-template<typename E, typename = std::enable_if_t<is_bitflag_enum_v<E>>>
-E operator^(E a, const E& b) noexcept {
-    a ^= b;
-    return a;
-}
-
-template<typename E, typename = std::enable_if_t<is_bitflag_enum_v<E>>>
-E operator~(E a) noexcept {
-    using underlying = std::underlying_type_t<E>;
-    auto underlying_a = static_cast<underlying>(a);
-    a = static_cast<E>(~underlying_a);
-    return a;
-}
 

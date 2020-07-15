@@ -180,6 +180,7 @@
     <ClInclude Include="Core\ThreadUtils.hpp" />
     <ClInclude Include="Core\ThreadSafeQueue.hpp" />
     <ClInclude Include="Core\TimeUtils.hpp" />
+    <ClInclude Include="Core\TypeUtils.hpp" />
     <ClInclude Include="Core\Vertex3D.hpp" />
     <ClInclude Include="Core\Win.hpp" />
     <ClInclude Include="Input\InputSystem.hpp" />
