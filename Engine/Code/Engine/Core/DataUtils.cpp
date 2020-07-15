@@ -12,6 +12,9 @@
 
 namespace DataUtils {
 
+std::string GetElementTextAsString(const XMLElement& element);
+std::string GetAttributeAsString(const XMLElement& element, const std::string& attributeName);
+
 void ValidateXmlElement(const XMLElement& element,
                         const std::string& name,
                         const std::string& requiredChildElements,
@@ -201,11 +204,14 @@ bool HasChild(const XMLElement& elem, const std::string& name) noexcept {
     return result;
 }
 
+std::string GetElementTextAsString(const XMLElement& element) {
+    const auto txtAsCStr = element.GetText();
+    return std::string{txtAsCStr ? txtAsCStr : ""};
+}
+
 bool ParseXmlElementText(const XMLElement& element, bool defaultValue) noexcept {
     auto retVal = defaultValue;
-    const auto txtAsCStr = element.GetText();
-    auto txt = std::string{txtAsCStr ? txtAsCStr : ""};
-    txt = StringUtils::ToLowerCase(txt);
+    const auto txt = StringUtils::ToLowerCase(GetElementTextAsString(element));
     if(txt == "true") {
         return true;
     } else if(txt == "false") {
@@ -221,8 +227,7 @@ bool ParseXmlElementText(const XMLElement& element, bool defaultValue) noexcept 
 }
 unsigned char ParseXmlElementText(const XMLElement& element, unsigned char defaultValue) noexcept {
     auto retVal = defaultValue;
-    const auto txtAsCStr = element.GetText();
-    const auto txt = std::string{txtAsCStr ? txtAsCStr : ""};
+    const auto txt = GetElementTextAsString(element);
     const auto is_range = txt.find('~') != std::string::npos;
     if(!is_range) {
         try {
@@ -231,21 +236,13 @@ unsigned char ParseXmlElementText(const XMLElement& element, unsigned char defau
             return defaultValue;
         }
     } else {
-        const auto values = StringUtils::Split(txt, '~');
-        if(values.size() == 1) {
-            retVal = static_cast<decltype(retVal)>(std::stoul(values[0]));
-        } else {
-            const auto lower = static_cast<decltype(retVal)>(std::stoul(values[0]));
-            const auto upper = static_cast<decltype(retVal)>(std::stoul(values[1]));
-            retVal = static_cast<decltype(retVal)>(MathUtils::GetRandomIntInRange(lower, upper));
-        }
+        retVal = detail::CalculateUnsignedIntegerRangeResult<decltype(retVal)>(txt);
     }
     return retVal;
 }
 signed char ParseXmlElementText(const XMLElement& element, signed char defaultValue) noexcept {
     auto retVal = defaultValue;
-    const auto txtAsCStr = element.GetText();
-    const auto txt = std::string{txtAsCStr ? txtAsCStr : ""};
+    const auto txt = GetElementTextAsString(element);
     const auto is_range = txt.find('~') != std::string::npos;
     if(!is_range) {
         try {
@@ -254,21 +251,13 @@ signed char ParseXmlElementText(const XMLElement& element, signed char defaultVa
             return defaultValue;
         }
     } else {
-        const auto values = StringUtils::Split(txt, '~');
-        if(values.size() == 1) {
-            retVal = static_cast<decltype(retVal)>(std::stoi(values[0]));
-        } else {
-            const auto lower = static_cast<decltype(retVal)>(std::stoi(values[0]));
-            const auto upper = static_cast<decltype(retVal)>(std::stoi(values[1]));
-            retVal = static_cast<decltype(retVal)>(MathUtils::GetRandomIntInRange(lower, upper));
-        }
+        retVal = detail::CalculateIntegerRangeResult<decltype(retVal)>(txt);
     }
     return retVal;
 }
 char ParseXmlElementText(const XMLElement& element, char defaultValue) noexcept {
     auto retVal = defaultValue;
-    const auto txtAsCStr = element.GetText();
-    const auto txt = std::string{txtAsCStr ? txtAsCStr : ""};
+    const auto txt = GetElementTextAsString(element);
     const auto is_range = txt.find('~') != std::string::npos;
     if(!is_range) {
         try {
@@ -277,21 +266,13 @@ char ParseXmlElementText(const XMLElement& element, char defaultValue) noexcept 
             return defaultValue;
         }
     } else {
-        const auto values = StringUtils::Split(txt, '~');
-        if(values.size() == 1) {
-            retVal = static_cast<decltype(retVal)>(std::stoi(values[0]));
-        } else {
-            const auto lower = static_cast<decltype(retVal)>(std::stoi(values[0]));
-            const auto upper = static_cast<decltype(retVal)>(std::stoi(values[1]));
-            retVal = static_cast<decltype(retVal)>(MathUtils::GetRandomIntInRange(lower, upper));
-        }
+        retVal = detail::CalculateIntegerRangeResult<decltype(retVal)>(txt);
     }
     return retVal;
 }
 unsigned short ParseXmlElementText(const XMLElement& element, unsigned short defaultValue) noexcept {
     auto retVal = defaultValue;
-    const auto txtAsCStr = element.GetText();
-    const auto txt = std::string{txtAsCStr ? txtAsCStr : ""};
+    const auto txt = GetElementTextAsString(element);
     const auto is_range = txt.find('~') != std::string::npos;
     if(!is_range) {
         try {
@@ -300,21 +281,13 @@ unsigned short ParseXmlElementText(const XMLElement& element, unsigned short def
             return defaultValue;
         }
     } else {
-        const auto values = StringUtils::Split(txt, '~');
-        if(values.size() == 1) {
-            retVal = static_cast<decltype(retVal)>(std::stoul(values[0]));
-        } else {
-            const auto lower = static_cast<decltype(retVal)>(std::stoul(values[0]));
-            const auto upper = static_cast<decltype(retVal)>(std::stoul(values[1]));
-            retVal = static_cast<decltype(retVal)>(MathUtils::GetRandomIntInRange(lower, upper));
-        }
+        retVal = detail::CalculateUnsignedIntegerRangeResult<decltype(retVal)>(txt);
     }
     return retVal;
 }
 short ParseXmlElementText(const XMLElement& element, short defaultValue) noexcept {
     auto retVal = defaultValue;
-    const auto txtAsCStr = element.GetText();
-    const auto txt = std::string{txtAsCStr ? txtAsCStr : ""};
+    const auto txt = GetElementTextAsString(element);
     const auto is_range = txt.find('~') != std::string::npos;
     if(!is_range) {
         try {
@@ -323,21 +296,13 @@ short ParseXmlElementText(const XMLElement& element, short defaultValue) noexcep
             return defaultValue;
         }
     } else {
-        const auto values = StringUtils::Split(txt, '~');
-        if(values.size() == 1) {
-            retVal = static_cast<decltype(retVal)>(std::stoi(values[0]));
-        } else {
-            const auto lower = static_cast<decltype(retVal)>(std::stoi(values[0]));
-            const auto upper = static_cast<decltype(retVal)>(std::stoi(values[1]));
-            retVal = static_cast<decltype(retVal)>(MathUtils::GetRandomIntInRange(lower, upper));
-        }
+        retVal = detail::CalculateIntegerRangeResult<decltype(retVal)>(txt);
     }
     return retVal;
 }
 unsigned int ParseXmlElementText(const XMLElement& element, unsigned int defaultValue) noexcept {
     auto retVal = defaultValue;
-    const auto txtAsCStr = element.GetText();
-    const auto txt = std::string{txtAsCStr ? txtAsCStr : ""};
+    const auto txt = GetElementTextAsString(element);
     const auto is_range = txt.find('~') != std::string::npos;
     if(!is_range) {
         try {
@@ -359,8 +324,7 @@ unsigned int ParseXmlElementText(const XMLElement& element, unsigned int default
 }
 int ParseXmlElementText(const XMLElement& element, int defaultValue) noexcept {
     auto retVal = defaultValue;
-    const auto txtAsCStr = element.GetText();
-    const auto txt = std::string{txtAsCStr ? txtAsCStr : ""};
+    const auto txt = GetElementTextAsString(element);
     const auto is_range = txt.find('~') != std::string::npos;
     if(!is_range) {
         try {
@@ -369,21 +333,13 @@ int ParseXmlElementText(const XMLElement& element, int defaultValue) noexcept {
             return defaultValue;
         }
     } else {
-        const auto values = StringUtils::Split(txt, '~');
-        if(values.size() == 1) {
-            retVal = static_cast<decltype(retVal)>(std::stoi(values[0]));
-        } else {
-            const auto lower = static_cast<decltype(retVal)>(std::stoi(values[0]));
-            const auto upper = static_cast<decltype(retVal)>(std::stoi(values[1]));
-            retVal = static_cast<decltype(retVal)>(MathUtils::GetRandomIntInRange(lower, upper));
-        }
+        retVal = detail::CalculateIntegerRangeResult<decltype(retVal)>(txt);
     }
     return retVal;
 }
 unsigned long ParseXmlElementText(const XMLElement& element, unsigned long defaultValue) noexcept {
     auto retVal = defaultValue;
-    const auto txtAsCStr = element.GetText();
-    const auto txt = std::string{txtAsCStr ? txtAsCStr : ""};
+    const auto txt = GetElementTextAsString(element);
     const auto is_range = txt.find('~') != std::string::npos;
     if(!is_range) {
         try {
@@ -392,21 +348,13 @@ unsigned long ParseXmlElementText(const XMLElement& element, unsigned long defau
             return defaultValue;
         }
     } else {
-        const auto values = StringUtils::Split(txt, '~');
-        if(values.size() == 1) {
-            retVal = static_cast<decltype(retVal)>(std::stoul(values[0]));
-        } else {
-            const auto lower = static_cast<decltype(retVal)>(std::stoul(values[0]));
-            const auto upper = static_cast<decltype(retVal)>(std::stoul(values[1]));
-            retVal = static_cast<decltype(retVal)>(MathUtils::GetRandomLongLongInRange(lower, upper));
-        }
+        retVal = detail::CalculateUnsignedLongLongRangeResult<decltype(retVal)>(txt);
     }
     return retVal;
 }
 long ParseXmlElementText(const XMLElement& element, long defaultValue) noexcept {
     auto retVal = defaultValue;
-    const auto txtAsCStr = element.GetText();
-    const auto txt = std::string{txtAsCStr ? txtAsCStr : ""};
+    const auto txt = GetElementTextAsString(element);
     const auto is_range = txt.find('~') != std::string::npos;
     if(!is_range) {
         try {
@@ -415,21 +363,13 @@ long ParseXmlElementText(const XMLElement& element, long defaultValue) noexcept 
             return defaultValue;
         }
     } else {
-        const auto values = StringUtils::Split(txt, '~');
-        if(values.size() == 1) {
-            retVal = static_cast<decltype(retVal)>(std::stoll(values[0]));
-        } else {
-            const auto lower = static_cast<decltype(retVal)>(std::stoll(values[0]));
-            const auto upper = static_cast<decltype(retVal)>(std::stoll(values[1]));
-            retVal = static_cast<decltype(retVal)>(MathUtils::GetRandomLongLongInRange(lower, upper));
-        }
+        retVal = detail::CalculateLongLongRangeResult<decltype(retVal)>(txt);
     }
     return retVal;
 }
 unsigned long long ParseXmlElementText(const XMLElement& element, unsigned long long defaultValue) noexcept {
     auto retVal = defaultValue;
-    const auto txtAsCStr = element.GetText();
-    const auto txt = std::string{txtAsCStr ? txtAsCStr : ""};
+    const auto txt = GetElementTextAsString(element);
     const auto is_range = txt.find('~') != std::string::npos;
     if(!is_range) {
         try {
@@ -438,21 +378,13 @@ unsigned long long ParseXmlElementText(const XMLElement& element, unsigned long 
             return defaultValue;
         }
     } else {
-        const auto values = StringUtils::Split(txt, '~');
-        if(values.size() == 1) {
-            retVal = static_cast<decltype(retVal)>(std::stoull(values[0]));
-        } else {
-            const auto lower = static_cast<decltype(retVal)>(std::stoull(values[0]));
-            const auto upper = static_cast<decltype(retVal)>(std::stoull(values[1]));
-            retVal = static_cast<decltype(retVal)>(MathUtils::GetRandomLongLongInRange(lower, upper));
-        }
+        retVal = detail::CalculateUnsignedLongLongRangeResult<decltype(retVal)>(txt);
     }
     return retVal;
 }
 long long ParseXmlElementText(const XMLElement& element, long long defaultValue) noexcept {
     auto retVal = defaultValue;
-    const auto txtAsCStr = element.GetText();
-    const auto txt = std::string{txtAsCStr ? txtAsCStr : ""};
+    const auto txt = GetElementTextAsString(element);
     const auto is_range = txt.find('~') != std::string::npos;
     if(!is_range) {
         try {
@@ -461,21 +393,13 @@ long long ParseXmlElementText(const XMLElement& element, long long defaultValue)
             return defaultValue;
         }
     } else {
-        const auto values = StringUtils::Split(txt, '~');
-        if(values.size() == 1) {
-            retVal = static_cast<decltype(retVal)>(std::stoll(values[0]));
-        } else {
-            const auto lower = static_cast<decltype(retVal)>(std::stoll(values[0]));
-            const auto upper = static_cast<decltype(retVal)>(std::stoll(values[1]));
-            retVal = static_cast<decltype(retVal)>(MathUtils::GetRandomLongLongInRange(lower, upper));
-        }
+        retVal = detail::CalculateLongLongRangeResult<decltype(retVal)>(txt);
     }
     return retVal;
 }
 float ParseXmlElementText(const XMLElement& element, float defaultValue) noexcept {
     auto retVal = defaultValue;
-    const auto txtAsCStr = element.GetText();
-    const auto txt = std::string{txtAsCStr ? txtAsCStr : ""};
+    const auto txt = GetElementTextAsString(element);
     const auto is_range = txt.find('~') != std::string::npos;
     if(!is_range) {
         try {
@@ -484,21 +408,13 @@ float ParseXmlElementText(const XMLElement& element, float defaultValue) noexcep
             return defaultValue;
         }
     } else {
-        const auto values = StringUtils::Split(txt, '~');
-        if(values.size() == 1) {
-            retVal = static_cast<decltype(retVal)>(std::stof(values[0]));
-        } else {
-            const auto lower = static_cast<decltype(retVal)>(std::stof(values[0]));
-            const auto upper = static_cast<decltype(retVal)>(std::stof(values[1]));
-            retVal = static_cast<decltype(retVal)>(MathUtils::GetRandomFloatInRange(lower, upper));
-        }
+        retVal = detail::CalculateFloatRangeResult<decltype(retVal)>(txt);
     }
     return retVal;
 }
 double ParseXmlElementText(const XMLElement& element, double defaultValue) noexcept {
     auto retVal = defaultValue;
-    const auto txtAsCStr = element.GetText();
-    const auto txt = std::string{txtAsCStr ? txtAsCStr : ""};
+    const auto txt = GetElementTextAsString(element);
     const auto is_range = txt.find('~') != std::string::npos;
     if(!is_range) {
         try {
@@ -507,22 +423,14 @@ double ParseXmlElementText(const XMLElement& element, double defaultValue) noexc
             return defaultValue;
         }
     } else {
-        const auto values = StringUtils::Split(txt, '~');
-        if(values.size() == 1) {
-            retVal = static_cast<decltype(retVal)>(std::stod(values[0]));
-        } else {
-            const auto lower = static_cast<decltype(retVal)>(std::stod(values[0]));
-            const auto upper = static_cast<decltype(retVal)>(std::stod(values[1]));
-            retVal = static_cast<decltype(retVal)>(MathUtils::GetRandomDoubleInRange(lower, upper));
-        }
+        retVal = detail::CalculateDoubleRangeResult<decltype(retVal)>(txt);
     }
     return retVal;
 }
 
 long double ParseXmlElementText(const XMLElement& element, long double defaultValue) noexcept {
     auto retVal = defaultValue;
-    const auto txtAsCStr = element.GetText();
-    const auto txt = std::string{txtAsCStr ? txtAsCStr : ""};
+    const auto txt = GetElementTextAsString(element);
     const auto is_range = txt.find('~') != std::string::npos;
     if(!is_range) {
         try {
@@ -531,21 +439,13 @@ long double ParseXmlElementText(const XMLElement& element, long double defaultVa
             return defaultValue;
         }
     } else {
-        const auto values = StringUtils::Split(txt, '~');
-        if(values.size() == 1) {
-            retVal = static_cast<decltype(retVal)>(std::stold(values[0]));
-        } else {
-            const auto lower = static_cast<decltype(retVal)>(std::stold(values[0]));
-            const auto upper = static_cast<decltype(retVal)>(std::stold(values[1]));
-            retVal = static_cast<decltype(retVal)>(MathUtils::GetRandomLongDoubleInRange(lower, upper));
-        }
+        retVal = detail::CalculateLongDoubleRangeResult<decltype(retVal)>(txt);
     }
     return retVal;
 }
 
 Rgba ParseXmlElementText(const XMLElement& element, const Rgba& defaultValue) noexcept {
-    const auto s = element.GetText();
-    const auto textVal = std::string{s ? s : ""};
+    const auto textVal = GetElementTextAsString(element);
     if(textVal.empty()) {
         return defaultValue;
     } else {
@@ -553,8 +453,7 @@ Rgba ParseXmlElementText(const XMLElement& element, const Rgba& defaultValue) no
     }
 }
 Vector2 ParseXmlElementText(const XMLElement& element, const Vector2& defaultValue) noexcept {
-    const auto s = element.GetText();
-    const auto textVal = std::string{s ? s : ""};
+    const auto textVal = GetElementTextAsString(element);
     if(textVal.empty()) {
         return defaultValue;
     } else {
@@ -562,8 +461,7 @@ Vector2 ParseXmlElementText(const XMLElement& element, const Vector2& defaultVal
     }
 }
 IntVector2 ParseXmlElementText(const XMLElement& element, const IntVector2& defaultValue) noexcept {
-    const auto s = element.GetText();
-    const auto textVal = std::string{s ? s : ""};
+    const auto textVal = GetElementTextAsString(element);
     if(textVal.empty()) {
         return defaultValue;
     } else {
@@ -571,8 +469,7 @@ IntVector2 ParseXmlElementText(const XMLElement& element, const IntVector2& defa
     }
 }
 Vector3 ParseXmlElementText(const XMLElement& element, const Vector3& defaultValue) noexcept {
-    const auto s = element.GetText();
-    const auto textVal = std::string{s ? s : ""};
+    const auto textVal = GetElementTextAsString(element);
     if(textVal.empty()) {
         return defaultValue;
     } else {
@@ -580,8 +477,7 @@ Vector3 ParseXmlElementText(const XMLElement& element, const Vector3& defaultVal
     }
 }
 IntVector3 ParseXmlElementText(const XMLElement& element, const IntVector3& defaultValue) noexcept {
-    const auto s = element.GetText();
-    const auto textVal = std::string{s ? s : ""};
+    const auto textVal = GetElementTextAsString(element);
     if(textVal.empty()) {
         return defaultValue;
     } else {
@@ -589,8 +485,7 @@ IntVector3 ParseXmlElementText(const XMLElement& element, const IntVector3& defa
     }
 }
 Vector4 ParseXmlElementText(const XMLElement& element, const Vector4& defaultValue) noexcept {
-    const auto s = element.GetText();
-    const auto textVal = std::string{s ? s : ""};
+    const auto textVal = GetElementTextAsString(element);
     if(textVal.empty()) {
         return defaultValue;
     } else {
@@ -598,8 +493,7 @@ Vector4 ParseXmlElementText(const XMLElement& element, const Vector4& defaultVal
     }
 }
 IntVector4 ParseXmlElementText(const XMLElement& element, const IntVector4& defaultValue) noexcept {
-    const auto s = element.GetText();
-    const auto textVal = std::string{s ? s : ""};
+    const auto textVal = GetElementTextAsString(element);
     if(textVal.empty()) {
         return defaultValue;
     } else {
@@ -607,8 +501,7 @@ IntVector4 ParseXmlElementText(const XMLElement& element, const IntVector4& defa
     }
 }
 Matrix4 ParseXmlElementText(const XMLElement& element, const Matrix4& defaultValue) noexcept {
-    const auto s = element.GetText();
-    const auto textVal = std::string{s ? s : ""};
+    const auto textVal = GetElementTextAsString(element);
     if(textVal.empty()) {
         return defaultValue;
     } else {
@@ -622,8 +515,7 @@ std::string ParseXmlElementText(const XMLElement& element, const char* defaultVa
 }
 
 std::string ParseXmlElementText(const XMLElement& element, const std::string& defaultValue) noexcept {
-    const auto s = element.GetText();
-    const auto textVal = std::string{s ? s : ""};
+    const auto textVal = GetElementTextAsString(element);
     if(textVal.empty()) {
         return defaultValue;
     } else {
@@ -637,48 +529,38 @@ bool ParseXmlAttribute(const XMLElement& element, const std::string& attributeNa
     return retVal;
 }
 
+std::string GetAttributeAsString(const XMLElement& element, const std::string& attributeName) {
+    const auto attrAsCStr = element.Attribute(attributeName.c_str());
+    return std::string{attrAsCStr ? attrAsCStr : ""};
+}
+
 unsigned char ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, unsigned char defaultValue) noexcept {
     unsigned int retVal = defaultValue;
-    const auto attrAsCStr = element.Attribute(attributeName.c_str());
-    const auto attr = std::string{attrAsCStr ? attrAsCStr : ""};
+    const auto attr = GetAttributeAsString(element, attributeName);
     const auto is_range = attr.find('~') != std::string::npos;
     if(!is_range) {
         element.QueryUnsignedAttribute(attributeName.c_str(), &retVal);
     } else {
-        const auto values = StringUtils::Split(attr, '~');
-        if(values.size() == 1) {
-            return static_cast<unsigned char>(std::stoul(values[0]));
-        }
-        const auto lower = static_cast<unsigned char>(std::stoul(values[0]));
-        const auto upper = static_cast<unsigned char>(std::stoul(values[1]));
-        retVal = MathUtils::GetRandomIntInRange(lower, upper);
+        retVal = detail::CalculateUnsignedIntegerRangeResult<decltype(retVal)>(attr);
     }
     return static_cast<unsigned char>(retVal);
 }
 
 signed char ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, signed char defaultValue) noexcept {
     signed int retVal = defaultValue;
-    const auto attrAsCStr = element.Attribute(attributeName.c_str());
-    const auto attr = std::string{attrAsCStr ? attrAsCStr : ""};
+    const auto attr = GetAttributeAsString(element, attributeName);
     const auto is_range = attr.find('~') != std::string::npos;
     if(!is_range) {
         element.QueryIntAttribute(attributeName.c_str(), &retVal);
     } else {
-        const auto values = StringUtils::Split(attr, '~');
-        if(values.size() == 1) {
-            return static_cast<signed char>(std::stoul(values[0]));
-        }
-        const auto lower = static_cast<signed char>(std::stoul(values[0]));
-        const auto upper = static_cast<signed char>(std::stoul(values[1]));
-        retVal = MathUtils::GetRandomIntInRange(lower, upper);
+        retVal = detail::CalculateIntegerRangeResult<decltype(retVal)>(attr);
     }
     return static_cast<signed char>(retVal);
 }
 
 char ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, char defaultValue) noexcept {
     char retVal = defaultValue;
-    const auto attrAsCStr = element.Attribute(attributeName.c_str());
-    const auto attr = std::string(attrAsCStr ? attrAsCStr : "");
+    const auto attr = GetAttributeAsString(element, attributeName);
     const auto is_range = attr.find('~') != std::string::npos;
     if(!is_range) {
         const auto attrValue = element.Attribute(attributeName.c_str());
@@ -715,8 +597,7 @@ char ParseXmlAttribute(const XMLElement& element, const std::string& attributeNa
 
 unsigned short ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, unsigned short defaultValue) noexcept {
     unsigned int retVal = defaultValue;
-    const auto attrAsCStr = element.Attribute(attributeName.c_str());
-    const auto attr = std::string{attrAsCStr ? attrAsCStr : ""};
+    const auto attr = GetAttributeAsString(element, attributeName);
     const auto is_range = attr.find('~') != std::string::npos;
     if(!is_range) {
         element.QueryUnsignedAttribute(attributeName.c_str(), &retVal);
@@ -734,8 +615,7 @@ unsigned short ParseXmlAttribute(const XMLElement& element, const std::string& a
 
 short ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, short defaultValue) noexcept {
     int retVal = defaultValue;
-    const auto attrAsCStr = element.Attribute(attributeName.c_str());
-    const auto attr = std::string{attrAsCStr ? attrAsCStr : ""};
+    const auto attr = GetAttributeAsString(element, attributeName);
     const auto is_range = attr.find('~') != std::string::npos;
     if(!is_range) {
         element.QueryIntAttribute(attributeName.c_str(), &retVal);
@@ -753,8 +633,7 @@ short ParseXmlAttribute(const XMLElement& element, const std::string& attributeN
 
 unsigned int ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, unsigned int defaultValue) noexcept {
     unsigned int retVal = defaultValue;
-    const auto attrAsCStr = element.Attribute(attributeName.c_str());
-    const auto attr = std::string{attrAsCStr ? attrAsCStr : ""};
+    const auto attr = GetAttributeAsString(element, attributeName);
     const auto is_range = attr.find('~') != std::string::npos;
     if(!is_range) {
         element.QueryUnsignedAttribute(attributeName.c_str(), &retVal);
@@ -772,8 +651,7 @@ unsigned int ParseXmlAttribute(const XMLElement& element, const std::string& att
 
 int ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, int defaultValue) noexcept {
     int retVal = defaultValue;
-    const auto attrAsCStr = element.Attribute(attributeName.c_str());
-    const auto attr = std::string{attrAsCStr ? attrAsCStr : ""};
+    const auto attr = GetAttributeAsString(element, attributeName);
     const auto is_range = attr.find('~') != std::string::npos;
     if(!is_range) {
         element.QueryIntAttribute(attributeName.c_str(), &retVal);
@@ -791,8 +669,7 @@ int ParseXmlAttribute(const XMLElement& element, const std::string& attributeNam
 
 unsigned long ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, unsigned long defaultValue) noexcept {
     long long retVal = defaultValue;
-    const auto attrAsCStr = element.Attribute(attributeName.c_str());
-    const auto attr = std::string{attrAsCStr ? attrAsCStr : ""};
+    const auto attr = GetAttributeAsString(element, attributeName);
     const auto is_range = attr.find('~') != std::string::npos;
     if(!is_range) {
         element.QueryInt64Attribute(attributeName.c_str(), &retVal);
@@ -810,8 +687,7 @@ unsigned long ParseXmlAttribute(const XMLElement& element, const std::string& at
 
 long ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, long defaultValue) noexcept {
     long long retVal = defaultValue;
-    const auto attrAsCStr = element.Attribute(attributeName.c_str());
-    const auto attr = std::string{attrAsCStr ? attrAsCStr : ""};
+    const auto attr = GetAttributeAsString(element, attributeName);
     const auto is_range = attr.find('~') != std::string::npos;
     if(!is_range) {
         element.QueryInt64Attribute(attributeName.c_str(), &retVal);
@@ -829,8 +705,7 @@ long ParseXmlAttribute(const XMLElement& element, const std::string& attributeNa
 
 unsigned long long ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, unsigned long long defaultValue) noexcept {
     unsigned long long retVal = defaultValue;
-    const auto attrAsCStr = element.Attribute(attributeName.c_str());
-    const auto attr = std::string{attrAsCStr ? attrAsCStr : ""};
+    const auto attr = GetAttributeAsString(element, attributeName);
     const auto is_range = attr.find('~') != std::string::npos;
     if(!is_range) {
         element.QueryUnsigned64Attribute(attributeName.c_str(), &retVal);
@@ -848,8 +723,7 @@ unsigned long long ParseXmlAttribute(const XMLElement& element, const std::strin
 
 long long ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, long long defaultValue) noexcept {
     long long retVal = defaultValue;
-    const auto attrAsCStr = element.Attribute(attributeName.c_str());
-    const auto attr = std::string{attrAsCStr ? attrAsCStr : ""};
+    const auto attr = GetAttributeAsString(element, attributeName);
     const auto is_range = attr.find('~') != std::string::npos;
     if(!is_range) {
         element.QueryInt64Attribute(attributeName.c_str(), &retVal);
@@ -867,8 +741,7 @@ long long ParseXmlAttribute(const XMLElement& element, const std::string& attrib
 
 float ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, float defaultValue) noexcept {
     float retVal = defaultValue;
-    const auto attrAsCStr = element.Attribute(attributeName.c_str());
-    const auto attr = std::string{attrAsCStr ? attrAsCStr : ""};
+    const auto attr = GetAttributeAsString(element, attributeName);
     const auto is_range = attr.find('~') != std::string::npos;
     if(!is_range) {
         element.QueryFloatAttribute(attributeName.c_str(), &retVal);
@@ -886,8 +759,7 @@ float ParseXmlAttribute(const XMLElement& element, const std::string& attributeN
 
 double ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, double defaultValue) noexcept {
     double retVal = defaultValue;
-    const auto attrAsCStr = element.Attribute(attributeName.c_str());
-    const auto attr = std::string{attrAsCStr ? attrAsCStr : ""};
+    const auto attr = GetAttributeAsString(element, attributeName);
     const auto is_range = attr.find('~') != std::string::npos;
     if(!is_range) {
         element.QueryDoubleAttribute(attributeName.c_str(), &retVal);
@@ -905,8 +777,7 @@ double ParseXmlAttribute(const XMLElement& element, const std::string& attribute
 
 long double ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, long double defaultValue) noexcept {
     long double retVal = defaultValue;
-    const auto attrAsCStr = element.Attribute(attributeName.c_str());
-    const auto attr = std::string{attrAsCStr ? attrAsCStr : ""};
+    const auto attr = GetAttributeAsString(element, attributeName);
     const auto is_range = attr.find('~') != std::string::npos;
     if(!is_range) {
         const auto valueAsCStr = element.Attribute(attr.c_str());
@@ -931,8 +802,7 @@ long double ParseXmlAttribute(const XMLElement& element, const std::string& attr
 }
 
 Rgba ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const Rgba& defaultValue) noexcept {
-    const auto s = element.Attribute(attributeName.c_str()); //returns nullptr when Attribute not found!
-    const auto textVal = std::string{s ? s : ""};
+    const auto textVal = GetAttributeAsString(element, attributeName);
     if(textVal.empty()) {
         return defaultValue;
     } else {
@@ -941,8 +811,7 @@ Rgba ParseXmlAttribute(const XMLElement& element, const std::string& attributeNa
 }
 
 Vector2 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const Vector2& defaultValue) noexcept {
-    const auto s = element.Attribute(attributeName.c_str()); //returns nullptr when Attribute not found!
-    const auto textVal = std::string{s ? s : ""};
+    const auto textVal = GetAttributeAsString(element, attributeName);
     if(textVal.empty()) {
         return defaultValue;
     } else {
@@ -951,8 +820,7 @@ Vector2 ParseXmlAttribute(const XMLElement& element, const std::string& attribut
 }
 
 IntVector2 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const IntVector2& defaultValue) noexcept {
-    auto s = element.Attribute(attributeName.c_str()); //returns nullptr when Attribute not found!
-    std::string textVal(s ? s : "");
+    const auto textVal = GetAttributeAsString(element, attributeName);
     if(textVal.empty()) {
         return defaultValue;
     } else {
@@ -961,8 +829,7 @@ IntVector2 ParseXmlAttribute(const XMLElement& element, const std::string& attri
 }
 
 Vector3 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const Vector3& defaultValue) noexcept {
-    auto s = element.Attribute(attributeName.c_str()); //returns nullptr when Attribute not found!
-    std::string textVal(s ? s : "");
+    const auto textVal = GetAttributeAsString(element, attributeName);
     if(textVal.empty()) {
         return defaultValue;
     } else {
@@ -971,8 +838,7 @@ Vector3 ParseXmlAttribute(const XMLElement& element, const std::string& attribut
 }
 
 IntVector3 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const IntVector3& defaultValue) noexcept {
-    auto s = element.Attribute(attributeName.c_str()); //returns nullptr when Attribute not found!
-    std::string textVal(s ? s : "");
+    const auto textVal = GetAttributeAsString(element, attributeName);
     if(textVal.empty()) {
         return defaultValue;
     } else {
@@ -981,8 +847,7 @@ IntVector3 ParseXmlAttribute(const XMLElement& element, const std::string& attri
 }
 
 Vector4 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const Vector4& defaultValue) noexcept {
-    auto s = element.Attribute(attributeName.c_str()); //returns nullptr when Attribute not found!
-    std::string textVal(s ? s : "");
+    const auto textVal = GetAttributeAsString(element, attributeName);
     if(textVal.empty()) {
         return defaultValue;
     } else {
@@ -991,8 +856,7 @@ Vector4 ParseXmlAttribute(const XMLElement& element, const std::string& attribut
 }
 
 IntVector4 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const IntVector4& defaultValue) noexcept {
-    auto s = element.Attribute(attributeName.c_str()); //returns nullptr when Attribute not found!
-    std::string textVal(s ? s : "");
+    const auto textVal = GetAttributeAsString(element, attributeName);
     if(textVal.empty()) {
         return defaultValue;
     } else {
@@ -1001,8 +865,7 @@ IntVector4 ParseXmlAttribute(const XMLElement& element, const std::string& attri
 }
 
 Matrix4 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const Matrix4& defaultValue) noexcept {
-    auto s = element.Attribute(attributeName.c_str()); //returns nullptr when Attribute not found!
-    std::string textVal(s ? s : "");
+    const auto textVal = GetAttributeAsString(element, attributeName);
     if(textVal.empty()) {
         return defaultValue;
     } else {
