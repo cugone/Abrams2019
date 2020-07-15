@@ -124,6 +124,8 @@ public:
     void RemoveChannelGroup(const std::string& name) noexcept;
     void AddSoundToChannelGroup(const std::string& channelGroupName, Sound* snd) noexcept;
     void AddSoundToChannelGroup(const std::string& channelGroupName, const std::filesystem::path& filepath) noexcept;
+    void RemoveSoundFromChannelGroup(const std::string& channelGroupName, Sound* snd) noexcept;
+    void RemoveSoundFromChannelGroup(const std::string& channelGroupName, const std::filesystem::path& filepath) noexcept;
 
     void SetEngineCallback(EngineCallback* callback) noexcept;
     const WAVEFORMATEXTENSIBLE& GetFormat() const noexcept;
