@@ -55,8 +55,8 @@ enum class RHIOutputMode : uint8_t {
     Last_
 };
 
-RHIOutputMode& operator++(RHIOutputMode& mode) noexcept;
-RHIOutputMode operator++(RHIOutputMode& mode, int) noexcept;
+template<>
+struct TypeUtils::is_incrementable_enum_type<RHIOutputMode> : std::true_type {};
 
 enum class BufferType : uint8_t {
     None,
@@ -86,7 +86,7 @@ enum class PipelineStage : uint8_t {
 };
 
 template<>
-struct is_bitflag_enum_type<PipelineStage> : std::true_type {};
+struct TypeUtils::is_bitflag_enum_type<PipelineStage> : std::true_type {};
 
 enum class ComparisonFunction {
     Never,
@@ -283,7 +283,7 @@ enum class BufferUsage : uint8_t {
 };
 
 template<>
-struct is_bitflag_enum_type<BufferUsage> : std::true_type {};
+struct TypeUtils::is_bitflag_enum_type<BufferUsage> : std::true_type {};
 
 enum class BufferBindUsage : uint32_t {
     Vertex_Buffer = 0x001,
@@ -299,7 +299,7 @@ enum class BufferBindUsage : uint32_t {
 };
 
 template<>
-struct is_bitflag_enum_type<BufferBindUsage> : std::true_type {};
+struct TypeUtils::is_bitflag_enum_type<BufferBindUsage> : std::true_type {};
 
 enum class FilterMode {
     Point,
@@ -360,7 +360,7 @@ enum class BlendColorWriteEnable : unsigned char {
 };
 
 template<>
-struct is_bitflag_enum_type<BlendColorWriteEnable> : std::true_type {};
+struct TypeUtils::is_bitflag_enum_type<BlendColorWriteEnable> : std::true_type {};
 
 enum class FillMode {
     Solid,
@@ -399,5 +399,5 @@ enum class ResourceMiscFlag : long {
 };
 
 template<>
-struct is_bitflag_enum_type<ResourceMiscFlag> : std::true_type {};
+struct TypeUtils::is_bitflag_enum_type<ResourceMiscFlag> : std::true_type {};
 
