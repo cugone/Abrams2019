@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Engine/Core/TypeUtils.hpp"
+
 #include <bitset>
 #include <string>
 
@@ -19,6 +21,9 @@ enum class ArgumentParserState : uint8_t {
     EndOfFileBit,
     Max
 };
+
+template<>
+struct TypeUtils::is_bitflag_enum_type<ArgumentParserState> : std::true_type {};
 
 class ArgumentParser {
 public:
@@ -64,11 +69,6 @@ private:
     mutable std::string _current{};
     mutable std::bitset<static_cast<std::size_t>(ArgumentParserState::Max)> _state_bits{};
 };
-
-ArgumentParserState operator|(ArgumentParserState a, const ArgumentParserState& b) noexcept;
-ArgumentParserState operator&(ArgumentParserState a, const ArgumentParserState& b) noexcept;
-ArgumentParserState& operator|=(const ArgumentParserState& a, const ArgumentParserState& b) noexcept;
-ArgumentParserState& operator&=(const ArgumentParserState& a, const ArgumentParserState& b) noexcept;
 
 template<typename T>
 ArgumentParser& operator>>(ArgumentParser& parser, T&& arg) noexcept {

@@ -373,32 +373,6 @@ bool ArgumentParser::GetNext(long double& value) const noexcept {
     return false;
 }
 
-ArgumentParserState& operator|=(ArgumentParserState& a, const ArgumentParserState& b) noexcept {
-    using underlying = std::underlying_type_t<ArgumentParserState>;
-    auto underlying_a = static_cast<underlying>(a);
-    auto underlying_b = static_cast<underlying>(b);
-    a = static_cast<ArgumentParserState>(underlying_a | underlying_b);
-    return a;
-}
-
-ArgumentParserState operator|(ArgumentParserState a, const ArgumentParserState& b) noexcept {
-    a |= b;
-    return a;
-}
-
-ArgumentParserState& operator&=(ArgumentParserState& a, const ArgumentParserState& b) noexcept {
-    using underlying = std::underlying_type_t<ArgumentParserState>;
-    auto underlying_a = static_cast<underlying>(a);
-    auto underlying_b = static_cast<underlying>(b);
-    a = static_cast<ArgumentParserState>(underlying_a & underlying_b);
-    return a;
-}
-
-ArgumentParserState operator&(ArgumentParserState a, const ArgumentParserState& b) noexcept {
-    a &= b;
-    return a;
-}
-
 void ArgumentParser::SetState(const ArgumentParserState& stateBits, bool newValue) const noexcept {
     if((stateBits & ArgumentParserState::BadBit) == ArgumentParserState::BadBit) {
         _state_bits[static_cast<std::size_t>(ArgumentParserState::BadBit)] = newValue;
