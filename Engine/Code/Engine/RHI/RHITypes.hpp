@@ -83,13 +83,6 @@ enum class PipelineStage : uint8_t {
     All = Vs | Hs | Ds | Gs | Ps | Cs
 };
 
-PipelineStage& operator|=(PipelineStage& a, const PipelineStage& b) noexcept;
-PipelineStage operator|(PipelineStage a, const PipelineStage& b) noexcept;
-PipelineStage& operator&=(PipelineStage& a, const PipelineStage& b) noexcept;
-PipelineStage operator&(PipelineStage a, const PipelineStage& b) noexcept;
-PipelineStage operator^(PipelineStage a, const PipelineStage& b) noexcept;
-PipelineStage& operator^=(PipelineStage& a, const PipelineStage& b) noexcept;
-
 enum class ComparisonFunction {
     Never,
     Less,
@@ -284,11 +277,6 @@ enum class BufferUsage : uint8_t {
     Staging = 0b00001000
 };
 
-BufferUsage& operator&=(BufferUsage& a, const BufferUsage& b) noexcept;
-BufferUsage& operator|=(BufferUsage& a, const BufferUsage& b) noexcept;
-BufferUsage operator&(BufferUsage a, const BufferUsage& b) noexcept;
-BufferUsage operator|(BufferUsage a, const BufferUsage& b) noexcept;
-
 enum class BufferBindUsage : uint32_t {
     Vertex_Buffer = 0x001,
     Index_Buffer = 0x002,
@@ -301,11 +289,6 @@ enum class BufferBindUsage : uint32_t {
     Decoder = 0x100,
     Video_Encoder = 0x200
 };
-
-BufferBindUsage& operator&=(BufferBindUsage& a, const BufferBindUsage& b) noexcept;
-BufferBindUsage& operator|=(BufferBindUsage& a, const BufferBindUsage& b) noexcept;
-BufferBindUsage operator&(BufferBindUsage a, const BufferBindUsage& b) noexcept;
-BufferBindUsage operator|(BufferBindUsage a, const BufferBindUsage& b) noexcept;
 
 enum class FilterMode {
     Point,
@@ -365,14 +348,6 @@ enum class BlendColorWriteEnable : unsigned char {
     All = 0x0F
 };
 
-BlendColorWriteEnable operator~(BlendColorWriteEnable a) noexcept;
-BlendColorWriteEnable operator|(BlendColorWriteEnable a, const BlendColorWriteEnable& b) noexcept;
-BlendColorWriteEnable operator&(BlendColorWriteEnable a, const BlendColorWriteEnable& b) noexcept;
-BlendColorWriteEnable operator^(BlendColorWriteEnable a, const BlendColorWriteEnable& b) noexcept;
-BlendColorWriteEnable& operator&=(BlendColorWriteEnable& a, const BlendColorWriteEnable& b) noexcept;
-BlendColorWriteEnable& operator|=(BlendColorWriteEnable& a, const BlendColorWriteEnable& b) noexcept;
-BlendColorWriteEnable& operator^=(BlendColorWriteEnable& a, const BlendColorWriteEnable& b) noexcept;
-
 enum class FillMode {
     Solid,
     Wireframe,
@@ -409,5 +384,89 @@ enum class ResourceMiscFlag : long {
     Hw_Protected = 0x80000L
 };
 
-ResourceMiscFlag operator|(const ResourceMiscFlag& a, const ResourceMiscFlag& b) noexcept;
-ResourceMiscFlag operator&(const ResourceMiscFlag& a, const ResourceMiscFlag& b) noexcept;
+template<typename E>
+using is_scoped_enum = std::integral_constant<bool, std::is_enum<E>::value && !std::is_convertible<E, int>::value>;
+
+template<typename E>
+constexpr bool is_scoped_enum_v = is_scoped_enum<E>::value;
+
+template<typename E>
+struct is_bitflag_enum_type : std::false_type {};
+
+template<>
+struct is_bitflag_enum_type<ResourceMiscFlag> : std::true_type {};
+
+template<>
+struct is_bitflag_enum_type<BlendColorWriteEnable> : std::true_type {};
+
+template<>
+struct is_bitflag_enum_type<BufferBindUsage> : std::true_type {};
+
+template<>
+struct is_bitflag_enum_type<BufferUsage> : std::true_type {};
+
+template<>
+struct is_bitflag_enum_type<PipelineStage> : std::true_type {};
+
+template<typename E>
+constexpr bool is_bitflag_enum_type_v = is_bitflag_enum_type<E>::value;
+
+template<typename E>
+using is_bitflag_enum = std::integral_constant<bool, is_scoped_enum_v<E> && is_bitflag_enum_type_v<E>>;
+
+template<typename E>
+constexpr bool is_bitflag_enum_v = is_bitflag_enum<E>::value;
+
+template<typename E, typename = std::enable_if_t<is_bitflag_enum_v<E>>>
+E& operator|=(E& a, const E& b) noexcept {
+    using underlying = std::underlying_type_t<E>;
+    auto underlying_a = static_cast<underlying>(a);
+    auto underlying_b = static_cast<underlying>(b);
+    a = static_cast<E>(underlying_a | underlying_b);
+    return a;
+}
+
+template<typename E, typename = std::enable_if_t<is_bitflag_enum_v<E>>>
+E operator|(E a, const E& b) noexcept {
+    a |= b;
+    return a;
+}
+
+template<typename E, typename = std::enable_if_t<is_bitflag_enum_v<E>>>
+E& operator&=(E& a, const E& b) noexcept {
+    using underlying = std::underlying_type_t<E>;
+    auto underlying_a = static_cast<underlying>(a);
+    auto underlying_b = static_cast<underlying>(b);
+    a = static_cast<E>(underlying_a & underlying_b);
+    return a;
+}
+
+template<typename E, typename = std::enable_if_t<is_bitflag_enum_v<E>>>
+E operator&(E a, const E& b) noexcept {
+    a &= b;
+    return a;
+}
+
+template<typename E, typename = std::enable_if_t<is_bitflag_enum_v<E>>>
+E& operator^=(E& a, const E& b) noexcept {
+    using underlying = std::underlying_type_t<E>;
+    auto underlying_a = static_cast<underlying>(a);
+    auto underlying_b = static_cast<underlying>(b);
+    a = static_cast<E>(underlying_a ^ underlying_b);
+    return a;
+}
+
+template<typename E, typename = std::enable_if_t<is_bitflag_enum_v<E>>>
+E operator^(E a, const E& b) noexcept {
+    a ^= b;
+    return a;
+}
+
+template<typename E, typename = std::enable_if_t<is_bitflag_enum_v<E>>>
+E operator~(E a) noexcept {
+    using underlying = std::underlying_type_t<E>;
+    auto underlying_a = static_cast<underlying>(a);
+    a = static_cast<E>(~underlying_a);
+    return a;
+}
+
