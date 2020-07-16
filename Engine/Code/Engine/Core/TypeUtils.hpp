@@ -17,7 +17,7 @@ namespace TypeUtils {
     namespace detail {
 
         template<typename E>
-        using is_scoped_enum = std::integral_constant<bool, std::is_enum<E>::value && !std::is_convertible<E, int>::value>;
+        using is_scoped_enum = std::integral_constant<bool, std::is_enum_v<E> && !std::is_convertible_v<E, int>>;
 
         template<typename E>
         constexpr bool is_scoped_enum_v = detail::is_scoped_enum<E>::value;
