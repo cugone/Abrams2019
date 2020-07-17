@@ -58,11 +58,18 @@ void AABB2::StretchToIncludePoint(const Vector2& point) noexcept {
 }
 
 void AABB2::ScalePadding(float scaleX, float scaleY) noexcept {
-    auto width = maxs.x - mins.x;
-    auto height = maxs.y - mins.y;
+    mins.x *= scaleX;
+    maxs.x *= scaleX;
 
-    maxs.x = mins.x + width * scaleX;
-    maxs.y = mins.y + height * scaleY;
+    mins.y *= scaleY;
+    maxs.y *= scaleY;
+
+    if(maxs.x < mins.x) {
+        std::swap(maxs.x, mins.x);
+    }
+    if(maxs.y < mins.y) {
+        std::swap(maxs.y, mins.y);
+    }
 }
 
 void AABB2::AddPaddingToSides(float paddingX, float paddingY) noexcept {
