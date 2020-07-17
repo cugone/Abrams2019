@@ -95,6 +95,17 @@ AudioSystem::ChannelGroup* AudioSystem::GetChannelGroup(const std::string& name)
     return nullptr;
 }
 
+AudioSystem::ChannelGroup* AudioSystem::GetChannelGroup(Sound* snd) noexcept {
+    for(auto& group : _channel_groups) {
+        for(auto* sound : group.second->sounds) {
+            if(snd == sound) {
+                return group.second.get();
+            }
+        }
+    }
+    return nullptr;
+}
+
 void AudioSystem::AddChannelGroup(const std::string& name) noexcept {
     auto group = std::make_unique<ChannelGroup>();
     auto found = _channel_groups.find(name);
@@ -244,7 +255,7 @@ void AudioSystem::DeactivateChannel(Channel& channel) noexcept {
     _active_channels.erase(found_iter);
 }
 
-void AudioSystem::Play(Sound& snd) noexcept {
+void AudioSystem::Play(Sound& snd, float volume /*= 1.0f*/, float frequency /*= 1.0f*/) noexcept {
     std::scoped_lock<std::mutex> lock(_cs);
     if(_max_channels <= _idle_channels.size()) {
         return;
@@ -254,10 +265,12 @@ void AudioSystem::Play(Sound& snd) noexcept {
     }
     _idle_channels.push_back(std::make_unique<Channel>(*this));
     _active_channels.push_back(std::move(_idle_channels.back()));
+    _active_channels.back()->SetVolume(volume);
+    _active_channels.back()->SetFrequency(frequency);
     _active_channels.back()->Play(snd);
 }
 
-void AudioSystem::Play(std::filesystem::path filepath) noexcept {
+void AudioSystem::Play(std::filesystem::path filepath, float volume /*= 1.0f*/, float frequency /*= 1.0f*/) noexcept {
     namespace FS = std::filesystem;
     if(!FS::exists(filepath)) {
         return;
@@ -270,7 +283,16 @@ void AudioSystem::Play(std::filesystem::path filepath) noexcept {
         found_iter = _sounds.find(filepath);
     }
     Sound* snd = found_iter->second.get();
-    Play(*snd);
+    if(auto* group = GetChannelGroup(snd)) {
+        const auto [groupvolume, groupfrequency] = group->GetVolumeAndFrequency();
+        if(volume == 1.0f) {
+            volume = groupvolume;
+        }
+        if(frequency == 1.0f) {
+            frequency = groupfrequency;
+        }
+    }
+    Play(*snd, volume, frequency);
 }
 
 AudioSystem::Sound* AudioSystem::CreateSound(std::filesystem::path filepath) noexcept {
@@ -364,6 +386,8 @@ void AudioSystem::Channel::Play(Sound& snd) noexcept {
         {
             std::scoped_lock<std::mutex> lock(_cs);
             _voice->SubmitSourceBuffer(&_buffer, nullptr);
+            _voice->SetVolume(_volume);
+            _voice->SetFrequencyRatio(_frequency);
             _voice->Start();
         }
     }
@@ -378,10 +402,20 @@ void AudioSystem::Channel::Stop() noexcept {
 }
 
 void AudioSystem::Channel::SetVolume(float newVolume) noexcept {
-    if(_voice) {
-        std::scoped_lock<std::mutex> lock(_cs);
-        _voice->SetVolume(newVolume);
-    }
+    _volume = newVolume;
+}
+
+void AudioSystem::Channel::SetFrequency(float newFrequency) noexcept {
+    newFrequency = std::clamp(newFrequency, XAUDIO2_MIN_FREQ_RATIO, 2.0f);
+    _frequency = newFrequency;
+}
+
+float AudioSystem::Channel::GetVolume() const noexcept {
+    return _volume;
+}
+
+float AudioSystem::Channel::GetFrequency() const noexcept {
+    return _frequency;
 }
 
 std::size_t AudioSystem::Sound::_id = 0;
@@ -435,4 +469,20 @@ void STDMETHODCALLTYPE AudioSystem::EngineCallback::OnCriticalError(HRESULT erro
 
 void AudioSystem::ChannelGroup::SetVolume(float newVolume) noexcept {
     channel->SetVolume(newVolume);
+}
+
+void AudioSystem::ChannelGroup::SetFrequency(float newFrequency) noexcept {
+    channel->SetFrequency(newFrequency);
+}
+
+constexpr std::pair<float, float> AudioSystem::ChannelGroup::GetVolumeAndFrequency() const noexcept {
+    return std::make_pair(GetVolume(), GetFrequency());
+}
+
+float AudioSystem::ChannelGroup::GetFrequency() const noexcept {
+    return channel->GetFrequency();
+}
+
+float AudioSystem::ChannelGroup::GetVolume() const noexcept {
+    return channel->GetVolume();
 }

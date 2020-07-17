@@ -33,12 +33,12 @@ class FileLogger;
 class AudioSystem : public EngineSubsystem {
 private:
     class Channel;
+    struct ChannelGroup;
 
 public:
     class EngineCallback : public IXAudio2EngineCallback {
     public:
-        virtual ~EngineCallback() {
-        }
+        virtual ~EngineCallback() {}
         virtual void STDMETHODCALLTYPE OnProcessingPassStart() override{};
         virtual void STDMETHODCALLTYPE OnProcessingPassEnd() override{};
         virtual void STDMETHODCALLTYPE OnCriticalError(HRESULT error) override;
@@ -80,19 +80,29 @@ private:
         ~Channel() noexcept;
         void Play(Sound& snd) noexcept;
         void Stop() noexcept;
+        float GetVolume() const noexcept;
+        float GetFrequency() const noexcept;
         void SetVolume(float newVolume) noexcept;
+        void SetFrequency(float newFrequency) noexcept;
 
     private:
         XAUDIO2_BUFFER _buffer{};
         IXAudio2SourceVoice* _voice = nullptr;
         Sound* _sound = nullptr;
         AudioSystem* _audio_system = nullptr;
+        float _volume{1.0f};
+        float _frequency{1.0f};
         std::mutex _cs{};
     };
     struct ChannelGroup {
         Channel* channel = nullptr;
         std::vector<Sound*> sounds{};
         void SetVolume(float newVolume) noexcept;
+        void SetFrequency(float newFrequency) noexcept;
+
+        constexpr std::pair<float, float> GetVolumeAndFrequency() const noexcept;
+        float GetFrequency() const noexcept;
+        float GetVolume() const noexcept;
     };
 
 public:
@@ -115,11 +125,12 @@ public:
     void RegisterWavFilesFromFolder(std::filesystem::path folderpath, bool recursive = false) noexcept;
     void RegisterWavFile(std::filesystem::path filepath) noexcept;
 
-    void Play(Sound& snd) noexcept;
-    void Play(std::filesystem::path filepath) noexcept;
+    void Play(Sound& snd, float volume = 1.0f, float frequency = 1.0f) noexcept;
+    void Play(std::filesystem::path filepath, float volume = 1.0f, float frequency = 1.0f) noexcept;
     Sound* CreateSound(std::filesystem::path filepath) noexcept;
 
     ChannelGroup* GetChannelGroup(const std::string& name) noexcept;
+    ChannelGroup* GetChannelGroup(Sound* snd) noexcept;
     void AddChannelGroup(const std::string& name) noexcept;
     void RemoveChannelGroup(const std::string& name) noexcept;
     void AddSoundToChannelGroup(const std::string& channelGroupName, Sound* snd) noexcept;
