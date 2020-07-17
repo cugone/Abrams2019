@@ -54,6 +54,7 @@
     <ClCompile Include="Core\StringUtils.cpp" />
     <ClCompile Include="Core\ThreadUtils.cpp" />
     <ClCompile Include="Core\TimeUtils.cpp" />
+    <ClCompile Include="Core\Utilities.cpp" />
     <ClCompile Include="Input\InputSystem.cpp" />
     <ClCompile Include="Input\XboxController.cpp" />
     <ClCompile Include="Math\AABB2.cpp" />
@@ -181,6 +182,7 @@
     <ClInclude Include="Core\ThreadSafeQueue.hpp" />
     <ClInclude Include="Core\TimeUtils.hpp" />
     <ClInclude Include="Core\TypeUtils.hpp" />
+    <ClInclude Include="Core\Utilities.hpp" />
     <ClInclude Include="Core\Vertex3D.hpp" />
     <ClInclude Include="Core\Win.hpp" />
     <ClInclude Include="Input\InputSystem.hpp" />

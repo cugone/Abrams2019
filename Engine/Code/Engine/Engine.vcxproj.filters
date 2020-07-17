@@ -421,6 +421,9 @@
     <ClCompile Include="Core\OrthographicCameraController.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Core\Utilities.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vector2.hpp">
@@ -811,6 +814,9 @@
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Core\TypeUtils.hpp">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Utilities.hpp">
       <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
