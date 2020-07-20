@@ -13,18 +13,6 @@
 
 #include <hidusage.h>
 
-KeyCode& operator++(KeyCode& keycode) noexcept {
-    using IntType = typename std::underlying_type_t<KeyCode>;
-    keycode = static_cast<KeyCode>(static_cast<IntType>(keycode) + 1);
-    return keycode;
-}
-
-KeyCode operator++(KeyCode& keycode, int) noexcept {
-    KeyCode result = keycode;
-    ++keycode;
-    return result;
-}
-
 unsigned char InputSystem::ConvertKeyCodeToWinVK(const KeyCode& code) noexcept {
     switch(code) {
     case KeyCode::LButton: return VK_LBUTTON;

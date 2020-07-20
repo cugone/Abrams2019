@@ -1,6 +1,7 @@
 #pragma once
 #include "Engine/Core/EngineSubsystem.hpp"
 #include "Engine/Core/Stopwatch.hpp"
+#include "Engine/Core/TypeUtils.hpp"
 #include "Engine/Core/Win.hpp"
 #include "Engine/Input/XboxController.hpp"
 #include "Engine/Math/AABB2.hpp"
@@ -367,8 +368,8 @@ enum class KeyCode : int {
     Max /* Internal use only */
 };
 
-KeyCode& operator++(KeyCode& keycode) noexcept;
-KeyCode operator++(KeyCode& keycode, int) noexcept;
+template<>
+struct TypeUtils::is_incrementable_enum_type<KeyCode> : std::true_type {};
 
 class InputSystem : public EngineSubsystem {
 public:
