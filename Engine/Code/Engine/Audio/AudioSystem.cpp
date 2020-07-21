@@ -115,7 +115,7 @@ void AudioSystem::AddChannelGroup(const std::string& name) noexcept {
         }
         found->second.reset(nullptr);
     }
-    auto channel = std::make_unique<Channel>(*this);
+    auto channel = std::make_unique<Channel>(*this, AudioSystem::Channel::ChannelDesc{});
     auto* channel_ptr = channel.get();
     _idle_channels.push_back(std::move(channel));
     group->channel = channel_ptr;
@@ -255,7 +255,7 @@ void AudioSystem::DeactivateChannel(Channel& channel) noexcept {
     _active_channels.erase(found_iter);
 }
 
-void AudioSystem::Play(Sound& snd, float volume /*= 1.0f*/, float frequency /*= 1.0f*/) noexcept {
+void AudioSystem::Play(Sound& snd, const SoundDesc& desc /* = SoundDesc{}*/) noexcept {
     std::scoped_lock<std::mutex> lock(_cs);
     if(_max_channels <= _idle_channels.size()) {
         return;
@@ -263,14 +263,25 @@ void AudioSystem::Play(Sound& snd, float volume /*= 1.0f*/, float frequency /*= 
     if(_max_channels <= _active_channels.size()) {
         return;
     }
-    _idle_channels.push_back(std::make_unique<Channel>(*this));
+    auto desc_copy = desc;
+    if(auto* group = GetChannelGroup(&snd)) {
+        const auto [groupvolume, groupfrequency] = group->GetVolumeAndFrequency();
+        if(desc_copy.volume == 1.0f) {
+            desc_copy.volume = groupvolume;
+        }
+        if(desc_copy.frequency == 1.0f) {
+            desc_copy.frequency = groupfrequency;
+        }
+    }
+    auto channelDesc = AudioSystem::Channel::ChannelDesc{this};
+    channelDesc = desc_copy;
+    _idle_channels.push_back(std::make_unique<Channel>(*this, channelDesc));
     _active_channels.push_back(std::move(_idle_channels.back()));
-    _active_channels.back()->SetVolume(volume);
-    _active_channels.back()->SetFrequency(frequency);
-    _active_channels.back()->Play(snd);
+    auto& inserted_channel = _active_channels.back();
+    inserted_channel->Play(snd);
 }
 
-void AudioSystem::Play(std::filesystem::path filepath, float volume /*= 1.0f*/, float frequency /*= 1.0f*/) noexcept {
+void AudioSystem::Play(std::filesystem::path filepath, const SoundDesc& desc /*= SoundDesc{}*/) noexcept {
     namespace FS = std::filesystem;
     if(!FS::exists(filepath)) {
         return;
@@ -283,16 +294,7 @@ void AudioSystem::Play(std::filesystem::path filepath, float volume /*= 1.0f*/, 
         found_iter = _sounds.find(filepath);
     }
     Sound* snd = found_iter->second.get();
-    if(auto* group = GetChannelGroup(snd)) {
-        const auto [groupvolume, groupfrequency] = group->GetVolumeAndFrequency();
-        if(volume == 1.0f) {
-            volume = groupvolume;
-        }
-        if(frequency == 1.0f) {
-            frequency = groupfrequency;
-        }
-    }
-    Play(*snd, volume, frequency);
+    Play(*snd, desc);
 }
 
 AudioSystem::Sound* AudioSystem::CreateSound(std::filesystem::path filepath) noexcept {
@@ -358,12 +360,23 @@ void STDMETHODCALLTYPE AudioSystem::Channel::VoiceCallback::OnBufferEnd(void* pB
     channel._audio_system->DeactivateChannel(channel);
 }
 
-AudioSystem::Channel::Channel(AudioSystem& audioSystem) noexcept
-: _audio_system(&audioSystem) {
+void STDMETHODCALLTYPE AudioSystem::Channel::VoiceCallback::OnLoopEnd(void* pBufferContext) {
+    Channel& channel = *reinterpret_cast<Channel*>(pBufferContext);
+    if(channel._desc.stopWhenFinishedLooping && channel._desc.loop_count != XAUDIO2_LOOP_INFINITE) {
+        if(++channel._desc.repeat_count >= channel._desc.loop_count) {
+            channel.Stop();
+        }
+    }
+}
+
+AudioSystem::Channel::Channel(AudioSystem& audioSystem, const ChannelDesc& desc) noexcept
+: _audio_system(&audioSystem)
+, _desc{desc}
+{
     static VoiceCallback vcb;
     _buffer.pContext = this;
     auto fmt = reinterpret_cast<const WAVEFORMATEX*>(&(_audio_system->GetFormat()));
-    _audio_system->_xaudio2->CreateSourceVoice(&_voice, fmt, 0, 2.0f, &vcb);
+    _audio_system->_xaudio2->CreateSourceVoice(&_voice, fmt, 0, _desc.frequency_max, &vcb);
 }
 
 AudioSystem::Channel::~Channel() noexcept {
@@ -383,11 +396,18 @@ void AudioSystem::Channel::Play(Sound& snd) noexcept {
     if(auto* wav = snd.GetWav()) {
         _buffer.pAudioData = wav->GetDataBuffer();
         _buffer.AudioBytes = wav->GetDataBufferSize();
+        _buffer.LoopCount = _desc.loop_count;
+        _buffer.LoopBegin = 0;
+        _buffer.LoopLength = 0;
+        if(_desc.loop_count) {
+            _buffer.LoopBegin = _desc.loop_beginSamples;
+            _buffer.LoopLength = _desc.loop_endSamples - _desc.loop_beginSamples;
+        }
         {
             std::scoped_lock<std::mutex> lock(_cs);
             _voice->SubmitSourceBuffer(&_buffer, nullptr);
-            _voice->SetVolume(_volume);
-            _voice->SetFrequencyRatio(_frequency);
+            _voice->SetVolume(_desc.volume);
+            _voice->SetFrequencyRatio(_desc.frequency);
             _voice->Start();
         }
     }
@@ -401,21 +421,70 @@ void AudioSystem::Channel::Stop() noexcept {
     }
 }
 
+AudioSystem::Channel::ChannelDesc::ChannelDesc(AudioSystem* audioSystem)
+    : audio_system{audioSystem}
+{
+    /* DO NOTHING */
+}
+
+AudioSystem::Channel::ChannelDesc& AudioSystem::Channel::ChannelDesc::operator=(const SoundDesc& sndDesc) {
+    volume = sndDesc.volume;
+    frequency = sndDesc.frequency;
+    loop_count = sndDesc.loopCount <= -1 ? XAUDIO2_LOOP_INFINITE : (std::clamp(sndDesc.loopCount, 0, XAUDIO2_MAX_LOOP_COUNT));
+    stopWhenFinishedLooping = sndDesc.stopWhenFinishedLooping;
+    const auto& fmt = audio_system->GetLoadedWavFileFormat();
+    loop_beginSamples = static_cast<uint32_t>(fmt.samplesPerSecond * sndDesc.loopBegin.count());
+    loop_endSamples = static_cast<uint32_t>(fmt.samplesPerSecond * sndDesc.loopEnd.count());
+    return *this;
+}
+
+void AudioSystem::Channel::SetStopWhenFinishedLooping(bool value) {
+    _desc.stopWhenFinishedLooping = value;
+}
+
+void AudioSystem::Channel::SetLoopCount(int count) noexcept {
+    if(count <= -1) {
+        _desc.loop_count = XAUDIO2_LOOP_INFINITE;
+    } else {
+        count = std::clamp(count, 0, XAUDIO2_MAX_LOOP_COUNT);
+        _desc.loop_count = count;
+    }
+}
+
+uint32_t AudioSystem::Channel::GetLoopCount() const noexcept {
+    return _desc.loop_count;
+}
+
+void AudioSystem::Channel::SetLoopRange(TimeUtils::FPSeconds start, TimeUtils::FPSeconds end) {
+    SetLoopBegin(start);
+    SetLoopEnd(end);
+}
+
+void AudioSystem::Channel::SetLoopBegin(TimeUtils::FPSeconds start) {
+    const auto& fmt = _audio_system->GetLoadedWavFileFormat();
+    _desc.loop_beginSamples = static_cast<uint32_t>(fmt.samplesPerSecond * start.count());
+}
+
+void AudioSystem::Channel::SetLoopEnd(TimeUtils::FPSeconds end) {
+    const auto& fmt = _audio_system->GetLoadedWavFileFormat();
+    _desc.loop_endSamples = static_cast<uint32_t>(fmt.samplesPerSecond * end.count());
+}
+
 void AudioSystem::Channel::SetVolume(float newVolume) noexcept {
-    _volume = newVolume;
+    _desc.volume = newVolume;
 }
 
 void AudioSystem::Channel::SetFrequency(float newFrequency) noexcept {
-    newFrequency = std::clamp(newFrequency, XAUDIO2_MIN_FREQ_RATIO, 2.0f);
-    _frequency = newFrequency;
+    newFrequency = std::clamp(newFrequency, XAUDIO2_MIN_FREQ_RATIO, _desc.frequency_max);
+    _desc.frequency = newFrequency;
 }
 
 float AudioSystem::Channel::GetVolume() const noexcept {
-    return _volume;
+    return _desc.volume;
 }
 
 float AudioSystem::Channel::GetFrequency() const noexcept {
-    return _frequency;
+    return _desc.frequency;
 }
 
 std::size_t AudioSystem::Sound::_id = 0;

@@ -60,29 +60,63 @@ public:
         std::vector<Channel*> _channels{};
         std::mutex _cs{};
     };
-
+    struct SoundDesc {
+        float volume{1.0f};
+        float frequency{1.0f};
+        int loopCount{0};
+        bool stopWhenFinishedLooping{false};
+        TimeUtils::FPSeconds loopBegin{};
+        TimeUtils::FPSeconds loopEnd{};
+    };
 private:
     class Channel {
     public:
         class VoiceCallback : public IXAudio2VoiceCallback {
         public:
-            virtual ~VoiceCallback() {
-            }
+            virtual ~VoiceCallback() {}
             virtual void STDMETHODCALLTYPE OnVoiceProcessingPassStart(uint32_t /*bytesRequired*/) override{};
             virtual void STDMETHODCALLTYPE OnVoiceProcessingPassEnd() override{};
             virtual void STDMETHODCALLTYPE OnStreamEnd() override{};
             virtual void STDMETHODCALLTYPE OnBufferStart(void* /*pBufferContext*/) override{};
             virtual void STDMETHODCALLTYPE OnBufferEnd(void* pBufferContext) override;
-            virtual void STDMETHODCALLTYPE OnLoopEnd(void* /*pBufferContext*/) override{};
+            virtual void STDMETHODCALLTYPE OnLoopEnd(void* pBufferContext) override;
             virtual void STDMETHODCALLTYPE OnVoiceError(void* /*pBufferContext*/, HRESULT /*Error*/) override{};
         };
-        explicit Channel(AudioSystem& audioSystem) noexcept;
+        struct ChannelDesc {
+            ChannelDesc() = default;
+            ChannelDesc(const ChannelDesc& other) = default;
+            ChannelDesc& operator=(const ChannelDesc& other) = default;
+            ChannelDesc& operator=(const SoundDesc& sndDesc);
+            explicit ChannelDesc(AudioSystem* audioSystem);
+
+            AudioSystem* audio_system{nullptr};
+            unsigned long long repeat_count{0};
+            float volume{1.0f};
+            float frequency{1.0f};
+            float frequency_max{2.0f};
+            uint32_t loop_count{0};
+            uint32_t loop_beginSamples{0};
+            uint32_t loop_endSamples{0};
+            bool stopWhenFinishedLooping{false};
+        };
+        explicit Channel(AudioSystem& audioSystem, const ChannelDesc& desc) noexcept;
         ~Channel() noexcept;
         void Play(Sound& snd) noexcept;
         void Stop() noexcept;
+        
+        void SetStopWhenFinishedLooping(bool value);
+
+        void SetLoopCount(int count) noexcept;
+        uint32_t GetLoopCount() const noexcept;
+        
+        void SetLoopBegin(TimeUtils::FPSeconds start);
+        void SetLoopEnd(TimeUtils::FPSeconds end);
+        void SetLoopRange(TimeUtils::FPSeconds start, TimeUtils::FPSeconds end);
+        
         float GetVolume() const noexcept;
-        float GetFrequency() const noexcept;
         void SetVolume(float newVolume) noexcept;
+        
+        float GetFrequency() const noexcept;
         void SetFrequency(float newFrequency) noexcept;
 
     private:
@@ -90,9 +124,10 @@ private:
         IXAudio2SourceVoice* _voice = nullptr;
         Sound* _sound = nullptr;
         AudioSystem* _audio_system = nullptr;
-        float _volume{1.0f};
-        float _frequency{1.0f};
+        ChannelDesc _desc{};
         std::mutex _cs{};
+
+        friend class VoiceCallback;
     };
     struct ChannelGroup {
         Channel* channel = nullptr;
@@ -125,8 +160,8 @@ public:
     void RegisterWavFilesFromFolder(std::filesystem::path folderpath, bool recursive = false) noexcept;
     void RegisterWavFile(std::filesystem::path filepath) noexcept;
 
-    void Play(Sound& snd, float volume = 1.0f, float frequency = 1.0f) noexcept;
-    void Play(std::filesystem::path filepath, float volume = 1.0f, float frequency = 1.0f) noexcept;
+    void Play(Sound& snd, const SoundDesc& desc = SoundDesc{}) noexcept;
+    void Play(std::filesystem::path filepath, const SoundDesc& desc = SoundDesc{}) noexcept;
     Sound* CreateSound(std::filesystem::path filepath) noexcept;
 
     ChannelGroup* GetChannelGroup(const std::string& name) noexcept;
