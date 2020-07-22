@@ -213,6 +213,7 @@ void AudioSystem::Render() const {
 void AudioSystem::EndFrame() {
     std::scoped_lock<std::mutex> lock(_cs);
     _idle_channels.erase(std::remove_if(std::begin(_idle_channels), std::end(_idle_channels), [](const std::unique_ptr<Channel>& c) { return c == nullptr; }), std::end(_idle_channels));
+    _active_channels.erase(std::remove_if(std::begin(_active_channels), std::end(_active_channels), [](const std::unique_ptr<Channel>& c) { return c == nullptr; }), std::end(_active_channels));
 }
 
 bool AudioSystem::ProcessSystemMessage(const EngineMessage& /*msg*/) noexcept {
@@ -251,7 +252,6 @@ void AudioSystem::DeactivateChannel(Channel& channel) noexcept {
     std::scoped_lock<std::mutex> lock(_cs);
     auto found_iter = std::find_if(std::begin(_active_channels), std::end(_active_channels),
                                    [&channel](const std::unique_ptr<Channel>& c) { return c.get() == &channel; });
-    _idle_channels.push_back(std::move(*found_iter));
     _active_channels.erase(found_iter);
 }
 
