@@ -141,6 +141,7 @@
     <ClCompile Include="Video\Avi.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Thirdparty\EnTT\EnTT.hpp" />
     <ClInclude Include="..\Thirdparty\ImGui\imconfig.h" />
     <ClInclude Include="..\Thirdparty\ImGui\imgui.h" />
     <ClInclude Include="..\Thirdparty\Imgui\imgui_impl_dx11.h" />

@@ -62,6 +62,9 @@
     <Filter Include="Physics">
       <UniqueIdentifier>{e6b637d5-e9d2-41b2-954d-50d2aa587ec4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Thirdparty\EnTT">
+      <UniqueIdentifier>{13d0dc8d-6f17-4a5e-a8f5-67b6463b9929}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Math\Vector2.cpp">
@@ -818,6 +821,9 @@
     </ClInclude>
     <ClInclude Include="Core\Utilities.hpp">
       <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Thirdparty\EnTT\EnTT.hpp">
+      <Filter>Thirdparty\EnTT</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
