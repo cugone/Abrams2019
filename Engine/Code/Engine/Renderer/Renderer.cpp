@@ -980,6 +980,11 @@ void Renderer::DrawQuad2D(const Rgba& color, const Vector4& texCoords) noexcept 
     DrawQuad2D(Vector2::ZERO, Vector2(0.5f, 0.5f), color, texCoords);
 }
 
+void Renderer::DrawQuad2D(const Matrix4& transform, const Rgba& color /*= Rgba::White*/, const Vector4& texCoords /*= Vector4::ZW_AXIS*/) noexcept {
+    SetModelMatrix(transform);
+    DrawQuad2D(Vector2::ZERO, Vector2{0.5f, 0.5f}, color, texCoords);
+}
+
 void Renderer::DrawCircle2D(float centerX, float centerY, float radius, const Rgba& color /*= Rgba::WHITE*/) noexcept {
     DrawPolygon2D(centerX, centerY, radius, 65, color);
 }
