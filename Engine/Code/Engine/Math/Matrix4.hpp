@@ -182,6 +182,14 @@ public:
     friend std::ostream& operator<<(std::ostream& out_stream, const Matrix4& m) noexcept;
     friend std::istream& operator>>(std::istream& in_stream, Matrix4& m) noexcept;
 
+    Vector3 GetRight() const noexcept;
+    Vector3 GetUp() const noexcept;
+    Vector3 GetForward() const noexcept;
+    
+    Vector2 GetRight2D() const noexcept;
+    Vector2 GetUp2D() const noexcept;
+    Vector2 GetForward2D() const noexcept;
+
     Vector4 GetIBasis() const noexcept;
     Vector4 GetIBasis() noexcept;
 

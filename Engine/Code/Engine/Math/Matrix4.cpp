@@ -409,6 +409,30 @@ void Matrix4::SetWComponents(const Vector4& components) noexcept {
     m_indicies[15] = components.w;
 }
 
+Vector3 Matrix4::GetRight() const noexcept {
+    return Vector3{GetIBasis().GetNormalize3D()};
+}
+
+Vector3 Matrix4::GetUp() const noexcept {
+    return Vector3{GetJBasis().GetNormalize3D()};
+}
+
+Vector3 Matrix4::GetForward() const noexcept {
+    return Vector3{GetKBasis().GetNormalize3D()};
+}
+
+Vector2 Matrix4::GetRight2D() const noexcept {
+    return Vector2{GetRight()};
+}
+
+Vector2 Matrix4::GetUp2D() const noexcept {
+    return Vector2{GetUp()};
+}
+
+Vector2 Matrix4::GetForward2D() const noexcept {
+    return Vector2{GetForward()};
+}
+
 Vector4 Matrix4::GetIBasis() const noexcept {
     return Vector4(m_indicies[0], m_indicies[4], m_indicies[8], m_indicies[12]);
 }
