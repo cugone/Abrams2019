@@ -135,3 +135,7 @@ void Mesh::Render(Renderer& renderer, const Mesh::Builder& builder) noexcept {
         }
     }
 }
+
+void Mesh::Render(Renderer& renderer) const noexcept {
+    Render(renderer, m_builder);
+}

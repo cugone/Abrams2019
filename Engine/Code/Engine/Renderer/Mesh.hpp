@@ -54,7 +54,9 @@ public:
     };
 
     static void Render(Renderer& renderer, const Mesh::Builder& builder) noexcept;
+    void Render(Renderer& renderer) const noexcept;
 
 protected:
+    Mesh::Builder m_builder{};
 private:
 };
