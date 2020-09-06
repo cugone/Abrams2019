@@ -1,5 +1,7 @@
 #include "Engine/Physics/PhysicsSystem.hpp"
 
+#include "Engine/Core/ErrorWarningAssert.hpp"
+
 #include "Engine/Core/ThreadUtils.hpp"
 
 void PhysicsSystem::Update_Worker() noexcept {
@@ -818,13 +820,20 @@ Vector2 GJKClosestPoint(const Collider& a, const Collider& b) {
     const auto doSimplex = [&](std::vector<Vector2>& simplex, Vector2& D) {
         const auto S = simplex.size();
         switch(S) {
+        case 1:
+            ERROR_AND_DIE("doSimplex reached degenerate case of 1.");
+            break;
         case 2:
             doSimplexLine(simplex, D);
             break;
         case 3:
             doSimplexTriangle(simplex, D);
             break;
+        case 4:
+            ERROR_AND_DIE("doSimplex reached complex case of 4.");
+            break;
         default:
+            ERROR_AND_DIE("doSimplex reached default case.");
             break;
         }
     };
