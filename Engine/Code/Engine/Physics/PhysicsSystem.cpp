@@ -142,9 +142,9 @@ std::set<CollisionData, std::equal_to<CollisionData>> PhysicsSystem::NarrowPhase
         for(auto iter_b = iter_a + 1; iter_b != potential_collisions.end(); ++iter_b) {
             auto* const cur_body = *iter_a;
             auto* const next_body = *iter_b;
-            const auto [collides, distance, normal] = GJKDistance(*cur_body->GetCollider(), *next_body->GetCollider());
-            if(collides) {
-                const auto [where_inserted, was_inserted] = result.insert(CollisionData{cur_body, next_body, distance, normal});
+            const auto collisionResult = GJKDistance(*cur_body->GetCollider(), *next_body->GetCollider());
+            if(collisionResult.collides) {
+                const auto [where_inserted, was_inserted] = result.insert(CollisionData{cur_body, next_body, collisionResult.distance, collisionResult.collisionNormal});
                 if(was_inserted) {
                     DebuggerPrintf("Physics System: Attempting to insert already existing element.");
                 }

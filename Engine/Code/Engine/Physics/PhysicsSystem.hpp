@@ -117,9 +117,9 @@ private:
 };
 
 struct GJKResult {
-    bool valid{false};
+    bool collides{false};
     float distance{0.0f};
-    Vector2 direction{};
+    Vector2 collisionNormal{};
 };
 
 GJKResult GJKDistance(const Collider& a, const Collider& b);
