@@ -116,7 +116,13 @@ protected:
 private:
 };
 
-std::tuple<bool, float, Vector2> GJKDistance(const Collider& a, const Collider& b);
+struct GJKResult {
+    bool valid{false};
+    float distance{0.0f};
+    Vector2 direction{};
+};
+
+GJKResult GJKDistance(const Collider& a, const Collider& b);
 Vector2 GJKClosestPoint(const Collider& a, const Collider& b);
 bool GJKIntersect(const Collider& a, const Collider& b);
 

@@ -853,7 +853,7 @@ Vector2 GJKClosestPoint(const Collider& a, const Collider& b) {
     return simplex.back();
 }
 
-std::tuple<bool, float, Vector2> GJKDistance(const Collider& a, const Collider& b) {
+GJKResult GJKDistance(const Collider& a, const Collider& b) {
     const auto calcMinkowskiDiff = [](const Vector2& direction, const Collider& a) { return a.Support(direction); };
     const auto support = [&](const Vector2& direction) { return calcMinkowskiDiff(direction, a) - calcMinkowskiDiff(-direction, b); };
     auto A = support((b.CalcCenter() - a.CalcCenter()).GetNormalize());
@@ -934,5 +934,5 @@ std::tuple<bool, float, Vector2> GJKDistance(const Collider& a, const Collider& 
             }
         }
     }(simplex, D); //IIIL
-    return std::make_tuple(result, A.CalcLength(), D);
+    return GJKResult{result, A.CalcLength(), D};
 }
