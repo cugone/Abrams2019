@@ -898,7 +898,7 @@ Vector2 Matrix4::TransformDirection(const Vector2& direction) const noexcept {
     float x = MathUtils::DotProduct(GetXComponents(), v);
     float y = MathUtils::DotProduct(GetYComponents(), v);
 
-    return Vector2(x, y);
+    return Vector2(x, y).GetNormalize();
 }
 Vector3 Matrix4::TransformDirection(const Vector3& direction) const noexcept {
     Vector4 v(direction.x, direction.y, direction.z, 0.0f);
@@ -907,7 +907,7 @@ Vector3 Matrix4::TransformDirection(const Vector3& direction) const noexcept {
     float y = MathUtils::DotProduct(GetYComponents(), v);
     float z = MathUtils::DotProduct(GetZComponents(), v);
 
-    return Vector3(x, y, z);
+    return Vector3(x, y, z).GetNormalize();
 }
 Vector4 Matrix4::TransformVector(const Vector4& homogeneousVector) const noexcept {
     return operator*(homogeneousVector);
