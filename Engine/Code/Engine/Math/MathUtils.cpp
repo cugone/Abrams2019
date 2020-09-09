@@ -1029,6 +1029,35 @@ bool DoPolygonsOverlap(const Polygon2& a, const Polygon2& b) noexcept {
     return true;
 }
 
+std::optional<Vector2> DoLineSegmentOverlap(const LineSegment2& a, const LineSegment2& b) noexcept {
+
+//https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
+
+    const auto x1 = a.start.x;
+    const auto y1 = a.start.y;
+    const auto x2 = a.end.x;
+    const auto y2 = a.end.y;
+    const auto x3 = b.start.x;
+    const auto y3 = b.start.y;
+    const auto x4 = b.end.x;
+    const auto y4 = b.end.y;
+    const auto denominator = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+    if(MathUtils::IsEquivalentToZero(denominator)) {
+        return {};
+    }
+
+    const auto tNumerator = (x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4);
+    const auto t = tNumerator / denominator;
+
+    if(0.0f <= t && t <= 1.0f) {
+        const auto vT = Vector2{x1 + t * (x2 - x1), y1 + t * (y2 - y1)};
+        if(MathUtils::IsPointOn(a, vT) && MathUtils::IsPointOn(b, vT)) {
+            return std::make_optional(vT);
+        }
+    }
+    return {};
+}
+
 bool DoLineSegmentOverlap(const Disc2& a, const LineSegment2& b) noexcept {
     return CalcDistanceSquared(a.center, b) < a.radius * a.radius;
 }

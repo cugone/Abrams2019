@@ -8,6 +8,7 @@
 #include "Engine/Math/Vector4.hpp"
 
 #include <algorithm>
+#include <optional>
 #include <random>
 #include <ratio>
 #include <utility>
@@ -261,6 +262,7 @@ bool DoAABBsOverlap(const AABB3& a, const Sphere3& b) noexcept;
 bool DoOBBsOverlap(const OBB2& a, const OBB2& b) noexcept;
 bool DoPolygonsOverlap(const Polygon2& a, const Polygon2& b) noexcept;
 
+std::optional<Vector2> DoLineSegmentOverlap(const LineSegment2& a, const LineSegment2& b) noexcept;
 bool DoLineSegmentOverlap(const Disc2& a, const LineSegment2& b) noexcept;
 bool DoLineSegmentOverlap(const Sphere3& a, const LineSegment3& b) noexcept;
 
