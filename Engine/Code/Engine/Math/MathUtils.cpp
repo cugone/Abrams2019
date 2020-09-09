@@ -725,6 +725,17 @@ Vector3 CalcClosestPoint(const Vector3& p, const AABB3& aabb) noexcept {
     return Vector3(nearestX, nearestY, nearestZ);
 }
 
+Vector2 CalcClosestPoint(const Vector2& p, const Polygon2& poly2) noexcept {
+    if(MathUtils::IsPointInside(poly2, p)) {
+        return p;
+    }
+    const auto& edges = poly2.GetEdges();
+    const auto segment_with_min_distance = *std::min_element(std::cbegin(edges), std::cend(edges), [&](const LineSegment2& a, const LineSegment2& b) {
+        return MathUtils::CalcDistanceSquared(p, a) < MathUtils::CalcDistanceSquared(p, b);
+    });
+    return MathUtils::CalcClosestPoint(p, segment_with_min_distance);
+}
+
 Vector2 CalcClosestPoint(const Vector2& p, const Disc2& disc) noexcept {
     Vector2 dir = (p - disc.center).GetNormalize();
     return disc.center + dir * disc.radius;

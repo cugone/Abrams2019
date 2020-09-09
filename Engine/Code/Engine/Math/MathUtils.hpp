@@ -233,9 +233,13 @@ bool IsPointOn(const Capsule3& capsule, const Vector3& point) noexcept;
 Vector2 CalcClosestPoint(const Vector2& p, const AABB2& aabb) noexcept;
 Vector2 CalcClosestPoint(const Vector2& p, const OBB2& obb) noexcept;
 Vector3 CalcClosestPoint(const Vector3& p, const AABB3& aabb) noexcept;
+
+Vector2 CalcClosestPoint(const Vector2& p, const Polygon2& poly2) noexcept;
+
 Vector2 CalcClosestPoint(const Vector2& p, const Disc2& disc) noexcept;
 Vector2 CalcClosestPoint(const Vector2& p, const LineSegment2& line) noexcept;
 Vector2 CalcClosestPoint(const Vector2& p, const Capsule2& capsule) noexcept;
+
 Vector3 CalcClosestPoint(const Vector3& p, const LineSegment3& line) noexcept;
 Vector3 CalcClosestPoint(const Vector3& p, const Sphere3& sphere) noexcept;
 Vector3 CalcClosestPoint(const Vector3& p, const Capsule3& capsule) noexcept;
