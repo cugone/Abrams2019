@@ -89,13 +89,17 @@ std::vector<std::add_pointer_t<T>> QuadTree<T>::Query(const AABB2& area) noexcep
     if(MathUtils::DoAABBsOverlap(area, m_bounds)) {
         if(!IsLeaf(*this)) {
             for(const auto& c : m_children) {
-                auto inner_result = c->Query(area);
-                result.insert(std::end(result), std::begin(inner_result), std::end(inner_result));
+                if(c) {
+                    auto inner_result = c->Query(area);
+                    result.insert(std::end(result), std::begin(inner_result), std::end(inner_result));
+                }
             }
         } else {
             for(auto* elem : m_elements) {
-                if(MathUtils::DoOBBsOverlap(OBB2(area), elem->GetBounds())) {
-                    result.push_back(elem);
+                if(elem) {
+                    if(MathUtils::DoOBBsOverlap(OBB2(area), elem->GetBounds())) {
+                        result.push_back(elem);
+                    }
                 }
             }
         }
