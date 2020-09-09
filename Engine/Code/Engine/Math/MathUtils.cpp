@@ -809,24 +809,23 @@ Vector2 CalcClosestPoint(const Vector2& p, const Disc2& disc) noexcept {
 }
 
 Vector2 CalcClosestPoint(const Vector2& p, const LineSegment2& line) noexcept {
-    Vector2 D = line.end - line.start;
-    Vector2 T = D.GetNormalize();
+    Vector2 lineDisplacement = line.end - line.start;
+    Vector2 lineDirection = lineDisplacement.GetNormalize();
 
-    Vector2 SP = p - line.start;
-    float regionI = MathUtils::DotProduct(T, SP);
+    Vector2 lineSP = p - line.start;
+    float regionI = MathUtils::DotProduct(lineDirection, lineSP);
     if(regionI < 0.0f) {
         return line.start;
     }
 
-    Vector2 EP = p - line.end;
-    float regionII = MathUtils::DotProduct(T, EP);
+    Vector2 lineEP = p - line.end;
+    float regionII = MathUtils::DotProduct(lineDirection, lineEP);
     if(regionII > 0.0f) {
         return line.end;
     }
 
-    Vector2 directionSE = D.GetNormalize();
-    float lengthToClosestPoint = MathUtils::DotProduct(directionSE, SP);
-    Vector2 C = directionSE * lengthToClosestPoint;
+    float lengthToClosestPoint = MathUtils::DotProduct(lineDirection, lineSP);
+    Vector2 C = lineDirection * lengthToClosestPoint;
     Vector2 ConL = line.start + C;
     return ConL;
 }
