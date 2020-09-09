@@ -220,6 +220,7 @@ bool IsPointInside(const AABB3& aabb, const Vector3& point) noexcept;
 bool IsPointInside(const OBB2& obb, const Vector2& point) noexcept;
 bool IsPointInside(const Disc2& disc, const Vector2& point) noexcept;
 bool IsPointInside(const Capsule2& capsule, const Vector2& point) noexcept;
+bool IsPointInside(const Polygon2& poly2, const Vector2& point) noexcept;
 bool IsPointInside(const Sphere3& sphere, const Vector3& point) noexcept;
 bool IsPointInside(const Capsule3& capsule, const Vector3& point) noexcept;
 

@@ -16,8 +16,11 @@
 #include "Engine/Math/Quaternion.hpp"
 #include "Engine/Math/Sphere3.hpp"
 
+#include "Engine/Profiling/ProfileLogScope.hpp"
+
 #include <algorithm>
 #include <cmath>
+#include <sstream>
 
 namespace MathUtils {
 
@@ -620,6 +623,70 @@ bool IsPointInside(const Disc2& disc, const Vector2& point) noexcept {
 
 bool IsPointInside(const Capsule2& capsule, const Vector2& point) noexcept {
     return CalcDistanceSquared(point, capsule.line) < (capsule.radius * capsule.radius);
+}
+
+// Copyright 2000 softSurfer, 2012 Dan Sunday
+// This code may be freely used and modified for any purpose
+// providing that this copyright notice is included with it.
+// SoftSurfer makes no warranty for this code, and cannot be held
+// liable for any real or imagined damage resulting from its use.
+// Users of this code must verify correctness for their application.
+bool IsPointInside(const Polygon2& poly2, const Vector2& point) noexcept {
+    if(!IsPointInside(poly2.GetBounds(), point)) {
+        return false;
+    }
+    const auto& verts = poly2.GetVerts();
+    const auto pointCount = verts.size();
+    std::ostringstream ss{};
+    ss << "Inclusion of a Point in Polygon2 Crossing Number Test for " << pointCount << " points";
+    ss.flush();
+    //Crossing Number Test
+    const auto crossing_inside = [&]()
+    {
+        PROFILE_LOG_SCOPE(ss.str().c_str());
+        int cn = 0; // the  crossing number counter
+        const auto n = static_cast<int>(pointCount);
+        // loop through all edges of the polygon
+        for(int i = 0; i < n; i++) {                         // edge from V[i]  to V[i+1]
+            if(((verts[i].y <= point.y) && (verts[i + 1].y > point.y))       // an upward crossing
+               || ((verts[i].y > point.y) && (verts[i + 1].y <= point.y))) { // a downward crossing
+                // compute the actual edge-ray intersect x-coordinate
+                float vt = static_cast<float>(point.y - verts[i].y) / (verts[i + 1].y - verts[i].y);
+                if(point.x < verts[i].x + vt * (verts[i + 1].x - verts[i].x)) // point.x < intersect
+                    ++cn;                                     // a valid crossing of y=point.y right of point.x
+            }
+        }
+        return (cn & 1) == 1; // 0 if even (out), and 1 if  odd (in)
+    }();
+    ss.str("");
+    ss.clear();
+    ss << "Inclusion of a Point in Polygon2 Crossing Number Test for " << pointCount << " points";
+    ss.flush();
+    //Winding Number Test
+    const auto winding_inside = [&]()
+    {
+        PROFILE_LOG_SCOPE(ss.str().c_str());
+        int wn = 0; // the  winding number counter
+        const auto isLeft = [&](const Vector2& P0, const Vector2& P1, const Vector2& P2) {
+            return ((P1.x - P0.x) * (P2.y - P0.y)
+                - (P2.x - P0.x) * (P1.y - P0.y));
+        };
+        const auto n = static_cast<int>(pointCount);
+        // loop through all edges of the polygon
+        for(int i = 0; i < n; i++) {                  // edge from V[i] to  V[i+1]
+            if(verts[i].y <= point.y) {                       // start y <= point.y
+                if(verts[i + 1].y > point.y)                  // an upward crossing
+                    if(isLeft(verts[i], verts[i + 1], point) > 0) // P left of  edge
+                        ++wn;                         // have  a valid up intersect
+            } else {                                  // start y > point.y (no test needed)
+                if(verts[i + 1].y <= point.y)                 // a downward crossing
+                    if(isLeft(verts[i], verts[i + 1], point) < 0) // P right of  edge
+                        --wn;                         // have  a valid down intersect
+            }
+        }
+        return wn != 0;
+    }();
+    return crossing_inside || winding_inside;
 }
 
 bool IsPointInside(const Sphere3& sphere, const Vector3& point) noexcept {
