@@ -964,89 +964,9 @@ bool DoAABBsOverlap(const AABB3& a, const Sphere3& b) noexcept {
 }
 
 bool DoOBBsOverlap(const OBB2& a, const OBB2& b) noexcept {
-    //Separating Axis Theorem
-    const auto Pa = a.position;
-    const auto Oa = a.orientationDegrees;
-    const auto Ra = Matrix4::Create2DRotationDegreesMatrix(Oa);
-    const auto Ta = Matrix4::CreateTranslationMatrix(Pa);
-    const auto Ma = Matrix4::MakeRT(Ra, Ta);
-    const auto a_hex = a.half_extents.x;
-    const auto a_hey = a.half_extents.y;
-    const auto a_topright = Ma.TransformPosition(Vector2(+a_hex, -a_hey));
-    const auto a_bottomright = Ma.TransformPosition(Vector2(+a_hex, +a_hey));
-    const auto a_topleft = Ma.TransformPosition(Vector2(-a_hex, -a_hey));
-    const auto a_bottomleft = Ma.TransformPosition(Vector2(-a_hex, +a_hey));
-    const auto a_right_normal = Ra.TransformDirection(Vector2(a_hex, 0.0f).GetNormalize());
-    const auto a_down_normal = Ra.TransformDirection(Vector2(0.0f, a_hey).GetNormalize());
-    const auto a_left_normal = -a_right_normal;
-    const auto a_up_normal = -a_down_normal;
-
-    const auto Pb = b.position;
-    const auto Ob = b.orientationDegrees;
-    const auto Rb = Matrix4::Create2DRotationDegreesMatrix(Ob);
-    const auto Tb = Matrix4::CreateTranslationMatrix(Pb);
-    const auto Mb = Matrix4::MakeRT(Rb, Tb);
-    const auto b_hex = b.half_extents.x;
-    const auto b_hey = b.half_extents.y;
-    const auto b_topright = Mb.TransformPosition(Vector2(+b_hex, -b_hey));
-    const auto b_bottomright = Mb.TransformPosition(Vector2(+b_hex, +b_hey));
-    const auto b_topleft = Mb.TransformPosition(Vector2(-b_hex, -b_hey));
-    const auto b_bottomleft = Mb.TransformPosition(Vector2(-b_hex, +b_hey));
-    const auto b_right_normal = Rb.TransformDirection(Vector2(b_hex, 0.0f).GetNormalize());
-    const auto b_down_normal = Rb.TransformDirection(Vector2(0.0f, b_hey).GetNormalize());
-    const auto b_left_normal = -b_right_normal;
-    const auto b_up_normal = -b_down_normal;
-
-    const std::vector<Vector2> a_normals{a_right_normal, a_down_normal};
-    const std::vector<Vector2> a_corners{a_bottomleft, a_topleft, a_topright, a_bottomright};
-    const std::vector<Vector2> b_normals{b_right_normal, b_down_normal};
-    const std::vector<Vector2> b_corners{b_bottomleft, b_topleft, b_topright, b_bottomright};
-
-    for(const auto& an : a_normals) {
-        auto min_a = std::numeric_limits<float>::infinity();
-        auto max_a = std::numeric_limits<float>::lowest();
-        for(const auto& ac : a_corners) {
-            const auto proj_dp = DotProduct(ac, an);
-            min_a = (std::min)(min_a, proj_dp);
-            max_a = (std::max)(max_a, proj_dp);
-        }
-
-        auto min_b = std::numeric_limits<float>::infinity();
-        auto max_b = std::numeric_limits<float>::lowest();
-        for(const auto& bc : b_corners) {
-            const auto proj_dp = DotProduct(bc, an);
-            min_b = (std::min)(min_b, proj_dp);
-            max_b = (std::max)(max_b, proj_dp);
-        }
-
-        if(max_a < min_b)
-            return false;
-        if(max_b < min_a)
-            return false;
-    }
-    for(const auto& bn : b_normals) {
-        auto min_b = std::numeric_limits<float>::infinity();
-        auto max_b = std::numeric_limits<float>::lowest();
-        for(const auto& bc : b_corners) {
-            const auto proj_dp = DotProduct(bc, bn);
-            min_b = (std::min)(min_b, proj_dp);
-            max_b = (std::max)(max_b, proj_dp);
-        }
-
-        auto min_a = std::numeric_limits<float>::infinity();
-        auto max_a = std::numeric_limits<float>::lowest();
-        for(const auto& ac : a_corners) {
-            const auto proj_dp = DotProduct(ac, bn);
-            min_a = (std::min)(min_a, proj_dp);
-            max_a = (std::max)(max_a, proj_dp);
-        }
-
-        if(max_b < min_a)
-            return false;
-        if(max_a < min_b)
-            return false;
-    }
-    return true;
+    const auto polyA = Polygon2(a);
+    const auto polyB = Polygon2(b);
+    return DoPolygonsOverlap(polyA, polyB);
 }
 
 bool DoPolygonsOverlap(const Polygon2& a, const Polygon2& b) noexcept {
