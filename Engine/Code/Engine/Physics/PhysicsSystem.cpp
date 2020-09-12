@@ -239,9 +239,12 @@ void RigidBody::BeginFrame() {
 
 void RigidBody::Update(TimeUtils::FPSeconds deltaSeconds) {
     PROFILE_LOG_SCOPE_FUNCTION();
-    if(!is_awake || !enable_physics || MathUtils::IsEquivalentToZero(inv_mass)) {
+    if(!is_awake || !IsPhysicsEnabled() || MathUtils::IsEquivalentToZero(GetInverseMass())) {
+        linear_impulses.clear();
+        angular_impulses.clear();
         return;
     }
+    const auto inv_mass = GetInverseMass();
     const auto linear_impulse_sum = std::accumulate(std::begin(linear_impulses), std::end(linear_impulses), Vector2::ZERO);
     const auto angular_impulse_sum = std::accumulate(std::begin(angular_impulses), std::end(angular_impulses), 0.0f);
     linear_impulses.clear();
@@ -268,6 +271,7 @@ void RigidBody::Update(TimeUtils::FPSeconds deltaSeconds) {
     orientationDegrees = new_orientationDegrees;
     acceleration = new_acceleration;
 
+    const auto collider = GetCollider();
     const auto S = Matrix4::CreateScaleMatrix(collider->GetHalfExtents());
     const auto R = Matrix4::Create2DRotationDegreesMatrix(orientationDegrees);
     const auto T = Matrix4::CreateTranslationMatrix(position);
@@ -289,7 +293,8 @@ void RigidBody::Update(TimeUtils::FPSeconds deltaSeconds) {
 
 void RigidBody::DebugRender(Renderer& renderer) const {
     renderer.SetModelMatrix(Matrix4::I);
-    collider->DebugRender(renderer);
+    rigidbodyDesc.collider->DebugRender(renderer);
+    renderer.DrawOBB2(GetBounds(), Rgba::Green);
 }
 
 void RigidBody::Endframe() {
@@ -297,27 +302,54 @@ void RigidBody::Endframe() {
 }
 
 void RigidBody::EnablePhysics(bool enabled) {
-    enable_physics = enabled;
+    rigidbodyDesc.physicsDesc.enablePhysics = enabled;
 }
 
 void RigidBody::EnableGravity(bool enabled) {
-    enable_gravity = enabled;
+    rigidbodyDesc.physicsDesc.enableGravity = enabled;
+}
+
+void RigidBody::EnableDrag(bool enabled) {
+    rigidbodyDesc.physicsDesc.enableDrag = enabled;
 }
 
 bool RigidBody::IsPhysicsEnabled() const {
-    return enable_physics;
+    return rigidbodyDesc.physicsDesc.enablePhysics;
 }
 
 bool RigidBody::IsGravityEnabled() const {
-    return enable_gravity;
+    return rigidbodyDesc.physicsDesc.enableGravity;
+}
+
+bool RigidBody::IsDragEnabled() const {
+    return rigidbodyDesc.physicsDesc.enableDrag;
+}
+
+void RigidBody::SetAwake(bool awake) noexcept {
+    is_awake = awake;
+}
+
+void RigidBody::Wake() noexcept {
+    SetAwake(true);
+}
+
+void RigidBody::Sleep() noexcept {
+    SetAwake(false);
+}
+
+bool RigidBody::IsAwake() const {
+    return is_awake;
 }
 
 float RigidBody::GetMass() const {
-    return 1.0f / inv_mass;
+    return rigidbodyDesc.physicsDesc.mass;
 }
 
 float RigidBody::GetInverseMass() const {
-    return inv_mass;
+    if(const auto mass = GetMass(); mass > 0.0f) {
+        return 1.0f / mass;
+    }
+    return 0.0f;
 }
 
 Matrix4 RigidBody::GetParentTransform() const {
@@ -359,7 +391,8 @@ void RigidBody::ApplyTorqueAt(const Vector2& position_on_object, const Vector2& 
 }
 
 void RigidBody::ApplyTorqueAt(const Vector2& position_on_object, const Vector2& force, bool asImpulse /*= false*/) {
-    const auto point_of_collision = MathUtils::CalcClosestPoint(position_on_object, static_cast<const Collider&>(*collider.get()));
+    const auto collider = GetCollider();
+    const auto point_of_collision = MathUtils::CalcClosestPoint(position_on_object, *collider);
     const auto r = position - point_of_collision;
     const auto torque = MathUtils::CrossProduct(force, r);
     ApplyTorque(torque, asImpulse);
@@ -374,8 +407,12 @@ void RigidBody::ApplyForceAt(const Vector2& position_on_object, const Vector2& d
 }
 
 void RigidBody::ApplyForceAt(const Vector2& position_on_object, const Vector2& force) {
-    const auto point_of_collision = MathUtils::CalcClosestPoint(position_on_object, *collider.get());
-    const auto r = position - point_of_collision;
+    const auto collider = GetCollider();
+    const auto point_of_collision = MathUtils::CalcClosestPoint(position_on_object, *collider);
+    auto r = position - point_of_collision;
+    if(MathUtils::IsEquivalentToZero(r)) {
+        r = position;
+    }
     const auto [parallel, perpendicular] = MathUtils::DivideIntoProjectAndReject(force, r);
     const auto angular_result = force - parallel;
     const auto linear_result = force - perpendicular;
@@ -388,7 +425,8 @@ void RigidBody::ApplyImpulseAt(const Vector2& position_on_object, const Vector2&
 }
 
 void RigidBody::ApplyImpulseAt(const Vector2& position_on_object, const Vector2& force) {
-    const auto point_of_collision = MathUtils::CalcClosestPoint(position_on_object, *collider.get());
+    const auto collider = GetCollider();
+    const auto point_of_collision = MathUtils::CalcClosestPoint(position_on_object, *collider);
     const auto r = position - point_of_collision;
     const auto [parallel, perpendicular] = MathUtils::DivideIntoProjectAndReject(force, r);
     const auto angular_result = force - parallel;
@@ -404,12 +442,25 @@ const OBB2 RigidBody::GetBounds() const {
     return OBB2(center, dims * 0.5f, orientation);
 }
 
+void RigidBody::SetPosition(const Vector2& newPosition, bool teleport /*= false*/) noexcept {
+    if(teleport) {
+        position = newPosition;
+        prev_position = newPosition;
+    } else {
+        Wake();
+        position = newPosition;
+    }
+}
+
 const Vector2& RigidBody::GetPosition() const {
     return position;
 }
 
 Vector2 RigidBody::GetVelocity() const {
-    return (position - prev_position) / dt.count();
+    if(dt.count()) {
+        return (position - prev_position) / dt.count();
+    }
+    return Vector2::ZERO;
 }
 
 const Vector2& RigidBody::GetAcceleration() const {
@@ -417,7 +468,7 @@ const Vector2& RigidBody::GetAcceleration() const {
 }
 
 Vector2 RigidBody::CalcDimensions() const {
-    return collider->CalcDimensions();
+    return GetCollider()->CalcDimensions();
 }
 
 float RigidBody::GetOrientationDegrees() const {
@@ -433,11 +484,11 @@ float RigidBody::GetAngularAccelerationDegrees() const {
 }
 
 const Collider* RigidBody::GetCollider() const noexcept {
-    return is_awake;
+    return rigidbodyDesc.collider.get();
 }
 
-const Collider* RigidBody::GetCollider() const noexcept {
-    return collider.get();
+Collider* RigidBody::GetCollider() noexcept {
+    return rigidbodyDesc.collider.get();
 }
 
 ColliderPolygon::ColliderPolygon(int sides /*= 4*/, const Vector2& position /*= Vector2::ZERO*/, const Vector2& half_extents /*= Vector2(0.5f, 0.5f)*/, float orientationDegrees /*= 0.0f*/)

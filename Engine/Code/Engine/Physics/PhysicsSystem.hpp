@@ -124,9 +124,21 @@ Vector2 CalcClosestPoint(const Vector2& p, const Collider& collider);
 }
 
 struct PhysicsMaterial {
-    float friction = 0.7f;
-    float restitution = 0.3f;
-    float density = 1.0f;
+    float friction = 0.0f; //0.7f; //Range: [0.0,1.0]; How quickly an object comes to rest during a contact. Values closer to 1.0 cause resting contacts to lose velocity faster.
+    float restitution = 0.0f; //0.3f; //Range: [-1.0f, 1.0f]; The bouncyness of a material. Negative values cause an object to gain velocity after a collision.
+    //float density = 1.0f; //Affect mass calculation for "bigger" objects.
+    float massExponent = 1.0f;// 0.75f; //Raise final mass calculation to this exponent.
+};
+
+struct PhysicsDesc {
+    float mass = 1.0f; //How "heavy" an object is. Expressed in Kilograms. Cannot be lower than 0.001f;
+    float maxAngularSpeed = 1000.0f;
+    //float linearDamping = 0.90f;
+    //float angularDamping = 0.90f;
+    bool enableGravity = true; //Should gravity be applied.
+    bool enableDrag = false; //Should drag be applied.
+    bool enablePhysics = true; //Should object be subject to physics calculations.
+    bool startAwake = true; //Should the object be awake on creation.
 };
 
 #if defined (_MSC_VER)
@@ -135,11 +147,13 @@ struct PhysicsMaterial {
 #endif
 
 struct RigidBodyDesc {
-    PhysicsMaterial physicsMaterial = PhysicsMaterial{};
     Vector2 initialPosition = Vector2::ZERO;
     Vector2 initialVelocity = Vector2::ZERO;
     Vector2 initialAcceleration = Vector2::ZERO;
     std::unique_ptr<Collider> collider = std::make_unique<ColliderOBB>(Vector2::ZERO, Vector2::ONE * 0.5f);
+    PhysicsMaterial physicsMaterial = PhysicsMaterial{};
+    PhysicsDesc physicsDesc = PhysicsDesc{};
+    RigidBodyDesc() = default;
     RigidBodyDesc(const RigidBodyDesc& other) = delete;
     RigidBodyDesc(RigidBodyDesc&& other) = default;
     RigidBodyDesc& operator=(const RigidBodyDesc& other) = delete;
@@ -164,8 +178,15 @@ public:
 
     void EnablePhysics(bool enabled);
     void EnableGravity(bool enabled);
+    void EnableDrag(bool enabled);
     bool IsPhysicsEnabled() const;
     bool IsGravityEnabled() const;
+    bool IsDragEnabled() const;
+
+    void SetAwake(bool awake) noexcept;
+    void Wake() noexcept;
+    void Sleep() noexcept;
+    bool IsAwake() const;
 
     float GetMass() const;
     float GetInverseMass() const;
@@ -192,6 +213,7 @@ public:
 
     const OBB2 GetBounds() const;
 
+    void SetPosition(const Vector2& newPosition, bool teleport = false) noexcept;
     const Vector2& GetPosition() const;
     Vector2 GetVelocity() const;
     const Vector2& GetAcceleration() const;
@@ -200,20 +222,17 @@ public:
     float GetAngularVelocityDegrees() const;
     float GetAngularAccelerationDegrees() const;
 
-    bool IsAwake() const;
-
     const Collider* GetCollider() const noexcept;
+    Collider* GetCollider() noexcept;
 
 protected:
 private:
-    std::unique_ptr<Collider> collider = nullptr;
+    RigidBodyDesc rigidbodyDesc{};
     RigidBody* parent = nullptr;
     std::vector<RigidBody*> children{};
-    PhysicsMaterial phys_material{};
     Vector2 prev_position{};
     Vector2 position{};
     Vector2 acceleration{};
-    float inv_mass = 1.0f;
     float prev_orientationDegrees = 0.0f;
     float orientationDegrees = 0.0f;
     float angular_acceleration = 0.0f;
@@ -224,8 +243,6 @@ private:
     std::vector<float> angular_forces{};
     std::vector<float> angular_impulses{};
     bool is_colliding = false;
-    bool enable_physics = true;
-    bool enable_gravity = true;
     bool is_awake = true;
 
     friend class PhysicsSystem;
@@ -252,8 +269,9 @@ struct CollisionData {
 
 struct PhysicsSystemDesc {
     AABB2 world_bounds = AABB2(Vector2::ZERO, 500.0f, 500.0f);
-    float gravity = 980.665f;
-    float world_to_meters = 1000.0f;
+    float gravity = 10.0f;
+    Vector2 dragK1K2 = Vector2{1.0f, 1.0f};
+    float world_to_meters = 100.0f;
     int position_solver_iterations = 1;
     int velocity_solver_iterations = 1;
 };
