@@ -215,6 +215,24 @@ RigidBody::RigidBody(RigidBodyDesc desc /*= RigidBodyDesc{}*/)
     inv_mass = (1.0f / (desc.physicsMaterial.density * area));
 }
 
+RigidBody::RigidBody([[maybe_unused]] const PhysicsSystemDesc& physicsDesc, RigidBodyDesc&& desc /*= RigidBodyDesc{}*/)
+: rigidbodyDesc{std::move(desc)}
+, prev_position(rigidbodyDesc.initialPosition)
+, position(rigidbodyDesc.initialPosition)
+, acceleration(rigidbodyDesc.initialAcceleration)
+{
+    const auto area = rigidbodyDesc.collider->CalcArea();
+    if(/*MathUtils::IsEquivalentToZero(rigidbodyDesc.physicsMaterial.density) ||*/ MathUtils::IsEquivalentToZero(area)) {
+        rigidbodyDesc.physicsDesc.mass = 0.0f;
+    } else {
+        //rigidbodyDesc.physicsDesc.mass = /*rigidbodyDesc.physicsMaterial.density **/ area / physicsDesc.world_to_meters;
+        //rigidbodyDesc.physicsDesc.mass = std::pow(rigidbodyDesc.physicsDesc.mass, rigidbodyDesc.physicsMaterial.massExponent);
+        if(!MathUtils::IsEquivalentToZero(rigidbodyDesc.physicsDesc.mass) && rigidbodyDesc.physicsDesc.mass < 0.001f) {
+            rigidbodyDesc.physicsDesc.mass = 0.001f;
+        }
+    }
+}
+
 void RigidBody::BeginFrame() {
     /* DO NOTHING */
 }

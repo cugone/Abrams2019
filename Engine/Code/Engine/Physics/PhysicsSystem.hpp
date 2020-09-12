@@ -150,9 +150,11 @@ struct RigidBodyDesc {
 #pragma warning (pop)
 #endif
 
+struct PhysicsSystemDesc;
+
 class RigidBody {
 public:
-    explicit RigidBody(RigidBodyDesc desc = RigidBodyDesc{});
+    explicit RigidBody([[maybe_unused]] const PhysicsSystemDesc& physicsDesc, RigidBodyDesc&& desc = RigidBodyDesc{});
     Matrix4 transform{};
 
     void BeginFrame();
