@@ -414,7 +414,7 @@ float RigidBody::GetAngularAccelerationDegrees() const {
     return angular_acceleration;
 }
 
-bool RigidBody::IsAwake() const {
+const Collider* RigidBody::GetCollider() const noexcept {
     return is_awake;
 }
 
@@ -424,102 +424,77 @@ const Collider* RigidBody::GetCollider() const noexcept {
 
 ColliderPolygon::ColliderPolygon(int sides /*= 4*/, const Vector2& position /*= Vector2::ZERO*/, const Vector2& half_extents /*= Vector2(0.5f, 0.5f)*/, float orientationDegrees /*= 0.0f*/)
 : Collider()
-, _sides(sides)
-, _orientationDegrees(orientationDegrees)
-, _half_extents(half_extents)
-, _position(position) {
-    CalcVerts();
-    CalcNormals();
+, _polygon{sides, position, half_extents, orientationDegrees}
+{
+    /* DO NOTHING */
 }
 
 ColliderPolygon::ColliderPolygon()
-: Collider() {
-    CalcVerts();
-    CalcNormals();
+: Collider()
+{
+    /* DO NOTHING */
 }
 
 ColliderPolygon::~ColliderPolygon() = default;
 
 void ColliderPolygon::DebugRender(Renderer& renderer) const noexcept {
-    const std::vector<Vertex3D> vbo = [this]() {
-        std::vector<Vertex3D> buffer;
-        buffer.reserve(_verts.size());
-        for(const auto& v : _verts) {
-            buffer.push_back(Vertex3D(Vector3(v, 0.0f)));
-        }
-        return buffer;
-    }();
-    const std::vector<unsigned int> ibo = [this, &vbo]() {
-        std::vector<unsigned int> buffer(vbo.size() + 1);
-        std::iota(std::begin(buffer), std::end(buffer), 0u);
-        buffer.back() = 0;
-        return buffer;
-    }();
-    renderer.DrawIndexed(PrimitiveType::LinesStrip, vbo, ibo);
+    renderer.DrawPolygon2D(_polygon, Rgba::White);
 }
 
 int ColliderPolygon::GetSides() const {
-    return _sides;
+    return _polygon.GetSides();
 }
 
 void ColliderPolygon::SetSides(int sides) {
-    if(_sides == sides) {
-        return;
-    }
-    _sides = sides;
-    CalcVerts();
-    CalcNormals();
+    _polygon.SetSides(sides);
 }
 
 const std::vector<Vector2>& ColliderPolygon::GetVerts() const noexcept {
-    return _verts;
+    return _polygon.GetVerts();
 }
 
 const Vector2& ColliderPolygon::GetPosition() const {
-    return _position;
+    return _polygon.GetPosition();
 }
 
 void ColliderPolygon::SetPosition(const Vector2& position) noexcept {
-    _position = position;
-    CalcVerts();
+    _polygon.SetPosition(position);
 }
 
 void ColliderPolygon::Translate(const Vector2& translation) {
-    _position += translation;
-    CalcVerts();
+    _polygon.Translate(translation);
 }
 
-void ColliderPolygon::Rotate(float displacementDegrees) {
-    _orientationDegrees += displacementDegrees;
-    _orientationDegrees = MathUtils::Wrap(_orientationDegrees, 0.0f, 360.0f);
-    CalcVerts();
-    CalcNormals();
+void ColliderPolygon::RotateDegrees(float displacementDegrees) {
+    _polygon.RotateDegrees(displacementDegrees);
+}
+
+void ColliderPolygon::Rotate(float displacementRadians) {
+    _polygon.Rotate(displacementRadians);
 }
 
 float ColliderPolygon::GetOrientationDegrees() const noexcept {
-    return _orientationDegrees;
+    return _polygon.GetOrientationDegrees();
 }
 
 void ColliderPolygon::SetOrientationDegrees(float degrees) noexcept {
-    _orientationDegrees = degrees;
-    _orientationDegrees = MathUtils::Wrap(_orientationDegrees, 0.0f, 360.0f);
-    CalcVerts();
-    CalcNormals();
+    _polygon.SetOrientationDegrees(degrees);
 }
 
 const Vector2& ColliderPolygon::GetHalfExtents() const noexcept {
-    return _half_extents;
+    return _polygon.GetHalfExtents();
 }
 
 void ColliderPolygon::SetHalfExtents(const Vector2& newHalfExtents) {
-    _half_extents = newHalfExtents;
+    _polygon.SetHalfExtents(newHalfExtents);
 }
 
 Vector2 ColliderPolygon::CalcDimensions() const noexcept {
-    const auto [min_x, max_x] = std::minmax_element(std::cbegin(_verts), std::cend(_verts), [](const Vector2& a, const Vector2& b) {
+    const auto verts = _polygon.GetVerts();
+    const auto [min_x, max_x] = std::minmax_element(std::cbegin(verts), std::cend(verts), [](const Vector2& a, const Vector2& b) {
         return a.x < b.x;
     });
-    const auto [min_y, max_y] = std::minmax_element(std::cbegin(_verts), std::cend(_verts), [](const Vector2& a, const Vector2& b) {
+    const auto [min_y, max_y] = std::minmax_element(std::cbegin(verts), std::cend(verts), [](const Vector2& a, const Vector2& b) {
         return a.y < b.y;
     });
     const float width = (*max_x).x - (*min_x).x;
@@ -529,65 +504,29 @@ Vector2 ColliderPolygon::CalcDimensions() const noexcept {
 
 float ColliderPolygon::CalcArea() const noexcept {
     float A = 0.0f;
-    auto s = _verts.size();
+    const auto verts = _polygon.GetVerts();
+    auto s = verts.size();
     for(std::size_t i = 0; i < s - 1; ++i) {
-        A = _verts[i].x * _verts[i + 1].y - _verts[i + 1].x * _verts[i].y;
+        A = verts[i].x * verts[i + 1].y - verts[i + 1].x * verts[i].y;
     }
     return 0.5f * A;
 }
 
 OBB2 ColliderPolygon::GetBounds() const noexcept {
-    return OBB2(_position, CalcDimensions() * 0.5f, _orientationDegrees);
-}
-
-void ColliderPolygon::CalcNormals() {
-    auto s = _verts.size();
-    _normals.clear();
-    if(_normals.capacity() < s) {
-        _normals.reserve(s);
-    }
-    for(std::size_t i = 0; i < s; ++i) {
-        auto j = (i + 1) % s;
-        auto n = (_verts[j] - _verts[i]).GetNormalize().GetLeftHandNormal();
-        _normals.push_back(n);
-    }
-    const auto S = Matrix4::CreateScaleMatrix(_half_extents);
-    const auto R = Matrix4::Create2DRotationDegreesMatrix(_orientationDegrees);
-    const auto T = Matrix4::CreateTranslationMatrix(_position);
-    const auto M = Matrix4::MakeSRT(S, R, T);
-    for(auto& n : _normals) {
-        n = M.TransformDirection(n);
-    }
-}
-
-void ColliderPolygon::CalcVerts() {
-    auto num_sides_as_float = static_cast<float>(_sides);
-    _verts.clear();
-    if(_verts.capacity() < _sides) {
-        _verts.reserve(_sides);
-    }
-    auto anglePerVertex = 360.0f / num_sides_as_float;
-    for(float degrees = 0.0f; degrees < 360.0f; degrees += anglePerVertex) {
-        float radians = MathUtils::ConvertDegreesToRadians(degrees);
-        float pX = 0.5f * std::cos(radians);
-        float pY = 0.5f * std::sin(radians);
-        _verts.emplace_back(Vector2(pX, pY));
-    }
-    const auto S = Matrix4::CreateScaleMatrix(_half_extents);
-    const auto R = Matrix4::Create2DRotationDegreesMatrix(_orientationDegrees);
-    const auto T = Matrix4::CreateTranslationMatrix(_position);
-    const auto M = Matrix4::MakeSRT(S, R, T);
-    for(auto& v : _verts) {
-        v = M.TransformPosition(v);
-    }
+    return OBB2(_polygon.GetPosition(), CalcDimensions() * 0.5f, _polygon.GetOrientationDegrees());
 }
 
 Vector2 ColliderPolygon::Support(const Vector2& d) const noexcept {
-    return *std::max_element(std::cbegin(_verts), std::cend(_verts), [&d](const Vector2& a, const Vector2& b) { return MathUtils::DotProduct(a, d) < MathUtils::DotProduct(b, d); });
+    const auto& verts = _polygon.GetVerts();
+    return *std::max_element(std::cbegin(verts), std::cend(verts), [&d](const Vector2& a, const Vector2& b) { return MathUtils::DotProduct(a, d.GetNormalize()) < MathUtils::DotProduct(b, d.GetNormalize()); });
 }
 
 Vector2 ColliderPolygon::CalcCenter() const noexcept {
-    return _position;
+    return _polygon.GetPosition();
+}
+
+const Polygon2& ColliderPolygon::GetPolygon() const noexcept {
+    return _polygon;
 }
 
 ColliderOBB::ColliderOBB(const Vector2& position, const Vector2& half_extents)
@@ -601,11 +540,11 @@ float ColliderOBB::CalcArea() const noexcept {
 }
 
 void ColliderOBB::DebugRender(Renderer& renderer) const noexcept {
-    renderer.DrawOBB2(_orientationDegrees, Rgba::Pink);
+    renderer.DrawOBB2(_polygon.GetOrientationDegrees(), Rgba::Pink);
 }
 
 const Vector2& ColliderOBB::GetHalfExtents() const noexcept {
-    return _half_extents;
+    return _polygon.GetHalfExtents();
 }
 
 Vector2 ColliderOBB::Support(const Vector2& d) const noexcept {
@@ -617,7 +556,7 @@ void ColliderOBB::SetPosition(const Vector2& position) noexcept {
 }
 
 float ColliderOBB::GetOrientationDegrees() const noexcept {
-    return _orientationDegrees;
+    return _polygon.GetOrientationDegrees();
 }
 
 void ColliderOBB::SetOrientationDegrees(float degrees) noexcept {
@@ -625,15 +564,15 @@ void ColliderOBB::SetOrientationDegrees(float degrees) noexcept {
 }
 
 Vector2 ColliderOBB::CalcDimensions() const noexcept {
-    return _half_extents * 2.0f;
+    return _polygon.GetHalfExtents() * 2.0f;
 }
 
 OBB2 ColliderOBB::GetBounds() const noexcept {
-    return OBB2(_position, _half_extents, _orientationDegrees);
+    return OBB2(_polygon.GetPosition(), _polygon.GetHalfExtents(), _polygon.GetOrientationDegrees());
 }
 
 Vector2 ColliderOBB::CalcCenter() const noexcept {
-    return _position;
+    return _polygon.GetPosition();
 }
 
 ColliderCircle::ColliderCircle(const Vector2& position, float radius)
@@ -642,20 +581,21 @@ ColliderCircle::ColliderCircle(const Vector2& position, float radius)
 }
 
 float ColliderCircle::CalcArea() const noexcept {
-    return MathUtils::M_PI * _half_extents.x * _half_extents.x;
+    const auto half_extents = _polygon.GetHalfExtents();
+    return MathUtils::M_PI * half_extents.x * half_extents.x;
 }
 
 const Vector2& ColliderCircle::GetHalfExtents() const noexcept {
-    return _half_extents;
+    return _polygon.GetHalfExtents();
 }
 
 Vector2 ColliderCircle::Support(const Vector2& d) const noexcept {
-    return _position + d.GetNormalize() * _half_extents.x;
+    return _polygon.GetPosition() + d.GetNormalize() * _polygon.GetHalfExtents().x;
     //return ColliderPolygon::Support(d);
 }
 
 void ColliderCircle::DebugRender(Renderer& renderer) const noexcept {
-    renderer.DrawCircle2D(_position, _half_extents.x, Rgba::Pink);
+    renderer.DrawCircle2D(_polygon.GetPosition(), _polygon.GetHalfExtents().x, Rgba::Pink);
 }
 
 void ColliderCircle::SetPosition(const Vector2& position) noexcept {
@@ -663,7 +603,7 @@ void ColliderCircle::SetPosition(const Vector2& position) noexcept {
 }
 
 float ColliderCircle::GetOrientationDegrees() const noexcept {
-    return _orientationDegrees;
+    return _polygon.GetOrientationDegrees();
 }
 
 void ColliderCircle::SetOrientationDegrees(float degrees) noexcept {
@@ -671,15 +611,15 @@ void ColliderCircle::SetOrientationDegrees(float degrees) noexcept {
 }
 
 Vector2 ColliderCircle::CalcDimensions() const noexcept {
-    return _half_extents;
+    return _polygon.GetHalfExtents() * 2.0f;
 }
 
 OBB2 ColliderCircle::GetBounds() const noexcept {
-    return OBB2(_position, _half_extents, _orientationDegrees);
+    return OBB2(_polygon.GetPosition(), _polygon.GetHalfExtents(), _polygon.GetOrientationDegrees());
 }
 
 Vector2 ColliderCircle::CalcCenter() const noexcept {
-    return _position;
+    return _polygon.GetPosition();
 }
 
 Vector2 MathUtils::CalcClosestPoint(const Vector2& p, const Collider& collider) {

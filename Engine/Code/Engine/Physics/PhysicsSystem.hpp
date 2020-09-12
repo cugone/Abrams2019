@@ -53,6 +53,7 @@ public:
     const Vector2& GetPosition() const;
     virtual void SetPosition(const Vector2& position) noexcept override;
     void Translate(const Vector2& translation);
+    void RotateDegrees(float displacementDegrees);
     void Rotate(float displacementDegrees);
     virtual float GetOrientationDegrees() const noexcept override;
     virtual void SetOrientationDegrees(float degrees) noexcept override;
@@ -64,18 +65,10 @@ public:
     virtual Vector2 Support(const Vector2& d) const noexcept override;
     virtual Vector2 CalcCenter() const noexcept override;
 
+    const Polygon2& GetPolygon() const noexcept;
+
 protected:
-    void CalcNormals();
-
-    void CalcVerts();
-
-    int _sides = 4;
-    float _orientationDegrees = 0.0f;
-    Vector2 _half_extents = Vector2(0.5f, 0.5f);
-    Vector2 _position = Vector2::ZERO;
-    std::vector<Vector2> _verts;
-    std::vector<Vector2> _normals;
-
+    Polygon2 _polygon = Polygon2{4, Vector2::ZERO, Vector2{0.5f, 0.5f}, 0.0f};
 private:
 };
 
