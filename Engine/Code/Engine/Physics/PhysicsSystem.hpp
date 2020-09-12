@@ -1,271 +1,24 @@
 #pragma once
 
-#include "Engine/Core/ThreadSafeQueue.hpp"
 #include "Engine/Core/TimeUtils.hpp"
-#include "Engine/Core/Vertex3D.hpp"
-#include "Engine/Math/MathUtils.hpp"
-#include "Engine/Math/Matrix4.hpp"
-#include "Engine/Math/OBB2.hpp"
-#include "Engine/Math/Polygon2.hpp"
+
+#include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/Vector2.hpp"
-#include "Engine/Math/Vector3.hpp"
-#include "Engine/Physics/QuadTree.hpp"
+
+#include "Engine/Physics/PhysicsTypes.hpp"
+#include "Engine/Physics/RigidBody.hpp"
+
+#include "Engine/Profiling/ProfileLogScope.hpp"
+
 #include "Engine/Renderer/Renderer.hpp"
 
-#include <algorithm>
 #include <atomic>
 #include <condition_variable>
-#include <memory>
-#include <numeric>
+#include <queue>
 #include <set>
 #include <thread>
-#include <tuple>
+#include <utility>
 #include <vector>
-
-class Renderer;
-
-class Collider {
-public:
-    virtual ~Collider() = default;
-    virtual void DebugRender(Renderer& renderer) const noexcept = 0;
-    virtual Vector2 CalcDimensions() const noexcept = 0;
-    virtual Vector2 CalcCenter() const noexcept = 0;
-    virtual float CalcArea() const noexcept = 0;
-    virtual const Vector2& GetHalfExtents() const noexcept = 0;
-    virtual void SetPosition(const Vector2& position) noexcept = 0;
-    virtual void SetOrientationDegrees(float orientationDegrees) noexcept = 0;
-    virtual float GetOrientationDegrees() const noexcept = 0;
-    virtual OBB2 GetBounds() const noexcept = 0;
-    virtual Vector2 Support(const Vector2& d) const noexcept = 0;
-};
-
-class ColliderPolygon : public Collider {
-public:
-    ColliderPolygon();
-
-    explicit ColliderPolygon(int sides = 4, const Vector2& position = Vector2::ZERO, const Vector2& half_extents = Vector2(0.5f, 0.5f), float orientationDegrees = 0.0f);
-
-    virtual ~ColliderPolygon();
-    virtual void DebugRender(Renderer& renderer) const noexcept override;
-    int GetSides() const;
-    void SetSides(int sides);
-    const std::vector<Vector2>& GetVerts() const noexcept;
-    const Vector2& GetPosition() const;
-    virtual void SetPosition(const Vector2& position) noexcept override;
-    void Translate(const Vector2& translation);
-    void RotateDegrees(float displacementDegrees);
-    void Rotate(float displacementDegrees);
-    virtual float GetOrientationDegrees() const noexcept override;
-    virtual void SetOrientationDegrees(float degrees) noexcept override;
-    const Vector2& GetHalfExtents() const noexcept override;
-    void SetHalfExtents(const Vector2& newHalfExtents);
-    virtual Vector2 CalcDimensions() const noexcept override;
-    virtual float CalcArea() const noexcept override;
-    OBB2 GetBounds() const noexcept override;
-    virtual Vector2 Support(const Vector2& d) const noexcept override;
-    virtual Vector2 CalcCenter() const noexcept override;
-
-    const Polygon2& GetPolygon() const noexcept;
-
-protected:
-    Polygon2 _polygon = Polygon2{4, Vector2::ZERO, Vector2{0.5f, 0.5f}, 0.0f};
-private:
-};
-
-class ColliderOBB : public ColliderPolygon {
-public:
-    ColliderOBB(const Vector2& position, const Vector2& half_extents);
-    virtual float CalcArea() const noexcept override;
-
-    virtual void DebugRender(Renderer& renderer) const noexcept override;
-    virtual const Vector2& GetHalfExtents() const noexcept override;
-    virtual Vector2 Support(const Vector2& d) const noexcept override;
-    virtual void SetPosition(const Vector2& position) noexcept override;
-    virtual float GetOrientationDegrees() const noexcept override;
-    virtual void SetOrientationDegrees(float degrees) noexcept override;
-    virtual Vector2 CalcDimensions() const noexcept override;
-    virtual OBB2 GetBounds() const noexcept override;
-    virtual Vector2 CalcCenter() const noexcept override;
-
-protected:
-private:
-};
-
-class ColliderCircle : public ColliderPolygon {
-public:
-    ColliderCircle(const Vector2& position, float radius);
-    virtual float CalcArea() const noexcept override;
-    virtual const Vector2& GetHalfExtents() const noexcept override;
-    virtual Vector2 Support(const Vector2& d) const noexcept override;
-    virtual void DebugRender(Renderer& renderer) const noexcept override;
-    virtual void SetPosition(const Vector2& position) noexcept override;
-    virtual float GetOrientationDegrees() const noexcept override;
-    virtual void SetOrientationDegrees(float degrees) noexcept override;
-    virtual Vector2 CalcDimensions() const noexcept override;
-    virtual OBB2 GetBounds() const noexcept override;
-    virtual Vector2 CalcCenter() const noexcept override;
-
-protected:
-private:
-};
-
-struct GJKResult {
-    bool collides{false};
-    float distance{0.0f};
-    Vector2 collisionNormal{};
-};
-
-GJKResult GJKDistance(const Collider& a, const Collider& b);
-Vector2 GJKClosestPoint(const Collider& a, const Collider& b);
-bool GJKIntersect(const Collider& a, const Collider& b);
-
-namespace MathUtils {
-Vector2 CalcClosestPoint(const Vector2& p, const Collider& collider);
-}
-
-struct PhysicsMaterial {
-    float friction = 0.0f; //0.7f; //Range: [0.0,1.0]; How quickly an object comes to rest during a contact. Values closer to 1.0 cause resting contacts to lose velocity faster.
-    float restitution = 0.0f; //0.3f; //Range: [-1.0f, 1.0f]; The bouncyness of a material. Negative values cause an object to gain velocity after a collision.
-    //float density = 1.0f; //Affect mass calculation for "bigger" objects.
-    float massExponent = 1.0f;// 0.75f; //Raise final mass calculation to this exponent.
-};
-
-struct PhysicsDesc {
-    float mass = 1.0f; //How "heavy" an object is. Expressed in Kilograms. Cannot be lower than 0.001f;
-    float maxAngularSpeed = 1000.0f;
-    //float linearDamping = 0.90f;
-    //float angularDamping = 0.90f;
-    bool enableGravity = true; //Should gravity be applied.
-    bool enableDrag = false; //Should drag be applied.
-    bool enablePhysics = true; //Should object be subject to physics calculations.
-    bool startAwake = true; //Should the object be awake on creation.
-};
-
-#if defined (_MSC_VER)
-#pragma warning (push)
-#pragma warning (disable: 26444 ) // 143 Avoid unnamed objects with custom construction and destruction (es.84).
-#endif
-
-struct RigidBodyDesc {
-    Vector2 initialPosition = Vector2::ZERO;
-    Vector2 initialVelocity = Vector2::ZERO;
-    Vector2 initialAcceleration = Vector2::ZERO;
-    std::unique_ptr<Collider> collider = std::make_unique<ColliderOBB>(Vector2::ZERO, Vector2::ONE * 0.5f);
-    PhysicsMaterial physicsMaterial = PhysicsMaterial{};
-    PhysicsDesc physicsDesc = PhysicsDesc{};
-    RigidBodyDesc() = default;
-    RigidBodyDesc(const RigidBodyDesc& other) = delete;
-    RigidBodyDesc(RigidBodyDesc&& other) = default;
-    RigidBodyDesc& operator=(const RigidBodyDesc& other) = delete;
-    RigidBodyDesc& operator=(RigidBodyDesc&& other) = default;
-};
-
-#if defined(_MSC_VER)
-#pragma warning (pop)
-#endif
-
-struct PhysicsSystemDesc;
-
-class RigidBody {
-public:
-    explicit RigidBody([[maybe_unused]] const PhysicsSystemDesc& physicsDesc, RigidBodyDesc&& desc = RigidBodyDesc{});
-    Matrix4 transform{};
-
-    void BeginFrame();
-    void Update(TimeUtils::FPSeconds deltaSeconds);
-    void DebugRender(Renderer& renderer) const;
-    void Endframe();
-
-    void EnablePhysics(bool enabled);
-    void EnableGravity(bool enabled);
-    void EnableDrag(bool enabled);
-    bool IsPhysicsEnabled() const;
-    bool IsGravityEnabled() const;
-    bool IsDragEnabled() const;
-
-    void SetAwake(bool awake) noexcept;
-    void Wake() noexcept;
-    void Sleep() noexcept;
-    bool IsAwake() const;
-
-    float GetMass() const;
-    float GetInverseMass() const;
-
-    Matrix4 GetParentTransform() const;
-
-    void ApplyImpulse(const Vector2& impulse);
-    void ApplyImpulse(const Vector2& direction, float magnitude);
-
-    void ApplyForce(const Vector2& force);
-    void ApplyForce(const Vector2& direction, float magnitude);
-
-    void ApplyTorque(float force, bool asImpulse = false);
-    void ApplyTorque(const Vector2& direction, float magnitude, bool asImpulse = false);
-
-    void ApplyTorqueAt(const Vector2& position_on_object, const Vector2& force, bool asImpulse = false);
-    void ApplyTorqueAt(const Vector2& position_on_object, const Vector2& direction, float magnitude, bool asImpulse = false);
-
-    void ApplyForceAt(const Vector2& position_on_object, const Vector2& direction, float magnitude);
-    void ApplyForceAt(const Vector2& position_on_object, const Vector2& force);
-
-    void ApplyImpulseAt(const Vector2& position_on_object, const Vector2& direction, float magnitude);
-    void ApplyImpulseAt(const Vector2& position_on_object, const Vector2& force);
-
-    const OBB2 GetBounds() const;
-
-    void SetPosition(const Vector2& newPosition, bool teleport = false) noexcept;
-    const Vector2& GetPosition() const;
-    Vector2 GetVelocity() const;
-    const Vector2& GetAcceleration() const;
-    Vector2 CalcDimensions() const;
-    float GetOrientationDegrees() const;
-    float GetAngularVelocityDegrees() const;
-    float GetAngularAccelerationDegrees() const;
-
-    const Collider* GetCollider() const noexcept;
-    Collider* GetCollider() noexcept;
-
-protected:
-private:
-    RigidBodyDesc rigidbodyDesc{};
-    RigidBody* parent = nullptr;
-    std::vector<RigidBody*> children{};
-    Vector2 prev_position{};
-    Vector2 position{};
-    Vector2 acceleration{};
-    float prev_orientationDegrees = 0.0f;
-    float orientationDegrees = 0.0f;
-    float angular_acceleration = 0.0f;
-    TimeUtils::FPSeconds dt{};
-    TimeUtils::FPSeconds time_since_last_move{};
-    std::vector<Vector2> linear_forces{};
-    std::vector<Vector2> linear_impulses{};
-    std::vector<float> angular_forces{};
-    std::vector<float> angular_impulses{};
-    bool is_colliding = false;
-    bool is_awake = true;
-
-    friend class PhysicsSystem;
-};
-
-struct CollisionData {
-    RigidBody* const a = nullptr;
-    RigidBody* const b = nullptr;
-    float distance = 0.0f;
-    Vector2 normal{};
-    CollisionData(RigidBody* const a, RigidBody* const b, float distance, const Vector2& normal)
-    : a(a)
-    , b(b)
-    , distance(distance)
-    , normal(normal) {
-    }
-    bool operator==(const CollisionData& rhs) const noexcept {
-        return (this->a == rhs.a && this->b == rhs.b) || (this->b == rhs.a && this->a == rhs.b);
-    }
-    bool operator!=(const CollisionData& rhs) const noexcept {
-        return !(*this == rhs);
-    }
-};
 
 struct PhysicsSystemDesc {
     AABB2 world_bounds = AABB2(Vector2::ZERO, 500.0f, 500.0f);
@@ -293,19 +46,63 @@ public:
 
     void DebugShowCollision(bool show);
     void DebugShowWorldPartition(bool show);
+    void DebugShowContacts(bool show);
+
     void Enable(bool enable);
     void SetGravity(float new_gravity);
     float GetGravity() const noexcept;
+    void SetDragCoefficients(const Vector2& k1k2);
+    void SetDragCoefficients(float linearCoefficient, float squareCoefficient);
+    std::pair<float,float> GetDragCoefficients() const noexcept;
+    const PhysicsSystemDesc& GetWorldDescription() const noexcept;
     void SetWorldDescription(const PhysicsSystemDesc& new_desc);
     void EnableGravity(bool isGravityEnabled) noexcept;
-    void EnablePhysics(bool isGravityEnabled) noexcept;
+    void EnableDrag(bool isDragEnabled) noexcept;
+    void EnablePhysics(bool isPhysicsEnabled) noexcept;
 
 protected:
 private:
     void Update_Worker() noexcept;
     void UpdateBodiesInBounds(TimeUtils::FPSeconds deltaSeconds) noexcept;
     std::vector<RigidBody*> BroadPhaseCollision(const AABB2& query_area) noexcept;
-    std::set<CollisionData, std::equal_to<CollisionData>> NarrowPhaseCollision(const std::vector<RigidBody*>& potential_collisions) noexcept;
+
+    using CollisionDataSet = std::set<CollisionData, std::equal_to<CollisionData>>;
+
+    template<typename CollisionDetectionFunction, typename CollisionResolutionFunction>
+    CollisionDataSet NarrowPhaseCollision(const std::vector<RigidBody*>& potential_collisions, CollisionDetectionFunction&& cd, CollisionResolutionFunction&& cr) noexcept {
+        PROFILE_LOG_SCOPE_FUNCTION();
+        CollisionDataSet result{};
+        if(potential_collisions.size() < 2) {
+            _contacts.clear();
+            return {};
+        }
+        for(auto iter_a = std::begin(potential_collisions); iter_a != std::end(potential_collisions); ++iter_a) {
+            for(auto iter_b = iter_a + 1; iter_b != std::end(potential_collisions); ++iter_b) {
+                auto* const cur_body = *iter_a;
+                auto* const next_body = *iter_b;
+                if(cur_body == next_body) {
+                    continue;
+                }
+                const auto cdResult = std::invoke(cd, *cur_body->GetCollider(), *next_body->GetCollider());
+                if(cdResult.collides) {
+                    const auto crResult = std::invoke(cr, cdResult, *cur_body->GetCollider(), *next_body->GetCollider());
+                    const auto contact = CollisionData{cur_body, next_body, crResult.distance, crResult.normal};
+                    const auto [_, was_inserted] = result.insert(contact);
+                    if(!was_inserted) {
+                        DebuggerPrintf("Physics System: Attempting to insert already existing element.");
+                    } else {
+                        while(_contacts.size() >= 10) {
+                            _contacts.pop_front();
+                        }
+                        _contacts.push_back(contact);
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    void SolveCollision(const CollisionDataSet& actual_collisions) noexcept;
 
     Renderer& _renderer;
     PhysicsSystemDesc _desc{};
@@ -315,9 +112,12 @@ private:
     std::atomic_bool _is_running = false;
     std::atomic_bool _delta_seconds_changed = false;
     std::vector<RigidBody*> _rigidBodies{};
+    std::deque<CollisionData> _contacts{};
     std::vector<const RigidBody*> _pending_removal{};
-    QuadTree<RigidBody> _world_partition{};
+    //QuadTree<RigidBody> _world_partition{};
     std::atomic<float> _deltaSeconds = 0.0f;
     bool _show_colliders = false;
+    bool _show_object_bounds = false;
     bool _show_world_partition = false;
+    bool _show_contacts = false;
 };
