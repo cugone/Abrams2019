@@ -368,6 +368,19 @@ Vector3 CrossProduct(const Vector3& a, const Vector3& b) noexcept {
     return Vector3(a2 * b3 - a3 * b2, a3 * b1 - a1 * b3, a1 * b2 - a2 * b1);
 }
 
+float TripleProductScalar(const Vector3& a, const Vector3& b, const Vector3& c) noexcept {
+    return DotProduct(a, CrossProduct(b, c));
+}
+
+Vector2 TripleProductVector(const Vector2& a, const Vector2& b, const Vector2& c) noexcept {
+    //(A x B) x C = B * (A . C) - A * (B . C);
+    return (b * DotProduct(a, c)) - (c * DotProduct(a, b));
+}
+
+Vector3 TripleProductVector(const Vector3& a, const Vector3& b, const Vector3& c) noexcept {
+    return CrossProduct(CrossProduct(a, b), c);
+}
+
 Vector2 Project(const Vector2& a, const Vector2& b) noexcept {
     return (DotProduct(a, b) / DotProduct(b, b)) * b;
 }

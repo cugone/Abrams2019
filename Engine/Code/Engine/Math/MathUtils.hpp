@@ -160,6 +160,10 @@ float DotProduct(const Vector3& a, const Vector3& b) noexcept;
 float DotProduct(const Vector4& a, const Vector4& b) noexcept;
 float DotProduct(const Quaternion& a, const Quaternion& b) noexcept;
 
+float TripleProductScalar(const Vector3& a, const Vector3& b, const Vector3& c) noexcept;
+Vector2 TripleProductVector(const Vector2& a, const Vector2& b, const Vector2& c) noexcept;
+Vector3 TripleProductVector(const Vector3& a, const Vector3& b, const Vector3& c) noexcept;
+
 Vector2 Project(const Vector2& a, const Vector2& b) noexcept;
 Vector3 Project(const Vector3& a, const Vector3& b) noexcept;
 Vector4 Project(const Vector4& a, const Vector4& b) noexcept;
