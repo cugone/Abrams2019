@@ -1058,6 +1058,7 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
             RegisterKeyDown(key);
             return true;
         }
+        return false;
     }
     case WindowsSystemMessage::Mouse_LButtonUp: {
         constexpr uint16_t lbutton_mask = 0b0000'0000'0000'0001;  //0x0001
@@ -1073,6 +1074,7 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
             RegisterKeyUp(key);
             return true;
         }
+        return false;
     }
     case WindowsSystemMessage::Mouse_RButtonDown: {
         constexpr uint16_t lbutton_mask = 0b0000'0000'0000'0001;  //0x0001
@@ -1088,6 +1090,7 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
             RegisterKeyDown(key);
             return true;
         }
+        return false;
     }
     case WindowsSystemMessage::Mouse_RButtonUp: {
         constexpr uint16_t lbutton_mask = 0b0000'0000'0000'0001;  //0x0001
@@ -1103,6 +1106,7 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
             RegisterKeyUp(key);
             return true;
         }
+        return false;
     }
     case WindowsSystemMessage::Mouse_MButtonDown: {
         constexpr uint16_t lbutton_mask = 0b0000'0000'0000'0001;  //0x0001
@@ -1118,6 +1122,7 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
             RegisterKeyDown(key);
             return true;
         }
+        return false;
     }
     case WindowsSystemMessage::Mouse_MButtonUp: {
         constexpr uint16_t lbutton_mask = 0b0000'0000'0000'0001;  //0x0001
@@ -1133,6 +1138,7 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
             RegisterKeyUp(key);
             return true;
         }
+        return false;
     }
     case WindowsSystemMessage::Mouse_XButtonDown: {
         constexpr uint16_t lbutton_mask = 0b0000'0000'0000'0001;       //0x0001
