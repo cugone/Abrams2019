@@ -8,6 +8,7 @@ CollisionData::CollisionData(RigidBody* const a, RigidBody* const b, float dista
 {}
 
 bool CollisionData::operator==(const CollisionData& rhs) const noexcept {
+    //Strict weak ordering required by std::set
     return (!(this->a < rhs.a) && !(rhs.a < this->a)) && (!(this->b < rhs.b) && !(rhs.b < this->b));
 }
 bool CollisionData::operator!=(const CollisionData& rhs) const noexcept {
