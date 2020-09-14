@@ -20,7 +20,6 @@
 
 #include <algorithm>
 #include <cmath>
-#include <sstream>
 
 namespace MathUtils {
 
@@ -294,6 +293,22 @@ float CalcDistance(const Vector3& p, const LineSegment3& line) noexcept {
     return std::sqrt(CalcDistanceSquared(p, line));
 }
 
+float CalcDistance(const Vector2& p, const Polygon2& poly2) noexcept {
+    return std::sqrt(CalcDistanceSquared(p, poly2));
+}
+
+float CalcDistance(const LineSegment2& line, const Polygon2& poly2) noexcept {
+    return CalcDistance(poly2, line);
+}
+
+float CalcDistance(const Polygon2& poly2, const LineSegment2& line) noexcept {
+    return std::sqrt(CalcDistanceSquared(poly2, line));
+}
+
+float CalcDistance(const LineSegment2& lineA, const LineSegment2& lineB) noexcept {
+    return std::sqrt(CalcDistanceSquared(lineA, lineB));
+}
+
 float CalcDistance4D(const Vector4& a, const Vector4& b) noexcept {
     return (b - a).CalcLength4D();
 }
@@ -320,6 +335,63 @@ float CalcDistanceSquared(const Vector2& p, const LineSegment2& line) noexcept {
 
 float CalcDistanceSquared(const Vector3& p, const LineSegment3& line) noexcept {
     return CalcDistanceSquared(p, CalcClosestPoint(p, line));
+}
+
+float CalcDistanceSquared(const Vector2& p, const Polygon2& poly2) noexcept {
+    return CalcDistanceSquared(p, CalcClosestPoint(p, poly2));
+}
+
+float CalcDistanceSquared(const LineSegment2& line, const Polygon2& poly2) noexcept {
+    return CalcDistanceSquared(poly2, line);
+}
+
+float CalcDistanceSquared(const Polygon2& poly2, const LineSegment2& line) noexcept {
+    const auto& edges = poly2.GetEdges();
+
+    float smallest_distance_sq = std::numeric_limits<float>::infinity();
+    for(const auto& edge : edges) {
+        const auto new_dist = CalcDistanceSquared(edge, line);
+        if(new_dist < smallest_distance_sq) {
+            smallest_distance_sq = new_dist;
+        }
+    }
+    return smallest_distance_sq;
+}
+
+float CalcDistanceSquared(const LineSegment2& lineA, const LineSegment2& lineB) noexcept {
+
+    //https://stackoverflow.com/a/11427699/421178
+
+    const auto a_len_sq = lineA.CalcLengthSquared();
+    const auto b_len_sq = lineB.CalcLengthSquared();
+    { //Early-out if either or both segments are too short to consider as segments.
+        const auto is_a_len_sq_zero = IsEquivalentToZero(a_len_sq);
+        const auto is_b_len_sq_zero = IsEquivalentToZero(b_len_sq);
+        //Both "segments" are actually points...
+        if(is_a_len_sq_zero && is_b_len_sq_zero) {
+            return CalcDistanceSquared(lineA.start, lineB.start);
+        }
+        //Else either one is a point.
+        if(is_a_len_sq_zero) {
+            return CalcDistanceSquared(lineA.start, lineB);
+        }
+        if(is_b_len_sq_zero) {
+            return CalcDistanceSquared(lineB.start, lineA);
+        }
+    }
+
+    //Actual segment-segment distance...
+    if(DoLineSegmentOverlap(lineA, lineB)) {
+        return 0.0f;
+    }
+
+    const auto a1 = lineA.start;
+    const auto a2 = lineA.end;
+    const auto b1 = lineB.start;
+    const auto b2 = lineB.end;
+    const auto distances = std::vector<float>{CalcDistanceSquared(a1, lineB),CalcDistanceSquared(a2, lineB),CalcDistanceSquared(b1, lineA),CalcDistanceSquared(b2, lineA)};
+
+    return *std::min_element(std::cbegin(distances), std::cend(distances));
 }
 
 float CalcDistanceSquared4D(const Vector4& a, const Vector4& b) noexcept {
@@ -638,68 +710,68 @@ bool IsPointInside(const Capsule2& capsule, const Vector2& point) noexcept {
     return CalcDistanceSquared(point, capsule.line) < (capsule.radius * capsule.radius);
 }
 
-// Copyright 2000 softSurfer, 2012 Dan Sunday
-// This code may be freely used and modified for any purpose
-// providing that this copyright notice is included with it.
-// SoftSurfer makes no warranty for this code, and cannot be held
-// liable for any real or imagined damage resulting from its use.
-// Users of this code must verify correctness for their application.
 bool IsPointInside(const Polygon2& poly2, const Vector2& point) noexcept {
     if(!IsPointInside(poly2.GetBounds(), point)) {
         return false;
     }
     const auto& verts = poly2.GetVerts();
     const auto pointCount = verts.size();
-    std::ostringstream ss{};
-    ss << "Inclusion of a Point in Polygon2 Crossing Number Test for " << pointCount << " points";
-    ss.flush();
+
+    // Crossing Number Test and Winding Number Test
+    // Copyright 2000 softSurfer, 2012 Dan Sunday
+    // This code may be freely used and modified for any purpose
+    // providing that this copyright notice is included with it.
+    // SoftSurfer makes no warranty for this code, and cannot be held
+    // liable for any real or imagined damage resulting from its use.
+    // Users of this code must verify correctness for their application.
+
+
+
+#if 0
     //Crossing Number Test
     const auto crossing_inside = [&]()
     {
-        PROFILE_LOG_SCOPE(ss.str().c_str());
+        PROFILE_LOG_SCOPE("Crossing Inside");
         int cn = 0; // the  crossing number counter
-        const auto n = static_cast<int>(pointCount);
+        const auto n = pointCount;
         // loop through all edges of the polygon
-        for(int i = 0; i < n; i++) {                         // edge from V[i]  to V[i+1]
-            if(((verts[i].y <= point.y) && (verts[i + 1].y > point.y))       // an upward crossing
-               || ((verts[i].y > point.y) && (verts[i + 1].y <= point.y))) { // a downward crossing
+        for(std::size_t i = 0u; i < n - 1u; i++) {                         // edge from V[i]  to V[i+1]
+            if(((verts[i].y <= point.y) && (verts[i + 1u].y > point.y))       // an upward crossing
+               || ((verts[i].y > point.y) && (verts[i + 1u].y <= point.y))) { // a downward crossing
                 // compute the actual edge-ray intersect x-coordinate
-                float vt = static_cast<float>(point.y - verts[i].y) / (verts[i + 1].y - verts[i].y);
-                if(point.x < verts[i].x + vt * (verts[i + 1].x - verts[i].x)) // point.x < intersect
+                float vt = static_cast<float>(point.y - verts[i].y) / (verts[i + 1u].y - verts[i].y);
+                if(point.x < verts[i].x + vt * (verts[i + 1u].x - verts[i].x)) // point.x < intersect
                     ++cn;                                     // a valid crossing of y=point.y right of point.x
             }
         }
         return (cn & 1) == 1; // 0 if even (out), and 1 if  odd (in)
     }();
-    ss.str("");
-    ss.clear();
-    ss << "Inclusion of a Point in Polygon2 Crossing Number Test for " << pointCount << " points";
-    ss.flush();
+#endif
     //Winding Number Test
     const auto winding_inside = [&]()
     {
-        PROFILE_LOG_SCOPE(ss.str().c_str());
+        PROFILE_LOG_SCOPE("Winding Inside");
         int wn = 0; // the  winding number counter
         const auto isLeft = [&](const Vector2& P0, const Vector2& P1, const Vector2& P2) {
             return ((P1.x - P0.x) * (P2.y - P0.y)
                 - (P2.x - P0.x) * (P1.y - P0.y));
         };
-        const auto n = static_cast<int>(pointCount);
+        const auto n = pointCount;
         // loop through all edges of the polygon
-        for(int i = 0; i < n; i++) {                  // edge from V[i] to  V[i+1]
+        for(std::size_t i = 0u; i < n - 1u; i++) {                  // edge from V[i] to  V[i+1]
             if(verts[i].y <= point.y) {                       // start y <= point.y
-                if(verts[i + 1].y > point.y)                  // an upward crossing
-                    if(isLeft(verts[i], verts[i + 1], point) > 0) // P left of  edge
+                if(verts[i + 1u].y > point.y)                  // an upward crossing
+                    if(isLeft(verts[i], verts[i + 1u], point) > 0) // P left of  edge
                         ++wn;                         // have  a valid up intersect
             } else {                                  // start y > point.y (no test needed)
-                if(verts[i + 1].y <= point.y)                 // a downward crossing
-                    if(isLeft(verts[i], verts[i + 1], point) < 0) // P right of  edge
+                if(verts[i + 1u].y <= point.y)                 // a downward crossing
+                    if(isLeft(verts[i], verts[i + 1u], point) < 0) // P right of  edge
                         --wn;                         // have  a valid down intersect
             }
         }
         return wn != 0;
     }();
-    return crossing_inside || winding_inside;
+    return winding_inside;
 }
 
 bool IsPointInside(const Sphere3& sphere, const Vector3& point) noexcept {
@@ -717,7 +789,7 @@ bool IsPointOn(const Disc2& disc, const Vector2& point) noexcept {
 }
 
 bool IsPointOn(const LineSegment2& line, const Vector2& point) noexcept {
-    return MathUtils::IsEquivalent(CalcDistanceSquared(point, line), 0.0f);
+    return IsEquivalentToZero(CalcDistanceSquared(point, line));
 }
 
 bool IsPointOn(const Capsule2& capsule, const Vector2& point) noexcept {
@@ -727,7 +799,7 @@ bool IsPointOn(const Capsule2& capsule, const Vector2& point) noexcept {
 }
 
 bool IsPointOn(const LineSegment3& line, const Vector3& point) noexcept {
-    return MathUtils::IsEquivalent(CalcDistanceSquared(point, line), 0.0f);
+    return IsEquivalentToZero(CalcDistanceSquared(point, line));
 }
 
 bool IsPointOn(const Sphere3& sphere, const Vector3& point) noexcept {
@@ -740,6 +812,16 @@ bool IsPointOn(const Capsule3& capsule, const Vector3& point) noexcept {
     float distanceSquared = CalcDistanceSquared(point, capsule.line);
     float radiusSquared = capsule.radius * capsule.radius;
     return !(distanceSquared < radiusSquared || radiusSquared < distanceSquared);
+}
+
+bool IsPointOn(const Polygon2& poly2, const Vector2& point) noexcept {
+    const auto edges = poly2.GetEdges();
+    for(const auto& edge : edges) {
+        if(IsPointOn(edge, point)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 Vector2 CalcClosestPoint(const Vector2& p, const AABB2& aabb) noexcept {
