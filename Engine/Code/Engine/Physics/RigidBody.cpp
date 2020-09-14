@@ -11,7 +11,7 @@
 
 RigidBody::RigidBody([[maybe_unused]] const PhysicsSystemDesc& physicsDesc, RigidBodyDesc&& desc /*= RigidBodyDesc{}*/)
 : rigidbodyDesc{std::move(desc)}
-, prev_position(rigidbodyDesc.initialPosition)
+, prev_position(rigidbodyDesc.initialPosition - rigidbodyDesc.initialVelocity)
 , position(rigidbodyDesc.initialPosition)
 , acceleration(rigidbodyDesc.initialAcceleration) {
     const auto area = rigidbodyDesc.collider->CalcArea();
@@ -59,7 +59,7 @@ void RigidBody::Update(TimeUtils::FPSeconds deltaSeconds) {
         time_since_last_move = TimeUtils::FPSeconds{0.0f};
     }
     is_awake = time_since_last_move < TimeUtils::FPSeconds{1.0f};
-    //Stï¿½rmer method as described on Wikipedia:
+    //Störmer method as described on Wikipedia:
     //https://en.wikipedia.org/wiki/Verlet_integration#Verlet_integration_(without_velocities)
     //As of 2020-08-09 and version VS2019 16.7.3 hyper link parsing is broken.
     //The closing parenthesis in the above link is required.
