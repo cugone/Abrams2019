@@ -42,7 +42,10 @@ public:
 
     void AddObject(RigidBody* body);
     void AddObjects(std::vector<RigidBody*> bodies);
-    void RemoveObject(const RigidBody* body);
+    void RemoveObject(RigidBody* body);
+    void RemoveObjects(std::vector<RigidBody*> bodies);
+    void RemoveAllObjects() noexcept;
+    void RemoveAllObjectsImmediately() noexcept;
 
     void DebugShowCollision(bool show);
     void DebugShowWorldPartition(bool show);
@@ -113,7 +116,8 @@ private:
     std::atomic_bool _delta_seconds_changed = false;
     std::vector<RigidBody*> _rigidBodies{};
     std::deque<CollisionData> _contacts{};
-    std::vector<const RigidBody*> _pending_removal{};
+    std::vector<RigidBody*> _pending_removal{};
+    std::vector<RigidBody*> _pending_addition{};
     //QuadTree<RigidBody> _world_partition{};
     std::atomic<float> _deltaSeconds = 0.0f;
     bool _show_colliders = false;

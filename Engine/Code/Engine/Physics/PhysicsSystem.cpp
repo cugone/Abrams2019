@@ -2,6 +2,7 @@
 
 #include "Engine/Physics/PhysicsUtils.hpp"
 
+#include <algorithm>
 #include <mutex>
 
 //TODO: Multi-threaded update when things get hairy.
@@ -227,25 +228,43 @@ void PhysicsSystem::EndFrame() noexcept {
     }
     _pending_removal.clear();
     _pending_removal.shrink_to_fit();
+    
+    _rigidBodies.reserve(_rigidBodies.size() + _pending_addition.size());
+    for(auto* a : _pending_addition) {
+        _rigidBodies.push_back(a);
+    }
+    _pending_addition.clear();
+    _pending_addition.shrink_to_fit();
     //_world_partition.Clear();
     //_world_partition.Add(_rigidBodies);
     _signal.notify_all();
 }
 
 void PhysicsSystem::AddObject(RigidBody* body) {
-    _rigidBodies.push_back(body);
+    _pending_addition.push_back(body);
     //_world_partition.Add(body);
 }
 
 void PhysicsSystem::AddObjects(std::vector<RigidBody*> bodies) {
-    _rigidBodies.reserve(_rigidBodies.size() + bodies.size());
-    for(auto* body : bodies) {
-        AddObject(body);
-    }
+    _pending_addition.reserve(_rigidBodies.size() + bodies.size());
+    _pending_addition.insert(std::cend(_pending_addition), std::cbegin(bodies), std::cend(bodies));
 }
 
-void PhysicsSystem::RemoveObject(const RigidBody* body) {
+void PhysicsSystem::RemoveObject(RigidBody* body) {
     _pending_removal.push_back(body);
+}
+
+void PhysicsSystem::RemoveObjects(std::vector<RigidBody*> bodies) {
+    _pending_removal.insert(std::cend(_pending_removal), std::cbegin(bodies), std::cend(bodies));
+}
+
+void PhysicsSystem::RemoveAllObjects() noexcept {
+    _pending_removal.insert(std::cend(_pending_removal), std::cbegin(_rigidBodies), std::cend(_rigidBodies));
+}
+
+void PhysicsSystem::RemoveAllObjectsImmediately() noexcept {
+    _rigidBodies.clear();
+    _rigidBodies.shrink_to_fit();
 }
 
 void PhysicsSystem::DebugShowCollision(bool show) {
