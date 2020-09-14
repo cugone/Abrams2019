@@ -35,6 +35,8 @@ void RigidBody::Update(TimeUtils::FPSeconds deltaSeconds) {
     if(!is_awake || !IsPhysicsEnabled() || MathUtils::IsEquivalentToZero(GetInverseMass())) {
         linear_impulses.clear();
         angular_impulses.clear();
+        linear_forces.clear();
+        angular_forces.clear();
         return;
     }
     const auto inv_mass = GetInverseMass();
@@ -57,7 +59,7 @@ void RigidBody::Update(TimeUtils::FPSeconds deltaSeconds) {
         time_since_last_move = TimeUtils::FPSeconds{0.0f};
     }
     is_awake = time_since_last_move < TimeUtils::FPSeconds{1.0f};
-    //Störmer method as described on Wikipedia:
+    //Stï¿½rmer method as described on Wikipedia:
     //https://en.wikipedia.org/wiki/Verlet_integration#Verlet_integration_(without_velocities)
     //As of 2020-08-09 and version VS2019 16.7.3 hyper link parsing is broken.
     //The closing parenthesis in the above link is required.
