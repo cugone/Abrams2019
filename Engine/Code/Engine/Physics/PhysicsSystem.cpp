@@ -60,19 +60,19 @@ void PhysicsSystem::SetWorldDescription(const PhysicsSystemDesc& new_desc) {
 }
 
 void PhysicsSystem::EnablePhysics(bool isPhysicsEnabled) noexcept {
-    for(auto& b : _rigidBodies) {
+    for(auto* b : _rigidBodies) {
         b->EnablePhysics(isPhysicsEnabled);
     }
 }
 
 void PhysicsSystem::EnableGravity(bool isGravityEnabled) noexcept {
-    for(auto& b : _rigidBodies) {
+    for(auto* b : _rigidBodies) {
         b->EnableGravity(isGravityEnabled);
     }
 }
 
 void PhysicsSystem::EnableDrag(bool isGravityEnabled) noexcept {
-    for(auto& b : _rigidBodies) {
+    for(auto* b : _rigidBodies) {
         b->EnableDrag(isGravityEnabled);
     }
 }
