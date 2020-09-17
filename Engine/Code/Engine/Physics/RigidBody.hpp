@@ -35,6 +35,15 @@ struct PhysicsSystemDesc;
 class RigidBody {
 public:
     explicit RigidBody([[maybe_unused]] const PhysicsSystemDesc& physicsDesc, RigidBodyDesc&& desc = RigidBodyDesc{});
+
+    RigidBody() = delete;
+    RigidBody(RigidBody&& other) noexcept = default;
+    RigidBody& operator=(RigidBody&& rhs) noexcept = default;
+
+    RigidBody(const RigidBody& other) noexcept = default;
+    RigidBody& operator=(const RigidBody& rhs) noexcept = default;
+    ~RigidBody() noexcept = default;
+
     Matrix4 transform{};
 
     void BeginFrame();
