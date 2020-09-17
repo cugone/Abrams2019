@@ -3,14 +3,16 @@
 #include "Engine/Profiling/ProfileLogScope.hpp"
 
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Physics/PhysicsSystem.hpp"
 #include "Engine/Physics/PhysicsUtils.hpp"
 
 #include "Engine/Renderer/Renderer.hpp"
 
 #include <numeric>
 
-RigidBody::RigidBody([[maybe_unused]] const PhysicsSystemDesc& physicsDesc, RigidBodyDesc&& desc /*= RigidBodyDesc{}*/)
-: rigidbodyDesc{std::move(desc)}
+RigidBody::RigidBody(PhysicsSystem* physicsSystem, const RigidBodyDesc& desc /*= RigidBodyDesc{}*/)
+: parentPhysicsSystem(physicsSystem)
+, rigidbodyDesc(desc)
 , prev_position(rigidbodyDesc.initialPosition - rigidbodyDesc.initialVelocity)
 , position(rigidbodyDesc.initialPosition)
 , acceleration(rigidbodyDesc.initialAcceleration) {
@@ -59,7 +61,7 @@ void RigidBody::Update(TimeUtils::FPSeconds deltaSeconds) {
         time_since_last_move = TimeUtils::FPSeconds{0.0f};
     }
     is_awake = time_since_last_move < TimeUtils::FPSeconds{1.0f};
-    //Störmer method as described on Wikipedia:
+    //Stï¿½rmer method as described on Wikipedia:
     //https://en.wikipedia.org/wiki/Verlet_integration#Verlet_integration_(without_velocities)
     //As of 2020-08-09 and version VS2019 16.7.3 hyper link parsing is broken.
     //The closing parenthesis in the above link is required.

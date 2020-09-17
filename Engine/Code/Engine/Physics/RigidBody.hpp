@@ -88,10 +88,11 @@ struct RigidBodyDesc {
 #endif
 
 struct PhysicsSystemDesc;
+class PhysicsSystem;
 
 class RigidBody {
 public:
-    explicit RigidBody([[maybe_unused]] const PhysicsSystemDesc& physicsDesc, RigidBodyDesc&& desc = RigidBodyDesc{});
+    explicit RigidBody(PhysicsSystem* physicsSystem, const RigidBodyDesc& desc = RigidBodyDesc{});
 
     RigidBody() = delete;
     RigidBody(RigidBody&& other) noexcept = default;
@@ -159,6 +160,7 @@ public:
 
 protected:
 private:
+    PhysicsSystem* parentPhysicsSystem{nullptr};
     RigidBodyDesc rigidbodyDesc{};
     RigidBody* parent = nullptr;
     std::vector<RigidBody*> children{};
