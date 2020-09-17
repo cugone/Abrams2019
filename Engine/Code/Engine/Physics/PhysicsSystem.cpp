@@ -2,6 +2,8 @@
 
 #include "Engine/Physics/PhysicsUtils.hpp"
 
+#include "Engine/Math/Plane2.hpp"
+
 #include <algorithm>
 #include <mutex>
 
@@ -144,9 +146,13 @@ void PhysicsSystem::UpdateBodiesInBounds(TimeUtils::FPSeconds deltaSeconds) noex
         if(!body) {
             continue;
         }
-        //if(MathUtils::DoOBBsOverlap(OBB2(_desc.world_bounds), body->GetBounds())) {
-            body->Update(deltaSeconds);
+        body->Update(deltaSeconds);
+        //if(!MathUtils::DoOBBsOverlap(OBB2(_desc.world_bounds), body->GetBounds())) {
+        //    body->FellOutOfWorld();
         //}
+        if(MathUtils::IsPointInFrontOfPlane(body->GetPosition(), Plane2(Vector2::Y_AXIS, _desc.kill_plane_distance))) {
+            body->FellOutOfWorld();
+        }
     }
 }
 
