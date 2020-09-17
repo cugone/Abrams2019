@@ -492,14 +492,14 @@ Vector2 InputSystem::GetMouseDeltaFromWindowCenter() const noexcept {
 }
 
 Vector2 InputSystem::GetMouseDeltaFromWindowCenter(const Window& window_ref) const noexcept {
-    const auto window_center = Vector2{window_ref.GetDimensions() * 0.5f};
-    return GetMouseCoords() - window_center;
+    return GetMouseCoords() - GetWindowCenter(window_ref);
 }
 
 void InputSystem::SetCursorScreenPosition(const Vector2& screen_pos) noexcept {
     int x = static_cast<int>(screen_pos.x);
     int y = static_cast<int>(screen_pos.y);
     ::SetCursorPos(x, y);
+    SetMouseCoods(static_cast<float>(x), static_cast<float>(y));
 }
 
 void InputSystem::UpdateXboxConnectedState() noexcept {
@@ -510,6 +510,34 @@ void InputSystem::UpdateXboxConnectedState() noexcept {
             ++_connected_controller_count;
         }
     }
+}
+
+void InputSystem::SetMouseCoods(float newX, float newY) noexcept {
+    SetMouseCoods(Vector2{newX, newY});
+}
+
+void InputSystem::SetMouseCoods(Vector2 newCoords) noexcept {
+    _mouseCoords = newCoords;
+}
+
+void InputSystem::UpdateMouseCoords(float newX, float newY) noexcept {
+    UpdateMouseCoords(Vector2{newX, newY});
+}
+
+void InputSystem::UpdateMouseCoords(Vector2 newCoords) noexcept {
+    _mousePrevCoords = _mouseCoords;
+    _mouseCoords = newCoords;
+    _mouseDelta = _mouseCoords - _mousePrevCoords;
+}
+
+void InputSystem::AdjustMouseCoords(float offsetX, float offsetY) noexcept {
+    AdjustMouseCoords(Vector2{offsetX, offsetY});
+}
+
+void InputSystem::AdjustMouseCoords(Vector2 offset) noexcept {
+    _mousePrevCoords = _mouseCoords;
+    _mouseCoords += offset;
+    _mouseDelta = _mouseCoords - _mousePrevCoords;
 }
 
 Vector2 InputSystem::GetScreenCenter() const noexcept {
@@ -1053,9 +1081,12 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         constexpr uint16_t xbutton1_mask = 0b0000'0000'0010'0000; //0x0020
         constexpr uint16_t xbutton2_mask = 0b0000'0000'0100'0000; //0x0040
         WPARAM wp = msg.wparam;
+        LPARAM lp = msg.lparam;
         if(wp & lbutton_mask) {
             unsigned char key = ConvertKeyCodeToWinVK(KeyCode::LButton);
             RegisterKeyDown(key);
+            const auto point = MAKEPOINTS(lp);
+            SetMouseCoods(point.x, point.y);
             return true;
         }
         return false;
@@ -1069,9 +1100,12 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         constexpr uint16_t xbutton1_mask = 0b0000'0000'0010'0000; //0x0020
         constexpr uint16_t xbutton2_mask = 0b0000'0000'0100'0000; //0x0040
         WPARAM wp = msg.wparam;
+        LPARAM lp = msg.lparam;
         if(!(wp & lbutton_mask)) {
             unsigned char key = ConvertKeyCodeToWinVK(KeyCode::LButton);
             RegisterKeyUp(key);
+            const auto point = MAKEPOINTS(lp);
+            SetMouseCoods(point.x, point.y);
             return true;
         }
         return false;
@@ -1085,9 +1119,12 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         constexpr uint16_t xbutton1_mask = 0b0000'0000'0010'0000; //0x0020
         constexpr uint16_t xbutton2_mask = 0b0000'0000'0100'0000; //0x0040
         WPARAM wp = msg.wparam;
+        LPARAM lp = msg.lparam;
         if(wp & rbutton_mask) {
             unsigned char key = ConvertKeyCodeToWinVK(KeyCode::RButton);
             RegisterKeyDown(key);
+            const auto point = MAKEPOINTS(lp);
+            SetMouseCoods(point.x, point.y);
             return true;
         }
         return false;
@@ -1101,9 +1138,12 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         constexpr uint16_t xbutton1_mask = 0b0000'0000'0010'0000; //0x0020
         constexpr uint16_t xbutton2_mask = 0b0000'0000'0100'0000; //0x0040
         WPARAM wp = msg.wparam;
+        LPARAM lp = msg.lparam;
         if(!(wp & rbutton_mask)) {
             unsigned char key = ConvertKeyCodeToWinVK(KeyCode::RButton);
             RegisterKeyUp(key);
+            const auto point = MAKEPOINTS(lp);
+            SetMouseCoods(point.x, point.y);
             return true;
         }
         return false;
@@ -1117,9 +1157,12 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         constexpr uint16_t xbutton1_mask = 0b0000'0000'0010'0000; //0x0020
         constexpr uint16_t xbutton2_mask = 0b0000'0000'0100'0000; //0x0040
         WPARAM wp = msg.wparam;
+        LPARAM lp = msg.lparam;
         if(wp & mbutton_mask) {
             unsigned char key = ConvertKeyCodeToWinVK(KeyCode::MButton);
             RegisterKeyDown(key);
+            const auto point = MAKEPOINTS(lp);
+            SetMouseCoods(point.x, point.y);
             return true;
         }
         return false;
@@ -1133,9 +1176,12 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         constexpr uint16_t xbutton1_mask = 0b0000'0000'0010'0000; //0x0020
         constexpr uint16_t xbutton2_mask = 0b0000'0000'0100'0000; //0x0040
         WPARAM wp = msg.wparam;
+        LPARAM lp = msg.lparam;
         if(!(wp & mbutton_mask)) {
             unsigned char key = ConvertKeyCodeToWinVK(KeyCode::MButton);
             RegisterKeyUp(key);
+            const auto point = MAKEPOINTS(lp);
+            SetMouseCoods(point.x, point.y);
             return true;
         }
         return false;
@@ -1151,6 +1197,7 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         constexpr uint16_t xbutton1_mask = 0b0000'0001;                //0x0001
         constexpr uint16_t xbutton2_mask = 0b0000'0010;                //0x0002
         WPARAM wp = msg.wparam;
+        LPARAM lp = msg.lparam;
         auto buttons = GET_XBUTTON_WPARAM(wp);
         unsigned char key = ConvertKeyCodeToWinVK(KeyCode::XButton1);
         if(buttons & xbutton1_mask) {
@@ -1160,6 +1207,8 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
             key = ConvertKeyCodeToWinVK(KeyCode::XButton2);
         }
         RegisterKeyDown(key);
+        const auto point = MAKEPOINTS(lp);
+        SetMouseCoods(point.x, point.y);
         return true;
     }
     case WindowsSystemMessage::Mouse_XButtonUp: {
@@ -1173,6 +1222,7 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         constexpr uint16_t xbutton1_mask = 0b0000'0001;                //0x0001
         constexpr uint16_t xbutton2_mask = 0b0000'0010;                //0x0002
         WPARAM wp = msg.wparam;
+        LPARAM lp = msg.lparam;
         auto buttons = GET_XBUTTON_WPARAM(wp);
         unsigned char key = 0;
         if(buttons & xbutton1_mask) {
@@ -1182,12 +1232,15 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
             key = ConvertKeyCodeToWinVK(KeyCode::XButton2);
         }
         RegisterKeyUp(key);
+        const auto point = MAKEPOINTS(lp);
+        SetMouseCoods(point.x, point.y);
         return true;
     }
     case WindowsSystemMessage::Mouse_RawInput: {
         if(!IsMouseRawInputEnabled()) {
             return false;
         }
+        static bool firstCall = true;
         WPARAM wp = msg.wparam;
         const auto code = GET_RAWINPUT_CODE_WPARAM(wp);
         if(code == RIM_INPUT) {
@@ -1207,7 +1260,7 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
                             if(::GetRawInputData(rawinput, RID_INPUT, data_bytes.get(), &dsize, sizeof(RAWINPUTHEADER)) == dsize) {
                                 RAWINPUT* raw = reinterpret_cast<RAWINPUT*>(data_bytes.get());
                                 const auto& rawMouse = raw->data.mouse;
-                                if((rawMouse.usFlags & MOUSE_MOVE_ABSOLUTE) == MOUSE_MOVE_ABSOLUTE) {
+                                if(const auto moveAbsoluteFlag = (rawMouse.usFlags & MOUSE_MOVE_ABSOLUTE); moveAbsoluteFlag == MOUSE_MOVE_ABSOLUTE) {
                                     bool isVirtualDesktop = (rawMouse.usFlags & MOUSE_VIRTUAL_DESKTOP) == MOUSE_VIRTUAL_DESKTOP;
 
                                     const auto width = ::GetSystemMetrics(isVirtualDesktop ? SM_CXVIRTUALSCREEN : SM_CXSCREEN);
@@ -1215,15 +1268,15 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
 
                                     const auto absoluteX = (rawMouse.lLastX / 65535.0f) * width;
                                     const auto absoluteY = (rawMouse.lLastY / 65535.0f) * height;
-                                    _mouseCoords = Vector2{absoluteX, absoluteY};
-                                    _mousePrevCoords = _mouseCoords;
+                                    UpdateMouseCoords(absoluteX, absoluteY);
                                     _mouseDelta = Vector2::ZERO;
                                 } else {
-                                    int relativeX = rawMouse.lLastX;
-                                    int relativeY = rawMouse.lLastY;
-                                    _mousePrevCoords = _mouseCoords;
-                                    _mouseCoords += Vector2{static_cast<float>(relativeX), static_cast<float>(relativeY)};
-                                    _mouseDelta = _mouseCoords - _mousePrevCoords;
+                                    const auto relative = IntVector2{rawMouse.lLastX, rawMouse.lLastY};
+                                    if(firstCall) {
+                                        firstCall = false;
+                                        _mouseCoords = GetCursorWindowPosition();
+                                    }
+                                    AdjustMouseCoords(Vector2{relative});
                                 }
                             }
                         }
@@ -1247,9 +1300,7 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         constexpr uint16_t xbutton2_down_mask = 0b0000'0000'0100'0000; //0x0040
         LPARAM lp = msg.lparam;
         POINTS p = MAKEPOINTS(lp);
-        _mousePrevCoords = _mouseCoords;
-        _mouseCoords = Vector2(p.x, p.y);
-        _mouseDelta = _mouseCoords - _mousePrevCoords;
+        UpdateMouseCoords(p.x, p.y);
         return true;
     }
     case WindowsSystemMessage::Mouse_MouseWheel: {

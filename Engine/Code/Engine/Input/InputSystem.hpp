@@ -375,6 +375,13 @@ private:
     void InitializeMouseRawInput() noexcept;
     void UpdateXboxConnectedState() noexcept;
 
+    void SetMouseCoods(float newX, float newY) noexcept;
+    void SetMouseCoods(Vector2 newCoords) noexcept;
+    void UpdateMouseCoords(float newX, float newY) noexcept;
+    void UpdateMouseCoords(Vector2 newCoords) noexcept;
+    void AdjustMouseCoords(float offsetX, float offsetY) noexcept;
+    void AdjustMouseCoords(Vector2 offset) noexcept;
+
     FileLogger* _fileLogger = nullptr;
     Renderer* _renderer = nullptr;
     std::array<XboxController, 4> _xboxControllers{};
