@@ -104,6 +104,16 @@ void PhysicsSystem::BeginFrame() noexcept {
     if(!_is_running) {
         return;
     }
+
+    //_rigidBodies.reserve(_rigidBodies.size() + _pending_addition.size());
+    for(auto* a : _pending_addition) {
+        _rigidBodies.emplace_back(a);
+    }
+    _pending_addition.clear();
+    _pending_addition.shrink_to_fit();
+    //_world_partition.Clear();
+    //_world_partition.Add(_rigidBodies);
+
     for(auto& body : _rigidBodies) {
         //TODO: Refactor to gravity and drag Force Generators
         if(body->IsGravityEnabled()) {
@@ -234,15 +244,6 @@ void PhysicsSystem::EndFrame() noexcept {
     }
     _pending_removal.clear();
     _pending_removal.shrink_to_fit();
-    
-    _rigidBodies.reserve(_rigidBodies.size() + _pending_addition.size());
-    for(auto* a : _pending_addition) {
-        _rigidBodies.push_back(a);
-    }
-    _pending_addition.clear();
-    _pending_addition.shrink_to_fit();
-    //_world_partition.Clear();
-    //_world_partition.Add(_rigidBodies);
     _signal.notify_all();
 }
 
