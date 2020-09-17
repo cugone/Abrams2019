@@ -107,6 +107,10 @@ const Polygon2& ColliderPolygon::GetPolygon() const noexcept {
     return _polygon;
 }
 
+ColliderPolygon* ColliderPolygon::Clone() const noexcept {
+    return new ColliderPolygon(GetSides(), GetPosition(), GetHalfExtents(), GetOrientationDegrees());
+}
+
 ColliderOBB::ColliderOBB(const Vector2& position, const Vector2& half_extents)
 : ColliderPolygon(4, position, half_extents, 0.0f) {
     /* DO NOTHING */
@@ -151,6 +155,10 @@ OBB2 ColliderOBB::GetBounds() const noexcept {
 
 Vector2 ColliderOBB::CalcCenter() const noexcept {
     return _polygon.GetPosition();
+}
+
+ColliderOBB* ColliderOBB::Clone() const noexcept {
+    return new ColliderOBB(GetPosition(), GetHalfExtents());
 }
 
 ColliderCircle::ColliderCircle(const Vector2& position, float radius)
@@ -198,4 +206,8 @@ OBB2 ColliderCircle::GetBounds() const noexcept {
 
 Vector2 ColliderCircle::CalcCenter() const noexcept {
     return _polygon.GetPosition();
+}
+
+ColliderCircle* ColliderCircle::Clone() const noexcept {
+    return new ColliderCircle(GetPosition(), GetHalfExtents().x);
 }

@@ -21,6 +21,7 @@ public:
     virtual float GetOrientationDegrees() const noexcept = 0;
     virtual OBB2 GetBounds() const noexcept = 0;
     virtual Vector2 Support(const Vector2& d) const noexcept = 0;
+    virtual Collider* Clone() const noexcept = 0;
 };
 
 class ColliderPolygon : public Collider {
@@ -38,6 +39,7 @@ public:
     virtual float CalcArea() const noexcept override;
     virtual Vector2 Support(const Vector2& d) const noexcept override;
     virtual Vector2 CalcCenter() const noexcept override;
+    virtual ColliderPolygon* Clone() const noexcept override;
 
     int GetSides() const;
     void SetSides(int sides);
@@ -72,6 +74,7 @@ public:
     virtual Vector2 CalcDimensions() const noexcept override;
     virtual OBB2 GetBounds() const noexcept override;
     virtual Vector2 CalcCenter() const noexcept override;
+    virtual ColliderOBB* Clone() const noexcept override;
 
 protected:
 private:
@@ -90,6 +93,7 @@ public:
     virtual Vector2 CalcDimensions() const noexcept override;
     virtual OBB2 GetBounds() const noexcept override;
     virtual Vector2 CalcCenter() const noexcept override;
+    virtual ColliderCircle* Clone() const noexcept override;
 
 protected:
 private:
