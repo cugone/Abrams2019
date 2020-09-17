@@ -10,6 +10,13 @@
 
 class Camera2D {
 public:
+    Camera2D() = default;
+    Camera2D(const Camera2D& camera2D) noexcept = default;
+    Camera2D(Camera2D&& camera2D) noexcept = default;
+    Camera2D& operator=(const Camera2D& camera2D) noexcept = default;
+    Camera2D& operator=(Camera2D&& camera2D) noexcept = default;
+    ~Camera2D() = default;
+
     void SetupView(const Vector2& leftBottom, const Vector2& rightTop, const Vector2& nearFar = Vector2(0.0f, 1.0f), float aspectRatio = MathUtils::M_16_BY_9_RATIO) noexcept;
 
     void Update(TimeUtils::FPSeconds deltaSeconds) noexcept;
