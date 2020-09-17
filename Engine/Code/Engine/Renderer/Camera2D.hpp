@@ -54,6 +54,9 @@ public:
 
     float GetShake() const noexcept;
 
+    static Vector2 WindowToWorldPoint(const Camera2D& camera, const Vector2& screenPoint) noexcept;
+    Vector2 WindowToWorldPoint(const Vector2& screenPoint) const noexcept;
+
     float trauma = 0.0f;
     float trauma_recovery_rate = 1.0f;
     Vector2 position = Vector2::ZERO;

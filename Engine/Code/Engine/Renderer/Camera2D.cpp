@@ -141,3 +141,18 @@ float Camera2D::GetViewWidth() const noexcept {
 float Camera2D::GetShake() const noexcept {
     return trauma * trauma;
 }
+
+/* static */
+Vector2 Camera2D::WindowToWorldPoint(const Camera2D& camera, const Vector2& screenPoint) noexcept {
+    return camera.WindowToWorldPoint(screenPoint);
+}
+
+Vector2 Camera2D::WindowToWorldPoint(const Vector2& screenPoint) const noexcept {
+    const auto view_dims = GetViewDimensions();
+    float x = 2.0f * screenPoint.x / view_dims.x - 1.0f;
+    float y = 2.0f * screenPoint.y / view_dims.y - 1.0f;
+    const auto screenPos = Vector4{x, -y, 0.0f, 1.0f};
+    const auto& s2w = GetInverseViewProjectionMatrix();
+    const auto worldPos = s2w * screenPos;
+    return Vector2{worldPos.x, worldPos.y};
+}
