@@ -16,14 +16,71 @@ struct RigidBodyDesc {
     Vector2 initialPosition = Vector2::ZERO;
     Vector2 initialVelocity = Vector2::ZERO;
     Vector2 initialAcceleration = Vector2::ZERO;
-    std::unique_ptr<Collider> collider = std::make_unique<ColliderOBB>(Vector2::ZERO, Vector2::ONE * 0.5f);
+    Collider* collider{nullptr};
     PhysicsMaterial physicsMaterial = PhysicsMaterial{};
     PhysicsDesc physicsDesc = PhysicsDesc{};
-    RigidBodyDesc() = default;
-    RigidBodyDesc(const RigidBodyDesc& other) = delete;
-    RigidBodyDesc(RigidBodyDesc&& other) = default;
-    RigidBodyDesc& operator=(const RigidBodyDesc& other) = delete;
-    RigidBodyDesc& operator=(RigidBodyDesc&& other) = default;
+    RigidBodyDesc() noexcept
+        : collider(new ColliderOBB(Vector2::ZERO, Vector2::ONE * 0.5f))
+    {
+        /* DO NOTHING */
+    }
+    RigidBodyDesc(const Vector2& initialPos, const Vector2& initialVel, const Vector2& initialAcc, Collider* coll, const PhysicsMaterial& physMat, const PhysicsDesc& physDesc) noexcept
+        : initialPosition(initialPos)
+        , initialVelocity(initialVel)
+        , initialAcceleration(initialAcc)
+        , collider(coll)
+        , physicsMaterial(physMat)
+        , physicsDesc(physDesc)
+    {
+        /* DO NOTHING */
+    }
+    RigidBodyDesc(RigidBodyDesc&& other) noexcept
+        : initialPosition(std::move(other.initialPosition))
+        , initialVelocity(std::move(other.initialVelocity))
+        , initialAcceleration(std::move(other.initialAcceleration))
+        , physicsMaterial(std::move(other.physicsMaterial))
+        , physicsDesc(std::move(other.physicsDesc))
+    {
+        collider = std::move(other.collider);
+        other.collider = nullptr;
+    }
+    RigidBodyDesc& operator=(RigidBodyDesc&& other) noexcept {
+        initialPosition = std::move(other.initialPosition);
+        initialVelocity = std::move(other.initialVelocity);
+        initialAcceleration = std::move(other.initialAcceleration);
+        physicsMaterial = std::move(other.physicsMaterial);
+        physicsDesc = std::move(other.physicsDesc);
+        collider = std::move(other.collider);
+        other.collider = nullptr;
+        return *this;
+    }
+
+    RigidBodyDesc(const RigidBodyDesc& other) noexcept
+    : initialPosition(other.initialPosition)
+    ,initialVelocity(other.initialVelocity)
+    ,initialAcceleration(other.initialAcceleration)
+    ,physicsMaterial(other.physicsMaterial)
+    ,physicsDesc(other.physicsDesc)
+    {
+        auto new_collider = other.collider->Clone();
+        delete collider;
+        collider = new_collider;
+    }
+    RigidBodyDesc& operator=(const RigidBodyDesc& other) noexcept {
+        initialPosition = other.initialPosition;
+        initialVelocity = other.initialVelocity;
+        initialAcceleration = other.initialAcceleration;
+        physicsMaterial = other.physicsMaterial;
+        physicsDesc = other.physicsDesc;
+        auto new_collider = other.collider->Clone();
+        delete collider;
+        collider = new_collider;
+        return *this;
+    }
+    ~RigidBodyDesc() noexcept {
+        delete collider;
+        collider = nullptr;
+    }
 };
 
 #if defined(_MSC_VER)

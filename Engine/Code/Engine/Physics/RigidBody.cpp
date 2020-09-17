@@ -293,9 +293,11 @@ float RigidBody::GetAngularAccelerationDegrees() const {
 }
 
 const Collider* RigidBody::GetCollider() const noexcept {
-    return rigidbodyDesc.collider.get();
+    return rigidbodyDesc.collider;
 }
 
 Collider* RigidBody::GetCollider() noexcept {
-    return rigidbodyDesc.collider.get();
+    return rigidbodyDesc.collider;
+}
+
 }
