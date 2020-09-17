@@ -61,7 +61,7 @@ void RigidBody::Update(TimeUtils::FPSeconds deltaSeconds) {
         time_since_last_move = TimeUtils::FPSeconds{0.0f};
     }
     is_awake = time_since_last_move < TimeUtils::FPSeconds{1.0f};
-    //Stï¿½rmer method as described on Wikipedia:
+    //Störmer method as described on Wikipedia:
     //https://en.wikipedia.org/wiki/Verlet_integration#Verlet_integration_(without_velocities)
     //As of 2020-08-09 and version VS2019 16.7.3 hyper link parsing is broken.
     //The closing parenthesis in the above link is required.
@@ -82,34 +82,39 @@ void RigidBody::Update(TimeUtils::FPSeconds deltaSeconds) {
     orientationDegrees = new_orientationDegrees;
     acceleration = new_acceleration;
 
-    const auto collider = GetCollider();
-    const auto S = Matrix4::CreateScaleMatrix(collider->GetHalfExtents());
-    const auto R = Matrix4::Create2DRotationDegreesMatrix(orientationDegrees);
-    const auto T = Matrix4::CreateTranslationMatrix(position);
-    const auto M = Matrix4::MakeSRT(S, R, T);
-    auto new_transform = Matrix4::I;
-    if(!parent) {
-        new_transform = M;
-    } else {
-        auto p = parent;
-        while(p) {
-            new_transform = Matrix4::MakeRT(p->GetParentTransform(), M);
-            p = p->parent;
+    if(const auto collider = GetCollider(); collider != nullptr) {
+        const auto S = Matrix4::CreateScaleMatrix(collider->GetHalfExtents());
+        const auto R = Matrix4::Create2DRotationDegreesMatrix(orientationDegrees);
+        const auto T = Matrix4::CreateTranslationMatrix(position);
+        const auto M = Matrix4::MakeSRT(S, R, T);
+        auto new_transform = Matrix4::I;
+        if(!parent) {
+            new_transform = M;
+        } else {
+            auto p = parent;
+            while(p) {
+                new_transform = Matrix4::MakeRT(p->GetParentTransform(), M);
+                p = p->parent;
+            }
         }
+        transform = new_transform;
+        collider->SetPosition(position);
+        collider->SetOrientationDegrees(orientationDegrees);
     }
-    transform = new_transform;
-    collider->SetPosition(position);
-    collider->SetOrientationDegrees(orientationDegrees);
 }
 
 void RigidBody::DebugRender(Renderer& renderer) const {
     renderer.SetModelMatrix(Matrix4::I);
-    rigidbodyDesc.collider->DebugRender(renderer);
-    renderer.DrawOBB2(GetBounds(), Rgba::Green);
+    if(const auto collider = GetCollider(); collider != nullptr) {
+        collider->DebugRender(renderer);
+        renderer.DrawOBB2(GetBounds(), Rgba::Green);
+    }
 }
 
 void RigidBody::Endframe() {
-    /* DO NOTHING */
+    if(should_kill) {
+        parentPhysicsSystem->RemoveObject(this);
+    }
 }
 
 void RigidBody::EnablePhysics(bool enabled) {
@@ -202,11 +207,12 @@ void RigidBody::ApplyTorqueAt(const Vector2& position_on_object, const Vector2& 
 }
 
 void RigidBody::ApplyTorqueAt(const Vector2& position_on_object, const Vector2& force, bool asImpulse /*= false*/) {
-    const auto collider = GetCollider();
-    const auto point_of_collision = MathUtils::CalcClosestPoint(position_on_object, *collider);
-    const auto r = position - point_of_collision;
-    const auto torque = MathUtils::CrossProduct(force, r);
-    ApplyTorque(torque, asImpulse);
+    if(const auto collider = GetCollider(); collider != nullptr) {
+        const auto point_of_collision = MathUtils::CalcClosestPoint(position_on_object, *collider);
+        const auto r = position - point_of_collision;
+        const auto torque = MathUtils::CrossProduct(force, r);
+        ApplyTorque(torque, asImpulse);
+    }
 }
 
 void RigidBody::ApplyTorque(const Vector2& direction, float magnitude, bool asImpulse /*= false*/) {
@@ -218,17 +224,18 @@ void RigidBody::ApplyForceAt(const Vector2& position_on_object, const Vector2& d
 }
 
 void RigidBody::ApplyForceAt(const Vector2& position_on_object, const Vector2& force) {
-    const auto collider = GetCollider();
-    const auto point_of_collision = MathUtils::CalcClosestPoint(position_on_object, *collider);
-    auto r = position - point_of_collision;
-    if(MathUtils::IsEquivalentToZero(r)) {
-        r = position;
+    if(const auto collider = GetCollider(); collider != nullptr) {
+        const auto point_of_collision = MathUtils::CalcClosestPoint(position_on_object, *collider);
+        auto r = position - point_of_collision;
+        if(MathUtils::IsEquivalentToZero(r)) {
+            r = position;
+        }
+        const auto [parallel, perpendicular] = MathUtils::DivideIntoProjectAndReject(force, r);
+        const auto angular_result = force - parallel;
+        const auto linear_result = force - perpendicular;
+        ApplyTorqueAt(position_on_object, angular_result);
+        ApplyForce(linear_result);
     }
-    const auto [parallel, perpendicular] = MathUtils::DivideIntoProjectAndReject(force, r);
-    const auto angular_result = force - parallel;
-    const auto linear_result = force - perpendicular;
-    ApplyTorqueAt(position_on_object, angular_result);
-    ApplyForce(linear_result);
 }
 
 void RigidBody::ApplyImpulseAt(const Vector2& position_on_object, const Vector2& direction, float magnitude) {
@@ -236,14 +243,15 @@ void RigidBody::ApplyImpulseAt(const Vector2& position_on_object, const Vector2&
 }
 
 void RigidBody::ApplyImpulseAt(const Vector2& position_on_object, const Vector2& force) {
-    const auto collider = GetCollider();
-    const auto point_of_collision = MathUtils::CalcClosestPoint(position_on_object, *collider);
-    const auto r = position - point_of_collision;
-    const auto [parallel, perpendicular] = MathUtils::DivideIntoProjectAndReject(force, r);
-    const auto angular_result = force - parallel;
-    const auto linear_result = force - perpendicular;
-    ApplyTorqueAt(position_on_object, angular_result.GetNormalize(), angular_result.CalcLength(), true);
-    ApplyImpulse(linear_result);
+    if(const auto collider = GetCollider(); collider != nullptr) {
+        const auto point_of_collision = MathUtils::CalcClosestPoint(position_on_object, *collider);
+        const auto r = position - point_of_collision;
+        const auto [parallel, perpendicular] = MathUtils::DivideIntoProjectAndReject(force, r);
+        const auto angular_result = force - parallel;
+        const auto linear_result = force - perpendicular;
+        ApplyTorqueAt(position_on_object, angular_result.GetNormalize(), angular_result.CalcLength(), true);
+        ApplyImpulse(linear_result);
+    }
 }
 
 const OBB2 RigidBody::GetBounds() const {
@@ -279,7 +287,10 @@ const Vector2& RigidBody::GetAcceleration() const {
 }
 
 Vector2 RigidBody::CalcDimensions() const {
-    return GetCollider()->CalcDimensions();
+    if(const auto collider = GetCollider(); collider != nullptr) {
+        return collider->CalcDimensions();
+    }
+    return Vector2::ZERO;
 }
 
 float RigidBody::GetOrientationDegrees() const {
