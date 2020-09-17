@@ -29,25 +29,26 @@ public:
 
     explicit ColliderPolygon(int sides = 4, const Vector2& position = Vector2::ZERO, const Vector2& half_extents = Vector2(0.5f, 0.5f), float orientationDegrees = 0.0f);
 
-    virtual ~ColliderPolygon();
+    virtual ~ColliderPolygon() = default;
     virtual void DebugRender(Renderer& renderer) const noexcept override;
+    virtual void SetPosition(const Vector2& position) noexcept override;
+    virtual float GetOrientationDegrees() const noexcept override;
+    virtual void SetOrientationDegrees(float degrees) noexcept override;
+    virtual Vector2 CalcDimensions() const noexcept override;
+    virtual float CalcArea() const noexcept override;
+    virtual Vector2 Support(const Vector2& d) const noexcept override;
+    virtual Vector2 CalcCenter() const noexcept override;
+
     int GetSides() const;
     void SetSides(int sides);
     const std::vector<Vector2>& GetVerts() const noexcept;
     const Vector2& GetPosition() const;
-    virtual void SetPosition(const Vector2& position) noexcept override;
     void Translate(const Vector2& translation);
     void RotateDegrees(float displacementDegrees);
     void Rotate(float displacementDegrees);
-    virtual float GetOrientationDegrees() const noexcept override;
-    virtual void SetOrientationDegrees(float degrees) noexcept override;
     const Vector2& GetHalfExtents() const noexcept override;
     void SetHalfExtents(const Vector2& newHalfExtents);
-    virtual Vector2 CalcDimensions() const noexcept override;
-    virtual float CalcArea() const noexcept override;
     OBB2 GetBounds() const noexcept override;
-    virtual Vector2 Support(const Vector2& d) const noexcept override;
-    virtual Vector2 CalcCenter() const noexcept override;
 
     const Polygon2& GetPolygon() const noexcept;
 

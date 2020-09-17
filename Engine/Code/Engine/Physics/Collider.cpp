@@ -15,8 +15,6 @@ ColliderPolygon::ColliderPolygon()
     /* DO NOTHING */
 }
 
-ColliderPolygon::~ColliderPolygon() = default;
-
 void ColliderPolygon::DebugRender(Renderer& renderer) const noexcept {
     renderer.DrawPolygon2D(_polygon, Rgba::White);
 }
