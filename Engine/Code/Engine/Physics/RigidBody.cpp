@@ -302,4 +302,10 @@ Collider* RigidBody::GetCollider() noexcept {
     return rigidbodyDesc.collider;
 }
 
+void RigidBody::FellOutOfWorld() noexcept {
+    should_kill = true;
+}
+
+const bool RigidBody::ShouldKill() const noexcept {
+    return should_kill;
 }

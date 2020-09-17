@@ -158,6 +158,8 @@ public:
     const Collider* GetCollider() const noexcept;
     Collider* GetCollider() noexcept;
 
+    void FellOutOfWorld() noexcept;
+    const bool ShouldKill() const noexcept;
 protected:
 private:
     PhysicsSystem* parentPhysicsSystem{nullptr};
@@ -178,6 +180,7 @@ private:
     std::vector<float> angular_impulses{};
     bool is_colliding = false;
     bool is_awake = true;
+    bool should_kill = false;
 
     friend class PhysicsSystem;
 };
