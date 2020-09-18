@@ -34,6 +34,7 @@ enum class WindowsSystemMessage : unsigned int {
     Keyboard_SysKeyDown,
     Keyboard_SysKeyUp,
     Keyboard_UniChar,
+    Keyboard_Help,
     Mouse_RawInput,
     Mouse_CaptureChanged,
     Mouse_LButtonDblClk,

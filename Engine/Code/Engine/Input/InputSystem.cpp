@@ -688,6 +688,10 @@ void InputSystem::RegisterKeyUp(unsigned char keyIndex) noexcept {
 
 bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
     switch(msg.wmMessageCode) {
+    case WindowsSystemMessage::Keyboard_Help: {
+        //TODO: Event system should push a "Help" event.
+        return false;
+    }
     case WindowsSystemMessage::Keyboard_KeyDown: {
         LPARAM lp = msg.lparam;
         WPARAM wp = msg.wparam;

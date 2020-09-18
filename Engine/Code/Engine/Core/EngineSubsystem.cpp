@@ -47,6 +47,7 @@ WindowsSystemMessage EngineSubsystem::GetWindowsSystemMessageFromUintMessage(uns
     case WM_SYSKEYDOWN: return WindowsSystemMessage::Keyboard_SysKeyDown;
     case WM_SYSKEYUP: return WindowsSystemMessage::Keyboard_SysKeyUp;
     case WM_UNICHAR: return WindowsSystemMessage::Keyboard_UniChar;
+    case WM_HELP: return WindowsSystemMessage::Keyboard_Help;
     case WM_INPUT: return WindowsSystemMessage::Mouse_RawInput;
     case WM_CAPTURECHANGED: return WindowsSystemMessage::Mouse_CaptureChanged;
     case WM_LBUTTONDBLCLK: return WindowsSystemMessage::Mouse_LButtonDblClk;
