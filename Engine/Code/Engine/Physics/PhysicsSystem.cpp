@@ -114,20 +114,7 @@ void PhysicsSystem::BeginFrame() noexcept {
     //_world_partition.Clear();
     //_world_partition.Add(_rigidBodies);
 
-    for(auto& body : _rigidBodies) {
-        //TODO: Refactor to gravity and drag Force Generators
-        if(body->IsGravityEnabled()) {
-            body->ApplyForce(Vector2::Y_AXIS * _desc.gravity);
-        }
-        if(body->IsDragEnabled()) {
-            auto dragForce = body->GetVelocity();
-            auto dragCoeff = dragForce.CalcLength();
-            const auto [k1, k2] = GetDragCoefficients();
-            dragCoeff = k1 * dragCoeff + k2 * dragCoeff * dragCoeff;
-            dragForce.Normalize();
-            dragForce *= -dragCoeff;
-            body->ApplyForce(dragForce);
-        }
+    for(auto* body : _rigidBodies) {
         body->BeginFrame();
     }
 }
@@ -156,13 +143,29 @@ void PhysicsSystem::UpdateBodiesInBounds(TimeUtils::FPSeconds deltaSeconds) noex
         if(!body) {
             continue;
         }
+
+        //TODO: Refactor to gravity and drag Force Generators
+        if(body->IsGravityEnabled()) {
+            body->ApplyForce(Vector2::Y_AXIS * _desc.gravity, deltaSeconds);
+        }
+        if(body->IsDragEnabled()) {
+            if(auto dragForce = body->GetVelocity(); !MathUtils::IsEquivalentToZero(dragForce)) {
+                auto dragCoeff = dragForce.CalcLength();
+                const auto [k1, k2] = GetDragCoefficients();
+                dragCoeff = k1 * dragCoeff + k2 * dragCoeff * dragCoeff;
+                dragForce.Normalize();
+                dragForce *= -dragCoeff;
+                body->ApplyForce(dragForce, deltaSeconds);
+            }
+        }
+
         body->Update(deltaSeconds);
         //if(!MathUtils::DoOBBsOverlap(OBB2(_desc.world_bounds), body->GetBounds())) {
         //    body->FellOutOfWorld();
         //}
-        if(MathUtils::IsPointInFrontOfPlane(body->GetPosition(), Plane2(Vector2::Y_AXIS, _desc.kill_plane_distance))) {
-            body->FellOutOfWorld();
-        }
+        //if(MathUtils::IsPointInFrontOfPlane(body->GetPosition(), Plane2(Vector2::Y_AXIS, _desc.kill_plane_distance))) {
+        //    body->FellOutOfWorld();
+        //}
     }
 }
 
