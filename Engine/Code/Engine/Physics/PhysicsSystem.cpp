@@ -128,13 +128,13 @@ void PhysicsSystem::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
     _deltaSeconds = deltaSeconds.count();
     //_delta_seconds_changed = true;
     //_signal.notify_all();
-    UpdateBodiesInBounds(TimeUtils::FPSeconds(_deltaSeconds));
+    UpdateBodiesInBounds(deltaSeconds);
     const auto camera_position = Vector2(_renderer.GetCamera().GetPosition());
     const auto half_extents = Vector2(_renderer.GetOutput()->GetDimensions()) * 0.5f;
     const auto query_area = AABB2(camera_position - half_extents, camera_position + half_extents);
     const auto potential_collisions = BroadPhaseCollision(query_area);
-    const auto actual_collisions = NarrowPhaseCollision(potential_collisions, PhysicsUtils::GJK, PhysicsUtils::EPA);
-    SolveCollision(actual_collisions);
+    //const auto actual_collisions = NarrowPhaseCollision(potential_collisions, PhysicsUtils::GJK, PhysicsUtils::EPA);
+    SolveCollision({}/*actual_collisions*/);
 }
 
 void PhysicsSystem::UpdateBodiesInBounds(TimeUtils::FPSeconds deltaSeconds) noexcept {
