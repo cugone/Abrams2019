@@ -499,7 +499,7 @@ void InputSystem::SetCursorScreenPosition(const Vector2& screen_pos) noexcept {
     int x = static_cast<int>(screen_pos.x);
     int y = static_cast<int>(screen_pos.y);
     ::SetCursorPos(x, y);
-    SetMouseCoods(static_cast<float>(x), static_cast<float>(y));
+    SetMouseCoords(static_cast<float>(x), static_cast<float>(y));
 }
 
 void InputSystem::UpdateXboxConnectedState() noexcept {
@@ -512,11 +512,11 @@ void InputSystem::UpdateXboxConnectedState() noexcept {
     }
 }
 
-void InputSystem::SetMouseCoods(float newX, float newY) noexcept {
-    SetMouseCoods(Vector2{newX, newY});
+void InputSystem::SetMouseCoords(float newX, float newY) noexcept {
+    SetMouseCoords(Vector2{newX, newY});
 }
 
-void InputSystem::SetMouseCoods(Vector2 newCoords) noexcept {
+void InputSystem::SetMouseCoords(Vector2 newCoords) noexcept {
     _mouseCoords = newCoords;
 }
 
@@ -1089,8 +1089,9 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         if(wp & lbutton_mask) {
             unsigned char key = ConvertKeyCodeToWinVK(KeyCode::LButton);
             RegisterKeyDown(key);
-            const auto point = MAKEPOINTS(lp);
-            SetMouseCoods(point.x, point.y);
+            const auto x = static_cast<float>(GET_X_LPARAM(lp));
+            const auto y = static_cast<float>(GET_Y_LPARAM(lp));
+            SetMouseCoords(x, y);
             return true;
         }
         return false;
@@ -1108,8 +1109,9 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         if(!(wp & lbutton_mask)) {
             unsigned char key = ConvertKeyCodeToWinVK(KeyCode::LButton);
             RegisterKeyUp(key);
-            const auto point = MAKEPOINTS(lp);
-            SetMouseCoods(point.x, point.y);
+            const auto x = static_cast<float>(GET_X_LPARAM(lp));
+            const auto y = static_cast<float>(GET_Y_LPARAM(lp));
+            SetMouseCoords(x, y);
             return true;
         }
         return false;
@@ -1127,8 +1129,9 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         if(wp & rbutton_mask) {
             unsigned char key = ConvertKeyCodeToWinVK(KeyCode::RButton);
             RegisterKeyDown(key);
-            const auto point = MAKEPOINTS(lp);
-            SetMouseCoods(point.x, point.y);
+            const auto x = static_cast<float>(GET_X_LPARAM(lp));
+            const auto y = static_cast<float>(GET_Y_LPARAM(lp));
+            SetMouseCoords(x, y);
             return true;
         }
         return false;
@@ -1146,8 +1149,9 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         if(!(wp & rbutton_mask)) {
             unsigned char key = ConvertKeyCodeToWinVK(KeyCode::RButton);
             RegisterKeyUp(key);
-            const auto point = MAKEPOINTS(lp);
-            SetMouseCoods(point.x, point.y);
+            const auto x = static_cast<float>(GET_X_LPARAM(lp));
+            const auto y = static_cast<float>(GET_Y_LPARAM(lp));
+            SetMouseCoords(x, y);
             return true;
         }
         return false;
@@ -1165,8 +1169,9 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         if(wp & mbutton_mask) {
             unsigned char key = ConvertKeyCodeToWinVK(KeyCode::MButton);
             RegisterKeyDown(key);
-            const auto point = MAKEPOINTS(lp);
-            SetMouseCoods(point.x, point.y);
+            const auto x = static_cast<float>(GET_X_LPARAM(lp));
+            const auto y = static_cast<float>(GET_Y_LPARAM(lp));
+            SetMouseCoords(x, y);
             return true;
         }
         return false;
@@ -1184,8 +1189,9 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         if(!(wp & mbutton_mask)) {
             unsigned char key = ConvertKeyCodeToWinVK(KeyCode::MButton);
             RegisterKeyUp(key);
-            const auto point = MAKEPOINTS(lp);
-            SetMouseCoods(point.x, point.y);
+            const auto x = static_cast<float>(GET_X_LPARAM(lp));
+            const auto y = static_cast<float>(GET_Y_LPARAM(lp));
+            SetMouseCoords(x, y);
             return true;
         }
         return false;
@@ -1211,8 +1217,9 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
             key = ConvertKeyCodeToWinVK(KeyCode::XButton2);
         }
         RegisterKeyDown(key);
-        const auto point = MAKEPOINTS(lp);
-        SetMouseCoods(point.x, point.y);
+        const auto x = static_cast<float>(GET_X_LPARAM(lp));
+        const auto y = static_cast<float>(GET_Y_LPARAM(lp));
+        SetMouseCoords(x, y);
         return true;
     }
     case WindowsSystemMessage::Mouse_XButtonUp: {
@@ -1236,8 +1243,9 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
             key = ConvertKeyCodeToWinVK(KeyCode::XButton2);
         }
         RegisterKeyUp(key);
-        const auto point = MAKEPOINTS(lp);
-        SetMouseCoods(point.x, point.y);
+        const auto x = static_cast<float>(GET_X_LPARAM(lp));
+        const auto y = static_cast<float>(GET_Y_LPARAM(lp));
+        SetMouseCoords(x, y);
         return true;
     }
     case WindowsSystemMessage::Mouse_RawInput: {
@@ -1303,8 +1311,9 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         constexpr uint16_t xbutton1_down_mask = 0b0000'0000'0010'0000; //0x0020
         constexpr uint16_t xbutton2_down_mask = 0b0000'0000'0100'0000; //0x0040
         LPARAM lp = msg.lparam;
-        POINTS p = MAKEPOINTS(lp);
-        UpdateMouseCoords(p.x, p.y);
+        const auto x = static_cast<float>(GET_X_LPARAM(lp));
+        const auto y = static_cast<float>(GET_Y_LPARAM(lp));
+        SetMouseCoords(x, y);
         return true;
     }
     case WindowsSystemMessage::Mouse_MouseWheel: {
@@ -1353,13 +1362,10 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         if(!IsMouseLockedToViewport()) {
             return false;
         }
-        WPARAM wp = msg.wparam;
-        const bool is_maxHide = wp == SIZE_MAXHIDE;
-        const bool is_maximized = wp == SIZE_MAXIMIZED;
-        const bool is_maxShow = wp == SIZE_MAXSHOW;
-        const bool is_minimized = wp == SIZE_MINIMIZED;
-        const bool is_restored = wp == SIZE_RESTORED;
-        const bool should_unclip = is_maxHide || is_minimized;
+        const auto should_unclip = [msg]()->const bool {
+            const auto result = EngineSubsystem::GetResizeTypeFromWmSize(msg);
+            return result == WindowResizeType::MaxHide || result == WindowResizeType::Minimized;
+        }();
         if(should_unclip) {
             ::ClipCursor(nullptr);
             return false; //App needs to respond.

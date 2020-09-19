@@ -375,8 +375,8 @@ private:
     void InitializeMouseRawInput() noexcept;
     void UpdateXboxConnectedState() noexcept;
 
-    void SetMouseCoods(float newX, float newY) noexcept;
-    void SetMouseCoods(Vector2 newCoords) noexcept;
+    void SetMouseCoords(float newX, float newY) noexcept;
+    void SetMouseCoords(Vector2 newCoords) noexcept;
     void UpdateMouseCoords(float newX, float newY) noexcept;
     void UpdateMouseCoords(Vector2 newCoords) noexcept;
     void AdjustMouseCoords(float offsetX, float offsetY) noexcept;
