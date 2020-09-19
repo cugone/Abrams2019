@@ -72,11 +72,15 @@ std::optional<std::vector<uint8_t>> ReadBinaryBufferFromFile(std::filesystem::pa
 
 std::optional<std::string> ReadStringBufferFromFile(std::filesystem::path filepath) noexcept {
     namespace FS = std::filesystem;
+    const auto initial_path_not_exist = !FS::exists(filepath);
+    if(initial_path_not_exist) {
+        return {};
+    }
     filepath = FS::canonical(filepath);
     filepath.make_preferred();
+    const auto canonical_path_not_exist = !FS::exists(filepath);
     const auto path_is_directory = FS::is_directory(filepath);
-    const auto path_not_exist = !FS::exists(filepath);
-    const auto not_valid_path = path_is_directory || path_not_exist;
+    const auto not_valid_path = path_is_directory || canonical_path_not_exist;
     if(not_valid_path) {
         return {};
     }
