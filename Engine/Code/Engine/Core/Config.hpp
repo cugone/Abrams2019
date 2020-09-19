@@ -20,6 +20,7 @@ public:
 
     bool LoadFromFile(const std::filesystem::path& filepath) noexcept;
     bool AppendFromFile(const std::filesystem::path& filepath) noexcept;
+    bool SaveToFile(const std::filesystem::path& filepath) noexcept;
 
     bool HasKey(const std::string& key) const noexcept;
 

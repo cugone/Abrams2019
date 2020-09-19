@@ -46,6 +46,15 @@ bool Config::AppendFromFile(const std::filesystem::path& filepath) noexcept {
     return false;
 }
 
+bool Config::SaveToFile(const std::filesystem::path& filepath) noexcept {
+    std::ofstream ofs;
+    ofs.open(filepath);
+    PrintConfigs(ofs);
+    ofs.flush();
+    ofs.close();
+    return true;
+}
+
 bool Config::HasKey(const std::string& key) const noexcept {
     return _config.find(key) != _config.end();
 }
