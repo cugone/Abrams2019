@@ -129,17 +129,17 @@ public:
     void ApplyImpulse(const Vector2& impulse);
     void ApplyImpulse(const Vector2& direction, float magnitude);
 
-    void ApplyForce(const Vector2& force);
-    void ApplyForce(const Vector2& direction, float magnitude);
+    void ApplyForce(const Vector2& force, const TimeUtils::FPSeconds& duration);
+    void ApplyForce(const Vector2& direction, float magnitude, const TimeUtils::FPSeconds& duration);
 
-    void ApplyTorque(float force, bool asImpulse = false);
-    void ApplyTorque(const Vector2& direction, float magnitude, bool asImpulse = false);
+    void ApplyTorque(float force, const TimeUtils::FPSeconds& duration);
+    void ApplyTorque(const Vector2& direction, float magnitude, const TimeUtils::FPSeconds& duration);
 
-    void ApplyTorqueAt(const Vector2& position_on_object, const Vector2& force, bool asImpulse = false);
-    void ApplyTorqueAt(const Vector2& position_on_object, const Vector2& direction, float magnitude, bool asImpulse = false);
+    void ApplyTorqueAt(const Vector2& position_on_object, const Vector2& force, const TimeUtils::FPSeconds& duration);
+    void ApplyTorqueAt(const Vector2& position_on_object, const Vector2& direction, float magnitude, const TimeUtils::FPSeconds& duration);
 
-    void ApplyForceAt(const Vector2& position_on_object, const Vector2& direction, float magnitude);
-    void ApplyForceAt(const Vector2& position_on_object, const Vector2& force);
+    void ApplyForceAt(const Vector2& position_on_object, const Vector2& direction, float magnitude, const TimeUtils::FPSeconds& duration);
+    void ApplyForceAt(const Vector2& position_on_object, const Vector2& force, const TimeUtils::FPSeconds& duration);
 
     void ApplyImpulseAt(const Vector2& position_on_object, const Vector2& direction, float magnitude);
     void ApplyImpulseAt(const Vector2& position_on_object, const Vector2& force);
@@ -148,7 +148,10 @@ public:
 
     void SetPosition(const Vector2& newPosition, bool teleport = false) noexcept;
     const Vector2& GetPosition() const;
-    Vector2 GetVelocity() const;
+
+    void SetVelocity(const Vector2& newVelocity) noexcept;
+    const Vector2& GetVelocity() const;
+
     const Vector2& GetAcceleration() const;
     Vector2 CalcDimensions() const;
     float GetOrientationDegrees() const;
@@ -162,21 +165,23 @@ public:
     const bool ShouldKill() const noexcept;
 protected:
 private:
+    void SetAcceleration(const Vector2& newAccleration) noexcept;
+
     PhysicsSystem* parentPhysicsSystem{nullptr};
     RigidBodyDesc rigidbodyDesc{};
     RigidBody* parent = nullptr;
     std::vector<RigidBody*> children{};
-    Vector2 prev_position{};
     Vector2 position{};
+    Vector2 velocity{};
     Vector2 acceleration{};
     float prev_orientationDegrees = 0.0f;
     float orientationDegrees = 0.0f;
     float angular_acceleration = 0.0f;
     TimeUtils::FPSeconds dt{};
     TimeUtils::FPSeconds time_since_last_move{};
-    std::vector<Vector2> linear_forces{};
+    std::vector<std::pair<Vector2, TimeUtils::FPSeconds>> linear_forces{};
     std::vector<Vector2> linear_impulses{};
-    std::vector<float> angular_forces{};
+    std::vector<std::pair<float, TimeUtils::FPSeconds>> angular_forces{};
     std::vector<float> angular_impulses{};
     bool is_colliding = false;
     bool is_awake = true;

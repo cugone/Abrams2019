@@ -215,8 +215,8 @@ void PhysicsSystem::SolveCollision(const PhysicsSystem::CollisionDataSet& actual
         const auto bDistanceContribution = collision.distance * bDeltaContribution;
         a->SetPosition(aPos + aDistanceContribution * aNormal);
         b->SetPosition(bPos + bDistanceContribution * bNormal);
-        collision.a->ApplyForceAt(aPos, aForceContribution);
-        collision.b->ApplyForceAt(bPos, bForceContribution);
+        collision.a->ApplyForceAt(aPos, aForceContribution, TimeUtils::FPSeconds::zero());
+        collision.b->ApplyForceAt(bPos, bForceContribution, TimeUtils::FPSeconds::zero());
     }
 }
 
