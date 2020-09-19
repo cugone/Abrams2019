@@ -300,6 +300,33 @@ void Renderer::LogAvailableDisplays() noexcept {
     _fileLogger.LogLineAndFlush(ss.str());
 }
 
+Vector2 Renderer::GetScreenCenter() const noexcept {
+    RECT desktopRect;
+    HWND desktopWindowHandle = ::GetDesktopWindow();
+    if(::GetClientRect(desktopWindowHandle, &desktopRect)) {
+        float center_x = desktopRect.left + (desktopRect.right - desktopRect.left) * 0.5f;
+        float center_y = desktopRect.top + (desktopRect.bottom - desktopRect.top) * 0.5f;
+        return Vector2{center_x, center_y};
+    }
+    return Vector2::ZERO;
+}
+
+Vector2 Renderer::GetWindowCenter() const noexcept {
+    const auto& window = *GetOutput()->GetWindow();
+    return GetWindowCenter(window);
+}
+
+Vector2 Renderer::GetWindowCenter(const Window& window) const noexcept {
+    RECT rect;
+    HWND windowHandle = reinterpret_cast<HWND>(window.GetWindowHandle());
+    if(::GetClientRect(windowHandle, &rect)) {
+        float center_x = rect.left + (rect.right - rect.left) * 0.50f;
+        float center_y = rect.top + (rect.bottom - rect.top) * 0.50f;
+        return Vector2{center_x, center_y};
+    }
+    return Vector2::ZERO;
+}
+
 void Renderer::SetDepthComparison(ComparisonFunction cf) noexcept {
     auto dx = GetDeviceContext();
     auto dx_dc = dx->GetDxContext();

@@ -528,6 +528,10 @@ private:
 
     void LogAvailableDisplays() noexcept;
 
+    Vector2 GetScreenCenter() const noexcept;
+    Vector2 GetWindowCenter() const noexcept;
+    Vector2 GetWindowCenter(const Window& window) const noexcept;
+
     Camera3D _camera{};
     matrix_buffer_t _matrix_data{};
     time_buffer_t _time_data{};
