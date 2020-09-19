@@ -1,6 +1,7 @@
 #include "Engine/Renderer/Renderer.hpp"
 
 #include "Engine/Core/BuildConfig.hpp"
+#include "Engine/Core/Config.hpp"
 #include "Engine/Core/DataUtils.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/FileLogger.hpp"
@@ -81,10 +82,48 @@ ComputeJob::~ComputeJob() noexcept {
     renderer.SetComputeShader(nullptr);
 }
 
-Renderer::Renderer(FileLogger& fileLogger, unsigned int width, unsigned int height) noexcept
+Renderer::Renderer(FileLogger& fileLogger, Config& theConfig) noexcept
 : _fileLogger(fileLogger)
-, _window_dimensions(width, height) {
-    /* DO NOTHING */
+, _theConfig(theConfig)
+{
+    _current_outputMode = [this]()->RHIOutputMode {
+        auto windowed = true;
+        if(_theConfig.HasKey("windowed")) {
+            _theConfig.GetValue("windowed", windowed);
+        }
+        _theConfig.SetValue("windowed", windowed);
+        if(windowed) {
+            return RHIOutputMode::Windowed;
+        } else {
+            return RHIOutputMode::Borderless_Fullscreen;
+        }
+    }(); //IIIL
+    _window_dimensions = [this]()->IntVector2 {
+        const auto width = [this]()->int {
+            auto value = 0;
+            if(_theConfig.HasKey("width")) {
+                _theConfig.GetValue("width", value);
+            }
+            if(value <= 0) {
+                value = 1600;
+            }
+            return value;
+        }(); //IIIL
+        const auto height = [this]()->int {
+            auto value = 0;
+            if(_theConfig.HasKey("height")) {
+                _theConfig.GetValue("height", value);
+            }
+            if(value <= 0) {
+                value = 900;
+            }
+            return value;
+        }(); //IIIL
+        _theConfig.SetValue("width", width);
+        _theConfig.SetValue("height", height);
+        return IntVector2{width, height};
+    }(); //IIIL
+    _theConfig.SaveToFile("Data/Config/options.config");
 }
 
 Renderer::~Renderer() noexcept {
@@ -128,13 +167,80 @@ FileLogger& Renderer::GetFileLogger() noexcept {
     return _fileLogger;
 }
 
-void Renderer::Initialize(bool headless /*= false*/) {
+bool Renderer::ProcessSystemMessage(const EngineMessage& msg) noexcept {
+    switch(msg.wmMessageCode) {
+    case WindowsSystemMessage::Window_ActivateApp: {
+        WPARAM wp = msg.wparam;
+        bool losing_focus = wp == FALSE;
+        bool gaining_focus = wp == TRUE;
+        if(losing_focus) {
+            
+        }
+        if(gaining_focus) {
+            
+        }
+        return false;
+    }
+    case WindowsSystemMessage::Keyboard_Activate: {
+        WPARAM wp = msg.wparam;
+        auto active_type = LOWORD(wp);
+        switch(active_type) {
+        case WA_ACTIVE: /* FALLTHROUGH */
+        case WA_CLICKACTIVE: //Gained Focus
+            return false; //App needs to respond
+        case WA_INACTIVE: //Lost focus
+            return false; //App needs to respond
+        default:
+            return false; //App needs to respond
+        }
+    }
+    case WindowsSystemMessage::Window_Size: {
+        LPARAM lp = msg.lparam;
+        const auto resize_type = EngineSubsystem::GetResizeTypeFromWmSize(msg);
+        if(auto* window = GetOutput()->GetWindow(); window != nullptr) {
+            if(resize_type == WindowResizeType::Maximized) {
+                window->SetDisplayMode(RHIOutputMode::Borderless_Fullscreen);
+            } else if(resize_type == WindowResizeType::Restored) {
+                if(const auto prev_displaymode = window->GetDisplayMode(); prev_displaymode == RHIOutputMode::Borderless_Fullscreen) {
+                    const auto w = LOWORD(lp);
+                    const auto h = HIWORD(lp);
+                    const auto new_size = IntVector2{w, h};
+                    const auto new_position = IntVector2{GetScreenCenter()} - new_size / 2;
+                    window->SetDisplayMode(RHIOutputMode::Windowed);
+                } else {
+                    const auto w = LOWORD(lp);
+                    const auto h = HIWORD(lp);
+                    const auto new_size = IntVector2{w, h};
+                    window->SetDimensions(new_size);
+                }
+            }
+            ResizeBuffers();
+        }
+        return false; //App must be able to respond.
+    }
+    }
+    return false;
+}
+
+void Renderer::Initialize() {
     _rhi_instance = RHIInstance::CreateInstance();
     _rhi_device = _rhi_instance->CreateDevice(*this);
-    if(headless) {
-        return;
+
+    WindowDesc windowDesc{};
+    if(_theConfig.HasKey("windowed")) {
+        auto windowed = windowDesc.mode == RHIOutputMode::Windowed;
+        _theConfig.GetValue("windowed", windowed);
+        windowDesc.mode = windowed ? RHIOutputMode::Windowed : RHIOutputMode::Borderless_Fullscreen;
     }
-    std::tie(_rhi_output, _rhi_context) = _rhi_device->CreateOutputAndContext(_window_dimensions);
+    if(_theConfig.HasKey("width")) {
+        auto& width = windowDesc.dimensions.x;
+        _theConfig.GetValue("width", width);
+    }
+    if(_theConfig.HasKey("height")) {
+        auto& height = windowDesc.dimensions.y;
+        _theConfig.GetValue("height", height);
+    }
+    std::tie(_rhi_output, _rhi_context) = _rhi_device->CreateOutputAndContext(windowDesc);
 
     LogAvailableDisplays();
     CreateWorkingVboAndIbo();

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine/Core/DataUtils.hpp"
+#include "Engine/Core/EngineSubsystem.hpp"
 #include "Engine/Core/TimeUtils.hpp"
 #include "Engine/Core/Vertex3D.hpp"
 #include "Engine/Math/AABB2.hpp"
@@ -23,6 +24,7 @@
 
 class AABB2;
 class BlendState;
+class Config;
 class ConstantBuffer;
 class DepthStencilState;
 struct DepthStencilDesc;
@@ -127,7 +129,7 @@ struct ComputeJob {
     ~ComputeJob() noexcept;
 };
 
-class Renderer {
+class Renderer : public EngineSubsystem {
 public:
     struct DrawInstruction {
         PrimitiveType type;
@@ -144,16 +146,17 @@ public:
         }
     };
 
-    Renderer(FileLogger& fileLogger, unsigned int width, unsigned int height) noexcept;
+    Renderer(FileLogger& fileLogger, Config& theConfig) noexcept;
     ~Renderer() noexcept;
 
     FileLogger& GetFileLogger() noexcept;
 
-    void Initialize(bool headless = false);
-    void BeginFrame();
-    void Update(TimeUtils::FPSeconds deltaSeconds);
-    void Render() const;
-    void EndFrame();
+    bool ProcessSystemMessage(const EngineMessage& msg) noexcept override;
+    void Initialize() override;
+    void BeginFrame() override;
+    void Update(TimeUtils::FPSeconds deltaSeconds) override;
+    void Render() const override;
+    void EndFrame() override;
 
     TimeUtils::FPSeconds GetGameFrameTime() const noexcept;
     TimeUtils::FPSeconds GetSystemFrameTime() const noexcept;
@@ -544,6 +547,7 @@ private:
     Sampler* _current_sampler = nullptr;
     Material* _current_material = nullptr;
     FileLogger& _fileLogger;
+    Config& _theConfig;
     IntVector2 _window_dimensions = IntVector2::ZERO;
     RHIOutputMode _current_outputMode = RHIOutputMode::Windowed;
     std::unique_ptr<VertexBuffer> _temp_vbo = nullptr;
