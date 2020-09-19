@@ -1,17 +1,25 @@
 #pragma once
 
 #include "Engine/Core/Win.hpp"
+
+#include "Engine/Math/IntVector2.hpp"
+
 #include "Engine/RHI/RHITypes.hpp"
 
 #include <functional>
 #include <string>
 
-class IntVector2;
+struct WindowDesc {
+    IntVector2 position{};
+    IntVector2 dimensions{1600,900};
+    RHIOutputMode mode = RHIOutputMode::Windowed;
+};
 
 class Window {
 public:
     Window() noexcept;
     explicit Window(const IntVector2& position, const IntVector2& dimensions) noexcept;
+    explicit Window(const WindowDesc& desc) noexcept;
     ~Window() noexcept;
 
     void Open() noexcept;

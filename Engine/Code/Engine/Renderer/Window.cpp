@@ -34,6 +34,40 @@ Window::Window(const IntVector2& position, const IntVector2& dimensions) noexcep
     SetDimensionsAndPosition(position, dimensions);
 }
 
+Window::Window(const WindowDesc& desc) noexcept
+: _styleFlags{_defaultWindowedStyleFlags}
+, _styleFlagsEx{_defaultStyleFlagsEx} {
+    if(_refCount == 0) {
+        if(Register()) {
+            ++_refCount;
+        }
+    }
+    switch(desc.mode) {
+    case RHIOutputMode::Windowed:
+        _styleFlags = _defaultWindowedStyleFlags;
+        break;
+    case RHIOutputMode::Borderless_Fullscreen:
+        _styleFlags = _defaultBorderlessStyleFlags;
+        break;
+    }
+    RECT r{};
+    r.top = static_cast<long>(desc.position.y);
+    r.left = static_cast<long>(desc.position.x);
+    r.bottom = r.top + desc.dimensions.y;
+    r.right = r.left + desc.dimensions.x;
+
+    ::AdjustWindowRectEx(&r, _styleFlags, _hasMenu, _styleFlagsEx);
+
+    _positionX = desc.position.x - r.left;
+    _positionY = desc.position.y - r.top;
+    _width = r.right - r.left;
+    _height = r.bottom - r.top;
+    _oldclientWidth = _clientWidth;
+    _oldclientHeight = _clientHeight;
+    _clientWidth = desc.dimensions.x;
+    _clientHeight = desc.dimensions.y;
+}
+
 Window::~Window() noexcept {
     Close();
     if(_refCount != 0) {

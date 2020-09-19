@@ -32,6 +32,7 @@ class InputLayoutInstanced;
 struct Vertex3D;
 class ShaderProgram;
 class Renderer;
+struct WindowDesc;
 
 class RHIDevice {
 public:
@@ -39,6 +40,7 @@ public:
     ~RHIDevice() = default;
 
     std::pair<std::unique_ptr<RHIOutput>, std::unique_ptr<RHIDeviceContext>> CreateOutputAndContext(const IntVector2& clientSize, const IntVector2& clientPosition = IntVector2::ZERO) noexcept;
+    std::pair<std::unique_ptr<RHIOutput>, std::unique_ptr<RHIDeviceContext>> CreateOutputAndContext(const WindowDesc& desc) noexcept;
 
     std::unique_ptr<VertexBuffer> CreateVertexBuffer(const VertexBuffer::buffer_t& vbo, const BufferUsage& usage, const BufferBindUsage& bindusage) const noexcept;
     std::unique_ptr<IndexBuffer> CreateIndexBuffer(const IndexBuffer::buffer_t& ibo, const BufferUsage& usage, const BufferBindUsage& bindusage) const noexcept;

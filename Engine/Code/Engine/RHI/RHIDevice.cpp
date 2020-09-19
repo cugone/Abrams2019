@@ -30,6 +30,11 @@ std::pair<std::unique_ptr<RHIOutput>, std::unique_ptr<RHIDeviceContext>> RHIDevi
     return CreateOutputAndContextFromWindow(std::move(window));
 }
 
+std::pair<std::unique_ptr<RHIOutput>, std::unique_ptr<RHIDeviceContext>> RHIDevice::CreateOutputAndContext(const WindowDesc& desc) noexcept {
+    auto window = std::make_unique<Window>(desc);
+    return CreateOutputAndContextFromWindow(std::move(window));
+}
+
 D3D_FEATURE_LEVEL RHIDevice::GetFeatureLevel() const noexcept {
     return _dx_highestSupportedFeatureLevel;
 }
