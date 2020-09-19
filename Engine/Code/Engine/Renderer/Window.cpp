@@ -9,7 +9,7 @@
 #include <algorithm>
 
 Window::Window() noexcept
-: _styleFlags{_defaultBorderlessStyleFlags}
+: _styleFlags{_defaultWindowedStyleFlags}
 , _styleFlagsEx{_defaultStyleFlagsEx} {
     if(_refCount == 0) {
         if(Register()) {
@@ -31,7 +31,23 @@ Window::Window(const IntVector2& position, const IntVector2& dimensions) noexcep
             ++_refCount;
         }
     }
-    SetDimensionsAndPosition(position, dimensions);
+    RECT r{};
+    r.top = static_cast<long>(position.y);
+    r.left = static_cast<long>(position.x);
+    r.bottom = r.top + dimensions.y;
+    r.right = r.left + dimensions.x;
+
+    ::AdjustWindowRectEx(&r, _styleFlags, _hasMenu, _styleFlagsEx);
+
+    _positionX = position.x - r.left;
+    _positionY = position.y - r.top;
+    _width = r.right - r.left;
+    _height = r.bottom - r.top;
+    _oldclientWidth = _clientWidth;
+    _oldclientHeight = _clientHeight;
+    _clientWidth = dimensions.x;
+    _clientHeight = dimensions.y;
+    
 }
 
 Window::Window(const WindowDesc& desc) noexcept
@@ -154,7 +170,7 @@ void Window::SetDimensionsAndPosition(const IntVector2& new_position, const IntV
     r.left = static_cast<long>(new_position.x);
     r.bottom = r.top + new_size.y;
     r.right = r.left + new_size.x;
-    ::SetWindowPos(_hWnd, HWND_TOP, r.left, r.top, r.right - r.left, r.bottom - r.top, SWP_SHOWWINDOW);
+    
     _positionX = r.left;
     _positionY = r.top;
     _width = r.right - r.left;
@@ -166,11 +182,40 @@ void Window::SetDimensionsAndPosition(const IntVector2& new_position, const IntV
 }
 
 void Window::SetPosition(const IntVector2& new_position) noexcept {
-    SetDimensionsAndPosition(new_position, GetDimensions());
+    RECT r{};
+    r.top = static_cast<long>(new_position.y);
+    r.left = static_cast<long>(new_position.x);
+    const auto dims = GetDimensions();
+    r.bottom = r.top + dims.y;
+    r.right = r.left + dims.x;
+    ::AdjustWindowRect(&r, _styleFlags, FALSE);
+    ::SetWindowPos(_hWnd, HWND_TOP, r.left, r.top, r.right - r.left, r.bottom - r.top, SWP_SHOWWINDOW);
+    _positionX = r.left;
+    _positionY = r.top;
+    _width = r.right - r.left;
+    _height = r.bottom - r.top;
+    _oldclientWidth = _clientWidth;
+    _oldclientHeight = _clientHeight;
+    _clientWidth = dims.x;
+    _clientHeight = dims.y;
 }
 
 void Window::SetDimensions(const IntVector2& new_dimensions) noexcept {
-    SetDimensionsAndPosition(GetPosition(), new_dimensions);
+    RECT r{};
+    const auto pos = GetPosition();
+    r.top = static_cast<long>(pos.y);
+    r.left = static_cast<long>(pos.x);
+    r.bottom = r.top + new_dimensions.y;
+    r.right = r.left + new_dimensions.x;
+    ::AdjustWindowRect(&r, _styleFlags, FALSE);
+    _positionX = r.left;
+    _positionY = r.top;
+    _width = r.right - r.left;
+    _height = r.bottom - r.top;
+    _oldclientWidth = _clientWidth;
+    _oldclientHeight = _clientHeight;
+    _clientWidth = new_dimensions.x;
+    _clientHeight = new_dimensions.y;
 }
 
 void Window::SetForegroundWindow() noexcept {
@@ -219,11 +264,19 @@ void Window::SetDisplayMode(const RHIOutputMode& display_mode) noexcept {
         if(::GetWindowPlacement(_hWnd, &g_wpPrev) && ::GetMonitorInfo(::MonitorFromWindow(_hWnd, MONITOR_DEFAULTTOPRIMARY), &mi)) {
             ::SetWindowLongPtr(_hWnd, GWL_STYLE,
                                dwStyle & ~WS_OVERLAPPEDWINDOW);
+#ifdef RENDER_DEBUG
+            ::SetWindowPos(_hWnd, HWND_NOTOPMOST,
+                           mi.rcMonitor.left, mi.rcMonitor.top,
+                           mi.rcMonitor.right - mi.rcMonitor.left,
+                           mi.rcMonitor.bottom - mi.rcMonitor.top,
+                           SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
+#else
             ::SetWindowPos(_hWnd, HWND_TOP,
                            mi.rcMonitor.left, mi.rcMonitor.top,
                            mi.rcMonitor.right - mi.rcMonitor.left,
                            mi.rcMonitor.bottom - mi.rcMonitor.top,
                            SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
+#endif
         }
         break;
     }
