@@ -19,7 +19,7 @@ struct PhysicsDesc {
     //float linearDamping = 0.90f;
     //float angularDamping = 0.90f;
     bool enableGravity = true; //Should gravity be applied.
-    bool enableDrag = false;   //Should drag be applied.
+    bool enableDrag = true;   //Should drag be applied.
     bool enablePhysics = true; //Should object be subject to physics calculations.
     bool startAwake = true;    //Should the object be awake on creation.
 };
