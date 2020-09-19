@@ -130,6 +130,14 @@ struct EngineMessage32 {
     #define EngineMessage EngineMessage32
 #endif
 
+enum class WindowResizeType {
+    Maximized,
+    Minimized,
+    Restored,
+    MaxHide,
+    MaxShow
+};
+
 class EngineSubsystem {
 public:
     virtual ~EngineSubsystem() noexcept = 0;
@@ -146,6 +154,7 @@ public:
     void SetNextHandler(EngineSubsystem* next_handler) noexcept;
 
 protected:
+    static WindowResizeType GetResizeTypeFromWmSize(const EngineMessage& msg) noexcept;
 private:
     EngineSubsystem* _next_subsystem = nullptr;
 };

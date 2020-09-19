@@ -1,5 +1,7 @@
 #include "Engine/Core/EngineSubsystem.hpp"
 
+#include "Engine/Core/ErrorWarningAssert.hpp"
+
 #include "Engine/Core/Win.hpp"
 
 EngineSubsystem::~EngineSubsystem() noexcept {
@@ -14,6 +16,18 @@ bool EngineSubsystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         return _next_subsystem->EngineSubsystem::ProcessSystemMessage(msg);
     }
     return false;
+}
+
+WindowResizeType EngineSubsystem::GetResizeTypeFromWmSize(const EngineMessage& msg) noexcept {
+    GUARANTEE_OR_DIE(msg.wmMessageCode == WindowsSystemMessage::Window_Size, "Message passed to GetResizeTypeFromWmSize is not an appropriate message type.");
+    switch(msg.wparam) {
+    case SIZE_RESTORED: return WindowResizeType::Restored;
+    case SIZE_MINIMIZED: return WindowResizeType::Minimized;
+    case SIZE_MAXIMIZED: return WindowResizeType::Maximized;
+    case SIZE_MAXSHOW: return WindowResizeType::MaxShow;
+    case SIZE_MAXHIDE: return WindowResizeType::MaxHide;
+    default: ERROR_AND_DIE("Number of WM_SIZE WPARAM values have changed.");
+    }
 }
 
 WindowsSystemMessage EngineSubsystem::GetWindowsSystemMessageFromUintMessage(unsigned int wmMessage) noexcept {
