@@ -43,7 +43,6 @@ public:
 
     bool HasFocus() const noexcept;
 
-    ImGuiIO& GetIO() const noexcept;
     bool WantsInputCapture() const noexcept;
     bool WantsInputKeyboardCapture() const noexcept;
     bool WantsInputMouseCapture() const noexcept;
@@ -67,10 +66,11 @@ private:
     FileLogger& _fileLogger;
     Renderer& _renderer;
     ImGuiContext* _context{};
-    ImGuiIO* _io{};
     mutable Camera2D _ui_camera{};
     std::map<std::string, std::unique_ptr<UI::Widget>> _widgets{};
     std::vector<UI::Widget*> _active_widgets{};
+    std::filesystem::path _ini_filepath{"Engine/Config/ui.ini"};
+    std::filesystem::path _log_filepath{"Engine/Config/ui.log"};
     bool show_imgui_demo_window = false;
 };
 

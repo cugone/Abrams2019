@@ -12,6 +12,8 @@
 
 #include "Engine/UI/Widget.hpp"
 
+#include "Thirdparty/Imgui/imgui_internal.h"
+
 #include <algorithm>
 
 IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -82,7 +84,7 @@ UISystem::UISystem(FileLogger& fileLogger, Renderer& renderer) noexcept
 , _fileLogger(fileLogger)
 , _renderer(renderer)
 , _context(ImGui::CreateContext())
-, _io(&ImGui::GetIO()) {
+{
 #ifdef UI_DEBUG
     IMGUI_CHECKVERSION();
 #endif
@@ -94,15 +96,12 @@ UISystem::~UISystem() noexcept {
 
     ImGui::DestroyContext(_context);
     _context = nullptr;
-    _io = nullptr;
-
     _widgets.clear();
 
 }
 
 void UISystem::Initialize() {
-    _io->IniFilename = nullptr;
-    _io->LogFilename = nullptr;
+    namespace FS = std::filesystem;
 
     auto* hwnd = _renderer.GetOutput()->GetWindow()->GetWindowHandle();
     auto* dx_device = _renderer.GetDevice()->GetDxDevice();
@@ -110,10 +109,16 @@ void UISystem::Initialize() {
     ImGui_ImplWin32_Init(hwnd);
     ImGui_ImplDX11_Init(dx_device, dx_context);
     const auto dims = Vector2{_renderer.GetOutput()->GetDimensions()};
-    _io->DisplaySize.x = dims.x;
-    _io->DisplaySize.y = dims.y;
+    auto& io = ImGui::GetIO();
+    io.DisplaySize.x = dims.x;
+    io.DisplaySize.y = dims.y;
     ImGui::StyleColorsDark();
 
+    io.IniFilename = "Engine/Config/ui.ini";
+
+    io.ConfigWindowsResizeFromEdges = true;
+    io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableSetMousePos;
 }
 
 void UISystem::BeginFrame() {
@@ -168,11 +173,8 @@ bool UISystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
 }
 
 bool UISystem::HasFocus() const noexcept {
-    return _io->WantCaptureKeyboard || _io->WantCaptureMouse;
-}
-
-ImGuiIO& UISystem::GetIO() const noexcept {
-    return *_io;
+    auto& io = ImGui::GetIO();
+    return io.WantCaptureKeyboard || io.WantCaptureMouse;
 }
 
 bool UISystem::WantsInputCapture() const noexcept {
@@ -180,11 +182,11 @@ bool UISystem::WantsInputCapture() const noexcept {
 }
 
 bool UISystem::WantsInputKeyboardCapture() const noexcept {
-    return GetIO().WantCaptureKeyboard;
+    return ImGui::GetIO().WantCaptureKeyboard;
 }
 
 bool UISystem::WantsInputMouseCapture() const noexcept {
-    return GetIO().WantCaptureMouse;
+    return ImGui::GetIO().WantCaptureMouse;
 }
 
 void UISystem::ToggleImguiDemoWindow() noexcept {
