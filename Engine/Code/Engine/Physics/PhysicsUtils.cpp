@@ -115,7 +115,7 @@ EPAResult PhysicsUtils::EPA(const GJKResult& gjk, const Collider& a, const Colli
             const auto e = b - a;
             const auto oa = a;
             const auto n = MathUtils::TripleProductVector(e, oa, e).GetNormalize();
-            float d = MathUtils::DotProduct(a, n);
+            float d = MathUtils::DotProduct(n, a);
             if(d < distance) {
                 distance = d;
                 std::get<0>(closest) = d;
@@ -129,15 +129,18 @@ EPAResult PhysicsUtils::EPA(const GJKResult& gjk, const Collider& a, const Colli
     const auto support = [&](const Vector3& direction) { return calcMinkowskiDiff(direction, a) - calcMinkowskiDiff(-direction, b); };
     for(;;) {
         const auto edge = findClosestEdge(simplex_copy);
-        const auto n = std::get<1>(edge);
         const auto distance = std::get<0>(edge);
+        const auto n = std::get<1>(edge);
+        GUARANTEE_RECOVERABLE(!MathUtils::IsEquivalentToZero(n), "EPA n was zero.");
         const auto i = std::get<2>(edge);
         const auto p = Vector3{support(n)};
         const auto d = MathUtils::DotProduct(p, Vector3{n});
-        if(MathUtils::IsEquivalentToZero(d - distance)) {
+        //Is "distance" within some tolerance? i.e. is it "close enough"?
+        //epsilon defaults to 0.00001, which I think is "close enough".
+        if(d - distance < 0.0001f) {
             return {d, n};
         } else {
-            simplex_copy.insert(std::begin(simplex_copy) + (i + 1), Vector3{p});
+            simplex_copy.insert(std::begin(simplex_copy) + i, Vector3{p});
         }
     }
 }
