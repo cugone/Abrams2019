@@ -30,7 +30,7 @@ RigidBody::RigidBody(PhysicsSystem* physicsSystem, const RigidBodyDesc& desc /*=
 }
 
 void RigidBody::BeginFrame() {
-    static constexpr auto pred = [](const auto& force) { return force.second.count() < 0.0f; };
+    static constexpr auto pred = [](const auto& force) { return force.second.count() <= 0.0f; };
     if(!linear_forces.empty()) {
         linear_forces.erase(std::remove_if(linear_forces.begin(), linear_forces.end(), pred), linear_forces.end());
     }
