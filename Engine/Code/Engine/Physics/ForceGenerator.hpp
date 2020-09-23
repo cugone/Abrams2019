@@ -15,6 +15,6 @@ public:
     virtual void notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) const noexcept = 0;
 
 protected:
-private:
     std::vector<RigidBody*> _observers{};
+private:
 };
