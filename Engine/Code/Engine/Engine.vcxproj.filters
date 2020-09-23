@@ -445,6 +445,9 @@
     <ClCompile Include="Physics\ForceGenerator.cpp">
       <Filter>Physics</Filter>
     </ClCompile>
+    <ClCompile Include="Physics\DragForceGenerator.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vector2.hpp">
@@ -859,6 +862,9 @@
       <Filter>Physics</Filter>
     </ClInclude>
     <ClInclude Include="Physics\ForceGenerator.hpp">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics\DragForceGenerator.hpp">
       <Filter>Physics</Filter>
     </ClInclude>
   </ItemGroup>
