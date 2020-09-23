@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Thirdparty">
@@ -439,6 +439,9 @@
     <ClCompile Include="Physics\PhysicsTypes.cpp">
       <Filter>Physics</Filter>
     </ClCompile>
+    <ClCompile Include="Physics\GravityForceGenerator.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
     <ClCompile Include="Physics\ForceGenerator.cpp">
       <Filter>Physics</Filter>
     </ClCompile>
@@ -850,6 +853,12 @@
       <Filter>Physics</Filter>
     </ClInclude>
     <ClInclude Include="Physics\PhysicsUtils.hpp">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics\GravityForceGenerator.hpp">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics\ForceGenerator.hpp">
       <Filter>Physics</Filter>
     </ClInclude>
   </ItemGroup>

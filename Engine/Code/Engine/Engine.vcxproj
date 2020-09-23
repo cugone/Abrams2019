@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="DebugProfile|x64">
@@ -86,6 +86,7 @@
     <ClCompile Include="Networking\NetUtils.cpp" />
     <ClCompile Include="Physics\Collider.cpp" />
     <ClCompile Include="Physics\ForceGenerator.cpp" />
+    <ClCompile Include="Physics\GravityForceGenerator.cpp" />
     <ClCompile Include="Physics\PhysicsSystem.cpp" />
     <ClCompile Include="Physics\PhysicsTypes.cpp" />
     <ClCompile Include="Physics\PhysicsUtils.cpp" />
@@ -222,6 +223,8 @@
     <ClInclude Include="Networking\Address.hpp" />
     <ClInclude Include="Networking\NetUtils.hpp" />
     <ClInclude Include="Physics\Collider.hpp" />
+    <ClInclude Include="Physics\ForceGenerator.hpp" />
+    <ClInclude Include="Physics\GravityForceGenerator.hpp" />
     <ClInclude Include="Physics\PhysicsSystem.hpp" />
     <ClInclude Include="Physics\PhysicsTypes.hpp" />
     <ClInclude Include="Physics\PhysicsUtils.hpp" />
