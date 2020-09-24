@@ -7,18 +7,13 @@
 
 #include <memory>
 
-#if defined(_MSC_VER)
-    #pragma warning(push)
-    #pragma warning(disable : 26444) // 143 Avoid unnamed objects with custom construction and destruction (es.84).
-#endif
-
 struct RigidBodyDesc {
-    Vector2 initialPosition = Vector2::ZERO;
-    Vector2 initialVelocity = Vector2::ZERO;
-    Vector2 initialAcceleration = Vector2::ZERO;
-    Collider* collider{nullptr};
-    PhysicsMaterial physicsMaterial = PhysicsMaterial{};
-    PhysicsDesc physicsDesc = PhysicsDesc{};
+    Vector2 initialPosition{};
+    Vector2 initialVelocity{};
+    Vector2 initialAcceleration{};
+    Collider* collider{};
+    PhysicsMaterial physicsMaterial{};
+    PhysicsDesc physicsDesc{};
     RigidBodyDesc() noexcept
         : collider(new ColliderOBB(Vector2::ZERO, Vector2::ONE * 0.5f))
     {
@@ -82,10 +77,6 @@ struct RigidBodyDesc {
         collider = nullptr;
     }
 };
-
-#if defined(_MSC_VER)
-    #pragma warning(pop)
-#endif
 
 struct PhysicsSystemDesc;
 class PhysicsSystem;
