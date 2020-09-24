@@ -451,6 +451,9 @@
     <ClCompile Include="Physics\Joint.cpp">
       <Filter>Physics</Filter>
     </ClCompile>
+    <ClCompile Include="Physics\SpringJoint.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vector2.hpp">
@@ -871,6 +874,9 @@
       <Filter>Physics</Filter>
     </ClInclude>
     <ClInclude Include="Physics\Joint.hpp">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics\SpringJoint.hpp">
       <Filter>Physics</Filter>
     </ClInclude>
   </ItemGroup>
