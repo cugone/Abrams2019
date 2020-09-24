@@ -1,6 +1,9 @@
 #pragma once
 
+#include "Engine/Core/TimeUtils.hpp"
+
 class RigidBody;
+class Renderer;
 
 class Joint {
 public:
@@ -11,9 +14,16 @@ public:
     Joint& operator=(Joint&& other) = default;
     virtual ~Joint() = default;
 
+    void attach(RigidBody* a, RigidBody* b) noexcept;
+    void detach(RigidBody* body) noexcept;
+    void detach_all() noexcept;
+    bool is_not_attached() const noexcept;
+
+    virtual void notify([[maybe_unused]]TimeUtils::FPSeconds deltaSeconds) noexcept = 0;
+    virtual void DebugRender(Renderer& renderer) const noexcept = 0;
 protected:
-    RigidBody* a{};
-    RigidBody* b{};
+    RigidBody* bodyA{};
+    RigidBody* bodyB{};
 private:
     
 };
