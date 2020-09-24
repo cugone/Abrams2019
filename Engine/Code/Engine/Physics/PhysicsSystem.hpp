@@ -77,6 +77,13 @@ public:
         return newJoint;
     }
 
+    template<typename ForceGeneratorType>
+    ForceGeneratorType* CreateForceGenerator() {
+        auto* newFG = new ForceGenerator();
+        _forceGenerators.emplace_back(newFG);
+        return newFG;
+    }
+
 protected:
 private:
     void UpdateBodiesInBounds(TimeUtils::FPSeconds deltaSeconds) noexcept;
@@ -129,6 +136,7 @@ private:
     std::vector<RigidBody*> _pending_addition{};
     GravityForceGenerator _gravityFG{Vector2::ZERO};
     DragForceGenerator _dragFG{Vector2::ZERO};
+    std::vector<std::unique_ptr<ForceGenerator>> _forceGenerators{};
     std::vector<std::unique_ptr<Joint>> _joints{};
     //QuadTree<RigidBody> _world_partition{};
     TimeUtils::FPSeconds _deltaSeconds = TimeUtils::FPSeconds::zero();
