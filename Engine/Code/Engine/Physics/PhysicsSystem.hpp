@@ -66,7 +66,6 @@ public:
 
 protected:
 private:
-    void Update_Worker() noexcept;
     void UpdateBodiesInBounds(TimeUtils::FPSeconds deltaSeconds) noexcept;
     std::vector<RigidBody*> BroadPhaseCollision(const AABB2& query_area) noexcept;
 
@@ -110,17 +109,13 @@ private:
 
     Renderer& _renderer;
     PhysicsSystemDesc _desc{};
-    std::thread _update_thread{};
-    std::condition_variable _signal{};
-    std::mutex _cs{};
-    std::atomic_bool _is_running = false;
-    std::atomic_bool _delta_seconds_changed = false;
+    bool _is_running = false;
     std::vector<RigidBody*> _rigidBodies{};
     std::deque<CollisionData> _contacts{};
     std::vector<RigidBody*> _pending_removal{};
     std::vector<RigidBody*> _pending_addition{};
     //QuadTree<RigidBody> _world_partition{};
-    std::atomic<float> _deltaSeconds = 0.0f;
+    TimeUtils::FPSeconds _deltaSeconds = TimeUtils::FPSeconds::zero();
     bool _show_colliders = false;
     bool _show_object_bounds = false;
     bool _show_world_partition = false;

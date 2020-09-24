@@ -7,25 +7,6 @@
 #include <algorithm>
 #include <mutex>
 
-//TODO: Multi-threaded update when things get hairy.
-void PhysicsSystem::Update_Worker() noexcept {
-    while(_is_running) {
-        std::unique_lock<std::mutex> lock(_cs);
-        //Condition to wake up: Not running or deltaSeconds has changed.
-        _signal.wait(lock, [this]() -> bool { return !_is_running || _delta_seconds_changed; });
-        if(_delta_seconds_changed) {
-            _delta_seconds_changed = false;
-            UpdateBodiesInBounds(TimeUtils::FPSeconds(_deltaSeconds));
-            const auto camera_position = Vector2(_renderer.GetCamera().GetPosition());
-            const auto half_extents = Vector2(_renderer.GetOutput()->GetDimensions()) * 0.5f;
-            const auto query_area = AABB2(camera_position - half_extents, camera_position + half_extents);
-            const auto potential_collisions = BroadPhaseCollision(query_area);
-            const auto actual_collisions = NarrowPhaseCollision(potential_collisions, PhysicsUtils::GJK, PhysicsUtils::EPA);
-            SolveCollision(actual_collisions);
-        }
-    }
-}
-
 void PhysicsSystem::Enable(bool enable) {
     _is_running = enable;
 }
@@ -87,10 +68,6 @@ PhysicsSystem::PhysicsSystem(Renderer& renderer, const PhysicsSystemDesc& desc /
 
 PhysicsSystem::~PhysicsSystem() {
     _is_running = false;
-    _signal.notify_all();
-    if(_update_thread.joinable()) {
-        _update_thread.join();
-    }
 }
 
 void PhysicsSystem::Initialize() noexcept {
@@ -122,12 +99,9 @@ void PhysicsSystem::BeginFrame() noexcept {
 void PhysicsSystem::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
     PROFILE_LOG_SCOPE_FUNCTION();
     if(!this->_is_running) {
-        //_signal.notify_all();
         return;
     }
-    _deltaSeconds = deltaSeconds.count();
-    //_delta_seconds_changed = true;
-    //_signal.notify_all();
+    _deltaSeconds = deltaSeconds;
     UpdateBodiesInBounds(deltaSeconds);
     const auto camera_position = Vector2(_renderer.GetCamera().GetPosition());
     const auto half_extents = Vector2(_renderer.GetOutput()->GetDimensions()) * 0.5f;
@@ -247,7 +221,6 @@ void PhysicsSystem::EndFrame() noexcept {
     }
     _pending_removal.clear();
     _pending_removal.shrink_to_fit();
-    _signal.notify_all();
 }
 
 void PhysicsSystem::AddObject(RigidBody* body) {
