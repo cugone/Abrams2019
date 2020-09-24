@@ -7,8 +7,10 @@
 
 #include "Engine/Physics/PhysicsTypes.hpp"
 #include "Engine/Physics/RigidBody.hpp"
+#include "Engine/Physics/ForceGenerator.hpp"
 #include "Engine/Physics/GravityForceGenerator.hpp"
 #include "Engine/Physics/DragForceGenerator.hpp"
+#include "Engine/Physics/Joint.hpp"
 
 #include "Engine/Profiling/ProfileLogScope.hpp"
 
@@ -21,6 +23,8 @@
 #include <thread>
 #include <utility>
 #include <vector>
+
+class Joint;
 
 struct PhysicsSystemDesc {
     AABB2 world_bounds{Vector2::ZERO, 500.0f, 500.0f};
@@ -65,6 +69,13 @@ public:
     void EnableGravity(bool isGravityEnabled) noexcept;
     void EnableDrag(bool isDragEnabled) noexcept;
     void EnablePhysics(bool isPhysicsEnabled) noexcept;
+
+    template<typename JointType>
+    JointType* CreateJoint(RigidBody* a, RigidBody* b) {
+        auto* newJoint = new JointType(a, b);
+        _joints.emplace_back(newJoint);
+        return newJoint;
+    }
 
 protected:
 private:
@@ -118,6 +129,7 @@ private:
     std::vector<RigidBody*> _pending_addition{};
     GravityForceGenerator _gravityFG{Vector2::ZERO};
     DragForceGenerator _dragFG{Vector2::ZERO};
+    std::vector<std::unique_ptr<Joint>> _joints{};
     //QuadTree<RigidBody> _world_partition{};
     TimeUtils::FPSeconds _deltaSeconds = TimeUtils::FPSeconds::zero();
     bool _show_colliders = false;
