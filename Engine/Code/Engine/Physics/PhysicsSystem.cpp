@@ -208,8 +208,10 @@ void PhysicsSystem::EndFrame() noexcept {
     for(auto& body : _rigidBodies) {
         body->Endframe();
     }
-    for(const auto* r : _pending_removal) {
+    for(auto* r : _pending_removal) {
         _rigidBodies.erase(std::remove_if(std::begin(_rigidBodies), std::end(_rigidBodies), [this, r](const RigidBody* b) { return b == r; }), std::end(_rigidBodies));
+        _gravityFG.detach(r);
+        _dragFG.detach(r);
     }
     _pending_removal.clear();
     _pending_removal.shrink_to_fit();
@@ -240,6 +242,8 @@ void PhysicsSystem::RemoveAllObjects() noexcept {
 void PhysicsSystem::RemoveAllObjectsImmediately() noexcept {
     _rigidBodies.clear();
     _rigidBodies.shrink_to_fit();
+    _gravityFG.detach_all();
+    _dragFG.detach_all();
 }
 
 void PhysicsSystem::DebugShowCollision(bool show) {

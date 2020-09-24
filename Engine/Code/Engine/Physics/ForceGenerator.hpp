@@ -20,7 +20,7 @@ public:
     virtual void notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) const noexcept = 0;
 
     bool is_attached(const RigidBody* const body) const noexcept;
-
+    void detach_all() noexcept;
 protected:
     std::vector<RigidBody*> _observers{};
 private:

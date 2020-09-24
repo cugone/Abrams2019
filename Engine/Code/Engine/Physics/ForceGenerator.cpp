@@ -17,3 +17,7 @@ void ForceGenerator::detach(RigidBody* body) noexcept {
 bool ForceGenerator::is_attached(const RigidBody* const body) const noexcept {
     return std::find(std::cbegin(_observers), std::cend(_observers), body) != std::cend(_observers);
 }
+
+void ForceGenerator::detach_all() noexcept {
+    _observers.clear();
+}
