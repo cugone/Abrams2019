@@ -23,13 +23,13 @@
 #include <vector>
 
 struct PhysicsSystemDesc {
-    AABB2 world_bounds = AABB2(Vector2::ZERO, 500.0f, 500.0f);
-    float gravity = 10.0f;
-    Vector2 dragK1K2 = Vector2{1.0f, 1.0f};
-    float world_to_meters = 100.0f;
-    float kill_plane_distance = 10000.0f;
-    int position_solver_iterations = 1;
-    int velocity_solver_iterations = 1;
+    AABB2 world_bounds{Vector2::ZERO, 500.0f, 500.0f};
+    Vector2 gravity{0.0f, 10.0f};
+    Vector2 dragK1K2{1.0f, 1.0f};
+    float world_to_meters{100.0f};
+    float kill_plane_distance{10000.0f};
+    int position_solver_iterations{1};
+    int velocity_solver_iterations{1};
 };
 
 class PhysicsSystem {
