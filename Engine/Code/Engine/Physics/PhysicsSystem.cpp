@@ -11,11 +11,11 @@ void PhysicsSystem::Enable(bool enable) {
     _is_running = enable;
 }
 
-void PhysicsSystem::SetGravity(float new_gravity) {
+void PhysicsSystem::SetGravity(const Vector2& new_gravity) {
     _desc.gravity = new_gravity;
 }
 
-float PhysicsSystem::GetGravity() const noexcept {
+Vector2 PhysicsSystem::GetGravity() const noexcept {
     return _desc.gravity;
 }
 
@@ -37,6 +37,8 @@ const PhysicsSystemDesc& PhysicsSystem::GetWorldDescription() const noexcept {
 
 void PhysicsSystem::SetWorldDescription(const PhysicsSystemDesc& new_desc) {
     _desc = new_desc;
+    _gravityFG.SetGravity(_desc.gravity);
+    _dragFG.SetCoefficients(_desc.dragK1K2);
     //_world_partition.SetWorldBounds(_desc.world_bounds);
 }
 
@@ -92,6 +94,10 @@ void PhysicsSystem::BeginFrame() noexcept {
     //_world_partition.Add(_rigidBodies);
 
     for(auto* body : _rigidBodies) {
+        const auto is_gravity_enabled = body->IsGravityEnabled();
+        const auto is_drag_enabled = body->IsDragEnabled();
+        is_gravity_enabled ? _gravityFG.attach(body) : _gravityFG.detach(body);
+        is_drag_enabled ? _dragFG.attach(body) : _dragFG.detach(body);
         body->BeginFrame();
     }
 }
@@ -113,26 +119,12 @@ void PhysicsSystem::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
 
 void PhysicsSystem::UpdateBodiesInBounds(TimeUtils::FPSeconds deltaSeconds) noexcept {
     PROFILE_LOG_SCOPE_FUNCTION();
+    _gravityFG.notify(deltaSeconds);
+    _dragFG.notify(deltaSeconds);
     for(auto body : _rigidBodies) {
         if(!body) {
             continue;
         }
-
-        //TODO: Refactor to gravity and drag Force Generators
-        if(body->IsGravityEnabled()) {
-            body->ApplyForce(Vector2::Y_AXIS * _desc.gravity, deltaSeconds);
-        }
-        if(body->IsDragEnabled()) {
-            if(auto dragForce = body->GetVelocity(); !MathUtils::IsEquivalentToZero(dragForce)) {
-                auto dragCoeff = dragForce.CalcLength();
-                const auto [k1, k2] = GetDragCoefficients();
-                dragCoeff = k1 * dragCoeff + k2 * dragCoeff * dragCoeff;
-                dragForce.Normalize();
-                dragForce *= -dragCoeff;
-                body->ApplyForce(dragForce, deltaSeconds);
-            }
-        }
-
         body->Update(deltaSeconds);
         //if(!MathUtils::DoOBBsOverlap(OBB2(_desc.world_bounds), body->GetBounds())) {
         //    body->FellOutOfWorld();

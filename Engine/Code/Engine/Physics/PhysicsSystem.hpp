@@ -7,6 +7,8 @@
 
 #include "Engine/Physics/PhysicsTypes.hpp"
 #include "Engine/Physics/RigidBody.hpp"
+#include "Engine/Physics/GravityForceGenerator.hpp"
+#include "Engine/Physics/DragForceGenerator.hpp"
 
 #include "Engine/Profiling/ProfileLogScope.hpp"
 
@@ -53,8 +55,8 @@ public:
     void DebugShowContacts(bool show);
 
     void Enable(bool enable);
-    void SetGravity(float new_gravity);
-    float GetGravity() const noexcept;
+    void SetGravity(const Vector2& new_gravity);
+    Vector2 GetGravity() const noexcept;
     void SetDragCoefficients(const Vector2& k1k2);
     void SetDragCoefficients(float linearCoefficient, float squareCoefficient);
     std::pair<float,float> GetDragCoefficients() const noexcept;
@@ -114,6 +116,8 @@ private:
     std::deque<CollisionData> _contacts{};
     std::vector<RigidBody*> _pending_removal{};
     std::vector<RigidBody*> _pending_addition{};
+    GravityForceGenerator _gravityFG{Vector2::ZERO};
+    DragForceGenerator _dragFG{Vector2::ZERO};
     //QuadTree<RigidBody> _world_partition{};
     TimeUtils::FPSeconds _deltaSeconds = TimeUtils::FPSeconds::zero();
     bool _show_colliders = false;
