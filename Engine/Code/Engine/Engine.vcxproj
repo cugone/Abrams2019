@@ -93,6 +93,7 @@
     <ClCompile Include="Physics\PhysicsTypes.cpp" />
     <ClCompile Include="Physics\PhysicsUtils.cpp" />
     <ClCompile Include="Physics\RigidBody.cpp" />
+    <ClCompile Include="Physics\RodJoint.cpp" />
     <ClCompile Include="Physics\SpringJoint.cpp" />
     <ClCompile Include="Profiling\Memory.cpp" />
     <ClCompile Include="Profiling\ProfileLogScope.cpp" />
@@ -235,6 +236,7 @@
     <ClInclude Include="Physics\PhysicsUtils.hpp" />
     <ClInclude Include="Physics\QuadTree.hpp" />
     <ClInclude Include="Physics\RigidBody.hpp" />
+    <ClInclude Include="Physics\RodJoint.hpp" />
     <ClInclude Include="Physics\SpringJoint.hpp" />
     <ClInclude Include="Profiling\Memory.hpp" />
     <ClInclude Include="Profiling\ProfileLogScope.hpp" />
