@@ -121,6 +121,12 @@ void PhysicsSystem::UpdateBodiesInBounds(TimeUtils::FPSeconds deltaSeconds) noex
     PROFILE_LOG_SCOPE_FUNCTION();
     _gravityFG.notify(deltaSeconds);
     _dragFG.notify(deltaSeconds);
+    for(auto&& fg : _forceGenerators) {
+        fg->notify(deltaSeconds);
+    }
+    for(auto&& joint : _joints) {
+        joint->notify(deltaSeconds);
+    }
     for(auto body : _rigidBodies) {
         if(!body) {
             continue;
@@ -195,6 +201,11 @@ void PhysicsSystem::Render() const noexcept {
             body->DebugRender(_renderer);
         }
     }
+    if(_show_joints) {
+        for(const auto& joint : _joints) {
+            joint->DebugRender(_renderer);
+        }
+    }
     if(_show_world_partition) {
         //_world_partition.DebugRender(_renderer);
     }
@@ -212,6 +223,12 @@ void PhysicsSystem::EndFrame() noexcept {
         _rigidBodies.erase(std::remove_if(std::begin(_rigidBodies), std::end(_rigidBodies), [this, r](const RigidBody* b) { return b == r; }), std::end(_rigidBodies));
         _gravityFG.detach(r);
         _dragFG.detach(r);
+        for(auto&& fg : _forceGenerators) {
+            fg->detach(r);
+        }
+        for(auto&& joint : _joints) {
+            joint->detach(r);
+        }
     }
     _pending_removal.clear();
     _pending_removal.shrink_to_fit();
@@ -244,6 +261,12 @@ void PhysicsSystem::RemoveAllObjectsImmediately() noexcept {
     _rigidBodies.shrink_to_fit();
     _gravityFG.detach_all();
     _dragFG.detach_all();
+    for(auto&& fg : _forceGenerators) {
+        fg->detach_all();
+    }
+    for(auto&& joint : _joints) {
+        joint->detach_all();
+    }
 }
 
 void PhysicsSystem::DebugShowCollision(bool show) {
@@ -256,4 +279,8 @@ void PhysicsSystem::DebugShowWorldPartition(bool show) {
 
 void PhysicsSystem::DebugShowContacts(bool show) {
     _show_contacts = show;
+}
+
+void PhysicsSystem::DebugShowJoints(bool show) {
+    _show_joints = show;
 }

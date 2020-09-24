@@ -57,6 +57,7 @@ public:
     void DebugShowCollision(bool show);
     void DebugShowWorldPartition(bool show);
     void DebugShowContacts(bool show);
+    void DebugShowJoints(bool show);
 
     void Enable(bool enable);
     void SetGravity(const Vector2& new_gravity);
@@ -72,7 +73,8 @@ public:
 
     template<typename JointType>
     JointType* CreateJoint(RigidBody* a, RigidBody* b) {
-        auto* newJoint = new JointType(a, b);
+        auto* newJoint = new JointType{};
+        newJoint->attach(a, b);
         _joints.emplace_back(newJoint);
         return newJoint;
     }
@@ -144,4 +146,5 @@ private:
     bool _show_object_bounds = false;
     bool _show_world_partition = false;
     bool _show_contacts = false;
+    bool _show_joints = false;
 };
