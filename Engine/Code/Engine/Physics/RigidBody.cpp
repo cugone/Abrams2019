@@ -8,6 +8,7 @@
 
 #include "Engine/Renderer/Renderer.hpp"
 
+#include <cmath>
 #include <numeric>
 #include <type_traits>
 
@@ -70,7 +71,18 @@ void RigidBody::Update(TimeUtils::FPSeconds deltaSeconds) {
 
     const auto new_position = GetPosition() + GetVelocity() * dt.count() + GetAcceleration() * (dt.count() * dt.count() * 0.5f);
     const auto new_acceleration = (linear_impulse_sum + linear_force_sum.first) * inv_mass;
-    const auto new_velocity = GetVelocity() + (GetAcceleration() + new_acceleration) * (dt.count() * 0.5f);
+    auto new_velocity = GetVelocity() + (GetAcceleration() + new_acceleration) * (dt.count() * 0.5f);
+    new_velocity *= rigidbodyDesc.physicsDesc.linearDamping;
+
+    {
+        const bool is_near_zero = MathUtils::IsEquivalentToZero(new_velocity);
+        const bool is_inf = (std::isinf(new_velocity.x) || std::isinf(new_velocity.y));
+        const bool is_nan = (std::isnan(new_velocity.x) || std::isnan(new_velocity.y));
+        const bool should_clamp = is_near_zero || is_nan || is_inf;
+        if(should_clamp) {
+            new_velocity = Vector2::ZERO;
+        }
+    }
 
     auto deltaPosition = position - new_position;
     auto deltaOrientation = orientationDegrees - prev_orientationDegrees;
@@ -83,15 +95,21 @@ void RigidBody::Update(TimeUtils::FPSeconds deltaSeconds) {
     is_awake = time_since_last_move < TimeUtils::FPSeconds{1.0f};
 
     SetPosition(new_position);
-    SetVelocity(new_velocity * rigidbodyDesc.physicsDesc.linearDamping);
+    SetVelocity(new_velocity);
     SetAcceleration(new_acceleration);
 
     const auto& maxAngularSpeed = rigidbodyDesc.physicsDesc.maxAngularSpeed;
     auto new_angular_velocity = std::clamp((2.0f * orientationDegrees - prev_orientationDegrees) / dt.count(), -maxAngularSpeed, maxAngularSpeed);
     new_angular_velocity *= rigidbodyDesc.physicsDesc.angularDamping;
 
-    if(MathUtils::IsEquivalentToZero(new_angular_velocity)) {
-        new_angular_velocity = 0.0f;
+    {
+        const bool is_near_zero = MathUtils::IsEquivalentToZero(new_angular_velocity);
+        const bool is_inf = std::isinf(new_angular_velocity);
+        const bool is_nan = std::isnan(new_angular_velocity);
+        const bool should_clamp = is_near_zero || is_nan || is_inf;
+        if(should_clamp) {
+            new_angular_velocity = 0.0f;
+        }
     }
     const auto new_orientationDegrees = MathUtils::Wrap(new_angular_velocity + new_angular_acceleration * t * t, 0.0f, 360.0f);
     prev_orientationDegrees = orientationDegrees;
