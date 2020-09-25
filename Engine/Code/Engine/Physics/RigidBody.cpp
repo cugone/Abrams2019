@@ -83,11 +83,12 @@ void RigidBody::Update(TimeUtils::FPSeconds deltaSeconds) {
     is_awake = time_since_last_move < TimeUtils::FPSeconds{1.0f};
 
     SetPosition(new_position);
-    SetVelocity(new_velocity);
+    SetVelocity(new_velocity * rigidbodyDesc.physicsDesc.linearDamping);
     SetAcceleration(new_acceleration);
 
     const auto& maxAngularSpeed = rigidbodyDesc.physicsDesc.maxAngularSpeed;
     auto new_angular_velocity = std::clamp((2.0f * orientationDegrees - prev_orientationDegrees) / dt.count(), -maxAngularSpeed, maxAngularSpeed);
+    new_angular_velocity *= rigidbodyDesc.physicsDesc.angularDamping;
 
     if(MathUtils::IsEquivalentToZero(new_angular_velocity)) {
         new_angular_velocity = 0.0f;
