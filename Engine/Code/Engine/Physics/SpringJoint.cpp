@@ -58,5 +58,11 @@ void SpringJoint::notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noe
 void SpringJoint::DebugRender(Renderer& renderer) const noexcept {
     auto* first_body = bodyA;
     auto* second_body = bodyB;
-    renderer.DrawLine2D(first_body->GetPosition(), second_body->GetPosition());
+    if(!(first_body || second_body)) {
+        return;
+    }
+    const auto fb_pos = first_body == nullptr ? _anchors.first : first_body->GetPosition();
+    const auto sb_pos = second_body == nullptr ? _anchors.second : second_body->GetPosition();
+    renderer.SetModelMatrix(Matrix4::I);
+    renderer.DrawLine2D(fb_pos, sb_pos);
 }
