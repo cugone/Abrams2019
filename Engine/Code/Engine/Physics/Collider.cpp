@@ -16,7 +16,7 @@ ColliderPolygon::ColliderPolygon()
 }
 
 void ColliderPolygon::DebugRender(Renderer& renderer) const noexcept {
-    renderer.DrawPolygon2D(_polygon, Rgba::White);
+    renderer.DrawPolygon2D(Vector2::ZERO, _polygon.GetHalfExtents().x, _polygon.GetSides(), Rgba::White);//_polygon, Rgba::White);
 }
 
 int ColliderPolygon::GetSides() const {
@@ -181,7 +181,7 @@ Vector2 ColliderCircle::Support(const Vector2& d) const noexcept {
 }
 
 void ColliderCircle::DebugRender(Renderer& renderer) const noexcept {
-    renderer.DrawCircle2D(_polygon.GetPosition(), _polygon.GetHalfExtents().x, Rgba::Pink);
+    renderer.DrawCircle2D(Vector2::ZERO, 0.5f, Rgba::Pink);// _polygon.GetPosition(), _polygon.GetHalfExtents().x, Rgba::Pink);
 }
 
 void ColliderCircle::SetPosition(const Vector2& position) noexcept {

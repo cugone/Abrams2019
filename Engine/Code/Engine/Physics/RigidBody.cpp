@@ -125,10 +125,16 @@ void RigidBody::Update(TimeUtils::FPSeconds deltaSeconds) {
 }
 
 void RigidBody::DebugRender(Renderer& renderer) const {
-    renderer.SetModelMatrix(Matrix4::I);
     if(const auto collider = GetCollider(); collider != nullptr) {
+        const auto& world_scale = parentPhysicsSystem->GetWorldDescription().world_to_meters;
+        const auto he = this->GetBounds().half_extents;
+        const auto S = Matrix4::CreateScaleMatrix(he * world_scale);
+        const auto R = Matrix4::Create2DRotationDegreesMatrix(GetOrientationDegrees());
+        const auto T = Matrix4::CreateTranslationMatrix(GetPosition());
+        const auto M = Matrix4::MakeSRT(S, R, T);
+        renderer.SetModelMatrix(M);
         collider->DebugRender(renderer);
-        renderer.DrawOBB2(GetBounds(), Rgba::Green);
+        renderer.DrawOBB2(GetOrientationDegrees(), Rgba::Green);
     }
 }
 
