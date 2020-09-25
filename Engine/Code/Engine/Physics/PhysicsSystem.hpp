@@ -32,8 +32,8 @@ struct PhysicsSystemDesc {
     Vector2 dragK1K2{1.0f, 1.0f};
     float world_to_meters{100.0f};
     float kill_plane_distance{10000.0f};
-    int position_solver_iterations{1};
-    int velocity_solver_iterations{1};
+    int position_solver_iterations{2};
+    int velocity_solver_iterations{2};
 };
 
 class PhysicsSystem {
