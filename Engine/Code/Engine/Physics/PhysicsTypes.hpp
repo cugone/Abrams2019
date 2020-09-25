@@ -9,7 +9,7 @@ class RigidBody;
 struct PhysicsMaterial {
     float friction = 0.0f;    //0.7f; //Range: [0.0,1.0]; How quickly an object comes to rest during a contact. Values closer to 1.0 cause resting contacts to lose velocity faster.
     float restitution = 0.0f; //0.3f; //Range: [-1.0f, 1.0f]; The bouncyness of a material. Negative values cause an object to gain velocity after a collision.
-    //float density = 1.0f; //Affect mass calculation for "bigger" objects.
+    float density = 1.0f; //Affect mass calculation for "bigger" objects.
     float massExponent = 1.0f; // 0.75f; //Raise final mass calculation to this exponent.
 };
 
