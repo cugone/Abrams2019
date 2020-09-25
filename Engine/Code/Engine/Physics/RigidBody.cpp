@@ -371,3 +371,14 @@ void RigidBody::SetAcceleration(const Vector2& newAccleration) noexcept {
     DebuggerPrintf("Set Acceleration was called with: %f,%f\n", newAccleration.x, newAccleration.y);
     acceleration = newAccleration;
 }
+
+Vector2 RigidBody::CalcForceVector() noexcept {
+    const auto inv_mass = GetInverseMass();
+    const auto linear_impulse_sum = std::accumulate(std::begin(linear_impulses), std::end(linear_impulses), Vector2::ZERO);
+
+    using LinearForceType = typename std::decay<decltype(*linear_forces.begin())>::type;
+    const auto linear_acc = [](const LinearForceType& a, const LinearForceType& b) { return std::make_pair(a.first + b.first, TimeUtils::FPSeconds::zero()); };
+    const auto linear_force_sum = std::accumulate(std::begin(linear_forces), std::end(linear_forces), std::make_pair(Vector2::ZERO, TimeUtils::FPSeconds::zero()), linear_acc);
+
+    return linear_impulse_sum + linear_force_sum.first;
+}

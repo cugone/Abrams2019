@@ -117,6 +117,8 @@ public:
 
     Matrix4 GetParentTransform() const;
 
+    Vector2 CalcForceVector() noexcept;
+
     void ApplyImpulse(const Vector2& impulse);
     void ApplyImpulse(const Vector2& direction, float magnitude);
 
