@@ -15,6 +15,9 @@ public:
     void attach(RigidBody* a, RigidBody* b) noexcept;
     void notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept override;
     void DebugRender(Renderer& renderer) const noexcept override;
+protected:
+private:
+
     bool ConstraintViolated() const noexcept override;
     void SolvePositionConstraint() const noexcept override;
     void SolveVelocityConstraint() const noexcept override;
@@ -25,4 +28,6 @@ private:
 
     std::pair<Vector2, Vector2> _anchors{};
     float _length{};
+
+    friend class PhysicsSystem;
 };

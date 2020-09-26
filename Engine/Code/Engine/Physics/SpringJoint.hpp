@@ -21,9 +21,6 @@ public:
 
     void notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept override;
     void DebugRender(Renderer& renderer) const noexcept override;
-    bool ConstraintViolated() const noexcept override;
-    void SolvePositionConstraint() const noexcept override;
-    void SolveVelocityConstraint() const noexcept override;
 
 protected:
 private:
@@ -31,4 +28,10 @@ private:
     float _restingLength = 1.0f;
     float _k = 1.0f;
     std::pair<Vector2, Vector2> _anchors{};
+
+    bool ConstraintViolated() const noexcept override;
+    void SolvePositionConstraint() const noexcept override;
+    void SolveVelocityConstraint() const noexcept override;
+
+    friend class PhysicsSystem;
 };
