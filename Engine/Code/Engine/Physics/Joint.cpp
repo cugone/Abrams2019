@@ -24,6 +24,10 @@ bool Joint::is_not_attached() const noexcept {
     return bodyA == nullptr && bodyB == nullptr;
 }
 
+void Joint::AttachedCanCollide(bool canCollide) noexcept {
+    attachedCanCollide = canCollide;
+}
+
 RigidBody* Joint::GetBodyA() const noexcept {
     return bodyA;
 }
