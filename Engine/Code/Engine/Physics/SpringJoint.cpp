@@ -30,28 +30,24 @@ void SpringJoint::notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noe
     const auto fb_pos = first_body == nullptr ? _anchors.first : first_body->GetPosition();
     const auto sb_pos = second_body == nullptr ? _anchors.second : second_body->GetPosition();
 
-    auto left_direction = fb_pos - sb_pos;
-    auto left_magnitude = left_direction.CalcLength();
-    if(MathUtils::IsEquivalent(std::abs(left_magnitude), _restingLength) == false) {
-        auto current_compression = left_magnitude - _restingLength;
-        if(current_compression <= -_compressionLength)
-            current_compression = -_compressionLength;
-        left_magnitude = _k * current_compression;
-        left_direction.Normalize();
+    const auto displacement_towards_first = fb_pos - sb_pos;
+    const auto direction_towards_first = displacement_towards_first.GetNormalize();
+    auto towards_first_magnitude = displacement_towards_first.CalcLength();
+    if(MathUtils::IsEquivalent(towards_first_magnitude, _restingLength) == false) {
+        const auto spring_displacement = towards_first_magnitude - _restingLength;
+        towards_first_magnitude = _k * spring_displacement;
     }
 
-    auto right_direction = sb_pos - fb_pos;
-    auto right_magnitude = right_direction.CalcLength();
-    if(MathUtils::IsEquivalent(std::abs(right_magnitude), _restingLength) == false) {
-        auto current_compression = right_magnitude - _restingLength;
-        if(current_compression <= -_compressionLength)
-            current_compression = -_compressionLength;
-        right_magnitude = _k * current_compression;
-        right_direction.Normalize();
+    const auto displacement_towards_second = sb_pos - fb_pos;
+    const auto direction_towards_second = displacement_towards_second.GetNormalize();
+    auto towards_second_magnitude = displacement_towards_second.CalcLength();
+    if(MathUtils::IsEquivalent(towards_second_magnitude, _restingLength) == false) {
+        auto spring_displacement = towards_second_magnitude - _restingLength;
+        towards_second_magnitude = _k * spring_displacement;
     }
 
-    first_body->ApplyForce(right_direction * right_magnitude, TimeUtils::FPSeconds::zero());
-    second_body->ApplyForce(left_direction * left_magnitude, TimeUtils::FPSeconds::zero());
+    first_body->ApplyImpulse(direction_towards_second * towards_second_magnitude);
+    second_body->ApplyImpulse(direction_towards_first * towards_first_magnitude);
 
 }
 
