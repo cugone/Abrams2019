@@ -6,6 +6,28 @@
 
 #include "Engine/Renderer/Renderer.hpp"
 
+void CableJoint::attach(RigidBody* a, RigidBody* b) noexcept {
+    auto posA = Vector2::ZERO;
+    auto posB = Vector2::ZERO;
+    if(a) {
+        attachA(a);
+        posA = a->GetPosition();
+    }
+    if(b) {
+        attachB(b);
+        posB = b->GetPosition();
+    }
+    _length = MathUtils::CalcDistance(posA, posB);
+}
+
+void CableJoint::attachA(RigidBody* a) noexcept {
+    bodyA = a;
+}
+
+void CableJoint::attachB(RigidBody* b) noexcept {
+    bodyB = b;
+}
+
 void CableJoint::notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept {
     auto* first_body = bodyA;
     auto* second_body = bodyB;
@@ -83,7 +105,7 @@ void CableJoint::SolvePositionConstraint() const noexcept {
     auto newPosition1 = fb_pos;
     auto newPosition2 = sb_pos;
 
-    if(_length < distance) { //Extension
+    if(_length < distance) {
         if(first_body) {
             const auto newDisplacement = mass1_ratio * direction_to_second * std::abs(_length - distance);
             const auto newPosition = first_body->GetPosition() + newDisplacement;
