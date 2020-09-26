@@ -89,10 +89,11 @@ public:
 protected:
 private:
     void UpdateBodiesInBounds(TimeUtils::FPSeconds deltaSeconds) noexcept;
+    void ApplyCustomAndJointForces(TimeUtils::FPSeconds deltaSeconds) noexcept;
+    void ApplyGravityAndDrag(TimeUtils::FPSeconds deltaSeconds) noexcept;
     std::vector<RigidBody*> BroadPhaseCollision(const AABB2& query_area) noexcept;
 
     using CollisionDataSet = std::set<CollisionData, std::equal_to<CollisionData>>;
-
     template<typename CollisionDetectionFunction, typename CollisionResolutionFunction>
     CollisionDataSet NarrowPhaseCollision(const std::vector<RigidBody*>& potential_collisions, CollisionDetectionFunction&& cd, CollisionResolutionFunction&& cr) noexcept {
         PROFILE_LOG_SCOPE_FUNCTION();
@@ -128,6 +129,9 @@ private:
     }
 
     void SolveCollision(const CollisionDataSet& actual_collisions) noexcept;
+    void SolveConstraints() noexcept;
+    void SolvePositionConstraints() noexcept;
+    void SolveVelocityConstraints() noexcept;
 
     Renderer& _renderer;
     PhysicsSystemDesc _desc{};

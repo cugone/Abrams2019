@@ -108,6 +108,8 @@ void PhysicsSystem::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
         return;
     }
     _deltaSeconds = deltaSeconds;
+    ApplyGravityAndDrag(deltaSeconds);
+    ApplyCustomAndJointForces(deltaSeconds);
     UpdateBodiesInBounds(deltaSeconds);
     const auto camera_position = Vector2(_renderer.GetCamera().GetPosition());
     const auto half_extents = Vector2(_renderer.GetOutput()->GetDimensions()) * 0.5f;
@@ -115,18 +117,11 @@ void PhysicsSystem::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
     const auto potential_collisions = BroadPhaseCollision(query_area);
     //const auto actual_collisions = NarrowPhaseCollision(potential_collisions, PhysicsUtils::GJK, PhysicsUtils::EPA);
     SolveCollision({}/*actual_collisions*/);
+    SolveConstraints();
 }
 
 void PhysicsSystem::UpdateBodiesInBounds(TimeUtils::FPSeconds deltaSeconds) noexcept {
     PROFILE_LOG_SCOPE_FUNCTION();
-    _gravityFG.notify(deltaSeconds);
-    _dragFG.notify(deltaSeconds);
-    for(auto&& fg : _forceGenerators) {
-        fg->notify(deltaSeconds);
-    }
-    for(auto&& joint : _joints) {
-        joint->notify(deltaSeconds);
-    }
     for(auto body : _rigidBodies) {
         if(!body) {
             continue;
@@ -139,6 +134,20 @@ void PhysicsSystem::UpdateBodiesInBounds(TimeUtils::FPSeconds deltaSeconds) noex
         //    body->FellOutOfWorld();
         //}
     }
+}
+
+void PhysicsSystem::ApplyCustomAndJointForces(TimeUtils::FPSeconds deltaSeconds) noexcept {
+    for(auto&& fg : _forceGenerators) {
+        fg->notify(deltaSeconds);
+    }
+    for(auto&& joint : _joints) {
+        joint->notify(deltaSeconds);
+    }
+}
+
+void PhysicsSystem::ApplyGravityAndDrag(TimeUtils::FPSeconds deltaSeconds) noexcept {
+    _gravityFG.notify(deltaSeconds);
+    _dragFG.notify(deltaSeconds);
 }
 
 std::vector<RigidBody*> PhysicsSystem::BroadPhaseCollision(const AABB2& /*query_area*/) noexcept {
@@ -193,6 +202,23 @@ void PhysicsSystem::SolveCollision(const PhysicsSystem::CollisionDataSet& actual
         collision.a->ApplyForceAt(aPos, aForceContribution, TimeUtils::FPSeconds::zero());
         collision.b->ApplyForceAt(bPos, bForceContribution, TimeUtils::FPSeconds::zero());
     }
+}
+
+void PhysicsSystem::SolveConstraints() noexcept {
+    for(int i = 0; i < _desc.position_solver_iterations; ++i) {
+        SolvePositionConstraints();
+    }
+    for(int i = 0; i < _desc.velocity_solver_iterations; ++i) {
+        SolveVelocityConstraints();
+    }
+}
+
+void PhysicsSystem::SolvePositionConstraints() noexcept {
+    /* DO NOTHING */
+}
+
+void PhysicsSystem::SolveVelocityConstraints() noexcept {
+    /* DO NOTHING */
 }
 
 void PhysicsSystem::Render() const noexcept {
