@@ -32,8 +32,8 @@ struct PhysicsSystemDesc {
     Vector2 dragK1K2{1.0f, 1.0f};
     float world_to_meters{100.0f};
     float kill_plane_distance{10000.0f};
-    int position_solver_iterations{2};
-    int velocity_solver_iterations{2};
+    int position_solver_iterations{6};
+    int velocity_solver_iterations{8};
 };
 
 class PhysicsSystem {
@@ -129,9 +129,9 @@ private:
     }
 
     void SolveCollision(const CollisionDataSet& actual_collisions) noexcept;
-    void SolveConstraints() noexcept;
-    void SolvePositionConstraints() noexcept;
-    void SolveVelocityConstraints() noexcept;
+    void SolveConstraints() const noexcept;
+    void SolvePositionConstraints() const noexcept;
+    void SolveVelocityConstraints() const noexcept;
 
     Renderer& _renderer;
     PhysicsSystemDesc _desc{};

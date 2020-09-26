@@ -25,6 +25,9 @@ public:
     RigidBody* GetBodyA() const noexcept;
     RigidBody* GetBodyB() const noexcept;
 
+    virtual bool ConstraintViolated() const noexcept = 0;
+    virtual void SolvePositionConstraint() const noexcept = 0;
+    virtual void SolveVelocityConstraint() const noexcept = 0;
 protected:
     RigidBody* bodyA{};
     RigidBody* bodyB{};

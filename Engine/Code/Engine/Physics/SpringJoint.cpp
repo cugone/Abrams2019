@@ -66,3 +66,15 @@ void SpringJoint::DebugRender(Renderer& renderer) const noexcept {
     renderer.SetModelMatrix(Matrix4::I);
     renderer.DrawLine2D(fb_pos, sb_pos);
 }
+
+bool SpringJoint::ConstraintViolated() const noexcept {
+    return false;
+}
+
+void SpringJoint::SolvePositionConstraint() const noexcept {
+    /* DO NOTHING */
+}
+
+void SpringJoint::SolveVelocityConstraint() const noexcept {
+    /* DO NOTHING */
+}

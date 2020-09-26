@@ -110,7 +110,6 @@ void PhysicsSystem::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
     _deltaSeconds = deltaSeconds;
     ApplyGravityAndDrag(deltaSeconds);
     ApplyCustomAndJointForces(deltaSeconds);
-    UpdateBodiesInBounds(deltaSeconds);
     const auto camera_position = Vector2(_renderer.GetCamera().GetPosition());
     const auto half_extents = Vector2(_renderer.GetOutput()->GetDimensions()) * 0.5f;
     const auto query_area = AABB2(camera_position - half_extents, camera_position + half_extents);
@@ -118,6 +117,7 @@ void PhysicsSystem::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
     //const auto actual_collisions = NarrowPhaseCollision(potential_collisions, PhysicsUtils::GJK, PhysicsUtils::EPA);
     SolveCollision({}/*actual_collisions*/);
     SolveConstraints();
+    UpdateBodiesInBounds(deltaSeconds);
 }
 
 void PhysicsSystem::UpdateBodiesInBounds(TimeUtils::FPSeconds deltaSeconds) noexcept {
@@ -179,8 +179,6 @@ std::vector<RigidBody*> PhysicsSystem::BroadPhaseCollision(const AABB2& /*query_
 }
 
 void PhysicsSystem::SolveCollision(const PhysicsSystem::CollisionDataSet& actual_collisions) noexcept {
-    const auto maxVSolves = _desc.velocity_solver_iterations;
-    const auto maxPSolves = _desc.position_solver_iterations;
     for(auto& collision : actual_collisions) {
         auto* a = collision.a;
         auto* b = collision.b;
@@ -204,7 +202,7 @@ void PhysicsSystem::SolveCollision(const PhysicsSystem::CollisionDataSet& actual
     }
 }
 
-void PhysicsSystem::SolveConstraints() noexcept {
+void PhysicsSystem::SolveConstraints() const noexcept {
     for(int i = 0; i < _desc.position_solver_iterations; ++i) {
         SolvePositionConstraints();
     }
@@ -213,12 +211,20 @@ void PhysicsSystem::SolveConstraints() noexcept {
     }
 }
 
-void PhysicsSystem::SolvePositionConstraints() noexcept {
-    /* DO NOTHING */
+void PhysicsSystem::SolvePositionConstraints() const noexcept {
+    for(auto&& joint : _joints) {
+        if(joint->ConstraintViolated()) {
+            joint->SolvePositionConstraint();
+        }
+    }
 }
 
-void PhysicsSystem::SolveVelocityConstraints() noexcept {
-    /* DO NOTHING */
+void PhysicsSystem::SolveVelocityConstraints() const noexcept {
+    for(auto&& joint : _joints) {
+        if(joint->ConstraintViolated()) {
+            joint->SolveVelocityConstraint();
+        }
+    }
 }
 
 void PhysicsSystem::Render() const noexcept {
