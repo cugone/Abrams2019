@@ -28,7 +28,11 @@ void RodJoint::attachB(RigidBody* b) noexcept {
 }
 
 void RodJoint::SetAnchors(const Vector2& a, const Vector2& b) noexcept {
-    _anchors = std::make_pair(a, b);
+    //TODO: Local anchors maybe?
+    const auto posA = bodyA ? bodyA->GetPosition() : a;
+    const auto posB = bodyB ? bodyB->GetPosition() : b;
+    _length = MathUtils::CalcDistance(posA, posB);
+    _anchors = std::make_pair(posA, posB);
 }
 
 void RodJoint::notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept {

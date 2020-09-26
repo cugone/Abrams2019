@@ -15,6 +15,8 @@ public:
     void attach(RigidBody* a, RigidBody* b) noexcept;
     void notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept override;
     void DebugRender(Renderer& renderer) const noexcept override;
+    void SetAnchors(const Vector2& a, const Vector2& b) noexcept;
+
 protected:
 private:
     void attachA(RigidBody* a) noexcept;
@@ -23,10 +25,6 @@ private:
     bool ConstraintViolated() const noexcept override;
     void SolvePositionConstraint() const noexcept override;
     void SolveVelocityConstraint() const noexcept override;
-
-protected:
-private:
-    void SetAnchors(const Vector2& a, const Vector2& b) noexcept;
 
     std::pair<Vector2, Vector2> _anchors{};
     float _length{};
