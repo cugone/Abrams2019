@@ -457,6 +457,9 @@
     <ClCompile Include="Physics\RodJoint.cpp">
       <Filter>Physics</Filter>
     </ClCompile>
+    <ClCompile Include="Physics\CableJoint.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vector2.hpp">
@@ -883,6 +886,9 @@
       <Filter>Physics</Filter>
     </ClInclude>
     <ClInclude Include="Physics\RodJoint.hpp">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics\CableJoint.hpp">
       <Filter>Physics</Filter>
     </ClInclude>
   </ItemGroup>

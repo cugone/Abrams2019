@@ -84,6 +84,7 @@
     <ClCompile Include="Math\Vector4.cpp" />
     <ClCompile Include="Networking\Address.cpp" />
     <ClCompile Include="Networking\NetUtils.cpp" />
+    <ClCompile Include="Physics\CableJoint.cpp" />
     <ClCompile Include="Physics\Collider.cpp" />
     <ClCompile Include="Physics\DragForceGenerator.cpp" />
     <ClCompile Include="Physics\ForceGenerator.cpp" />
@@ -226,6 +227,7 @@
     <ClInclude Include="Memory\MemoryPool.hpp" />
     <ClInclude Include="Networking\Address.hpp" />
     <ClInclude Include="Networking\NetUtils.hpp" />
+    <ClInclude Include="Physics\CableJoint.hpp" />
     <ClInclude Include="Physics\Collider.hpp" />
     <ClInclude Include="Physics\DragForceGenerator.hpp" />
     <ClInclude Include="Physics\ForceGenerator.hpp" />
