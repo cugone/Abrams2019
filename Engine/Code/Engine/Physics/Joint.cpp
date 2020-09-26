@@ -23,3 +23,11 @@ void Joint::detach_all() noexcept {
 bool Joint::is_not_attached() const noexcept {
     return bodyA == nullptr && bodyB == nullptr;
 }
+
+RigidBody* Joint::GetBodyA() const noexcept {
+    return bodyA;
+}
+
+RigidBody* Joint::GetBodyB() const noexcept {
+    return bodyB;
+}

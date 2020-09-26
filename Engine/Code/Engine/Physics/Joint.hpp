@@ -21,6 +21,10 @@ public:
 
     virtual void notify([[maybe_unused]]TimeUtils::FPSeconds deltaSeconds) noexcept = 0;
     virtual void DebugRender(Renderer& renderer) const noexcept = 0;
+
+    RigidBody* GetBodyA() const noexcept;
+    RigidBody* GetBodyB() const noexcept;
+
 protected:
     RigidBody* bodyA{};
     RigidBody* bodyB{};
