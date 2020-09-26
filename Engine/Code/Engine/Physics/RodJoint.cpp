@@ -6,8 +6,25 @@
 #include "Engine/Math/MathUtils.hpp"
 
 void RodJoint::attach(RigidBody* a, RigidBody* b) noexcept {
-    Joint::attach(a, b);
-    _length = MathUtils::CalcDistance(a->GetPosition(), b->GetPosition());
+    auto posA = Vector2::ZERO;
+    auto posB = Vector2::ZERO;
+    if(a) {
+        attachA(a);
+        posA = a->GetPosition();
+    }
+    if(b) {
+        attachB(b);
+        posB = b->GetPosition();
+    }
+    _length = MathUtils::CalcDistance(posA, posB);
+}
+
+void RodJoint::attachA(RigidBody* a) noexcept {
+    bodyA = a;
+}
+
+void RodJoint::attachB(RigidBody* b) noexcept {
+    bodyB = b;
 }
 
 void RodJoint::SetAnchors(const Vector2& a, const Vector2& b) noexcept {
