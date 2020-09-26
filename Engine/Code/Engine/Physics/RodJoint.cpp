@@ -37,20 +37,20 @@ void RodJoint::notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexce
     if(distance < _length) { //Compression
         if(first_body) {
             //first_body->ApplyForce(direction_to_first * mass1_ratio, TimeUtils::FPSeconds::zero());
-            //first_body->ApplyImpulse(direction_to_first * mass1_ratio);
+            first_body->ApplyImpulse(direction_to_first * mass1_ratio);
         }
         if(second_body) {
             //second_body->ApplyForce(direction_to_second * mass2_ratio, TimeUtils::FPSeconds::zero());
-            //second_body->ApplyImpulse(direction_to_second * mass2_ratio);
+            second_body->ApplyImpulse(direction_to_second * mass2_ratio);
         }
     } else if(_length < distance) { //Extension
         if(first_body) {
             //first_body->ApplyForce(direction_to_second * mass1_ratio, TimeUtils::FPSeconds::zero());
-            //first_body->ApplyImpulse(direction_to_second * mass1_ratio);
+            first_body->ApplyImpulse(direction_to_second * mass1_ratio);
         }
         if(second_body) {
             //second_body->ApplyForce(direction_to_first * mass2_ratio, TimeUtils::FPSeconds::zero());
-            //second_body->ApplyImpulse(direction_to_first * mass2_ratio);
+            second_body->ApplyImpulse(direction_to_first * mass2_ratio);
         }
     }
 }
@@ -133,5 +133,40 @@ void RodJoint::SolvePositionConstraint() const noexcept {
 }
 
 void RodJoint::SolveVelocityConstraint() const noexcept {
-    /* DO NOTHING */
+    auto* first_body = bodyA;
+    auto* second_body = bodyB;
+    if(first_body == nullptr && second_body == nullptr) {
+        return;
+    }
+
+    const auto fb_pos = first_body == nullptr ? _anchors.first : first_body->GetPosition();
+    const auto sb_pos = second_body == nullptr ? _anchors.second : second_body->GetPosition();
+
+    const auto distance = MathUtils::CalcDistance(fb_pos, sb_pos);
+    const auto displacement_towards_first = fb_pos - sb_pos;
+    const auto displacement_towards_second = sb_pos - fb_pos;
+    const auto direction_to_first = displacement_towards_first.GetNormalize();
+    const auto direction_to_second = displacement_towards_second.GetNormalize();
+    const auto m1 = (first_body ? first_body->GetMass() : 0.0f);
+    const auto m2 = (second_body ? second_body->GetMass() : 0.0f);
+    const auto mass_sum = m1 + m2;
+    const auto mass1_ratio = m1 / mass_sum;
+    const auto mass2_ratio = m2 / mass_sum;
+    auto v1 = first_body ? first_body->GetVelocity() : Vector2::ZERO;
+    auto v2 = second_body ? second_body->GetVelocity() : Vector2::ZERO;
+    auto newVelocity1 = v1;
+    auto newVelocity2 = v2;
+    if(distance < _length) { //Compression
+        newVelocity1 = mass1_ratio * MathUtils::Reject(v1, direction_to_first);
+        newVelocity2 = mass2_ratio * MathUtils::Reject(v2, direction_to_second);
+    } else if(_length < distance) { //Extension
+        newVelocity1 = mass1_ratio * MathUtils::Reject(v1, direction_to_second);
+        newVelocity2 = mass2_ratio * MathUtils::Reject(v2, direction_to_first);
+    }
+    if(first_body) {
+        first_body->SetVelocity(newVelocity1);
+    }
+    if(second_body) {
+        second_body->SetVelocity(newVelocity2);
+    }
 }
