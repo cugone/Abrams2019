@@ -73,15 +73,13 @@ void RodJoint::Notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexce
 }
 
 void RodJoint::DebugRender(Renderer& renderer) const noexcept {
-    auto* first_body = _def.rigidBodyA;
-    auto* second_body = _def.rigidBodyB;
-    if(!(first_body || second_body)) {
+    if(!(_def.rigidBodyA || _def.rigidBodyB)) {
         return;
     }
-    const auto fb_pos = _def.worldAnchorA;
-    const auto sb_pos = _def.worldAnchorB;
+    const auto posA = GetAnchorA();
+    const auto posB = GetAnchorB();
     renderer.SetModelMatrix(Matrix4::I);
-    renderer.DrawLine2D(fb_pos, sb_pos);
+    renderer.DrawLine2D(posA, posB);
 }
 
 void RodJoint::Attach(RigidBody* a, RigidBody* b, Vector2 localAnchorA /*= Vector2::ZERO*/, Vector2 localAnchorB /*= Vector2::ZERO*/) noexcept {

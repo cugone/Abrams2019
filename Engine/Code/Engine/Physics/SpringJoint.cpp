@@ -61,15 +61,13 @@ void SpringJoint::Notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noe
 }
 
 void SpringJoint::DebugRender(Renderer& renderer) const noexcept {
-    auto* first_body = _def.rigidBodyA;
-    auto* second_body = _def.rigidBodyB;
-    if(!(first_body || second_body)) {
+    if(!(_def.rigidBodyA || _def.rigidBodyB)) {
         return;
     }
-    const auto fb_pos = first_body == nullptr ? _def.localAnchorA : first_body->GetPosition() + first_body->CalcDimensions() * 0.5f * _def.localAnchorA;
-    const auto sb_pos = second_body == nullptr ? _def.localAnchorB : second_body->GetPosition() + second_body->CalcDimensions() * 0.5f * _def.localAnchorB;
+    const auto posA = GetAnchorA();
+    const auto posB = GetAnchorB();
     renderer.SetModelMatrix(Matrix4::I);
-    renderer.DrawLine2D(fb_pos, sb_pos);
+    renderer.DrawLine2D(posA, posB);
 }
 
 void SpringJoint::Attach(RigidBody* a, RigidBody* b, Vector2 localAnchorA /*= Vector2::ZERO*/, Vector2 localAnchorB /*= Vector2::ZERO*/) noexcept {

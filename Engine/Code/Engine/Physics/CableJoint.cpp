@@ -65,8 +65,10 @@ void CableJoint::DebugRender(Renderer& renderer) const noexcept {
     if(!(_def.rigidBodyA || _def.rigidBodyB)) {
         return;
     }
+    const auto posA = GetAnchorA();
+    const auto posB = GetAnchorB();
     renderer.SetModelMatrix(Matrix4::I);
-    renderer.DrawLine2D(_def.worldAnchorA, _def.worldAnchorB);
+    renderer.DrawLine2D(posA, posB);
 }
 
 void CableJoint::Attach(RigidBody* a, RigidBody* b, Vector2 localAnchorA /*= Vector2::ZERO*/, Vector2 localAnchorB /*= Vector2::ZERO*/) noexcept {
