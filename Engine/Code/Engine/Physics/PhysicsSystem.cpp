@@ -141,7 +141,7 @@ void PhysicsSystem::ApplyCustomAndJointForces(TimeUtils::FPSeconds deltaSeconds)
         fg->notify(deltaSeconds);
     }
     for(auto&& joint : _joints) {
-        joint->notify(deltaSeconds);
+        joint->Notify(deltaSeconds);
     }
 }
 
@@ -259,7 +259,7 @@ void PhysicsSystem::EndFrame() noexcept {
             fg->detach(r);
         }
         for(auto&& joint : _joints) {
-            joint->detach(r);
+            joint->Detach(r);
         }
     }
     _pending_removal.clear();
@@ -297,7 +297,7 @@ void PhysicsSystem::RemoveAllObjectsImmediately() noexcept {
         fg->detach_all();
     }
     for(auto&& joint : _joints) {
-        joint->detach_all();
+        joint->DetachAll();
     }
 }
 

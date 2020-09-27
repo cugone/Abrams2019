@@ -20,7 +20,7 @@ void SpringJoint::SetRestingLength(float length) noexcept {
     _restingLength = length;
 }
 
-void SpringJoint::notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept {
+void SpringJoint::Notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept {
     auto* first_body = bodyA;
     auto* second_body = bodyB;
     if(first_body == nullptr && second_body == nullptr) {

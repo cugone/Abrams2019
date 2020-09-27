@@ -74,7 +74,7 @@ public:
     template<typename JointType>
     JointType* CreateJoint(RigidBody* a, RigidBody* b) {
         auto* newJoint = new JointType{};
-        newJoint->attach(a, b);
+        newJoint->Attach(a, b);
         _joints.emplace_back(newJoint);
         return newJoint;
     }

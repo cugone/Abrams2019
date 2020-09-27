@@ -19,7 +19,7 @@ public:
     void SetMinimumCompressionDistance(float distance) noexcept;
     void SetRestingLength(float length) noexcept;
 
-    void notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept override;
+    void Notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept override;
     void DebugRender(Renderer& renderer) const noexcept override;
 
 protected:

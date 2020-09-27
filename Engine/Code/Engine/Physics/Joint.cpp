@@ -1,12 +1,12 @@
 #include "Engine/Physics/Joint.hpp"
 
 
-void Joint::attach(RigidBody* a, RigidBody* b) noexcept {
+void Joint::Attach(RigidBody* a, RigidBody* b) noexcept {
     bodyA = a;
     bodyB = b;
 }
 
-void Joint::detach(RigidBody* body) noexcept {
+void Joint::Detach(RigidBody* body) noexcept {
     if(bodyA == body) {
         bodyA = nullptr;
     }
@@ -15,12 +15,12 @@ void Joint::detach(RigidBody* body) noexcept {
     }
 }
 
-void Joint::detach_all() noexcept {
+void Joint::DetachAll() noexcept {
     bodyA = nullptr;
     bodyB = nullptr;
 }
 
-bool Joint::is_not_attached() const noexcept {
+bool Joint::IsNotAttached() const noexcept {
     return bodyA == nullptr && bodyB == nullptr;
 }
 

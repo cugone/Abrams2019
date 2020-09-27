@@ -14,14 +14,14 @@ public:
     Joint& operator=(Joint&& other) = default;
     virtual ~Joint() = default;
 
-    void attach(RigidBody* a, RigidBody* b) noexcept;
-    void detach(RigidBody* body) noexcept;
-    void detach_all() noexcept;
-    bool is_not_attached() const noexcept;
+    void Attach(RigidBody* a, RigidBody* b) noexcept;
+    void Detach(RigidBody* body) noexcept;
+    void DetachAll() noexcept;
+    bool IsNotAttached() const noexcept;
 
     void AttachedCanCollide(bool canCollide) noexcept;
 
-    virtual void notify([[maybe_unused]]TimeUtils::FPSeconds deltaSeconds) noexcept = 0;
+    virtual void Notify([[maybe_unused]]TimeUtils::FPSeconds deltaSeconds) noexcept = 0;
     virtual void DebugRender(Renderer& renderer) const noexcept = 0;
 
     RigidBody* GetBodyA() const noexcept;

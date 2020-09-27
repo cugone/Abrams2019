@@ -5,7 +5,7 @@
 
 #include "Engine/Math/MathUtils.hpp"
 
-void RodJoint::attach(RigidBody* a, RigidBody* b) noexcept {
+void RodJoint::Attach(RigidBody* a, RigidBody* b) noexcept {
     auto posA = Vector2::ZERO;
     auto posB = Vector2::ZERO;
     if(a) {
@@ -35,7 +35,7 @@ void RodJoint::SetAnchors(const Vector2& a, const Vector2& b) noexcept {
     _anchors = std::make_pair(posA, posB);
 }
 
-void RodJoint::notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept {
+void RodJoint::Notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept {
     auto* first_body = bodyA;
     auto* second_body = bodyB;
     if(first_body == nullptr && second_body == nullptr) {

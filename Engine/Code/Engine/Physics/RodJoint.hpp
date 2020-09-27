@@ -12,8 +12,8 @@ public:
     RodJoint& operator=(RodJoint&& other) = default;
     virtual ~RodJoint() = default;
 
-    void attach(RigidBody* a, RigidBody* b) noexcept;
-    void notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept override;
+    void Attach(RigidBody* a, RigidBody* b) noexcept;
+    void Notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept override;
     void DebugRender(Renderer& renderer) const noexcept override;
     void SetAnchors(const Vector2& a, const Vector2& b) noexcept;
 

@@ -6,7 +6,7 @@
 
 #include "Engine/Renderer/Renderer.hpp"
 
-void CableJoint::attach(RigidBody* a, RigidBody* b) noexcept {
+void CableJoint::Attach(RigidBody* a, RigidBody* b) noexcept {
     auto posA = Vector2::ZERO;
     auto posB = Vector2::ZERO;
     if(a) {
@@ -28,7 +28,7 @@ void CableJoint::attachB(RigidBody* b) noexcept {
     bodyB = b;
 }
 
-void CableJoint::notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept {
+void CableJoint::Notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept {
     auto* first_body = bodyA;
     auto* second_body = bodyB;
     if(first_body == nullptr && second_body == nullptr) {
