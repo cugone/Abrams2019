@@ -4,7 +4,7 @@
 #include "Engine/Physics/Joint.hpp"
 
 struct RodJointDef : public JointDef {
-    RodJointDef() { type = JointType::Rod; };
+    RodJointDef() = default;
     float length{};
 };
 

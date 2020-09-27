@@ -7,16 +7,8 @@
 class RigidBody;
 class Renderer;
 
-enum class JointType {
-    Unknown
-    ,Spring
-    ,Rod
-    ,Cable
-};
-
 struct JointDef {
     virtual ~JointDef() = default;
-    JointType type{JointType::Unknown};
     RigidBody* rigidBodyA{};
     RigidBody* rigidBodyB{};
     Vector2 localAnchorA{};

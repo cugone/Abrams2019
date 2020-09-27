@@ -8,7 +8,6 @@
 #include "Engine/Math/MathUtils.hpp"
 
 RodJoint::RodJoint(const RodJointDef& def) noexcept {
-    _def.type = def.type;
     _def.rigidBodyA = def.rigidBodyA;
     _def.rigidBodyB = def.rigidBodyB;
     _def.localAnchorA = def.localAnchorA;

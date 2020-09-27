@@ -8,7 +8,6 @@
 #include "Engine/Renderer/Renderer.hpp"
 
 CableJoint::CableJoint(const CableJointDef& def) noexcept {
-    _def.type = def.type;
     _def.rigidBodyA = def.rigidBodyA;
     _def.rigidBodyB = def.rigidBodyB;
     _def.localAnchorA = def.localAnchorA;

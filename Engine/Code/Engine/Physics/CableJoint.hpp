@@ -7,7 +7,7 @@
 #include "Engine/Physics/Joint.hpp"
 
 struct CableJointDef : public JointDef {
-    CableJointDef() { type = JointType::Cable; };
+    CableJointDef() = default;
     float length{};
 };
 
