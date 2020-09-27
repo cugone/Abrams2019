@@ -11,6 +11,9 @@
 #include "Engine/Physics/GravityForceGenerator.hpp"
 #include "Engine/Physics/DragForceGenerator.hpp"
 #include "Engine/Physics/Joint.hpp"
+#include "Engine/Physics/SpringJoint.hpp"
+#include "Engine/Physics/RodJoint.hpp"
+#include "Engine/Physics/CableJoint.hpp"
 
 #include "Engine/Profiling/ProfileLogScope.hpp"
 
@@ -71,10 +74,18 @@ public:
     void EnableDrag(bool isDragEnabled) noexcept;
     void EnablePhysics(bool isPhysicsEnabled) noexcept;
 
-    template<typename JointType>
-    JointType* CreateJoint(RigidBody* a, RigidBody* b) {
-        auto* newJoint = new JointType{};
-        newJoint->Attach(a, b);
+    template<typename JointDefType>
+    Joint* CreateJoint(const JointDefType& defType) {
+        Joint* newJoint{nullptr};
+        if constexpr (std::is_same_v<JointDefType,SpringJointDef>) {
+            newJoint = new SpringJoint(defType);
+        } else if constexpr (std::is_same_v<JointDefType,RodJointDef>) {
+            newJoint = new RodJoint(defType);
+        } else if constexpr (std::is_same_v<JointDefType, CableJointDef>) {
+            newJoint = new CableJoint(defType);
+        } else {
+            static_assert(true, "CreateJoint received undeclared type.");
+        }
         _joints.emplace_back(newJoint);
         return newJoint;
     }

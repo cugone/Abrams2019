@@ -2,41 +2,44 @@
 
 #include "Engine/Math/MathUtils.hpp"
 
+#include "Engine/Physics/PhysicsUtils.hpp"
 #include "Engine/Physics/RigidBody.hpp"
 
 #include "Engine/Renderer/Renderer.hpp"
 
-void CableJoint::Attach(RigidBody* a, RigidBody* b) noexcept {
-    auto posA = Vector2::ZERO;
-    auto posB = Vector2::ZERO;
-    if(a) {
-        attachA(a);
-        posA = a->GetPosition();
+CableJoint::CableJoint(const CableJointDef& def) noexcept {
+    _def.type = def.type;
+    _def.rigidBodyA = def.rigidBodyA;
+    _def.rigidBodyB = def.rigidBodyB;
+    _def.localAnchorA = def.localAnchorA;
+    _def.localAnchorB = def.localAnchorB;
+    _def.linearDamping = def.linearDamping;
+    _def.angularDamping = def.angularDamping;
+    _def.attachedCollidable = def.attachedCollidable;
+    _def.breakForce = def.breakForce;
+    _def.breakTorque = def.breakTorque;
+    auto posA = _def.localAnchorA;
+    auto posB = _def.localAnchorB;
+    if(_def.rigidBodyA) {
+        posA = _def.rigidBodyA->GetPosition() + (_def.rigidBodyA->CalcDimensions() * 0.5f * _def.localAnchorA);
     }
-    if(b) {
-        attachB(b);
-        posB = b->GetPosition();
+    if(_def.rigidBodyB) {
+        posB = _def.rigidBodyB->GetPosition() + (_def.rigidBodyB->CalcDimensions() * 0.5f * _def.localAnchorB);
     }
-    _length = MathUtils::CalcDistance(posA, posB);
-}
-
-void CableJoint::attachA(RigidBody* a) noexcept {
-    bodyA = a;
-}
-
-void CableJoint::attachB(RigidBody* b) noexcept {
-    bodyB = b;
+    _def.worldAnchorA = posA;
+    _def.worldAnchorB = posB;
+    _def.length = def.length;
 }
 
 void CableJoint::Notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept {
-    auto* first_body = bodyA;
-    auto* second_body = bodyB;
+    auto* first_body =  _def.rigidBodyA;
+    auto* second_body = _def.rigidBodyB;
     if(first_body == nullptr && second_body == nullptr) {
         return;
     }
 
-    const auto fb_pos = first_body == nullptr ? _anchors.first : first_body->GetPosition();
-    const auto sb_pos = second_body == nullptr ? _anchors.second : second_body->GetPosition();
+    const auto fb_pos = _def.worldAnchorA;
+    const auto sb_pos = _def.worldAnchorB;
 
     const auto distance = MathUtils::CalcDistance(fb_pos, sb_pos);
     const auto displacement_towards_first = fb_pos - sb_pos;
@@ -48,8 +51,8 @@ void CableJoint::Notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noex
     const auto mass_sum = m1 + m2;
     const auto mass1_ratio = m1 / mass_sum;
     const auto mass2_ratio = m2 / mass_sum;
-
-    if(_length < distance) {
+    const auto length = _def.length;
+    if(length < distance) {
         if(first_body) {
             first_body->ApplyImpulse(direction_to_second * mass1_ratio);
         }
@@ -60,37 +63,75 @@ void CableJoint::Notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noex
 }
 
 void CableJoint::DebugRender(Renderer& renderer) const noexcept {
-    auto* first_body = bodyA;
-    auto* second_body = bodyB;
-    if(!(first_body || second_body)) {
+    if(!(_def.rigidBodyA || _def.rigidBodyB)) {
         return;
     }
-    const auto fb_pos = first_body == nullptr ? _anchors.first : first_body->GetPosition();
-    const auto sb_pos = second_body == nullptr ? _anchors.second : second_body->GetPosition();
     renderer.SetModelMatrix(Matrix4::I);
-    renderer.DrawLine2D(fb_pos, sb_pos);
+    renderer.DrawLine2D(_def.worldAnchorA, _def.worldAnchorB);
+}
+
+void CableJoint::Attach(RigidBody* a, RigidBody* b, Vector2 localAnchorA /*= Vector2::ZERO*/, Vector2 localAnchorB /*= Vector2::ZERO*/) noexcept {
+    _def.rigidBodyA = a;
+    _def.rigidBodyB = b;
+    _def.localAnchorA = localAnchorA;
+    _def.localAnchorB = localAnchorB;
+    if(a) {
+        _def.worldAnchorA = _def.rigidBodyA->GetPosition() + (_def.rigidBodyA->CalcDimensions() * 0.5f * _def.localAnchorA);
+    }
+    if(b) {
+        _def.worldAnchorB = _def.rigidBodyB->GetPosition() + (_def.rigidBodyB->CalcDimensions() * 0.5f * _def.localAnchorB);
+    }
+}
+
+void CableJoint::Detach(RigidBody* body) noexcept {
+    if(body == _def.rigidBodyA) {
+        _def.rigidBodyA = nullptr;
+    } else if(body == _def.rigidBodyB) {
+        _def.rigidBodyB = nullptr;
+    }
+}
+
+void CableJoint::DetachAll() noexcept {
+    _def.rigidBodyA = nullptr;
+    _def.rigidBodyB = nullptr;
+}
+
+bool CableJoint::IsNotAttached() const noexcept {
+    return _def.rigidBodyA == nullptr || _def.rigidBodyB == nullptr;
+}
+
+RigidBody* CableJoint::GetBodyA() const noexcept {
+    return _def.rigidBodyA;
+}
+
+RigidBody* CableJoint::GetBodyB() const noexcept {
+    return _def.rigidBodyB;
+}
+
+Vector2 CableJoint::GetAnchorA() const noexcept {
+    return _def.rigidBodyA ? _def.rigidBodyA->GetPosition() + (_def.rigidBodyA->CalcDimensions() * 0.5f * _def.localAnchorA) : _def.worldAnchorA;
+}
+
+Vector2 CableJoint::GetAnchorB() const noexcept {
+    return _def.rigidBodyB ? _def.rigidBodyB->GetPosition() + (_def.rigidBodyB->CalcDimensions() * 0.5f * _def.localAnchorB) : _def.worldAnchorB;
 }
 
 bool CableJoint::ConstraintViolated() const noexcept {
     const bool violated = [this]() -> const bool {
-        const auto* bodyA = GetBodyA();
-        const auto* bodyB = GetBodyB();
-        const auto posA = bodyA ? bodyA->GetPosition() : _anchors.first;
-        const auto posB = bodyB ? bodyB->GetPosition() : _anchors.second;
-        const auto distance = MathUtils::CalcDistance(posA, posB);
-        return _length < distance;
+        const auto distance = MathUtils::CalcDistance(_def.worldAnchorA, _def.worldAnchorB);
+        return _def.length < distance;
     }();
     return violated;
 }
 
 void CableJoint::SolvePositionConstraint() const noexcept {
-    auto* first_body = bodyA;
-    auto* second_body = bodyB;
+    auto* first_body =  GetBodyA();
+    auto* second_body = GetBodyB();
     if(first_body == nullptr && second_body == nullptr) {
         return;
     }
-    const auto fb_pos = first_body == nullptr ? _anchors.first : first_body->GetPosition();
-    const auto sb_pos = second_body == nullptr ? _anchors.second : second_body->GetPosition();
+    const auto fb_pos = GetAnchorA();
+    const auto sb_pos = GetAnchorB();
 
     const auto distance = MathUtils::CalcDistance(fb_pos, sb_pos);
     const auto displacement_towards_first = fb_pos - sb_pos;
@@ -102,17 +143,17 @@ void CableJoint::SolvePositionConstraint() const noexcept {
     const auto mass_sum = m1 + m2;
     const auto mass1_ratio = m1 / mass_sum;
     const auto mass2_ratio = m2 / mass_sum;
+    const auto length = _def.length;
     auto newPosition1 = fb_pos;
     auto newPosition2 = sb_pos;
-
-    if(_length < distance) {
+    if(length < distance) {
         if(first_body) {
-            const auto newDisplacement = mass1_ratio * direction_to_second * std::abs(_length - distance);
+            const auto newDisplacement = mass1_ratio * direction_to_second * std::abs(length - distance);
             const auto newPosition = first_body->GetPosition() + newDisplacement;
             newPosition1 = newPosition;
         }
         if(second_body) {
-            const auto newDisplacement = mass2_ratio * direction_to_first * std::abs(_length - distance);
+            const auto newDisplacement = mass2_ratio * direction_to_first * std::abs(length - distance);
             const auto newPosition = second_body->GetPosition() + newDisplacement;
             newPosition2 = newPosition;
         }
@@ -126,14 +167,14 @@ void CableJoint::SolvePositionConstraint() const noexcept {
 }
 
 void CableJoint::SolveVelocityConstraint() const noexcept {
-    auto* first_body = bodyA;
-    auto* second_body = bodyB;
+    auto* first_body =  _def.rigidBodyA;
+    auto* second_body = _def.rigidBodyB;
     if(first_body == nullptr && second_body == nullptr) {
         return;
     }
 
-    const auto fb_pos = first_body == nullptr ? _anchors.first : first_body->GetPosition();
-    const auto sb_pos = second_body == nullptr ? _anchors.second : second_body->GetPosition();
+    const auto fb_pos = _def.worldAnchorA;
+    const auto sb_pos = _def.worldAnchorB;
 
     const auto distance = MathUtils::CalcDistance(fb_pos, sb_pos);
     const auto displacement_towards_first = fb_pos - sb_pos;
@@ -149,8 +190,8 @@ void CableJoint::SolveVelocityConstraint() const noexcept {
     auto v2 = second_body ? second_body->GetVelocity() : Vector2::ZERO;
     auto newVelocity1 = v1;
     auto newVelocity2 = v2;
-
-    if(_length < distance) { //Extension
+    const auto length = _def.length;
+    if(length < distance) { //Extension
         newVelocity1 = mass1_ratio * MathUtils::Reject(v1, direction_to_second);
         newVelocity2 = mass2_ratio * MathUtils::Reject(v2, direction_to_first);
     }
