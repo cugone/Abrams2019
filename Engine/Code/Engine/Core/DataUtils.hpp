@@ -43,14 +43,17 @@ namespace DataUtils {
 }
 
 [[nodiscard]] inline auto Bits(uint16_t value) noexcept -> uint16_t {
+    //TODO: Use <bit> header version (std::popcount) when it becomes available.
     return __popcnt16(value);
 }
 
 [[nodiscard]] inline auto Bits(uint32_t value) noexcept -> uint32_t {
+    //TODO: Use <bit> header version (std::popcount) when it becomes available.
     return __popcnt(value);
 }
 
 [[nodiscard]] inline auto Bits(uint64_t value) noexcept -> uint64_t {
+    //TODO: Use <bit> header version (std::popcount) when it becomes available.
     return __popcnt64(value);
 }
 
