@@ -119,7 +119,7 @@ Vector2 CableJoint::GetAnchorB() const noexcept {
 
 bool CableJoint::ConstraintViolated() const noexcept {
     const bool violated = [this]() -> const bool {
-        const auto distance = MathUtils::CalcDistance(_def.worldAnchorA, _def.worldAnchorB);
+        const auto distance = MathUtils::CalcDistance(GetAnchorA(), GetAnchorB());
         return _def.length < distance;
     }();
     return violated;
@@ -131,12 +131,12 @@ void CableJoint::SolvePositionConstraint() const noexcept {
     if(first_body == nullptr && second_body == nullptr) {
         return;
     }
-    const auto fb_pos = GetAnchorA();
-    const auto sb_pos = GetAnchorB();
+    const auto posA = GetAnchorA();
+    const auto posB = GetAnchorB();
 
-    const auto distance = MathUtils::CalcDistance(fb_pos, sb_pos);
-    const auto displacement_towards_first = fb_pos - sb_pos;
-    const auto displacement_towards_second = sb_pos - fb_pos;
+    const auto distance = MathUtils::CalcDistance(posA, posB);
+    const auto displacement_towards_first = posA - posB;
+    const auto displacement_towards_second = posB - posA;
     const auto direction_to_first = displacement_towards_first.GetNormalize();
     const auto direction_to_second = displacement_towards_second.GetNormalize();
     const auto m1 = (first_body ? first_body->GetMass() : 0.0f);
@@ -145,8 +145,8 @@ void CableJoint::SolvePositionConstraint() const noexcept {
     const auto mass1_ratio = m1 / mass_sum;
     const auto mass2_ratio = m2 / mass_sum;
     const auto length = _def.length;
-    auto newPosition1 = fb_pos;
-    auto newPosition2 = sb_pos;
+    auto newPosition1 = posA;
+    auto newPosition2 = posB;
     if(length < distance) {
         if(first_body) {
             const auto newDisplacement = mass1_ratio * direction_to_second * std::abs(length - distance);
@@ -174,12 +174,12 @@ void CableJoint::SolveVelocityConstraint() const noexcept {
         return;
     }
 
-    const auto fb_pos = _def.worldAnchorA;
-    const auto sb_pos = _def.worldAnchorB;
+    const auto posA = GetAnchorA();
+    const auto posB = GetAnchorB();
 
-    const auto distance = MathUtils::CalcDistance(fb_pos, sb_pos);
-    const auto displacement_towards_first = fb_pos - sb_pos;
-    const auto displacement_towards_second = sb_pos - fb_pos;
+    const auto distance = MathUtils::CalcDistance(posA, posB);
+    const auto displacement_towards_first = posA - posB;
+    const auto displacement_towards_second = posB - posA;
     const auto direction_to_first = displacement_towards_first.GetNormalize();
     const auto direction_to_second = displacement_towards_second.GetNormalize();
     const auto m1 = (first_body ? first_body->GetMass() : 0.0f);

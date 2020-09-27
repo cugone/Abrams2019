@@ -30,16 +30,16 @@ SpringJoint::SpringJoint(const SpringJointDef& def) noexcept {
 }
 
 void SpringJoint::Notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept {
-    auto* first_body = _def.rigidBodyA;
-    auto* second_body = _def.rigidBodyB;
+    auto* first_body = GetBodyA();
+    auto* second_body = GetBodyB();
     if(first_body == nullptr && second_body == nullptr) {
         return;
     }
 
-    const auto fb_pos = _def.worldAnchorA;
-    const auto sb_pos = _def.worldAnchorB;
+    const auto posA = GetAnchorA();
+    const auto posB = GetAnchorB();
 
-    const auto displacement_towards_first = fb_pos - sb_pos;
+    const auto displacement_towards_first = posA - posB;
     const auto direction_towards_first = displacement_towards_first.GetNormalize();
     auto towards_first_magnitude = displacement_towards_first.CalcLength();
     if(MathUtils::IsEquivalent(towards_first_magnitude, _def.restingLength) == false) {
@@ -47,7 +47,7 @@ void SpringJoint::Notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noe
         towards_first_magnitude = _def.k * spring_displacement;
     }
 
-    const auto displacement_towards_second = sb_pos - fb_pos;
+    const auto displacement_towards_second = posB - posA;
     const auto direction_towards_second = displacement_towards_second.GetNormalize();
     auto towards_second_magnitude = displacement_towards_second.CalcLength();
     if(MathUtils::IsEquivalent(towards_second_magnitude, _def.restingLength) == false) {

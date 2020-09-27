@@ -142,18 +142,18 @@ void RodJoint::SolvePositionConstraint() const noexcept {
     if(first_body == nullptr && second_body == nullptr) {
         return;
     }
-    const auto fb_pos = GetAnchorA();
-    const auto sb_pos = GetAnchorB();
+    const auto posA = GetAnchorA();
+    const auto posB = GetAnchorB();
 
-    const auto distance = MathUtils::CalcDistance(fb_pos, sb_pos);
-    const auto direction = (fb_pos - sb_pos).GetNormalize();
+    const auto distance = MathUtils::CalcDistance(posA, posB);
+    const auto direction = (posA - posB).GetNormalize();
     const auto m1 = (first_body ? first_body->GetMass() : 0.0f);
     const auto m2 = (second_body ? second_body->GetMass() : 0.0f);
     const auto mass_sum = m1 + m2;
     const auto mass1_ratio = m1 / mass_sum;
     const auto mass2_ratio = m2 / mass_sum;
-    auto newPosition1 = fb_pos;
-    auto newPosition2 = sb_pos;
+    auto newPosition1 = posA;
+    auto newPosition2 = posB;
     const auto length = _def.length;
     const auto difference_from_length = std::abs(length - distance);
     const auto displacement = direction * difference_from_length;
