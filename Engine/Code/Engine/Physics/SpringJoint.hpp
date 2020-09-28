@@ -8,7 +8,7 @@ class Renderer;
 struct SpringJointDef : public JointDef {
     SpringJointDef() = default;
     virtual ~SpringJointDef() = default;
-    float restingLength = 1.0f;
+    float length = 1.0f;
     float k = 1.0f;
 };
 
