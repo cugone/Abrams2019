@@ -53,20 +53,16 @@ void RodJoint::Notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexce
     const auto length = _def.length;
     if(distance < length) { //Compression
         if(first_body) {
-            //first_body->ApplyForce(direction_to_first * mass1_ratio, TimeUtils::FPSeconds::zero());
             first_body->ApplyImpulse(direction_to_first * mass1_ratio);
         }
         if(second_body) {
-            //second_body->ApplyForce(direction_to_second * mass2_ratio, TimeUtils::FPSeconds::zero());
             second_body->ApplyImpulse(direction_to_second * mass2_ratio);
         }
     } else if(length < distance) { //Extension
         if(first_body) {
-            //first_body->ApplyForce(direction_to_second * mass1_ratio, TimeUtils::FPSeconds::zero());
             first_body->ApplyImpulse(direction_to_second * mass1_ratio);
         }
         if(second_body) {
-            //second_body->ApplyForce(direction_to_first * mass2_ratio, TimeUtils::FPSeconds::zero());
             second_body->ApplyImpulse(direction_to_first * mass2_ratio);
         }
     }
