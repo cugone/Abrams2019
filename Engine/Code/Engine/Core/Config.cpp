@@ -230,19 +230,19 @@ void Config::SetValue(const std::string& key, const char* value) noexcept {
 }
 
 void Config::PrintConfigs(std::ostream& output /*= std::cout*/) const noexcept {
-    for(auto iter = _config.begin(); iter != _config.end(); ++iter) {
+    for(const auto& [key,value] : _config) {
         bool value_has_space = false;
-        for(const auto& c : iter->second) {
+        for(const auto& c : value) {
             value_has_space |= std::isspace(c, std::locale(""));
             if(value_has_space) {
                 break;
             }
         }
-        output << iter->first << '=';
+        output << key << '=';
         if(value_has_space) {
             output << '"';
         }
-        output << iter->second;
+        output << value;
         if(value_has_space) {
             output << '"';
         }
