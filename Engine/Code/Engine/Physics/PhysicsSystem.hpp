@@ -134,7 +134,7 @@ Joint* PhysicsSystem::CreateJoint(const JointDefType& defType) {
 
 template<typename ForceGeneratorType>
 ForceGeneratorType* PhysicsSystem::CreateForceGenerator() {
-    auto* newFG = new ForceGenerator();
+    auto* newFG = new ForceGeneratorType();
     _forceGenerators.emplace_back(newFG);
     return newFG;
 }
