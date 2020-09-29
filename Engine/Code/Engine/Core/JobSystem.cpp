@@ -2,6 +2,7 @@
 
 #include "Engine/Core/ThreadUtils.hpp"
 #include "Engine/Core/TimeUtils.hpp"
+#include "Engine/Core/TypeUtils.hpp"
 #include "Engine/Core/Win.hpp"
 
 #include <chrono>
@@ -197,7 +198,7 @@ void JobSystem::Run(const JobType& category, const std::function<void(void*)>& c
 void JobSystem::Dispatch(Job* job) noexcept {
     job->state = JobState::Dispatched;
     ++job->num_dependencies;
-    const auto jobtype = static_cast<std::underlying_type_t<JobType>>(job->type);
+    const auto jobtype = TypeUtils::GetUnderlyingValue<JobType>(job->type);
     _queues[jobtype]->push(job);
     const auto signal = _signals[jobtype];
     if(signal) {
