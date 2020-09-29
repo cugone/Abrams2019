@@ -231,7 +231,7 @@ void* Window::GetWindowHandle() const noexcept {
 }
 
 void Window::SetWindowHandle(void* hWnd) noexcept {
-    _hWnd = reinterpret_cast<HWND>(hWnd);
+    _hWnd = static_cast<HWND>(hWnd);
 }
 
 HDC Window::GetWindowDeviceContext() const noexcept {

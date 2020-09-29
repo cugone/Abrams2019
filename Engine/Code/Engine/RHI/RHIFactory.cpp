@@ -36,7 +36,7 @@ Microsoft::WRL::ComPtr<IDXGISwapChain4> RHIFactory::CreateSwapChainForHwnd(const
     namespace MWRL = Microsoft::WRL;
     MWRL::ComPtr<IDXGISwapChain1> swap_chain1{};
     MWRL::ComPtr<IDXGISwapChain4> swap_chain4{};
-    auto hr_createsc4hwnd = _dxgi_factory->CreateSwapChainForHwnd(device.GetDxDevice(), reinterpret_cast<HWND>(window.GetWindowHandle()), &swapchain_desc, nullptr, nullptr, &swap_chain1);
+    auto hr_createsc4hwnd = _dxgi_factory->CreateSwapChainForHwnd(device.GetDxDevice(), static_cast<HWND>(window.GetWindowHandle()), &swapchain_desc, nullptr, nullptr, &swap_chain1);
     const auto hr_create = StringUtils::FormatWindowsMessage(hr_createsc4hwnd);
     GUARANTEE_OR_DIE(SUCCEEDED(hr_createsc4hwnd), hr_create.c_str());
     auto hr_dxgisc4 = swap_chain1.As(&swap_chain4);

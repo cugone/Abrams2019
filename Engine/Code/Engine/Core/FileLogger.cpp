@@ -85,7 +85,7 @@ void FileLogger::DoCopyLog() noexcept {
 
 void FileLogger::CopyLog(void* user_data) noexcept {
     if(IsRunning()) {
-        auto job_data = reinterpret_cast<copy_log_job_t*>(user_data);
+        auto job_data = static_cast<copy_log_job_t*>(user_data);
         auto from = job_data->from;
         auto to = job_data->to;
         std::scoped_lock<std::mutex> lock(_cs);

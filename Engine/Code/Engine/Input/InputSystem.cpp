@@ -442,7 +442,7 @@ KeyCode InputSystem::ConvertWinVKToKeyCode(unsigned char winVK) noexcept {
 Vector2 InputSystem::GetCursorWindowPosition(const Window& window_ref) const noexcept {
     POINT p;
     if(::GetCursorPos(&p)) {
-        if(::ScreenToClient(reinterpret_cast<HWND>(window_ref.GetWindowHandle()), &p)) {
+        if(::ScreenToClient(static_cast<HWND>(window_ref.GetWindowHandle()), &p)) {
             return Vector2{static_cast<float>(p.x), static_cast<float>(p.y)};
         }
     }
@@ -474,7 +474,7 @@ void InputSystem::SetCursorToScreenCenter() noexcept {
 
 void InputSystem::SetCursorToWindowCenter(const Window& window_ref) noexcept {
     RECT client_area;
-    if(::GetClientRect(reinterpret_cast<HWND>(window_ref.GetWindowHandle()), &client_area)) {
+    if(::GetClientRect(static_cast<HWND>(window_ref.GetWindowHandle()), &client_area)) {
         const auto center_x = client_area.left + (client_area.right - client_area.left) * 0.5f;
         const auto center_y = client_area.top + (client_area.bottom - client_area.top) * 0.5f;
         SetCursorWindowPosition(window_ref, Vector2{center_x, center_y});
@@ -558,7 +558,7 @@ Vector2 InputSystem::GetWindowCenter() const noexcept {
 
 Vector2 InputSystem::GetWindowCenter(const Window& window) const noexcept {
     RECT rect;
-    HWND windowHandle = reinterpret_cast<HWND>(window.GetWindowHandle());
+    HWND windowHandle = static_cast<HWND>(window.GetWindowHandle());
     if(::GetClientRect(windowHandle, &rect)) {
         const auto center_x = rect.left + (rect.right - rect.left) * 0.50f;
         const auto center_y = rect.top + (rect.bottom - rect.top) * 0.50f;
@@ -600,7 +600,7 @@ void InputSystem::SetCursorWindowPosition(const Window& window, const Vector2& w
     POINT p;
     p.x = static_cast<long>(window_pos.x);
     p.y = static_cast<long>(window_pos.y);
-    if(::ClientToScreen(reinterpret_cast<HWND>(window.GetWindowHandle()), &p)) {
+    if(::ClientToScreen(static_cast<HWND>(window.GetWindowHandle()), &p)) {
         SetCursorScreenPosition(Vector2{static_cast<float>(p.x), static_cast<float>(p.y)});
     }
 }
@@ -1432,7 +1432,7 @@ InputSystem::~InputSystem() noexcept {
 
 void InputSystem::InitializeMouseRawInput() noexcept {
     RAWINPUTDEVICE rid{};
-    rid.hwndTarget = reinterpret_cast<HWND>(_renderer->GetOutput()->GetWindow()->GetWindowHandle());
+    rid.hwndTarget = static_cast<HWND>(_renderer->GetOutput()->GetWindow()->GetWindowHandle());
     rid.usUsagePage = HID_USAGE_PAGE_GENERIC;
     rid.usUsage = HID_USAGE_GENERIC_MOUSE;
     rid.dwFlags = 0;

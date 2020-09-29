@@ -350,7 +350,7 @@ void AudioSystem::RegisterWavFile(std::filesystem::path filepath) noexcept {
 }
 
 void STDMETHODCALLTYPE AudioSystem::Channel::VoiceCallback::OnBufferEnd(void* pBufferContext) {
-    Channel& channel = *reinterpret_cast<Channel*>(pBufferContext);
+    Channel& channel = *static_cast<Channel*>(pBufferContext);
     channel.Stop();
     channel._sound->RemoveChannel(&channel);
     channel._sound = nullptr;
@@ -358,7 +358,7 @@ void STDMETHODCALLTYPE AudioSystem::Channel::VoiceCallback::OnBufferEnd(void* pB
 }
 
 void STDMETHODCALLTYPE AudioSystem::Channel::VoiceCallback::OnLoopEnd(void* pBufferContext) {
-    Channel& channel = *reinterpret_cast<Channel*>(pBufferContext);
+    Channel& channel = *static_cast<Channel*>(pBufferContext);
     if(channel._desc.stopWhenFinishedLooping && channel._desc.loop_count != XAUDIO2_LOOP_INFINITE) {
         if(++channel._desc.repeat_count >= channel._desc.loop_count) {
             channel.Stop();

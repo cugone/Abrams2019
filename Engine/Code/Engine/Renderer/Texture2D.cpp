@@ -33,7 +33,7 @@ ID3D11Resource* Texture2D::GetDxResource() const noexcept {
 }
 
 ID3D11Texture2D* Texture2D::GetDxTexture() noexcept {
-    return reinterpret_cast<ID3D11Texture2D*>(GetDxResource());
+    return static_cast<ID3D11Texture2D*>(GetDxResource());
 }
 
 Texture2D::Texture2D(Texture2D&& r_other) noexcept

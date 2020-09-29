@@ -47,7 +47,7 @@ bool Clipboard::Copy_helper(const T& text) {
     if(Open(_hwnd)) {
         if(Empty()) {
             if(auto hgblcopy = ::GlobalAlloc(GMEM_MOVEABLE, (text.size() + 1) * sizeof(T::value_type))) {
-                if(auto lpstrcopy = reinterpret_cast<LPTSTR>(::GlobalLock(hgblcopy))) {
+                if(auto lpstrcopy = static_cast<LPTSTR>(::GlobalLock(hgblcopy))) {
                     std::memcpy(lpstrcopy, text.data(), text.size() + 1);
                     lpstrcopy[text.size() + 1] = '\0';
                 }

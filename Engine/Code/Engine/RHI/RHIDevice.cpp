@@ -658,7 +658,7 @@ ID3DBlob* RHIDevice::CompileShader(const std::string& name, const void* sourceCo
     HRESULT compile_hr = ::D3DCompile(sourceCode, sourceCodeSize, name.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, entryPoint.c_str(), target_string.c_str(), compile_options, 0, &code_blob, &errors);
     if(FAILED(compile_hr) || (errors != nullptr)) {
         if(errors != nullptr) {
-            char* error_string = reinterpret_cast<char*>(errors->GetBufferPointer());
+            char* error_string = static_cast<char*>(errors->GetBufferPointer());
             DebuggerPrintf("Failed to compile [%s].  Compiler gave the following output;\n%s",
                            name.c_str(),
                            error_string);

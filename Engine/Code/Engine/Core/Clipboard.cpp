@@ -1,7 +1,7 @@
 #include "Engine/Core/Clipboard.hpp"
 
 Clipboard::Clipboard(void* hwnd) noexcept
-: _hwnd(reinterpret_cast<HWND>(hwnd)) {
+: _hwnd(static_cast<HWND>(hwnd)) {
     Open(_hwnd);
 }
 
@@ -12,7 +12,7 @@ Clipboard::~Clipboard() noexcept {
 }
 
 bool Clipboard::Open(void* hwnd) noexcept {
-    _hwnd = reinterpret_cast<HWND>(hwnd);
+    _hwnd = static_cast<HWND>(hwnd);
     _is_open = !!::OpenClipboard(_hwnd);
     return _is_open;
 }
@@ -60,7 +60,7 @@ std::string Clipboard::Paste() noexcept {
     std::string text_to_paste{};
     if(HasText()) {
         if(auto hglb = ::GetClipboardData(CF_TEXT)) {
-            if(auto lpstrpaste = reinterpret_cast<LPTSTR>(::GlobalLock(hglb))) {
+            if(auto lpstrpaste = static_cast<LPTSTR>(::GlobalLock(hglb))) {
                 text_to_paste = lpstrpaste;
                 ::GlobalUnlock(hglb);
             }

@@ -30,7 +30,7 @@ template<typename T, std::size_t maxSize>
         auto front = _ptr;
         _count += elems;
         _ptr += _count;
-        return reinterpret_cast<void*>(front);
+        return static_cast<void*>(front);
     }
     return nullptr;
 }
@@ -58,7 +58,7 @@ MemoryPool<T, maxSize>::~MemoryPool() noexcept {
 
 template<typename T, std::size_t maxSize>
 MemoryPool<T, maxSize>::MemoryPool() noexcept {
-    _data = reinterpret_cast<T*>(std::malloc(maxSize * sizeof(T)));
+    _data = static_cast<T*>(std::malloc(maxSize * sizeof(T)));
     _ptr = _data;
     _count = 0;
     _max = maxSize;

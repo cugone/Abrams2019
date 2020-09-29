@@ -34,7 +34,7 @@ constexpr const uint16_t IDM_SELECTALL = 3;
 HACCEL hAcceleratorTable{};
 
 void* Console::GetAcceleratorTable() const noexcept {
-    return reinterpret_cast<void*>(hAcceleratorTable);
+    return static_cast<void*>(hAcceleratorTable);
 }
 
 Console::Console(FileLogger& fileLogger, Renderer& renderer) noexcept
@@ -294,7 +294,7 @@ bool Console::ProcessSystemMessage(const EngineMessage& msg) noexcept {
 bool Console::HandleClipboardCopy() const noexcept {
     bool did_copy = false;
     if(Clipboard::HasText()) {
-        auto hwnd = reinterpret_cast<HWND>(_renderer.GetOutput()->GetWindow()->GetWindowHandle());
+        auto hwnd = static_cast<HWND>(_renderer.GetOutput()->GetWindow()->GetWindowHandle());
         Clipboard c{hwnd};
         if(_cursor_position != _selection_position) {
             std::string copied_text = CopyText(_cursor_position, _selection_position);
@@ -308,7 +308,7 @@ bool Console::HandleClipboardCopy() const noexcept {
 
 void Console::HandleClipboardPaste() noexcept {
     if(Clipboard::HasText()) {
-        auto hwnd = reinterpret_cast<HWND>(_renderer.GetOutput()->GetWindow()->GetWindowHandle());
+        auto hwnd = static_cast<HWND>(_renderer.GetOutput()->GetWindow()->GetWindowHandle());
         Clipboard c{hwnd};
         auto string_to_paste = c.Paste();
         PasteText(string_to_paste, _cursor_position);

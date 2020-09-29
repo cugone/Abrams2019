@@ -38,25 +38,15 @@ void SpringJoint::Notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noe
 
     const auto posA = GetAnchorA();
     const auto posB = GetAnchorB();
+    const auto velA = first_body ? first_body->GetVelocity() : Vector2::ZERO;
+    const auto velB = second_body ? second_body->GetVelocity() : Vector2::ZERO;
+    const auto position_displacement = posB - posA;
+    const auto velocity_displacement = velB - velA;
+    const auto force = _def.k * (position_displacement.CalcLength() - _def.length) * position_displacement.GetNormalize();
+    const auto damping_force = _def.k * MathUtils::DotProduct(velocity_displacement, position_displacement) * (position_displacement / position_displacement.CalcLengthSquared());
 
-    const auto displacement_towards_first = posA - posB;
-    const auto direction_towards_first = displacement_towards_first.GetNormalize();
-    auto towards_first_magnitude = displacement_towards_first.CalcLength();
-    if(MathUtils::IsEquivalent(towards_first_magnitude, _def.length) == false) {
-        const auto spring_displacement = towards_first_magnitude - _def.length;
-        towards_first_magnitude = _def.k * spring_displacement;
-    }
-
-    const auto displacement_towards_second = posB - posA;
-    const auto direction_towards_second = displacement_towards_second.GetNormalize();
-    auto towards_second_magnitude = displacement_towards_second.CalcLength();
-    if(MathUtils::IsEquivalent(towards_second_magnitude, _def.length) == false) {
-        auto spring_displacement = towards_second_magnitude - _def.length;
-        towards_second_magnitude = _def.k * spring_displacement;
-    }
-
-    first_body->ApplyImpulse(direction_towards_second * towards_second_magnitude);
-    second_body->ApplyImpulse(direction_towards_first * towards_first_magnitude);
+    first_body->ApplyImpulse(force + damping_force);
+    second_body->ApplyImpulse(-force + -damping_force);
 
 }
 

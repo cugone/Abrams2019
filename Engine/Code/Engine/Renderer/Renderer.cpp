@@ -318,7 +318,7 @@ Vector2 Renderer::GetWindowCenter() const noexcept {
 
 Vector2 Renderer::GetWindowCenter(const Window& window) const noexcept {
     RECT rect;
-    HWND windowHandle = reinterpret_cast<HWND>(window.GetWindowHandle());
+    HWND windowHandle = static_cast<HWND>(window.GetWindowHandle());
     if(::GetClientRect(windowHandle, &rect)) {
         float center_x = rect.left + (rect.right - rect.left) * 0.50f;
         float center_y = rect.top + (rect.bottom - rect.top) * 0.50f;
