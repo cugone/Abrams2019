@@ -15,8 +15,10 @@ namespace FileUtils {
 Obj::Obj(std::filesystem::path filepath) noexcept {
     namespace FS = std::filesystem;
     if(!FS::exists(filepath)) {
-        filepath = FS::canonical(filepath);
+        const auto ss = std::string{"Obj: "} + filepath.string() + " failed to load.\nReason: It does not exist.\n";
+        ERROR_AND_DIE(ss.c_str());
     }
+    filepath = FS::canonical(filepath);
     filepath.make_preferred();
     if(!Load(filepath)) {
         const auto ss = std::string{"Obj: "} + filepath.string() + " failed to load.";

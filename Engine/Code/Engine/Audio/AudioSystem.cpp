@@ -489,6 +489,10 @@ std::size_t AudioSystem::Sound::_id = 0;
 AudioSystem::Sound::Sound(AudioSystem& audiosystem, std::filesystem::path filepath)
 : _audio_system(&audiosystem) {
     namespace FS = std::filesystem;
+    if(!FS::exists(filepath)) {
+        DebuggerPrintf("Attempting to create sound that does not exist.\n");
+        ERROR_AND_DIE("Attempting to create sound that does not exist.\n");
+    }
     filepath = FS::canonical(filepath);
     filepath.make_preferred();
     auto found_iter = _audio_system->_wave_files.find(filepath);

@@ -95,9 +95,13 @@ const std::filesystem::path& KerningFont::GetFilePath() const noexcept {
 bool KerningFont::LoadFromFile(std::filesystem::path filepath) noexcept {
     {
         namespace FS = std::filesystem;
+        const auto path_exists = FS::exists(filepath);
+        if(!path_exists) {
+            DebuggerPrintf("Failed to read file: %s \nDoes not exist.\n", _filepath.string().c_str());
+            return false;
+        }
         filepath = FS::canonical(filepath);
         filepath.make_preferred();
-        const auto path_exists = FS::exists(filepath);
         const auto is_not_directory = !FS::is_directory(filepath);
         const auto is_file = FS::is_regular_file(filepath);
         const auto is_fnt = filepath.has_extension() && StringUtils::ToLowerCase(filepath.extension().string()) == ".fnt";

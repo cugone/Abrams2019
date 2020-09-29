@@ -51,10 +51,13 @@ bool WriteBufferToFile(const std::string& buffer, std::filesystem::path filepath
 
 std::optional<std::vector<uint8_t>> ReadBinaryBufferFromFile(std::filesystem::path filepath) noexcept {
     namespace FS = std::filesystem;
+    const auto path_not_exist = !FS::exists(filepath);
+    if(path_not_exist) {
+        return {};
+    }
     filepath = FS::canonical(filepath);
     filepath.make_preferred();
     const auto path_is_directory = FS::is_directory(filepath);
-    const auto path_not_exist = !FS::exists(filepath);
     const auto not_valid_path = path_is_directory || path_not_exist;
     if(not_valid_path) {
         return {};
