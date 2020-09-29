@@ -48,6 +48,10 @@ void PhysicsSystem::EnablePhysics(bool isPhysicsEnabled) noexcept {
     }
 }
 
+const std::vector<std::unique_ptr<Joint>>& PhysicsSystem::Debug_GetJoints() const noexcept {
+    return _joints;
+}
+
 void PhysicsSystem::EnableGravity(bool isGravityEnabled) noexcept {
     for(auto* b : _rigidBodies) {
         b->EnableGravity(isGravityEnabled);

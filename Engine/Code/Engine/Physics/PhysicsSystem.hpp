@@ -80,6 +80,8 @@ public:
     template<typename ForceGeneratorType>
     ForceGeneratorType* CreateForceGenerator();
 
+    const std::vector<std::unique_ptr<Joint>>& Debug_GetJoints() const noexcept;
+
 protected:
 private:
     void UpdateBodiesInBounds(TimeUtils::FPSeconds deltaSeconds) noexcept;
