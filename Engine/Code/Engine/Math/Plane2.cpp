@@ -7,9 +7,9 @@ Plane2::Plane2(const Vector2& normal, float distance_from_origin) noexcept
 }
 
 float Plane2::Normalize() noexcept {
-    float length = normal.CalcLength();
+    const auto length = normal.CalcLength();
     if(length > 0.0f) {
-        float inv_length = 1.0f / length;
+        const auto inv_length = 1.0f / length;
         normal.x *= inv_length;
         normal.y *= inv_length;
         dist *= inv_length;

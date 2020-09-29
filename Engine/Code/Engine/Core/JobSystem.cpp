@@ -28,11 +28,11 @@ void JobSystem::GenericJobWorker(std::condition_variable* signal) noexcept {
 }
 
 void JobConsumer::AddCategory(const JobType& category) noexcept {
-    auto categoryAsSizeT = static_cast<std::underlying_type_t<JobType>>(category);
+    const auto categoryAsSizeT = static_cast<std::underlying_type_t<JobType>>(category);
     if(categoryAsSizeT >= JobSystem::_queues.size()) {
         return;
     }
-    auto q = JobSystem::_queues[categoryAsSizeT];
+    const auto q = JobSystem::_queues[categoryAsSizeT];
     if(q) {
         _consumables.push_back(q);
     }
@@ -42,7 +42,7 @@ bool JobConsumer::ConsumeJob() noexcept {
     if(_consumables.empty()) {
         return false;
     }
-    for(auto& consumable : _consumables) {
+    for(const auto& consumable : _consumables) {
         if(!consumable) {
             continue;
         }
@@ -50,7 +50,7 @@ bool JobConsumer::ConsumeJob() noexcept {
         if(queue.empty()) {
             return false;
         }
-        auto job = queue.front();
+        const auto job = queue.front();
         queue.pop();
         job->work_cb(job->user_data);
         job->OnFinish();
@@ -61,7 +61,7 @@ bool JobConsumer::ConsumeJob() noexcept {
 }
 
 unsigned int JobConsumer::ConsumeAll() noexcept {
-    unsigned int processed_jobs = 0;
+    auto processed_jobs = 0u;
     while(ConsumeJob()) {
         ++processed_jobs;
     }
@@ -69,7 +69,7 @@ unsigned int JobConsumer::ConsumeAll() noexcept {
 }
 
 void JobConsumer::ConsumeFor(TimeUtils::FPMilliseconds consume_duration) noexcept {
-    auto start_time = TimeUtils::Now();
+    const auto start_time = TimeUtils::Now();
     while(TimeUtils::FPMilliseconds{TimeUtils::Now() - start_time} < consume_duration) {
         ConsumeJob();
     }
@@ -79,8 +79,8 @@ bool JobConsumer::HasJobs() const noexcept {
     if(_consumables.empty()) {
         return false;
     }
-    for(auto& consumable : _consumables) {
-        auto& queue = *consumable;
+    for(const auto& consumable : _consumables) {
+        const auto& queue = *consumable;
         if(!queue.empty()) {
             return true;
         }
@@ -197,16 +197,16 @@ void JobSystem::Run(const JobType& category, const std::function<void(void*)>& c
 void JobSystem::Dispatch(Job* job) noexcept {
     job->state = JobState::Dispatched;
     ++job->num_dependencies;
-    auto jobtype = static_cast<std::underlying_type_t<JobType>>(job->type);
+    const auto jobtype = static_cast<std::underlying_type_t<JobType>>(job->type);
     _queues[jobtype]->push(job);
-    auto signal = _signals[jobtype];
+    const auto signal = _signals[jobtype];
     if(signal) {
         signal->notify_all();
     }
 }
 
 bool JobSystem::Release(Job* job) noexcept {
-    auto dcount = --job->num_dependencies;
+    const auto dcount = --job->num_dependencies;
     if(dcount != 0) {
         return false;
     }

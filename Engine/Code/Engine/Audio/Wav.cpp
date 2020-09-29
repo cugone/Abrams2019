@@ -20,12 +20,11 @@ unsigned int Wav::Load(std::filesystem::path filepath) noexcept {
         return WAV_ERROR_NOT_A_WAV;
     }
 
-    if(auto next_chunk = riff_data.GetNextChunk()) {
+    if(const auto* next_chunk = riff_data.GetNextChunk()) {
         if(!next_chunk->data) {
             return WAV_SUCCESS; //Successfully read an empty file!
         }
-        bool is_wave = StringUtils::FourCC(next_chunk->data->fourcc) == RiffChunkID::WAVE;
-        if(!is_wave) {
+        if(const auto wavfcc = StringUtils::FourCC(next_chunk->data->fourcc); wavfcc != RiffChunkID::WAVE) {
             return WAV_ERROR_NOT_A_WAV;
         }
 

@@ -141,7 +141,7 @@ const std::filesystem::path& folderpath, const std::string& validExtensionList =
     if(!is_folder) {
         return;
     }
-    auto validExtensions = StringUtils::Split(StringUtils::ToLowerCase(validExtensionList));
+    const auto validExtensions = StringUtils::Split(StringUtils::ToLowerCase(validExtensionList));
     if(!recursive) {
         detail::ForEachFileInFolders<FS::directory_iterator>(preferred_folderpath, validExtensions, callback);
     } else {

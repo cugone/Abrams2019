@@ -21,15 +21,14 @@ float KerningFont::CalculateTextWidth(const KerningFont& font, const std::string
         return CalculateLongestMultiline(font, text, scale);
     }
 
-    float cursor_x = 0.0f;
+    auto cursor_x = 0.0f;
 
     for(auto char_iter = text.begin(); char_iter != text.end(); /* DO NOTHING */) {
-        KerningFont::CharDef current_char_def = font.GetCharDef(*char_iter);
-        auto previous_char = char_iter++;
+        const auto current_char_def = font.GetCharDef(*char_iter);
+        const auto previous_char = char_iter++;
         if(char_iter != text.end()) {
-            float kern_value = 0.0f;
-            auto kern_iter = font._kernmap.find(std::make_pair(*previous_char, *char_iter));
-            if(kern_iter != font._kernmap.end()) {
+            auto kern_value = 0.0f;
+            if(const auto kern_iter = font._kernmap.find(std::make_pair(*previous_char, *char_iter)); kern_iter != font._kernmap.end()) {
                 kern_value = static_cast<float>(kern_iter->second);
             }
             cursor_x += current_char_def.xadvance + kern_value;
@@ -98,11 +97,11 @@ bool KerningFont::LoadFromFile(std::filesystem::path filepath) noexcept {
         namespace FS = std::filesystem;
         filepath = FS::canonical(filepath);
         filepath.make_preferred();
-        bool path_exists = FS::exists(filepath);
-        bool is_not_directory = !FS::is_directory(filepath);
-        bool is_file = FS::is_regular_file(filepath);
-        bool is_fnt = filepath.has_extension() && StringUtils::ToLowerCase(filepath.extension().string()) == ".fnt";
-        bool is_valid = path_exists && is_not_directory && is_file && is_fnt;
+        const auto path_exists = FS::exists(filepath);
+        const auto is_not_directory = !FS::is_directory(filepath);
+        const auto is_file = FS::is_regular_file(filepath);
+        const auto is_fnt = filepath.has_extension() && StringUtils::ToLowerCase(filepath.extension().string()) == ".fnt";
+        const auto is_valid = path_exists && is_not_directory && is_file && is_fnt;
         if(!is_valid) {
             DebuggerPrintf("%s is not a BMFont file.\n", filepath.string().c_str());
             return false;
@@ -113,12 +112,12 @@ bool KerningFont::LoadFromFile(std::filesystem::path filepath) noexcept {
         }
         _filepath = filepath;
     }
-    if(auto buffer = FileUtils::ReadBinaryBufferFromFile(_filepath.string())) {
+    if(const auto& buffer = FileUtils::ReadBinaryBufferFromFile(_filepath.string()); buffer.has_value()) {
         if(buffer->size() < 4) {
             DebuggerPrintf("%s is not a BMFont file.\n", _filepath.string().c_str());
             return false;
         }
-        return LoadFromBuffer(buffer.value());
+        return LoadFromBuffer(*buffer);
     } else {
         DebuggerPrintf("Failed to read file: %s \n", _filepath.string().c_str());
         return false;
@@ -127,8 +126,8 @@ bool KerningFont::LoadFromFile(std::filesystem::path filepath) noexcept {
 
 bool KerningFont::LoadFromBuffer(const std::vector<unsigned char>& buffer) noexcept {
     std::vector<unsigned char> out_buffer(buffer);
-    bool is_binary = out_buffer[0] == 66 && out_buffer[1] == 77 && out_buffer[2] == 70;
-    bool is_text = out_buffer[0] == 105 && out_buffer[1] == 110 && out_buffer[2] == 102 && out_buffer[3] == 111;
+    const auto is_binary = out_buffer[0] == 66 && out_buffer[1] == 77 && out_buffer[2] == 70;
+    const auto is_text = out_buffer[0] == 105 && out_buffer[1] == 110 && out_buffer[2] == 102 && out_buffer[3] == 111;
     if(is_binary) {
         _is_loaded = LoadFromBinary(out_buffer);
     } else if(is_text) {
@@ -148,7 +147,7 @@ void KerningFont::SetMaterial(Material* mat) noexcept {
 }
 
 int KerningFont::GetKerningValue(int first, int second) const noexcept {
-    auto iter = _kernmap.find(std::make_pair(first, second));
+    const auto iter = _kernmap.find(std::make_pair(first, second));
     if(iter != _kernmap.end()) {
         return (*iter).second;
     }
@@ -156,10 +155,9 @@ int KerningFont::GetKerningValue(int first, int second) const noexcept {
 }
 
 float KerningFont::CalculateLongestMultiline(const KerningFont& font, const std::string& text, float scale /*= 1.0f*/) noexcept {
-    auto lines = StringUtils::Split(text, '\n', false);
-    float length = 0.0f;
-    auto max_iter = std::max_element(std::begin(lines), std::end(lines), [](const std::string& a, const std::string& b) { return a.size() < b.size(); });
-    length = CalculateTextWidth(font, *max_iter, scale);
+    const auto lines = StringUtils::Split(text, '\n', false);
+    const auto max_iter = std::max_element(std::begin(lines), std::end(lines), [](const std::string& a, const std::string& b) { return a.size() < b.size(); });
+    const auto length = CalculateTextWidth(font, *max_iter, scale);
     return length;
 }
 
@@ -168,11 +166,11 @@ float KerningFont::CalculateLongestMultiline(const std::string& text, float scal
 }
 
 bool KerningFont::LoadFromText(std::vector<unsigned char>& buffer) noexcept {
-    std::string bufferAsStr = std::string(buffer.begin(), buffer.end());
+    auto bufferAsStr = std::string(buffer.begin(), buffer.end());
     bufferAsStr = StringUtils::ReplaceAll(bufferAsStr, "\r\n", "\n");
     buffer.clear();
     buffer.shrink_to_fit();
-    unsigned int kerning_count = 0u;
+    auto kerning_count = 0u;
     {
         std::istringstream ss;
         ss.str(bufferAsStr);
@@ -247,11 +245,11 @@ bool KerningFont::IsKerningLine(const std::string& cur_line) noexcept {
 }
 
 bool KerningFont::ParseInfoLine(const std::string& infoLine) noexcept {
-    auto key_values = StringUtils::Split(infoLine, ' ', true);
+    const auto& key_values = StringUtils::Split(infoLine, ' ', true);
     std::string key{};
     std::string value{};
-    for(auto& key_value : key_values) {
-        auto cur_key_value = StringUtils::Split(key_value, '=', true);
+    for(const auto& key_value : key_values) {
+        const auto& cur_key_value = StringUtils::Split(key_value, '=', true);
         if(cur_key_value.size() < 2) {
             continue;
         }
@@ -286,14 +284,14 @@ bool KerningFont::ParseInfoLine(const std::string& infoLine) noexcept {
                 _info.is_aliased = std::stoi(value);
             }
             if(key == "padding") {
-                auto pads = StringUtils::Split(value, ',', true);
+                const auto& pads = StringUtils::Split(value, ',', true);
                 _info.padding.x = std::stoi(pads[0]);
                 _info.padding.y = std::stoi(pads[1]);
                 _info.padding.z = std::stoi(pads[2]);
                 _info.padding.w = std::stoi(pads[3]);
             }
             if(key == "spacing") {
-                auto spaces = StringUtils::Split(value, ',', true);
+                const auto& spaces = StringUtils::Split(value, ',', true);
                 _info.spacing.x = std::stoi(spaces[0]);
                 _info.spacing.y = std::stoi(spaces[1]);
             }
@@ -309,11 +307,11 @@ bool KerningFont::ParseInfoLine(const std::string& infoLine) noexcept {
 }
 
 bool KerningFont::ParseCommonLine(const std::string& commonLine) noexcept {
-    auto key_values = StringUtils::Split(commonLine, ' ', true);
+    const auto& key_values = StringUtils::Split(commonLine, ' ', true);
     std::string key{};
     std::string value{};
-    for(auto& key_value : key_values) {
-        auto cur_key_value = StringUtils::Split(key_value, '=', true);
+    for(const auto& key_value : key_values) {
+        const auto& cur_key_value = StringUtils::Split(key_value, '=', true);
         if(cur_key_value.size() < 2) {
             continue;
         }
@@ -360,13 +358,13 @@ bool KerningFont::ParseCommonLine(const std::string& commonLine) noexcept {
 
 bool KerningFont::ParsePageLine(const std::string& pageLine) noexcept {
     namespace FS = std::filesystem;
-    auto key_values = StringUtils::Split(pageLine, ' ', true);
+    const auto& key_values = StringUtils::Split(pageLine, ' ', true);
     std::string key{};
     std::string value{};
     std::size_t id = 0;
     std::string file{};
-    for(auto& key_value : key_values) {
-        auto cur_key_value = StringUtils::Split(key_value, '=', true);
+    for(const auto& key_value : key_values) {
+        const auto& cur_key_value = StringUtils::Split(key_value, '=', true);
         if(cur_key_value.size() < 2) {
             continue;
         }
@@ -394,11 +392,11 @@ bool KerningFont::ParsePageLine(const std::string& pageLine) noexcept {
 }
 
 bool KerningFont::ParseCharsLine(const std::string& charsLine) noexcept {
-    auto key_values = StringUtils::Split(charsLine, ' ', true);
+    const auto& key_values = StringUtils::Split(charsLine, ' ', true);
     std::string key{};
     std::string value{};
-    for(auto& key_value : key_values) {
-        auto cur_key_value = StringUtils::Split(key_value, '=', true);
+    for(const auto& key_value : key_values) {
+        const auto& cur_key_value = StringUtils::Split(key_value, '=', true);
         if(cur_key_value.size() < 2) {
             continue;
         }
@@ -416,12 +414,12 @@ bool KerningFont::ParseCharsLine(const std::string& charsLine) noexcept {
 }
 
 bool KerningFont::ParseCharLine(const std::string& charLine) noexcept {
-    auto key_values = StringUtils::Split(charLine, ' ', true);
+    const auto& key_values = StringUtils::Split(charLine, ' ', true);
     std::string key{};
     std::string value{};
     CharDef def{};
-    for(auto& key_value : key_values) {
-        auto cur_key_value = StringUtils::Split(key_value, '=', true);
+    for(const auto& key_value : key_values) {
+        const auto& cur_key_value = StringUtils::Split(key_value, '=', true);
         if(cur_key_value.size() < 2) {
             continue;
         }
@@ -467,11 +465,11 @@ bool KerningFont::ParseCharLine(const std::string& charLine) noexcept {
 }
 
 bool KerningFont::ParseKerningsLine(const std::string& kerningsLine) noexcept {
-    auto key_values = StringUtils::Split(kerningsLine, ' ', true);
+    const auto& key_values = StringUtils::Split(kerningsLine, ' ', true);
     std::string key{};
     std::string value{};
-    for(auto& key_value : key_values) {
-        auto cur_key_value = StringUtils::Split(key_value, '=', true);
+    for(const auto& key_value : key_values) {
+        const auto& cur_key_value = StringUtils::Split(key_value, '=', true);
         if(cur_key_value.size() < 2) {
             continue;
         }
@@ -489,12 +487,12 @@ bool KerningFont::ParseKerningsLine(const std::string& kerningsLine) noexcept {
 }
 
 bool KerningFont::ParseKerningLine(const std::string& kerningLine) noexcept {
-    auto key_values = StringUtils::Split(kerningLine, ' ', true);
+    const auto& key_values = StringUtils::Split(kerningLine, ' ', true);
     std::string key{};
     std::string value{};
     KerningDef def{};
-    for(auto& key_value : key_values) {
-        auto cur_key_value = StringUtils::Split(key_value, '=', true);
+    for(const auto& key_value : key_values) {
+        const auto& cur_key_value = StringUtils::Split(key_value, '=', true);
         if(cur_key_value.size() < 2) {
             continue;
         }
@@ -524,19 +522,18 @@ bool KerningFont::LoadFromXml(std::vector<unsigned char>& buffer) noexcept {
     file = StringUtils::ReplaceAll(file, "\r\n", "\n");
     buffer.clear();
     buffer.shrink_to_fit();
-    auto result = doc.Parse(file.c_str(), file.size());
-    if(result != tinyxml2::XML_SUCCESS) {
+    if(const auto& result = doc.Parse(file.c_str(), file.size()); result != tinyxml2::XML_SUCCESS) {
         return false;
     }
 
-    auto xml_root = doc.RootElement();
+    const auto* xml_root = doc.RootElement();
     if(xml_root == nullptr) {
         return false;
     }
 
     DataUtils::ValidateXmlElement(*xml_root, "font", "info,common,pages,chars", "", "kernings");
 
-    if(auto xml_info = xml_root->FirstChildElement("info")) {
+    if(const auto* xml_info = xml_root->FirstChildElement("info")) {
         DataUtils::ValidateXmlElement(*xml_info, "info", "", "face,size,bold,italic,charset,unicode,stretchH,smooth,aa,padding,spacing,outline");
 
         _info.face = DataUtils::ParseXmlAttribute(*xml_info, "face", _info.face);
@@ -553,7 +550,7 @@ bool KerningFont::LoadFromXml(std::vector<unsigned char>& buffer) noexcept {
         }
         {
             std::string padding_str{};
-            auto padding = StringUtils::Split(DataUtils::ParseXmlAttribute(*xml_info, "padding", padding_str));
+            const auto& padding = StringUtils::Split(DataUtils::ParseXmlAttribute(*xml_info, "padding", padding_str));
             ASSERT_OR_DIE(padding.size() == 4, "FONT FORMAT INFO PADDING CHANGED");
             _info.padding.x = std::stoi(padding[0]);
             _info.padding.y = std::stoi(padding[1]);
@@ -562,7 +559,7 @@ bool KerningFont::LoadFromXml(std::vector<unsigned char>& buffer) noexcept {
         }
         {
             std::string spacing_str{};
-            auto spacing = StringUtils::Split(DataUtils::ParseXmlAttribute(*xml_info, "spacing", spacing_str));
+            const auto& spacing = StringUtils::Split(DataUtils::ParseXmlAttribute(*xml_info, "spacing", spacing_str));
             ASSERT_OR_DIE(spacing.size() == 2, "FONT FORMAT INFO SPACING CHANGED");
             _info.spacing.x = std::stoi(spacing[0]);
             _info.spacing.y = std::stoi(spacing[1]);
@@ -570,7 +567,7 @@ bool KerningFont::LoadFromXml(std::vector<unsigned char>& buffer) noexcept {
         _info.outline = DataUtils::ParseXmlAttribute(*xml_info, "outline", _info.outline);
     }
 
-    if(auto xml_common = xml_root->FirstChildElement("common")) {
+    if(const auto* xml_common = xml_root->FirstChildElement("common")) {
         DataUtils::ValidateXmlElement(*xml_common, "common", "", "lineHeight,base,scaleW,scaleH,pages,packed,alphaChnl,redChnl,greenChnl,blueChnl");
         _common.line_height = DataUtils::ParseXmlAttribute(*xml_common, "lineHeight", _common.line_height);
         _common.base = DataUtils::ParseXmlAttribute(*xml_common, "base", _common.base);
@@ -583,7 +580,7 @@ bool KerningFont::LoadFromXml(std::vector<unsigned char>& buffer) noexcept {
         _common.green_channel = DataUtils::ParseXmlAttribute(*xml_common, "greenChnl", _common.green_channel);
         _common.blue_channel = DataUtils::ParseXmlAttribute(*xml_common, "blueChnl", _common.blue_channel);
     }
-    if(auto xml_pages = xml_root->FirstChildElement("pages")) {
+    if(const auto* xml_pages = xml_root->FirstChildElement("pages")) {
         DataUtils::ValidateXmlElement(*xml_pages, "pages", "page", "");
         _image_paths.resize(_common.page_count);
         { //Scope constraint
@@ -597,7 +594,7 @@ bool KerningFont::LoadFromXml(std::vector<unsigned char>& buffer) noexcept {
                                            });
         }
     }
-    if(auto xml_chars = xml_root->FirstChildElement("chars")) {
+    if(const auto* xml_chars = xml_root->FirstChildElement("chars")) {
         DataUtils::ValidateXmlElement(*xml_chars, "chars", "char", "count");
 
         _char_count = DataUtils::ParseXmlAttribute(*xml_chars, "count", _char_count);
@@ -619,7 +616,7 @@ bool KerningFont::LoadFromXml(std::vector<unsigned char>& buffer) noexcept {
                                            _charmap.insert_or_assign(id, t);
                                        });
     }
-    if(auto xml_kernings = xml_root->FirstChildElement("kernings")) {
+    if(const auto* xml_kernings = xml_root->FirstChildElement("kernings")) {
         DataUtils::ValidateXmlElement(*xml_kernings, "kernings", "kerning", "count");
         _kerns_count = DataUtils::ParseXmlAttribute(*xml_kernings, "count", _char_count);
         DataUtils::ForEachChildElement(*xml_kernings, "kerning",

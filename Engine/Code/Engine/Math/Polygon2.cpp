@@ -107,14 +107,14 @@ void Polygon2::AddPaddingToSides(const Vector2& padding) {
 }
 
 void Polygon2::CalcNormals() {
-    auto s = _verts.size();
+    const auto s = _verts.size();
     _normals.clear();
     if(_normals.capacity() < s) {
         _normals.reserve(s);
     }
     for(std::size_t i = 0; i < s; ++i) {
-        auto j = (i + 1) % s;
-        auto n = (_verts[j] - _verts[i]).GetNormalize().GetLeftHandNormal();
+        const auto j = (i + 1) % s;
+        const auto n = (_verts[j] - _verts[i]).GetNormalize().GetLeftHandNormal();
         _normals.push_back(n);
     }
     const auto S = Matrix4::CreateScaleMatrix(_half_extents);
@@ -127,16 +127,16 @@ void Polygon2::CalcNormals() {
 }
 
 void Polygon2::CalcVerts() {
-    auto num_sides_as_float = static_cast<float>(_sides);
+    const auto num_sides_as_float = static_cast<float>(_sides);
     _verts.clear();
     if(_verts.capacity() < _sides) {
         _verts.reserve(_sides);
     }
-    auto anglePerVertex = 360.0f / num_sides_as_float;
-    for(float degrees = 0.0f; degrees < 360.0f; degrees += anglePerVertex) {
-        float radians = MathUtils::ConvertDegreesToRadians(degrees);
-        float pX = 0.5f * std::cos(radians);
-        float pY = 0.5f * std::sin(radians);
+    const auto anglePerVertex = 360.0f / num_sides_as_float;
+    for(auto degrees = 0.0f; degrees < 360.0f; degrees += anglePerVertex) {
+        const auto radians = MathUtils::ConvertDegreesToRadians(degrees);
+        const auto pX = 0.5f * std::cos(radians);
+        const auto pY = 0.5f * std::sin(radians);
         _verts.emplace_back(Vector2(pX, pY));
     }
     const auto S = Matrix4::CreateScaleMatrix(_half_extents);

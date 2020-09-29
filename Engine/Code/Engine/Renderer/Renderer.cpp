@@ -3461,8 +3461,8 @@ std::unique_ptr<ShaderProgram> Renderer::CreateShaderProgramFromCsoFile(std::fil
     bool requested_retry = false;
     std::unique_ptr<ShaderProgram> sp = nullptr;
     do {
-        if(auto contents = FileUtils::ReadBinaryBufferFromFile(filepath)) {
-            sp = std::move(_rhi_device->CreateShaderProgramFromCsoBinaryBuffer(contents.value(), filepath.string(), target));
+        if(auto contents = FileUtils::ReadBinaryBufferFromFile(filepath); contents.has_value()) {
+            sp = std::move(_rhi_device->CreateShaderProgramFromCsoBinaryBuffer(*contents, filepath.string(), target));
             requested_retry = false;
 #ifdef RENDER_DEBUG
             if(sp == nullptr) {
@@ -4877,7 +4877,7 @@ Texture* Renderer::Create3DTexture(std::filesystem::path filepath, const IntVect
 
     D3D11_SUBRESOURCE_DATA subresource_data{};
 
-    if(const auto data = FileUtils::ReadBinaryBufferFromFile(filepath)) {
+    if(const auto& data = FileUtils::ReadBinaryBufferFromFile(filepath)) {
         auto width = dimensions.x;
         auto height = dimensions.y;
         subresource_data.pSysMem = data->data();

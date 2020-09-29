@@ -19,7 +19,7 @@ constexpr const bitfield8_t ANISOTROPIC_MASK_BITS = 0b0100'0000;
 
 //Dragons be here!! Look at your own risk!
 D3D11_FILTER FilterModeToD3DFilter(const FilterMode& minFilterMode, const FilterMode& magFilterMode, const FilterMode& mipFilterMode, const FilterComparisonMode& minMaxComparison) noexcept {
-    bitfield8_t filter_mask = GetFilterMaskFromModes(minFilterMode, magFilterMode, mipFilterMode, minMaxComparison);
+    const auto filter_mask = GetFilterMaskFromModes(minFilterMode, magFilterMode, mipFilterMode, minMaxComparison);
 
     //Any anisotropic setting overrides all others.
     if((filter_mask & ANISOTROPIC_MASK_BITS) == ANISOTROPIC_MASK_BITS) {
@@ -33,9 +33,9 @@ D3D11_FILTER FilterModeToD3DFilter(const FilterMode& minFilterMode, const Filter
             return D3D11_FILTER_ANISOTROPIC;
         }
     } else { //Not anisotropic
-        bool isMip = (filter_mask & MIP_MASK_BITS) == MIP_MASK_BITS;
-        bool isMag = (filter_mask & MAG_MASK_BITS) == MAG_MASK_BITS;
-        bool isMin = (filter_mask & MIN_MASK_BITS) == MIN_MASK_BITS;
+        const auto isMip = (filter_mask & MIP_MASK_BITS) == MIP_MASK_BITS;
+        const auto isMag = (filter_mask & MAG_MASK_BITS) == MAG_MASK_BITS;
+        const auto isMin = (filter_mask & MIN_MASK_BITS) == MIN_MASK_BITS;
         if(!isMin && !isMag && !isMip) { //000
             if((filter_mask & COMPARISON_MASK_BITS) == COMPARISON_MASK_BITS) {
                 return D3D11_FILTER_COMPARISON_MIN_MAG_MIP_POINT;

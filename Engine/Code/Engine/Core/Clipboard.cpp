@@ -59,7 +59,7 @@ void Clipboard::Close() noexcept {
 std::string Clipboard::Paste() noexcept {
     std::string text_to_paste{};
     if(HasText()) {
-        if(HGLOBAL hglb = ::GetClipboardData(CF_TEXT)) {
+        if(auto hglb = ::GetClipboardData(CF_TEXT)) {
             if(auto lpstrpaste = reinterpret_cast<LPTSTR>(::GlobalLock(hglb))) {
                 text_to_paste = lpstrpaste;
                 ::GlobalUnlock(hglb);

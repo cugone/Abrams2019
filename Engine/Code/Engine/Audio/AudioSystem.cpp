@@ -87,17 +87,17 @@ void AudioSystem::Initialize() {
     SetEngineCallback(&_engine_callback);
 }
 
-AudioSystem::ChannelGroup* AudioSystem::GetChannelGroup(const std::string& name) noexcept {
-    auto found = _channel_groups.find(name);
+AudioSystem::ChannelGroup* AudioSystem::GetChannelGroup(const std::string& name) const noexcept {
+    const auto found = _channel_groups.find(name);
     if(found != std::end(_channel_groups)) {
         return found->second.get();
     }
     return nullptr;
 }
 
-AudioSystem::ChannelGroup* AudioSystem::GetChannelGroup(Sound* snd) noexcept {
-    for(auto& group : _channel_groups) {
-        for(auto* sound : group.second->sounds) {
+AudioSystem::ChannelGroup* AudioSystem::GetChannelGroup(Sound* snd) const noexcept {
+    for(const auto& group : _channel_groups) {
+        for(const auto* sound : group.second->sounds) {
             if(snd == sound) {
                 return group.second.get();
             }
@@ -167,12 +167,10 @@ void AudioSystem::RemoveSoundFromChannelGroup(const std::string& channelGroupNam
 }
 
 void AudioSystem::RemoveSoundFromChannelGroup(const std::string& channelGroupName, const std::filesystem::path& filepath) noexcept {
-    if(auto group = GetChannelGroup(channelGroupName)) {
-        if(group->channel) {
-            if(auto found_iter = _sounds.find(filepath); found_iter != std::end(_sounds)) {
-                auto* snd = found_iter->second.get();
-                RemoveSoundFromChannelGroup(channelGroupName, snd);
-            }
+    if(const auto group = GetChannelGroup(channelGroupName); group && group->channel) {
+        if(const auto found_iter = _sounds.find(filepath); found_iter != std::end(_sounds)) {
+            auto* snd = found_iter->second.get();
+            RemoveSoundFromChannelGroup(channelGroupName, snd);
         }
     }
 }
@@ -237,11 +235,10 @@ void AudioSystem::RegisterWavFilesFromFolder(std::filesystem::path folderpath, b
     }
     folderpath = FS::canonical(folderpath);
     folderpath.make_preferred();
-    bool is_folder = FS::is_directory(folderpath);
-    if(!is_folder) {
+    if(!FS::is_directory(folderpath)) {
         return;
     }
-    auto cb =
+    const auto cb =
     [this](const std::filesystem::path& p) {
         RegisterWavFile(p);
     };
@@ -250,7 +247,7 @@ void AudioSystem::RegisterWavFilesFromFolder(std::filesystem::path folderpath, b
 
 void AudioSystem::DeactivateChannel(Channel& channel) noexcept {
     std::scoped_lock<std::mutex> lock(_cs);
-    auto found_iter = std::find_if(std::begin(_active_channels), std::end(_active_channels),
+    const auto found_iter = std::find_if(std::begin(_active_channels), std::end(_active_channels),
                                    [&channel](const std::unique_ptr<Channel>& c) { return c.get() == &channel; });
     _active_channels.erase(found_iter);
 }
@@ -393,7 +390,7 @@ AudioSystem::Channel::~Channel() noexcept {
 void AudioSystem::Channel::Play(Sound& snd) noexcept {
     snd.AddChannel(this);
     _sound = &snd;
-    if(auto* wav = snd.GetWav()) {
+    if(const auto* wav = snd.GetWav()) {
         _buffer.pAudioData = wav->GetDataBuffer();
         _buffer.AudioBytes = wav->GetDataBufferSize();
         _buffer.LoopCount = _desc.loop_count;

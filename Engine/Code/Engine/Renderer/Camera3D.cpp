@@ -165,7 +165,7 @@ float Camera3D::CalcFovYDegrees() const noexcept {
 }
 
 float Camera3D::CalcFovXDegrees() const noexcept {
-    float half_width = 0.5f * CalcNearViewWidth();
+    const auto half_width = 0.5f * CalcNearViewWidth();
     return 2.0f * std::atan(half_width / near_distance);
 }
 
@@ -249,7 +249,7 @@ void Camera3D::SetForwardFromTarget(const Vector3& lookAtPosition) noexcept {
     m.SetKBasis(Vector4(forward, 0.0f));
     m.OrthoNormalizeIJK();
     rotation = Quaternion(m);
-    auto eulerangles = rotation.CalcEulerAnglesDegrees();
+    const auto eulerangles = rotation.CalcEulerAnglesDegrees();
     rotationPitch = std::clamp(eulerangles.x, -89.0f, 89.0f);
     rotationYaw = MathUtils::Wrap(eulerangles.y, 0.0f, 360.0f);
     rotationRoll = MathUtils::Wrap(eulerangles.z, 0.0f, 360.0f);
@@ -306,15 +306,15 @@ void Camera3D::Rotate(const Vector3& axis, const float angle) noexcept {
 
 void Camera3D::RotateDegrees(const Vector3& axis, const float angleDegrees) noexcept {
     rotation = Quaternion::CreateFromAxisAngle(axis, angleDegrees);
-    auto eulerangles = rotation.CalcEulerAnglesDegrees();
+    const auto eulerangles = rotation.CalcEulerAnglesDegrees();
     rotationPitch = std::clamp(eulerangles.x, -89.0f, 89.0f);
     rotationYaw = MathUtils::Wrap(eulerangles.y, 0.0f, 360.0f);
     rotationRoll = MathUtils::Wrap(eulerangles.z, 0.0f, 360.0f);
 }
 
 Vector3 Camera3D::GetRight() const noexcept {
-    auto forward = GetForward();
-    auto right = MathUtils::CrossProduct(world_up, forward);
+    const auto forward = GetForward();
+    const auto right = MathUtils::CrossProduct(world_up, forward);
     return right.GetNormalize();
 }
 
@@ -329,23 +329,23 @@ Vector3 Camera3D::GetRightXZ() const noexcept {
 }
 
 Vector3 Camera3D::GetUp() const noexcept {
-    auto forward = GetForward();
-    auto right = GetRight();
-    auto up = MathUtils::CrossProduct(forward, right);
+    const auto forward = GetForward();
+    const auto right = GetRight();
+    const auto up = MathUtils::CrossProduct(forward, right);
     return up.GetNormalize();
 }
 
 Vector3 Camera3D::GetUpXY() const noexcept {
-    auto forward = GetForwardXY();
-    auto right = GetRightXY();
-    auto up = MathUtils::CrossProduct(forward, right);
+    const auto forward = GetForwardXY();
+    const auto right = GetRightXY();
+    const auto up = MathUtils::CrossProduct(forward, right);
     return up.GetNormalize();
 }
 
 Vector3 Camera3D::GetUpXZ() const noexcept {
-    auto forward = GetForwardXZ();
-    auto right = GetRightXZ();
-    auto up = MathUtils::CrossProduct(forward, right);
+    const auto forward = GetForwardXZ();
+    const auto right = GetRightXZ();
+    const auto up = MathUtils::CrossProduct(forward, right);
     return up.GetNormalize();
 }
 
@@ -362,15 +362,15 @@ Vector3 Camera3D::GetForward() const noexcept {
 }
 
 Vector3 Camera3D::GetForwardXY() const noexcept {
-    float cos_yaw = MathUtils::CosDegrees(rotationYaw);
-    float sin_yaw = MathUtils::SinDegrees(rotationYaw);
+    const auto cos_yaw = MathUtils::CosDegrees(rotationYaw);
+    const auto sin_yaw = MathUtils::SinDegrees(rotationYaw);
 
     return Vector3(cos_yaw, sin_yaw, 0.0f);
 }
 
 Vector3 Camera3D::GetForwardXZ() const noexcept {
-    float cos_yaw = MathUtils::CosDegrees(rotationYaw);
-    float sin_yaw = MathUtils::SinDegrees(rotationYaw);
+    const auto cos_yaw = MathUtils::CosDegrees(rotationYaw);
+    const auto sin_yaw = MathUtils::SinDegrees(rotationYaw);
 
     return Vector3(-sin_yaw, 0.0f, cos_yaw);
 }

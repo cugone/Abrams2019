@@ -64,8 +64,8 @@ System::Cpu::CpuDesc System::Cpu::GetCpuDesc() noexcept {
 }
 
 std::ostream& System::Cpu::operator<<(std::ostream& out, const System::Cpu::CpuDesc& cpu) noexcept {
-    auto old_fmt = out.flags();
-    auto old_w = out.width();
+    const auto old_fmt = out.flags();
+    const auto old_w = out.width();
     out << std::left << std::setw(25) << "Processor Type:" << std::right << std::setw(27) << StringUtils::to_string(cpu.type) << '\n';
     out << std::left << std::setw(25) << "Socket Count:" << std::right << std::setw(27) << cpu.socketCount << '\n';
     out << std::left << std::setw(25) << "Logical Processor Count:" << std::right << std::setw(27) << cpu.logicalCount << '\n';
@@ -94,7 +94,7 @@ SYSTEM_INFO GetSystemInfo() noexcept {
 
 System::Cpu::ProcessorArchitecture GetProcessorArchitecture() noexcept {
     using namespace System::Cpu;
-    auto info = GetSystemInfo();
+    const auto info = GetSystemInfo();
     switch(info.wProcessorArchitecture) {
     case PROCESSOR_ARCHITECTURE_INTEL: return ProcessorArchitecture::Intel;
     case PROCESSOR_ARCHITECTURE_MIPS: return ProcessorArchitecture::Mips;
@@ -127,8 +127,8 @@ unsigned long GetSocketCount() noexcept {
     //This will intentionally fail in order to fill the length parameter with the correct value.
     if(!::GetLogicalProcessorInformation(nullptr, &length)) {
         if(::GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
-            auto b = std::make_unique<unsigned char[]>(length);
-            auto buffer = reinterpret_cast<SYSTEM_LOGICAL_PROCESSOR_INFORMATION*>(b.get());
+            const auto b = std::make_unique<unsigned char[]>(length);
+            auto* buffer = reinterpret_cast<SYSTEM_LOGICAL_PROCESSOR_INFORMATION*>(b.get());
             if(!::GetLogicalProcessorInformation(buffer, &length)) {
                 return 0ul;
             }

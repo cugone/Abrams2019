@@ -20,7 +20,7 @@ void Stopwatch::SetFrequency(unsigned int hz) noexcept {
 }
 
 bool Stopwatch::Check() const noexcept {
-    auto current_time = TimeUtils::GetCurrentTimeElapsed();
+    const auto current_time = TimeUtils::GetCurrentTimeElapsed();
     return (target_time < current_time);
 }
 

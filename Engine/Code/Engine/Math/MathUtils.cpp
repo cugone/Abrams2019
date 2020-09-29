@@ -32,20 +32,20 @@ void SetRandomEngineSeed(unsigned int seed) noexcept {
 }
 
 std::pair<float, float> SplitFloatingPointValue(float value) noexcept {
-    float int_part = 0.0f;
-    float frac = std::modf(value, &int_part);
+    auto int_part = 0.0f;
+    const float frac = std::modf(value, &int_part);
     return std::make_pair(int_part, frac);
 }
 
 std::pair<double, double> SplitFloatingPointValue(double value) noexcept {
-    double int_part = 0.0;
-    double frac = std::modf(value, &int_part);
+    auto int_part = 0.0;
+    const auto frac = std::modf(value, &int_part);
     return std::make_pair(int_part, frac);
 }
 
 std::pair<long double, long double> SplitFloatingPointValue(long double value) noexcept {
-    long double int_part = 0.0;
-    long double frac = std::modf(value, &int_part);
+    auto int_part = 0.0L;
+    const auto frac = std::modf(value, &int_part);
     return std::make_pair(int_part, frac);
 }
 
@@ -164,32 +164,32 @@ long double GetRandomLongDoubleNegOneToOne() noexcept {
 }
 
 bool IsPercentChance(float probability) noexcept {
-    float roll = GetRandomFloatZeroToOne();
+    const auto roll = GetRandomFloatZeroToOne();
     return roll < probability;
 }
 
 bool IsPercentChance(double probability) noexcept {
-    double roll = GetRandomDoubleZeroToOne();
+    const auto roll = GetRandomDoubleZeroToOne();
     return roll < probability;
 }
 
 bool IsPercentChance(long double probability) noexcept {
-    long double roll = GetRandomLongDoubleZeroToOne();
+    const auto roll = GetRandomLongDoubleZeroToOne();
     return roll < probability;
 }
 
 float CosDegrees(float degrees) noexcept {
-    float radians = MathUtils::ConvertDegreesToRadians(degrees);
+    const auto radians = MathUtils::ConvertDegreesToRadians(degrees);
     return std::cos(radians);
 }
 
 float SinDegrees(float degrees) noexcept {
-    float radians = MathUtils::ConvertDegreesToRadians(degrees);
+    const auto radians = MathUtils::ConvertDegreesToRadians(degrees);
     return std::sin(radians);
 }
 
 float Atan2Degrees(float y, float x) noexcept {
-    float radians = std::atan2(y, x);
+    const auto radians = std::atan2(y, x);
     return MathUtils::ConvertRadiansToDegrees(radians);
 }
 
@@ -348,7 +348,7 @@ float CalcDistanceSquared(const LineSegment2& line, const Polygon2& poly2) noexc
 float CalcDistanceSquared(const Polygon2& poly2, const LineSegment2& line) noexcept {
     const auto& edges = poly2.GetEdges();
 
-    float smallest_distance_sq = std::numeric_limits<float>::infinity();
+    auto smallest_distance_sq = std::numeric_limits<float>::infinity();
     for(const auto& edge : edges) {
         const auto new_dist = CalcDistanceSquared(edge, line);
         if(new_dist < smallest_distance_sq) {
@@ -419,23 +419,23 @@ float DotProduct(const Quaternion& a, const Quaternion& b) noexcept {
 }
 
 float CrossProduct(const Vector2& a, const Vector2& b) noexcept {
-    float a1 = a.x;
-    float a2 = a.y;
+    const auto a1 = a.x;
+    const auto a2 = a.y;
 
-    float b1 = b.x;
-    float b2 = b.y;
+    const auto b1 = b.x;
+    const auto b2 = b.y;
 
     return a1 * b2 - a2 * b1;
 }
 
 Vector3 CrossProduct(const Vector3& a, const Vector3& b) noexcept {
-    float a1 = a.x;
-    float a2 = a.y;
-    float a3 = a.z;
+    const auto a1 = a.x;
+    const auto a2 = a.y;
+    const auto a3 = a.z;
 
-    float b1 = b.x;
-    float b2 = b.y;
-    float b3 = b.z;
+    const auto b1 = b.x;
+    const auto b2 = b.y;
+    const auto b3 = b.z;
 
     return Vector3(a2 * b3 - a3 * b2, a3 * b1 - a1 * b3, a1 * b2 - a2 * b1);
 }
@@ -561,8 +561,8 @@ unsigned int CalculateChessboardDistance(const IntVector4& start, const IntVecto
 
 Vector2 GetRandomPointOn(const AABB2& aabb) noexcept {
     float result[2]{0.0f, 0.0f};
-    int s = MathUtils::GetRandomIntLessThan(4);
-    int c = s % 2;
+    const auto s = MathUtils::GetRandomIntLessThan(4);
+    const auto c = s % 2;
     result[(c + 0) % 2] = s > 1 ? 1.0f : 0.0f;
     result[(c + 1) % 2] = s > 1 ? 1.0f : 0.0f;
     Vector2 point{result[0], result[1]};
@@ -576,15 +576,15 @@ Vector2 GetRandomPointOn(const Disc2& disc) noexcept {
 }
 
 Vector2 GetRandomPointOn(const LineSegment2& line) noexcept {
-    auto dir = line.CalcDirection();
-    auto len = line.CalcLength() * MathUtils::GetRandomFloatZeroToOne();
+    const auto dir = line.CalcDirection();
+    const auto len = line.CalcLength() * MathUtils::GetRandomFloatZeroToOne();
     return line.start + (dir * len);
 }
 
 Vector3 GetRandomPointOn(const AABB3& aabb) noexcept {
     float result[3]{0.0f, 0.0f, 0.0f};
-    int s = MathUtils::GetRandomIntLessThan(6);
-    int c = s % 3;
+    const auto s = MathUtils::GetRandomIntLessThan(6);
+    const auto c = s % 3;
     result[(c + 0) % 3] = s > 2 ? 1.0f : 0.0f;
     result[(c + 1) % 3] = MathUtils::GetRandomFloatZeroToOne();
     result[(c + 2) % 3] = MathUtils::GetRandomFloatZeroToOne();
@@ -594,24 +594,24 @@ Vector3 GetRandomPointOn(const AABB3& aabb) noexcept {
 
 Vector3 GetRandomPointOn(const Sphere3& sphere) noexcept {
     //See: https://karthikkaranth.me/blog/generating-random-points-in-a-sphere/
-    float u = MathUtils::GetRandomFloatZeroToOne();
-    float v = MathUtils::GetRandomFloatZeroToOne();
-    float theta = MathUtils::M_2PI * u;
-    float phi = std::acos(2.0f * v - 1.0f);
-    float r = sphere.radius;
-    float sin_theta = std::sin(theta);
-    float cos_theta = std::cos(theta);
-    float sin_phi = std::sin(phi);
-    float cos_phi = std::cos(phi);
-    float x = r * sin_phi * cos_theta;
-    float y = r * sin_phi * sin_theta;
-    float z = r * cos_phi;
+    const auto u = MathUtils::GetRandomFloatZeroToOne();
+    const auto v = MathUtils::GetRandomFloatZeroToOne();
+    const auto theta = MathUtils::M_2PI * u;
+    const auto phi = std::acos(2.0f * v - 1.0f);
+    const auto r = sphere.radius;
+    const auto sin_theta = std::sin(theta);
+    const auto cos_theta = std::cos(theta);
+    const auto sin_phi = std::sin(phi);
+    const auto cos_phi = std::cos(phi);
+    const auto x = r * sin_phi * cos_theta;
+    const auto y = r * sin_phi * sin_theta;
+    const auto z = r * cos_phi;
     return sphere.center + Vector3{x, y, z};
 }
 
 Vector3 GetRandomPointOn(const LineSegment3& line) noexcept {
-    auto dir = line.CalcDirection();
-    auto len = line.CalcLength() * MathUtils::GetRandomFloatZeroToOne();
+    const auto dir = line.CalcDirection();
+    const auto len = line.CalcLength() * MathUtils::GetRandomFloatZeroToOne();
     return line.start + (dir * len);
 }
 
@@ -631,18 +631,18 @@ Vector3 GetRandomPointInside(const AABB3& aabb) noexcept {
 
 Vector3 GetRandomPointInside(const Sphere3& sphere) noexcept {
     //See: https://karthikkaranth.me/blog/generating-random-points-in-a-sphere/
-    float u = MathUtils::GetRandomFloatZeroToOne();
-    float v = MathUtils::GetRandomFloatZeroToOne();
-    float theta = MathUtils::M_2PI * u;
-    float phi = std::acos(2.0f * v - 1.0f);
-    float r = sphere.radius * std::pow(MathUtils::GetRandomFloatZeroToOne(), 1.0f / 3.0f);
-    float sin_theta = std::sin(theta);
-    float cos_theta = std::cos(theta);
-    float sin_phi = std::sin(phi);
-    float cos_phi = std::cos(phi);
-    float x = r * sin_phi * cos_theta;
-    float y = r * sin_phi * sin_theta;
-    float z = r * cos_phi;
+    const auto u = MathUtils::GetRandomFloatZeroToOne();
+    const auto v = MathUtils::GetRandomFloatZeroToOne();
+    const auto theta = MathUtils::M_2PI * u;
+    const auto phi = std::acos(2.0f * v - 1.0f);
+    const auto r = sphere.radius * std::pow(MathUtils::GetRandomFloatZeroToOne(), 1.0f / 3.0f);
+    const auto sin_theta = std::sin(theta);
+    const auto cos_theta = std::cos(theta);
+    const auto sin_phi = std::sin(phi);
+    const auto cos_phi = std::cos(phi);
+    const auto x = r * sin_phi * cos_theta;
+    const auto y = r * sin_phi * sin_theta;
+    const auto z = r * cos_phi;
     return sphere.center + Vector3{x, y, z};
 }
 
@@ -783,8 +783,8 @@ bool IsPointInside(const Capsule3& capsule, const Vector3& point) noexcept {
 }
 
 bool IsPointOn(const Disc2& disc, const Vector2& point) noexcept {
-    float distanceSquared = CalcDistanceSquared(disc.center, point);
-    float radiusSquared = disc.radius * disc.radius;
+    const auto distanceSquared = CalcDistanceSquared(disc.center, point);
+    const auto radiusSquared = disc.radius * disc.radius;
     return !(distanceSquared < radiusSquared || radiusSquared < distanceSquared);
 }
 
@@ -793,8 +793,8 @@ bool IsPointOn(const LineSegment2& line, const Vector2& point) noexcept {
 }
 
 bool IsPointOn(const Capsule2& capsule, const Vector2& point) noexcept {
-    float distanceSquared = CalcDistanceSquared(point, capsule.line);
-    float radiusSquared = capsule.radius * capsule.radius;
+    const auto distanceSquared = CalcDistanceSquared(point, capsule.line);
+    const auto radiusSquared = capsule.radius * capsule.radius;
     return !(distanceSquared < radiusSquared || radiusSquared < distanceSquared);
 }
 
@@ -803,14 +803,14 @@ bool IsPointOn(const LineSegment3& line, const Vector3& point) noexcept {
 }
 
 bool IsPointOn(const Sphere3& sphere, const Vector3& point) noexcept {
-    float distanceSquared = CalcDistanceSquared(sphere.center, point);
-    float radiusSquared = sphere.radius * sphere.radius;
+    const auto distanceSquared = CalcDistanceSquared(sphere.center, point);
+    const auto radiusSquared = sphere.radius * sphere.radius;
     return !(distanceSquared < radiusSquared || radiusSquared < distanceSquared);
 }
 
 bool IsPointOn(const Capsule3& capsule, const Vector3& point) noexcept {
-    float distanceSquared = CalcDistanceSquared(point, capsule.line);
-    float radiusSquared = capsule.radius * capsule.radius;
+    const auto distanceSquared = CalcDistanceSquared(point, capsule.line);
+    const auto radiusSquared = capsule.radius * capsule.radius;
     return !(distanceSquared < radiusSquared || radiusSquared < distanceSquared);
 }
 
@@ -880,9 +880,9 @@ Vector2 CalcClosestPoint(const Vector2& p, const OBB2& obb) noexcept {
 }
 
 Vector3 CalcClosestPoint(const Vector3& p, const AABB3& aabb) noexcept {
-    float nearestX = std::clamp(p.x, aabb.mins.x, aabb.maxs.x);
-    float nearestY = std::clamp(p.y, aabb.mins.y, aabb.maxs.y);
-    float nearestZ = std::clamp(p.z, aabb.mins.z, aabb.maxs.z);
+    const auto nearestX = std::clamp(p.x, aabb.mins.x, aabb.maxs.x);
+    const auto nearestY = std::clamp(p.y, aabb.mins.y, aabb.maxs.y);
+    const auto nearestZ = std::clamp(p.z, aabb.mins.z, aabb.maxs.z);
 
     return Vector3(nearestX, nearestY, nearestZ);
 }
@@ -899,92 +899,92 @@ Vector2 CalcClosestPoint(const Vector2& p, const Polygon2& poly2) noexcept {
 }
 
 Vector2 CalcClosestPoint(const Vector2& p, const Disc2& disc) noexcept {
-    Vector2 dir = (p - disc.center).GetNormalize();
+    const auto dir = (p - disc.center).GetNormalize();
     return disc.center + dir * disc.radius;
 }
 
 Vector2 CalcClosestPoint(const Vector2& p, const LineSegment2& line) noexcept {
-    Vector2 lineDisplacement = line.end - line.start;
-    Vector2 lineDirection = lineDisplacement.GetNormalize();
+    const auto lineDisplacement = line.end - line.start;
+    const auto lineDirection = lineDisplacement.GetNormalize();
 
-    Vector2 lineSP = p - line.start;
-    float regionI = MathUtils::DotProduct(lineDirection, lineSP);
+    const auto lineSP = p - line.start;
+    const auto regionI = MathUtils::DotProduct(lineDirection, lineSP);
     if(regionI < 0.0f) {
         return line.start;
     }
 
-    Vector2 lineEP = p - line.end;
-    float regionII = MathUtils::DotProduct(lineDirection, lineEP);
+    const auto lineEP = p - line.end;
+    const auto regionII = MathUtils::DotProduct(lineDirection, lineEP);
     if(regionII > 0.0f) {
         return line.end;
     }
 
-    float lengthToClosestPoint = MathUtils::DotProduct(lineDirection, lineSP);
-    Vector2 C = lineDirection * lengthToClosestPoint;
-    Vector2 ConL = line.start + C;
+    const auto lengthToClosestPoint = MathUtils::DotProduct(lineDirection, lineSP);
+    const auto C = lineDirection * lengthToClosestPoint;
+    const auto ConL = line.start + C;
     return ConL;
 }
 
 Vector2 CalcClosestPoint(const Vector2& p, const Capsule2& capsule) noexcept {
-    Vector2 closestP = CalcClosestPoint(p, capsule.line);
-    Vector2 dir_to_p = (p - closestP).GetNormalize();
+    const auto closestP = CalcClosestPoint(p, capsule.line);
+    const auto dir_to_p = (p - closestP).GetNormalize();
     return closestP + (dir_to_p * capsule.radius);
 }
 
 Vector3 CalcClosestPoint(const Vector3& p, const LineSegment3& line) noexcept {
-    Vector3 D = line.end - line.start;
-    Vector3 T = D.GetNormalize();
-    Vector3 SP = p - line.start;
+    const auto D = line.end - line.start;
+    const auto T = D.GetNormalize();
+    const auto SP = p - line.start;
     float regionI = MathUtils::DotProduct(T, SP);
     if(regionI < 0.0f) {
         return line.start;
     }
 
-    Vector3 EP = p - line.end;
-    float regionII = MathUtils::DotProduct(T, EP);
+    const auto EP = p - line.end;
+    const auto regionII = MathUtils::DotProduct(T, EP);
     if(regionII > 0.0f) {
         return line.end;
     }
 
-    Vector3 directionSE = D.GetNormalize();
-    float lengthToClosestPoint = MathUtils::DotProduct(directionSE, SP);
-    Vector3 C = directionSE * lengthToClosestPoint;
-    Vector3 ConL = line.start + C;
+    const auto directionSE = D.GetNormalize();
+    const auto lengthToClosestPoint = MathUtils::DotProduct(directionSE, SP);
+    const auto C = directionSE * lengthToClosestPoint;
+    const auto ConL = line.start + C;
     return ConL;
 }
 
 Vector3 CalcClosestPoint(const Vector3& p, const Sphere3& sphere) noexcept {
-    Vector3 dir = (p - sphere.center).GetNormalize();
+    const auto dir = (p - sphere.center).GetNormalize();
     return sphere.center + dir * sphere.radius;
 }
 
 Vector3 CalcClosestPoint(const Vector3& p, const Capsule3& capsule) noexcept {
-    Vector3 closestP = CalcClosestPoint(p, capsule.line);
-    Vector3 dir_to_p = (p - closestP).GetNormalize();
+    const auto closestP = CalcClosestPoint(p, capsule.line);
+    const auto dir_to_p = (p - closestP).GetNormalize();
     return closestP + (dir_to_p * capsule.radius);
 }
 
 Vector2 CalcNormalizedPointFromPoint(const Vector2& pos, const AABB2& bounds) noexcept {
-    float x_norm = RangeMap(pos.x, bounds.mins.x, bounds.maxs.x, 0.0f, 1.0f);
-    float y_norm = RangeMap(pos.y, bounds.mins.y, bounds.maxs.y, 0.0f, 1.0f);
+    const auto x_norm = RangeMap(pos.x, bounds.mins.x, bounds.maxs.x, 0.0f, 1.0f);
+    const auto y_norm = RangeMap(pos.y, bounds.mins.y, bounds.maxs.y, 0.0f, 1.0f);
     return Vector2(x_norm, y_norm);
 }
 
 Vector2 CalcPointFromNormalizedPoint(const Vector2& uv, const AABB2& bounds) noexcept {
-    float x = RangeMap(uv.x, 0.0f, 1.0f, bounds.mins.x, bounds.maxs.x);
-    float y = RangeMap(uv.y, 0.0f, 1.0f, bounds.mins.y, bounds.maxs.y);
+    const auto x = RangeMap(uv.x, 0.0f, 1.0f, bounds.mins.x, bounds.maxs.x);
+    const auto y = RangeMap(uv.y, 0.0f, 1.0f, bounds.mins.y, bounds.maxs.y);
     return Vector2(x, y);
 }
 
 Vector2 CalcNormalizedHalfExtentsFromPoint(const Vector2& pos, const AABB2& bounds) noexcept {
-    float x_norm = RangeMap(pos.x, bounds.mins.x, bounds.maxs.x, -0.5f, 0.5f);
-    float y_norm = RangeMap(pos.y, bounds.mins.y, bounds.maxs.y, -0.5f, 0.5f);
+    const auto x_norm = RangeMap(pos.x, bounds.mins.x, bounds.maxs.x, -0.5f, 0.5f);
+    const auto y_norm = RangeMap(pos.y, bounds.mins.y, bounds.maxs.y, -0.5f, 0.5f);
     return Vector2(x_norm, y_norm);
 }
 
 Vector2 CalcPointFromNormalizedHalfExtents(const Vector2& uv, const AABB2& bounds) noexcept {
-    float x = RangeMap(uv.x, -0.5f, 0.5f, bounds.mins.x, bounds.maxs.x);
-    float y = RangeMap(uv.y, -0.5f, 0.5f, bounds.mins.y, bounds.maxs.y);
+    const auto x = RangeMap(uv.x, -0.5f, 0.5f, bounds.mins.x, bounds.maxs.x);
+    const auto y = RangeMap(uv.y, -0.5f, 0.5f, bounds.mins.y, bounds.maxs.y);
     return Vector2(x, y);
 }
 
@@ -1175,8 +1175,8 @@ bool DoPlaneOverlap(const Sphere3& a, const Plane3& b) noexcept {
 }
 
 bool DoPlaneOverlap(const Capsule2& a, const Plane2& b) noexcept {
-    bool both_capsule_points_in_front = IsPointInFrontOfPlane(a.line.start, b) && IsPointInFrontOfPlane(a.line.end, b);
-    bool both_capsule_points_in_back = IsPointBehindOfPlane(a.line.start, b) && IsPointBehindOfPlane(a.line.end, b);
+    const auto both_capsule_points_in_front = IsPointInFrontOfPlane(a.line.start, b) && IsPointInFrontOfPlane(a.line.end, b);
+    const auto both_capsule_points_in_back = IsPointBehindOfPlane(a.line.start, b) && IsPointBehindOfPlane(a.line.end, b);
 
     if(both_capsule_points_in_front || both_capsule_points_in_back) {
         return CalcDistanceSquared(Vector2::ZERO, a.line) < (a.radius + b.dist) * (a.radius + b.dist);
@@ -1185,8 +1185,8 @@ bool DoPlaneOverlap(const Capsule2& a, const Plane2& b) noexcept {
 }
 
 bool DoPlaneOverlap(const Capsule3& a, const Plane3& b) noexcept {
-    bool both_capsule_points_in_front = IsPointInFrontOfPlane(a.line.start, b) && IsPointInFrontOfPlane(a.line.end, b);
-    bool both_capsule_points_in_back = IsPointBehindOfPlane(a.line.start, b) && IsPointBehindOfPlane(a.line.end, b);
+    const auto both_capsule_points_in_front = IsPointInFrontOfPlane(a.line.start, b) && IsPointInFrontOfPlane(a.line.end, b);
+    const auto both_capsule_points_in_back = IsPointBehindOfPlane(a.line.start, b) && IsPointBehindOfPlane(a.line.end, b);
 
     if(both_capsule_points_in_front || both_capsule_points_in_back) {
         return CalcDistanceSquared(Vector3::ZERO, a.line) < (a.radius + b.dist) * (a.radius + b.dist);
@@ -1219,12 +1219,12 @@ bool IsPointOnPlane(const Vector2& point, const Plane2& plane) noexcept {
 }
 
 float CalculateMatrix3Determinant(float m00, float m01, float m02, float m10, float m11, float m12, float m20, float m21, float m22) noexcept {
-    float a = m00;
-    float b = m01;
-    float c = m02;
-    float det_not_a = CalculateMatrix2Determinant(m11, m12, m21, m22);
-    float det_not_b = CalculateMatrix2Determinant(m10, m12, m20, m22);
-    float det_not_c = CalculateMatrix2Determinant(m10, m11, m20, m21);
+    const auto a = m00;
+    const auto b = m01;
+    const auto c = m02;
+    const auto det_not_a = CalculateMatrix2Determinant(m11, m12, m21, m22);
+    const auto det_not_b = CalculateMatrix2Determinant(m10, m12, m20, m22);
+    const auto det_not_c = CalculateMatrix2Determinant(m10, m11, m20, m21);
 
     return a * det_not_a - b * det_not_b + c * det_not_c;
 }
@@ -1243,7 +1243,7 @@ Quaternion SLERP(const Quaternion& a, const Quaternion& b, float t) noexcept {
     start.Normalize();
     end.Normalize();
 
-    float dp = MathUtils::DotProduct(start, end);
+    auto dp = MathUtils::DotProduct(start, end);
 
     if(dp < 0.0f) {
         end = -end;
@@ -1252,161 +1252,161 @@ Quaternion SLERP(const Quaternion& a, const Quaternion& b, float t) noexcept {
 
     //Really close together
     if(dp > 0.99995f) {
-        Quaternion result = MathUtils::Interpolate(start, end, t);
+        auto result = MathUtils::Interpolate(start, end, t);
         result.Normalize();
         return result;
     }
 
     dp = std::clamp(dp, -1.0f, 1.0f);
 
-    float theta_0 = std::acos(dp);
-    float theta = theta_0 * t;
+    const auto theta_0 = std::acos(dp);
+    const auto theta = theta_0 * t;
 
-    float scale0 = std::cos(theta) - dp * std::sin(theta) / std::sin(theta_0);
-    float scale1 = std::sin(theta) / std::sin(theta_0);
+    const auto scale0 = std::cos(theta) - dp * std::sin(theta) / std::sin(theta_0);
+    const auto scale1 = std::sin(theta) / std::sin(theta_0);
 
     return (scale0 * start) + (scale1 * end);
 }
 
 template<>
 Vector2 Interpolate(const Vector2& a, const Vector2& b, float t) {
-    float x = Interpolate(a.x, b.x, t);
-    float y = Interpolate(a.y, b.y, t);
+    const auto x = Interpolate(a.x, b.x, t);
+    const auto y = Interpolate(a.y, b.y, t);
     return Vector2(x, y);
 }
 
 template<>
 Vector3 Interpolate(const Vector3& a, const Vector3& b, float t) {
-    float x = Interpolate(a.x, b.x, t);
-    float y = Interpolate(a.y, b.y, t);
-    float z = Interpolate(a.z, b.z, t);
+    const auto x = Interpolate(a.x, b.x, t);
+    const auto y = Interpolate(a.y, b.y, t);
+    const auto z = Interpolate(a.z, b.z, t);
     return Vector3(x, y, z);
 }
 
 template<>
 Vector4 Interpolate(const Vector4& a, const Vector4& b, float t) {
-    float x = Interpolate(a.x, b.x, t);
-    float y = Interpolate(a.y, b.y, t);
-    float z = Interpolate(a.z, b.z, t);
-    float w = Interpolate(a.w, b.w, t);
+    const auto x = Interpolate(a.x, b.x, t);
+    const auto y = Interpolate(a.y, b.y, t);
+    const auto z = Interpolate(a.z, b.z, t);
+    const auto w = Interpolate(a.w, b.w, t);
     return Vector4(x, y, z, w);
 }
 
 template<>
 IntVector2 Interpolate(const IntVector2& a, const IntVector2& b, float t) {
-    float x = Interpolate(static_cast<float>(a.x), static_cast<float>(b.x), t);
-    float y = Interpolate(static_cast<float>(a.y), static_cast<float>(b.y), t);
+    const auto x = Interpolate(static_cast<float>(a.x), static_cast<float>(b.x), t);
+    const auto y = Interpolate(static_cast<float>(a.y), static_cast<float>(b.y), t);
     return IntVector2(Vector2(x, y));
 }
 
 template<>
 IntVector3 Interpolate(const IntVector3& a, const IntVector3& b, float t) {
-    float x = Interpolate(static_cast<float>(a.x), static_cast<float>(b.x), t);
-    float y = Interpolate(static_cast<float>(a.y), static_cast<float>(b.y), t);
-    float z = Interpolate(static_cast<float>(a.z), static_cast<float>(b.z), t);
+    const auto x = Interpolate(static_cast<float>(a.x), static_cast<float>(b.x), t);
+    const auto y = Interpolate(static_cast<float>(a.y), static_cast<float>(b.y), t);
+    const auto z = Interpolate(static_cast<float>(a.z), static_cast<float>(b.z), t);
     return IntVector3(Vector3(x, y, z));
 }
 
 template<>
 IntVector4 Interpolate(const IntVector4& a, const IntVector4& b, float t) {
-    float x = Interpolate(static_cast<float>(a.x), static_cast<float>(b.x), t);
-    float y = Interpolate(static_cast<float>(a.y), static_cast<float>(b.y), t);
-    float z = Interpolate(static_cast<float>(a.z), static_cast<float>(b.z), t);
-    float w = Interpolate(static_cast<float>(a.w), static_cast<float>(b.w), t);
+    const auto x = Interpolate(static_cast<float>(a.x), static_cast<float>(b.x), t);
+    const auto y = Interpolate(static_cast<float>(a.y), static_cast<float>(b.y), t);
+    const auto z = Interpolate(static_cast<float>(a.z), static_cast<float>(b.z), t);
+    const auto w = Interpolate(static_cast<float>(a.w), static_cast<float>(b.w), t);
     return IntVector4(Vector4(x, y, z, w));
 }
 
 template<>
 AABB2 Interpolate(const AABB2& a, const AABB2& b, float t) {
-    Vector2 mins(Interpolate(a.mins, b.mins, t));
-    Vector2 maxs(Interpolate(a.maxs, b.maxs, t));
+    const auto mins(Interpolate(a.mins, b.mins, t));
+    const auto maxs(Interpolate(a.maxs, b.maxs, t));
     return AABB2(mins, maxs);
 }
 
 template<>
 AABB3 Interpolate(const AABB3& a, const AABB3& b, float t) {
-    Vector3 mins(Interpolate(a.mins, b.mins, t));
-    Vector3 maxs(Interpolate(a.maxs, b.maxs, t));
+    const auto mins(Interpolate(a.mins, b.mins, t));
+    const auto maxs(Interpolate(a.maxs, b.maxs, t));
     return AABB3(mins, maxs);
 }
 
 template<>
 OBB2 Interpolate(const OBB2& a, const OBB2& b, float t) {
-    float orientation(Interpolate(a.orientationDegrees, b.orientationDegrees, t));
-    Vector2 he(Interpolate(a.half_extents, b.half_extents, t));
-    Vector2 p(Interpolate(a.position, b.position, t));
+    const auto orientation(Interpolate(a.orientationDegrees, b.orientationDegrees, t));
+    const auto he(Interpolate(a.half_extents, b.half_extents, t));
+    const auto p(Interpolate(a.position, b.position, t));
     return OBB2(p, he, orientation);
 }
 
 template<>
 Polygon2 Interpolate(const Polygon2& a, const Polygon2& b, float t) {
-    int sides = static_cast<int>(Interpolate(static_cast<float>(a.GetSides()), static_cast<float>(b.GetSides()), t));
-    float orientation(Interpolate(a.GetOrientationDegrees(), b.GetOrientationDegrees(), t));
-    Vector2 he(Interpolate(a.GetHalfExtents(), b.GetHalfExtents(), t));
-    Vector2 p(Interpolate(a.GetPosition(), b.GetPosition(), t));
+    const auto sides = static_cast<int>(Interpolate(static_cast<float>(a.GetSides()), static_cast<float>(b.GetSides()), t));
+    const auto orientation(Interpolate(a.GetOrientationDegrees(), b.GetOrientationDegrees(), t));
+    const auto he(Interpolate(a.GetHalfExtents(), b.GetHalfExtents(), t));
+    const auto p(Interpolate(a.GetPosition(), b.GetPosition(), t));
     return Polygon2(sides, p, he, orientation);
 }
 
 template<>
 Disc2 Interpolate(const Disc2& a, const Disc2& b, float t) {
-    Vector2 c(Interpolate(a.center, b.center, t));
-    float r(Interpolate(a.radius, b.radius, t));
+    const auto c(Interpolate(a.center, b.center, t));
+    const auto r(Interpolate(a.radius, b.radius, t));
     return Disc2(c, r);
 }
 
 template<>
 LineSegment2 Interpolate(const LineSegment2& a, const LineSegment2& b, float t) {
-    Vector2 start(Interpolate(a.start, b.start, t));
-    Vector2 end(Interpolate(a.end, b.end, t));
+    const auto start(Interpolate(a.start, b.start, t));
+    const auto end(Interpolate(a.end, b.end, t));
     return LineSegment2(start, end);
 }
 
 template<>
 Capsule2 Interpolate(const Capsule2& a, const Capsule2& b, float t) {
-    LineSegment2 line(Interpolate(a.line, b.line, t));
-    float r(Interpolate(a.radius, b.radius, t));
+    const auto line(Interpolate(a.line, b.line, t));
+    const auto r(Interpolate(a.radius, b.radius, t));
     return Capsule2(line, r);
 }
 
 template<>
 LineSegment3 Interpolate(const LineSegment3& a, const LineSegment3& b, float t) {
-    Vector3 start(Interpolate(a.start, b.start, t));
-    Vector3 end(Interpolate(a.end, b.end, t));
+    const auto start(Interpolate(a.start, b.start, t));
+    const auto end(Interpolate(a.end, b.end, t));
     return LineSegment3(start, end);
 }
 
 template<>
 Sphere3 Interpolate(const Sphere3& a, const Sphere3& b, float t) {
-    Vector3 c(Interpolate(a.center, b.center, t));
-    float r(Interpolate(a.radius, b.radius, t));
+    const auto c(Interpolate(a.center, b.center, t));
+    const auto r(Interpolate(a.radius, b.radius, t));
     return Sphere3(c, r);
 }
 
 template<>
 Capsule3 Interpolate(const Capsule3& a, const Capsule3& b, float t) {
-    LineSegment3 line(Interpolate(a.line, b.line, t));
-    float r(Interpolate(a.radius, b.radius, t));
+    const auto line(Interpolate(a.line, b.line, t));
+    const auto r(Interpolate(a.radius, b.radius, t));
     return Capsule3(line, r);
 }
 
 template<>
 Plane2 Interpolate(const Plane2& a, const Plane2& b, float t) {
-    float d = Interpolate(a.dist, b.dist, t);
-    Vector2 n = Interpolate(a.normal, b.normal, t);
+    const auto d = Interpolate(a.dist, b.dist, t);
+    const auto n = Interpolate(a.normal, b.normal, t);
     return Plane2(n, d);
 }
 
 template<>
 Plane3 Interpolate(const Plane3& a, const Plane3& b, float t) {
-    float d = Interpolate(a.dist, b.dist, t);
-    Vector3 n = Interpolate(a.normal, b.normal, t);
+    const auto d = Interpolate(a.dist, b.dist, t);
+    const auto n = Interpolate(a.normal, b.normal, t);
     return Plane3(n, d);
 }
 
 template<>
 Quaternion Interpolate(const Quaternion& a, const Quaternion& b, float t) {
-    float w = Interpolate(a.w, b.w, t);
-    Vector3 axis = Interpolate(a.axis, b.axis, t);
+    const auto w = Interpolate(a.w, b.w, t);
+    const auto axis = Interpolate(a.axis, b.axis, t);
     return Quaternion(w, axis);
 }
 
@@ -1417,10 +1417,10 @@ Rgba Interpolate(const Rgba& a, const Rgba& b, float t) {
     float b_color[4];
     b.GetAsFloats(b_color[0], b_color[1], b_color[2], b_color[3]);
 
-    float red = Interpolate(a_color[0], b_color[0], t);
-    float green = Interpolate(a_color[1], b_color[1], t);
-    float blue = Interpolate(a_color[2], b_color[2], t);
-    float alpha = Interpolate(a_color[3], b_color[3], t);
+    const auto red = Interpolate(a_color[0], b_color[0], t);
+    const auto green = Interpolate(a_color[1], b_color[1], t);
+    const auto blue = Interpolate(a_color[2], b_color[2], t);
+    const auto alpha = Interpolate(a_color[3], b_color[3], t);
 
     Rgba result;
     result.SetAsFloats(red, green, blue, alpha);
@@ -1428,92 +1428,92 @@ Rgba Interpolate(const Rgba& a, const Rgba& b, float t) {
 }
 
 Vector2 RangeMap(const Vector2& valueToMap, const Vector2& minmaxInputRange, const Vector2& minmaxOutputRange) {
-    auto x = RangeMap(valueToMap.x, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
-    auto y = RangeMap(valueToMap.y, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
+    const auto x = RangeMap(valueToMap.x, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
+    const auto y = RangeMap(valueToMap.y, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
     return Vector2{x, y};
 }
 
 Vector3 RangeMap(const Vector3& valueToMap, const Vector2& minmaxInputRange, const Vector2& minmaxOutputRange) {
-    auto x = RangeMap(valueToMap.x, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
-    auto y = RangeMap(valueToMap.y, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
-    auto z = RangeMap(valueToMap.z, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
+    const auto x = RangeMap(valueToMap.x, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
+    const auto y = RangeMap(valueToMap.y, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
+    const auto z = RangeMap(valueToMap.z, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
     return Vector3{x, y, z};
 }
 
 Vector4 RangeMap(const Vector4& valueToMap, const Vector2& minmaxInputRange, const Vector2& minmaxOutputRange) {
-    auto x = RangeMap(valueToMap.x, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
-    auto y = RangeMap(valueToMap.y, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
-    auto z = RangeMap(valueToMap.z, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
-    auto w = RangeMap(valueToMap.w, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
+    const auto x = RangeMap(valueToMap.x, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
+    const auto y = RangeMap(valueToMap.y, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
+    const auto z = RangeMap(valueToMap.z, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
+    const auto w = RangeMap(valueToMap.w, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
     return Vector4{x, y, z, w};
 }
 
 IntVector2 RangeMap(const IntVector2& valueToMap, const IntVector2& minmaxInputRange, const IntVector2& minmaxOutputRange) {
-    auto x = RangeMap(valueToMap.x, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
-    auto y = RangeMap(valueToMap.y, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
+    const auto x = RangeMap(valueToMap.x, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
+    const auto y = RangeMap(valueToMap.y, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
     return IntVector2{x, y};
 }
 
 IntVector3 RangeMap(const IntVector3& valueToMap, const IntVector2& minmaxInputRange, const IntVector2& minmaxOutputRange) {
-    auto x = RangeMap(valueToMap.x, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
-    auto y = RangeMap(valueToMap.y, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
-    auto z = RangeMap(valueToMap.z, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
+    const auto x = RangeMap(valueToMap.x, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
+    const auto y = RangeMap(valueToMap.y, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
+    const auto z = RangeMap(valueToMap.z, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
     return IntVector3{x, y, z};
 }
 
 IntVector4 RangeMap(const IntVector4& valueToMap, const IntVector2& minmaxInputRange, const IntVector2& minmaxOutputRange) {
-    auto x = RangeMap(valueToMap.x, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
-    auto y = RangeMap(valueToMap.y, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
-    auto z = RangeMap(valueToMap.z, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
-    auto w = RangeMap(valueToMap.w, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
+    const auto x = RangeMap(valueToMap.x, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
+    const auto y = RangeMap(valueToMap.y, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
+    const auto z = RangeMap(valueToMap.z, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
+    const auto w = RangeMap(valueToMap.w, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
     return IntVector4{x, y, z, w};
 }
 
 template<>
 Vector4 Wrap(const Vector4& valuesToWrap, const Vector4& minValues, const Vector4& maxValues) {
-    auto x = Wrap(valuesToWrap.x, minValues.x, maxValues.x);
-    auto y = Wrap(valuesToWrap.y, minValues.y, maxValues.y);
-    auto z = Wrap(valuesToWrap.z, minValues.z, maxValues.z);
-    auto w = Wrap(valuesToWrap.w, minValues.w, maxValues.w);
+    const auto x = Wrap(valuesToWrap.x, minValues.x, maxValues.x);
+    const auto y = Wrap(valuesToWrap.y, minValues.y, maxValues.y);
+    const auto z = Wrap(valuesToWrap.z, minValues.z, maxValues.z);
+    const auto w = Wrap(valuesToWrap.w, minValues.w, maxValues.w);
     return Vector4(x, y, z, w);
 }
 
 template<>
 Vector3 Wrap(const Vector3& valuesToWrap, const Vector3& minValues, const Vector3& maxValues) {
-    auto x = Wrap(valuesToWrap.x, minValues.x, maxValues.x);
-    auto y = Wrap(valuesToWrap.y, minValues.y, maxValues.y);
-    auto z = Wrap(valuesToWrap.z, minValues.z, maxValues.z);
+    const auto x = Wrap(valuesToWrap.x, minValues.x, maxValues.x);
+    const auto y = Wrap(valuesToWrap.y, minValues.y, maxValues.y);
+    const auto z = Wrap(valuesToWrap.z, minValues.z, maxValues.z);
     return Vector3(x, y, z);
 }
 
 template<>
 Vector2 Wrap(const Vector2& valuesToWrap, const Vector2& minValues, const Vector2& maxValues) {
-    auto x = Wrap(valuesToWrap.x, minValues.x, maxValues.x);
-    auto y = Wrap(valuesToWrap.y, minValues.y, maxValues.y);
+    const auto x = Wrap(valuesToWrap.x, minValues.x, maxValues.x);
+    const auto y = Wrap(valuesToWrap.y, minValues.y, maxValues.y);
     return Vector2(x, y);
 }
 
 template<>
 IntVector4 Wrap(const IntVector4& valuesToWrap, const IntVector4& minValues, const IntVector4& maxValues) {
-    auto x = Wrap(valuesToWrap.x, minValues.x, maxValues.x);
-    auto y = Wrap(valuesToWrap.y, minValues.y, maxValues.y);
-    auto z = Wrap(valuesToWrap.z, minValues.z, maxValues.z);
-    auto w = Wrap(valuesToWrap.w, minValues.w, maxValues.w);
+    const auto x = Wrap(valuesToWrap.x, minValues.x, maxValues.x);
+    const auto y = Wrap(valuesToWrap.y, minValues.y, maxValues.y);
+    const auto z = Wrap(valuesToWrap.z, minValues.z, maxValues.z);
+    const auto w = Wrap(valuesToWrap.w, minValues.w, maxValues.w);
     return IntVector4(x, y, z, w);
 }
 
 template<>
 IntVector3 Wrap(const IntVector3& valuesToWrap, const IntVector3& minValues, const IntVector3& maxValues) {
-    auto x = Wrap(valuesToWrap.x, minValues.x, maxValues.x);
-    auto y = Wrap(valuesToWrap.y, minValues.y, maxValues.y);
-    auto z = Wrap(valuesToWrap.z, minValues.z, maxValues.z);
+    const auto x = Wrap(valuesToWrap.x, minValues.x, maxValues.x);
+    const auto y = Wrap(valuesToWrap.y, minValues.y, maxValues.y);
+    const auto z = Wrap(valuesToWrap.z, minValues.z, maxValues.z);
     return IntVector3(x, y, z);
 }
 
 template<>
 IntVector2 Wrap(const IntVector2& valuesToWrap, const IntVector2& minValues, const IntVector2& maxValues) {
-    auto x = Wrap(valuesToWrap.x, minValues.x, maxValues.x);
-    auto y = Wrap(valuesToWrap.y, minValues.y, maxValues.y);
+    const auto x = Wrap(valuesToWrap.x, minValues.x, maxValues.x);
+    const auto y = Wrap(valuesToWrap.y, minValues.y, maxValues.y);
     return IntVector2(x, y);
 }
 

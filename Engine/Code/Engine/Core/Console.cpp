@@ -396,13 +396,13 @@ void Console::SetSkipNonWhitespaceMode(bool value) noexcept {
 }
 
 bool Console::HandleEndKey() noexcept {
-    auto offset = std::distance(_cursor_position, std::cend(_entryline));
+    const auto offset = std::distance(_cursor_position, std::cend(_entryline));
     MoveCursorRight(offset);
     return true;
 }
 
 bool Console::HandleHomeKey() noexcept {
-    auto offset = std::distance(std::cbegin(_entryline), _cursor_position);
+    const auto offset = std::distance(std::cbegin(_entryline), _cursor_position);
     MoveCursorLeft(offset);
     return true;
 }
@@ -417,15 +417,15 @@ bool Console::HandleDelKey() noexcept {
 }
 
 bool Console::HandleRightKey() noexcept {
-    auto offset = std::distance(std::cbegin(_entryline), _cursor_position);
-    auto offset_from_next_space = _entryline.find_first_of(' ', offset);
+    const auto offset = std::distance(std::cbegin(_entryline), _cursor_position);
+    const auto offset_from_next_space = _entryline.find_first_of(' ', offset);
     MoveCursorRight(_skip_nonwhitespace_mode ? offset + offset_from_next_space : 1);
     return true;
 }
 
 bool Console::HandleLeftKey() noexcept {
-    auto offset = std::distance(std::cbegin(_entryline), _cursor_position);
-    auto offset_from_previous_space = _entryline.find_last_of(' ', offset - 1);
+    const auto offset = std::distance(std::cbegin(_entryline), _cursor_position);
+    const auto offset_from_previous_space = _entryline.find_last_of(' ', offset - 1);
     MoveCursorLeft(_skip_nonwhitespace_mode ? offset - offset_from_previous_space : 1);
     return true;
 }
@@ -435,10 +435,8 @@ void Console::RunCommand(std::string name_and_args) noexcept {
         return;
     }
     name_and_args = StringUtils::TrimWhitespace(name_and_args);
-    auto first_space = name_and_args.find_first_of(' ');
-    std::string command = name_and_args.substr(0, first_space);
-    std::string args = first_space == std::string::npos ? "" : name_and_args.substr(first_space);
-    auto iter = _commands.find(command);
+    const auto [command, args] = StringUtils::SplitOnFirst(name_and_args, ' ');
+    const auto iter = _commands.find(command);
     if(iter == _commands.end()) {
         ErrorMsg("INVALID COMMAND");
         return;
@@ -450,14 +448,14 @@ void Console::RegisterCommand(const Command& command) noexcept {
     if(command.command_name.empty()) {
         return;
     }
-    auto iter = _commands.find(command.command_name);
+    const auto iter = _commands.find(command.command_name);
     if(iter == _commands.end()) {
         _commands.insert_or_assign(command.command_name, command);
     }
 }
 
 void Console::UnregisterCommand(const std::string& command_name) noexcept {
-    auto iter = _commands.find(command_name);
+    const auto iter = _commands.find(command_name);
     if(iter != _commands.end()) {
         _commands.erase(command_name);
     }
@@ -522,7 +520,7 @@ void Console::PushEntrylineToOutputBuffer() noexcept {
 }
 
 void Console::PushEntrylineToBuffer() noexcept {
-    auto already_in_buffer = !_entryline_buffer.empty() && _entryline_buffer.back() == _entryline;
+    const auto already_in_buffer = !_entryline_buffer.empty() && _entryline_buffer.back() == _entryline;
     if(already_in_buffer) {
         return;
     }
@@ -576,7 +574,7 @@ void Console::MoveCursorToFront() noexcept {
 
 void Console::UpdateSelectedRange(std::string::difference_type distance) noexcept {
     if(distance > 0) {
-        auto distance_from_end = std::distance(_cursor_position, std::cend(_entryline));
+        const auto distance_from_end = std::distance(_cursor_position, std::cend(_entryline));
         if(distance_from_end > std::abs(distance)) {
             _cursor_position += distance;
         } else {
@@ -592,7 +590,7 @@ void Console::UpdateSelectedRange(std::string::difference_type distance) noexcep
         _cursor_position = rangeStart;
         _selection_position = rangeEnd;
     } else if(distance < 0) {
-        auto distance_from_beginning = std::distance(std::cbegin(_entryline), _cursor_position);
+        const auto distance_from_beginning = std::distance(std::cbegin(_entryline), _cursor_position);
         if(distance_from_beginning > std::abs(distance)) {
             _cursor_position += distance;
         } else {
@@ -687,19 +685,19 @@ void Console::RegisterDefaultCommands() noexcept {
         std::string line{};
         if(arg_set >> line) {
             line = StringUtils::TrimWhitespace(line);
-            auto found_iter = _commands.find(line);
+            const auto found_iter = _commands.find(line);
             if(found_iter != _commands.end()) {
                 PrintMsg(std::string{found_iter->second.command_name + ": " + found_iter->second.help_text_short});
                 return;
             }
-            for(auto& entry : _commands) {
-                if(StringUtils::StartsWith(entry.first, line)) {
-                    PrintMsg(std::string{entry.second.command_name + ": " + entry.second.help_text_short});
+            for(auto& [key,value] : _commands) {
+                if(StringUtils::StartsWith(key, line)) {
+                    PrintMsg(std::string{value.command_name + ": " + value.help_text_short});
                 }
             }
         } else {
-            for(auto& entry : _commands) {
-                PrintMsg(std::string{entry.second.command_name + ": " + entry.second.help_text_short});
+            for(auto& [_,value] : _commands) {
+                PrintMsg(std::string{value.command_name + ": " + value.help_text_short});
             }
         }
     };
@@ -749,7 +747,7 @@ void Console::Render() const {
     _renderer.SetRenderTarget();
     _renderer.SetViewportAsPercent(0.0f, 0.0f, 1.0f, 0.957f);
 
-    auto view_half_extents = SetupViewFromCamera();
+    const auto view_half_extents = SetupViewFromCamera();
     DrawBackground(view_half_extents);
     DrawOutput(view_half_extents);
     DrawEntryLine(view_half_extents);
@@ -760,15 +758,15 @@ void Console::DrawCursor(const Vector2& view_half_extents) const noexcept {
     if(!_show_cursor) {
         return;
     }
-    float textline_bottom = view_half_extents.y * 0.99f;
-    float textline_left = -view_half_extents.x * 0.99f;
-    auto font = _renderer.GetFont("System32");
-    auto first = _entryline.begin();
-    auto has_text = !_entryline.empty();
-    std::string text_left_of_cursor = has_text ? std::string(first, _cursor_position) : std::string("");
-    float xPosOffsetToCaret = font->CalculateTextWidth(text_left_of_cursor);
-    Matrix4 cursor_t = Matrix4::CreateTranslationMatrix(Vector3(textline_left + xPosOffsetToCaret, textline_bottom, 0.0f));
-    Matrix4 model_cursor_mat = cursor_t;
+    const auto textline_bottom = view_half_extents.y * 0.99f;
+    const auto textline_left = -view_half_extents.x * 0.99f;
+    const auto font = _renderer.GetFont("System32");
+    const auto first = _entryline.begin();
+    const auto has_text = !_entryline.empty();
+    const auto text_left_of_cursor = has_text ? std::string(first, _cursor_position) : std::string("");
+    const auto xPosOffsetToCaret = font->CalculateTextWidth(text_left_of_cursor);
+    const auto cursor_t = Matrix4::CreateTranslationMatrix(Vector3(textline_left + xPosOffsetToCaret, textline_bottom, 0.0f));
+    const auto model_cursor_mat = cursor_t;
     _renderer.SetModelMatrix(model_cursor_mat);
     _renderer.SetMaterial(font->GetMaterial());
     _renderer.DrawTextLine(font, "|", Rgba::White);
@@ -789,8 +787,8 @@ void Console::DrawOutput(const Vector2& view_half_extents) const noexcept {
         _outputStartPosition.y -= font->GetLineHeight();
     }
     {
-        auto draw_x = -view_half_extents.x;
-        auto draw_y = view_half_extents.y;
+        const auto draw_x = -view_half_extents.x;
+        const auto draw_y = view_half_extents.y;
         auto draw_loc = _outputStartPosition + Vector2(draw_x * 0.99f, draw_y * 0.99f);
         for(auto iter = _output_buffer.cbegin(); iter != _output_buffer.cend(); ++iter) {
             draw_loc.y -= font->CalculateTextHeight(iter->str);
@@ -828,7 +826,7 @@ void Console::RegisterDefaultFont() noexcept {
         {
             std::unique_ptr<Texture> tex;
             {
-                auto img = Image::CreateImageFromFileBuffer(raw_system32_image);
+                const auto img = Image::CreateImageFromFileBuffer(raw_system32_image);
                 tex = _renderer.Create2DTextureFromMemory(img.GetData(), img.GetDimensions().x, img.GetDimensions().y);
             }
             tex_name += font_system32->GetName();
@@ -846,11 +844,11 @@ void Console::RegisterDefaultFont() noexcept {
         material_stream << "</material>";
         tinyxml2::XMLDocument doc;
         std::string material_string = material_stream.str();
-        auto result = doc.Parse(material_string.c_str(), material_string.size());
+        const auto result = doc.Parse(material_string.c_str(), material_string.size());
         if(result != tinyxml2::XML_SUCCESS) {
             return;
         }
-        auto xml_root = doc.RootElement();
+        const auto xml_root = doc.RootElement();
         auto mat = std::make_unique<Material>(_renderer, *xml_root);
         font_system32->SetMaterial(mat.get());
         _renderer.RegisterMaterial(std::move(mat));
@@ -926,8 +924,8 @@ void Console::DrawEntryLine(const Vector2& view_half_extents) const noexcept {
     const auto model_entryline_mat = entryline_t;
 
     if(_cursor_position != _selection_position) {
-        float xPosOffsetToCaret = font->CalculateTextWidth(std::string(std::begin(_entryline), _cursor_position));
-        float xPosOffsetToSelect = font->CalculateTextWidth(std::string(std::begin(_entryline), _selection_position));
+        auto xPosOffsetToCaret = font->CalculateTextWidth(std::string(std::begin(_entryline), _cursor_position));
+        auto xPosOffsetToSelect = font->CalculateTextWidth(std::string(std::begin(_entryline), _selection_position));
         auto rangeStart = _cursor_position;
         auto rangeEnd = _selection_position;
         if(_selection_position < _cursor_position) {
@@ -943,14 +941,14 @@ void Console::DrawEntryLine(const Vector2& view_half_extents) const noexcept {
         _renderer.SetMaterial(font->GetMaterial());
 
         _renderer.DrawTextLine(font, std::string(_entryline, 0, std::distance(std::cbegin(_entryline), rangeStart)), Rgba::White);
-        Matrix4 rightside_t = Matrix4::CreateTranslationMatrix(Vector3(xPosOffsetToSelect, 0.0f, 0.0f));
+        auto rightside_t = Matrix4::CreateTranslationMatrix(Vector3(xPosOffsetToSelect, 0.0f, 0.0f));
         rightside_t = Matrix4::MakeRT(model_entryline_mat, rightside_t);
         _renderer.SetModelMatrix(rightside_t);
         _renderer.DrawTextLine(font, std::string(_entryline, std::distance(std::cbegin(_entryline), rangeEnd), std::distance(rangeEnd, std::cend(_entryline))), Rgba::White);
 
-        float xPosOffsetToStart = font->CalculateTextWidth(std::string(std::begin(_entryline), rangeStart));
-        Matrix4 blacktext_t = Matrix4::CreateTranslationMatrix(Vector3(xPosOffsetToStart, 0.0f, 0.0f));
-        Matrix4 model_mat_blacktext = Matrix4::MakeRT(model_entryline_mat, blacktext_t);
+        const auto xPosOffsetToStart = font->CalculateTextWidth(std::string(std::begin(_entryline), rangeStart));
+        const auto blacktext_t = Matrix4::CreateTranslationMatrix(Vector3(xPosOffsetToStart, 0.0f, 0.0f));
+        auto model_mat_blacktext = Matrix4::MakeRT(model_entryline_mat, blacktext_t);
         _renderer.SetModelMatrix(model_mat_blacktext);
         _renderer.DrawTextLine(font, std::string(rangeStart, rangeEnd), Rgba::Black);
 
@@ -965,13 +963,13 @@ Vector2 Console::SetupViewFromCamera() const noexcept {
     const auto& window = _renderer.GetOutput();
     const auto& window_dimensions = window->GetDimensions();
     const auto& aspect = window->GetAspectRatio();
-    float window_width = static_cast<float>(window_dimensions.x);
-    float window_height = static_cast<float>(window_dimensions.y);
-    float view_half_width = window_width * 0.50f;
-    float view_half_height = window_height * 0.50f;
-    Vector2 leftBottom = Vector2(-view_half_width, view_half_height);
-    Vector2 rightTop = Vector2(view_half_width, -view_half_height);
-    Vector2 nearFar = Vector2(0.0f, 1.0f);
+    const auto window_width = static_cast<float>(window_dimensions.x);
+    const auto window_height = static_cast<float>(window_dimensions.y);
+    const auto view_half_width = window_width * 0.50f;
+    const auto view_half_height = window_height * 0.50f;
+    const auto leftBottom = Vector2(-view_half_width, view_half_height);
+    const auto rightTop = Vector2(view_half_width, -view_half_height);
+    const auto nearFar = Vector2(0.0f, 1.0f);
     _camera->SetupView(leftBottom, rightTop, nearFar, aspect);
 
     _renderer.SetViewMatrix(_camera->GetViewMatrix());

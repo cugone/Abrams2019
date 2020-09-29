@@ -37,7 +37,7 @@ template<typename T, std::size_t maxSize>
 
 template<typename T, std::size_t maxSize>
 void MemoryPool<T, maxSize>::deallocate(void* ptr, std::size_t size) noexcept {
-    auto elems = static_cast<int>(size / sizeof(T));
+    const auto elems = static_cast<int>(size / sizeof(T));
     if(0 < _count - elems) {
         _ptr -= elems;
         _count -= elems;

@@ -22,15 +22,15 @@ Frustum Frustum::CreateFromCamera(const Camera3D& camera, bool normalize) noexce
 Frustum::Frustum(const Matrix4& viewProjectionMatrix, float aspectRatio, float vfovDegrees, const Vector3& forward, float near, float far, bool normalize) noexcept {
     CalcPoints(vfovDegrees, aspectRatio, forward, near, far);
 
-    auto x = viewProjectionMatrix.GetXComponents();
-    auto y = viewProjectionMatrix.GetYComponents();
-    auto z = viewProjectionMatrix.GetZComponents();
-    auto w = viewProjectionMatrix.GetWComponents();
+    const auto x = viewProjectionMatrix.GetXComponents();
+    const auto y = viewProjectionMatrix.GetYComponents();
+    const auto z = viewProjectionMatrix.GetZComponents();
+    const auto w = viewProjectionMatrix.GetWComponents();
     {
-        auto a_l = x.w + x.x;
-        auto b_l = y.w + y.x;
-        auto c_l = z.w + z.x;
-        auto d_l = w.w + w.x;
+        const auto a_l = x.w + x.x;
+        const auto b_l = y.w + y.x;
+        const auto c_l = z.w + z.x;
+        const auto d_l = w.w + w.x;
         auto result = Plane3{Vector3{a_l, b_l, c_l}, d_l};
         if(normalize) {
             result.Normalize();
@@ -38,10 +38,10 @@ Frustum::Frustum(const Matrix4& viewProjectionMatrix, float aspectRatio, float v
         SetLeft(result);
     }
     {
-        auto a_r = x.w - x.x;
-        auto b_r = y.w - y.x;
-        auto c_r = z.w - z.x;
-        auto d_r = w.w - w.x;
+        const auto a_r = x.w - x.x;
+        const auto b_r = y.w - y.x;
+        const auto c_r = z.w - z.x;
+        const auto d_r = w.w - w.x;
         auto result = Plane3{Vector3{a_r, b_r, c_r}, d_r};
         if(normalize) {
             result.Normalize();
@@ -49,10 +49,10 @@ Frustum::Frustum(const Matrix4& viewProjectionMatrix, float aspectRatio, float v
         SetRight(result);
     }
     {
-        auto a_b = x.w + x.y;
-        auto b_b = y.w + y.y;
-        auto c_b = z.w + z.y;
-        auto d_b = w.w + w.y;
+        const auto a_b = x.w + x.y;
+        const auto b_b = y.w + y.y;
+        const auto c_b = z.w + z.y;
+        const auto d_b = w.w + w.y;
         auto result = Plane3{Vector3{a_b, b_b, c_b}, d_b};
         if(normalize) {
             result.Normalize();
@@ -60,10 +60,10 @@ Frustum::Frustum(const Matrix4& viewProjectionMatrix, float aspectRatio, float v
         SetBottom(result);
     }
     {
-        auto a_t = x.w - x.y;
-        auto b_t = y.w - y.y;
-        auto c_t = z.w - z.y;
-        auto d_t = w.w - w.y;
+        const auto a_t = x.w - x.y;
+        const auto b_t = y.w - y.y;
+        const auto c_t = z.w - z.y;
+        const auto d_t = w.w - w.y;
         auto result = Plane3{Vector3{a_t, b_t, c_t}, d_t};
         if(normalize) {
             result.Normalize();
@@ -71,10 +71,10 @@ Frustum::Frustum(const Matrix4& viewProjectionMatrix, float aspectRatio, float v
         SetTop(result);
     }
     {
-        auto a_n = z.x;
-        auto b_n = z.y;
-        auto c_n = z.z;
-        auto d_n = z.w;
+        const auto a_n = z.x;
+        const auto b_n = z.y;
+        const auto c_n = z.z;
+        const auto d_n = z.w;
         auto result = Plane3{Vector3{a_n, b_n, c_n}, d_n};
         if(normalize) {
             result.Normalize();
@@ -82,10 +82,10 @@ Frustum::Frustum(const Matrix4& viewProjectionMatrix, float aspectRatio, float v
         SetNear(result);
     }
     {
-        auto a_f = w.x - z.x;
-        auto b_f = w.y - z.y;
-        auto c_f = w.z - z.z;
-        auto d_f = w.w - z.w;
+        const auto a_f = w.x - z.x;
+        const auto b_f = w.y - z.y;
+        const auto c_f = w.z - z.z;
+        const auto d_f = w.w - z.w;
         auto result = Plane3{Vector3{a_f, b_f, c_f}, d_f};
         if(normalize) {
             result.Normalize();
@@ -119,14 +119,14 @@ void Frustum::SetFar(const Plane3& far) noexcept {
 }
 
 void Frustum::CalcPoints(float aspectRatio, float vfovDegrees, const Vector3& forward, float near, float far) noexcept {
-    const float aspect_ratio = aspectRatio;
-    const float fov_vertical_degrees = vfovDegrees;
-    const float near_distance = near;
-    const float far_distance = far;
-    const float near_view_half_height = near_distance * std::tan(0.5f * fov_vertical_degrees);
-    const float near_view_half_width = aspect_ratio * near_view_half_height;
-    const float far_view_half_height = far_distance * std::tan(0.5f * fov_vertical_degrees);
-    const float far_view_half_width = aspect_ratio * far_view_half_height;
+    const auto aspect_ratio = aspectRatio;
+    const auto fov_vertical_degrees = vfovDegrees;
+    const auto near_distance = near;
+    const auto far_distance = far;
+    const auto near_view_half_height = near_distance * std::tan(0.5f * fov_vertical_degrees);
+    const auto near_view_half_width = aspect_ratio * near_view_half_height;
+    const auto far_view_half_height = far_distance * std::tan(0.5f * fov_vertical_degrees);
+    const auto far_view_half_width = aspect_ratio * far_view_half_height;
 
     _points[0] = forward * Vector3{-near_view_half_width, -near_view_half_height, near_distance};
     _points[1] = forward * Vector3{-near_view_half_width, near_view_half_height, near_distance};

@@ -89,10 +89,10 @@ void AABB2::AddPaddingToSides(float paddingX, float paddingY) noexcept {
 }
 
 void AABB2::AddPaddingToSidesClamped(float paddingX, float paddingY) noexcept {
-    auto width = maxs.x - mins.x;
-    auto height = maxs.y - mins.y;
-    auto half_width = width * 0.5f;
-    auto half_height = height * 0.5f;
+    const auto width = maxs.x - mins.x;
+    const auto height = maxs.y - mins.y;
+    const auto half_width = width * 0.5f;
+    const auto half_height = height * 0.5f;
 
     paddingX = (std::max)(-half_width, paddingX);
     paddingY = (std::max)(-half_height, paddingY);

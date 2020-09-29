@@ -11,8 +11,8 @@ std::string StringUtils::to_string(const System::SystemDesc& system) noexcept {
 }
 
 std::ostream& System::operator<<(std::ostream& out, const System::SystemDesc& desc) noexcept {
-    auto old_fmt = out.flags();
-    auto old_w = out.width();
+    const auto old_fmt = out.flags();
+    const auto old_w = out.width();
     out << "SYSTEM:\n";
     out << desc.os;
     out << desc.cpu;

@@ -410,8 +410,8 @@ bool IsParentOf(const std::filesystem::path& p, const std::filesystem::path& chi
     const auto p_canon = FS::canonical(p);
     const auto child_canon = FS::canonical(child);
     for(auto iter = FS::recursive_directory_iterator{p_canon}; iter != FS::recursive_directory_iterator{}; ++iter) {
-        auto entry = *iter;
-        auto sub_p = entry.path();
+        const auto entry = *iter;
+        const auto sub_p = entry.path();
         if(sub_p == child_canon) {
             return true;
         }
@@ -462,7 +462,7 @@ void FileUtils::RemoveExceptMostRecentFiles(const std::filesystem::path& folderp
     }
     namespace FS = std::filesystem;
     if(mostRecentCountToKeep < CountFilesInFolders(folderpath, validExtensionList)) {
-        std::vector<FS::path> paths = GetAllPathsInFolders(folderpath);
+        auto paths = GetAllPathsInFolders(folderpath);
         const auto sort_pred = [](const FS::path& a, const FS::path& b) { return FS::last_write_time(a) > FS::last_write_time(b); };
         std::sort(std::begin(paths), std::end(paths), sort_pred);
         if(mostRecentCountToKeep > 0) {

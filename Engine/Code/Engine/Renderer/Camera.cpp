@@ -214,10 +214,10 @@ Vector3 Camera::GetForward() const noexcept {
     switch(projection_mode) {
     case ProjectionMode::Perspective:
     {
-        const float cos_yaw = MathUtils::CosDegrees(rotationYaw);
-        const float cos_pitch = MathUtils::CosDegrees(rotationPitch);
-        const float sin_yaw = MathUtils::SinDegrees(rotationYaw);
-        const float sin_pitch = MathUtils::SinDegrees(rotationPitch);
+        const auto cos_yaw = MathUtils::CosDegrees(rotationYaw);
+        const auto cos_pitch = MathUtils::CosDegrees(rotationPitch);
+        const auto sin_yaw = MathUtils::SinDegrees(rotationYaw);
+        const auto sin_pitch = MathUtils::SinDegrees(rotationPitch);
         return Vector3(-sin_yaw * cos_pitch, sin_pitch, cos_yaw * cos_pitch);
     }
     case ProjectionMode::Orthographic:

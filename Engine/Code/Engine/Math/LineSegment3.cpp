@@ -32,8 +32,8 @@ void LineSegment3::SetLengthFromStart(float length) noexcept {
 }
 
 void LineSegment3::SetLengthFromCenter(float length) noexcept {
-    Vector3 center = CalcCenter();
-    float half_length = length * 0.5f;
+    const auto center = CalcCenter();
+    const auto half_length = length * 0.5f;
     start = (start - center).GetNormalize() * half_length;
     end = (end - center).GetNormalize() * half_length;
 }

@@ -71,12 +71,12 @@ bool KeyValueParser::Parse(const std::string& input) noexcept {
 
         //Shorthand cases
         if(StringUtils::StartsWith(key, "-")) {
-            std::string sub_key = key.substr(1);
+            const auto sub_key = key.substr(1);
             SetValue(sub_key, false);
             continue;
         }
         if(StringUtils::StartsWith(key, "+")) {
-            std::string sub_key = key.substr(1);
+            const auto sub_key = key.substr(1);
             SetValue(sub_key, true);
             continue;
         }
@@ -85,8 +85,8 @@ bool KeyValueParser::Parse(const std::string& input) noexcept {
             key = key.substr(key.find_first_not_of("\""), key.find_last_not_of("\""));
         }
         if(value.find('"') != std::string::npos) {
-            auto ffno = value.find_first_not_of('"');
-            auto flno = value.find_last_not_of('"');
+            const auto ffno = value.find_first_not_of('"');
+            const auto flno = value.find_last_not_of('"');
             if(ffno == std::string::npos || flno == std::string::npos) {
                 if(ffno == std::string::npos) {
                     value = value.substr(1);
@@ -117,7 +117,7 @@ bool KeyValueParser::Parse(std::ifstream& input) noexcept {
 bool KeyValueParser::Parse(std::istream& input) noexcept {
     std::string cur_line;
     while(std::getline(input, cur_line)) {
-        bool did_parse = Parse(cur_line);
+        const auto did_parse = Parse(cur_line);
         if(!did_parse) {
             return false;
         }
@@ -133,9 +133,9 @@ bool KeyValueParser::ParseMultiParams(const std::string& input) noexcept {
     std::string whole_line = input;
     CollapseMultiParamWhitespace(whole_line);
     ConvertFromMultiParam(whole_line);
-    auto lines = StringUtils::SplitOnUnquoted(whole_line, '\n');
+    const auto lines = StringUtils::SplitOnUnquoted(whole_line, '\n');
     for(const auto& line : lines) {
-        bool did_parse = Parse(line);
+        const auto did_parse = Parse(line);
         if(!did_parse) {
             return false;
         }
@@ -145,7 +145,7 @@ bool KeyValueParser::ParseMultiParams(const std::string& input) noexcept {
 
 void KeyValueParser::ConvertFromMultiParam(std::string& whole_line) noexcept {
     //Replace space-delimited KVPs with newlines;
-    bool inQuote = false;
+    auto inQuote = false;
     for(auto iter = whole_line.begin(); iter != whole_line.end(); ++iter) {
         if(*iter == '"') {
             inQuote = !inQuote;
@@ -192,7 +192,7 @@ void KeyValueParser::SetValue(const std::string& key, const bool& value) noexcep
 }
 
 std::size_t KeyValueParser::CountCharNotInQuotes(std::string& cur_line, char c) noexcept {
-    bool inQuote = false;
+    auto inQuote = false;
     std::size_t count = 0u;
     for(auto iter = cur_line.begin(); iter != cur_line.end(); ++iter) {
         if(*iter == '"') {

@@ -94,8 +94,7 @@ Rgba::Rgba(const Vector4& fromFloats) noexcept {
 Rgba::Rgba(std::string name) noexcept {
     name = StringUtils::ToUpperCase(name);
 
-    std::size_t hash_loc = name.find_first_of('#');
-    if(hash_loc != std::string::npos) {
+    if(std::size_t hash_loc = name.find_first_of('#'); hash_loc != std::string::npos) {
         name.replace(hash_loc, 1, "0X");
         std::size_t char_count = 0;
         unsigned long value_int = std::stoul(name, &char_count, 16);
@@ -108,8 +107,8 @@ Rgba::Rgba(std::string name) noexcept {
             /* DO NOTHING */
         }
     } else {
-        std::vector<std::string> v = StringUtils::Split(name);
-        std::size_t v_s = v.size();
+        const auto v = StringUtils::Split(name);
+        const auto v_s = v.size();
         if(v_s > 1) {
             if(!(v_s < 3)) {
                 r = static_cast<unsigned char>(std::stoi(v[0].data()));
@@ -167,16 +166,16 @@ Vector3 Rgba::GetRgbAsFloats() const noexcept {
 }
 
 void Rgba::ScaleRGB(float scale) noexcept {
-    float scaled_red = static_cast<float>(r) * scale;
-    float scaled_green = static_cast<float>(g) * scale;
-    float scaled_blue = static_cast<float>(b) * scale;
+    const auto scaled_red = static_cast<float>(r) * scale;
+    const auto scaled_green = static_cast<float>(g) * scale;
+    const auto scaled_blue = static_cast<float>(b) * scale;
     r = static_cast<unsigned char>(std::clamp(scaled_red, 0.0f, 255.0f));
     g = static_cast<unsigned char>(std::clamp(scaled_green, 0.0f, 255.0f));
     b = static_cast<unsigned char>(std::clamp(scaled_blue, 0.0f, 255.0f));
 }
 
 void Rgba::ScaleAlpha(float scale) noexcept {
-    float scaled_alpha = static_cast<float>(a) * scale;
+    const auto scaled_alpha = static_cast<float>(a) * scale;
     a = static_cast<unsigned char>(std::clamp(scaled_alpha, 0.0f, 255.0f));
 }
 
@@ -329,7 +328,7 @@ Rgba& Rgba::operator-=(const Rgba& rhs) noexcept {
 }
 
 Rgba& Rgba::operator++() noexcept {
-    auto raw = GetAsRawValue();
+    const auto raw = GetAsRawValue();
     SetFromRawValue(raw + 1);
     return *this;
 }
@@ -340,7 +339,7 @@ Rgba Rgba::operator++(int) noexcept {
 }
 
 Rgba& Rgba::operator--() noexcept {
-    auto raw = GetAsRawValue();
+    const auto raw = GetAsRawValue();
     SetFromRawValue(raw - 1);
     return *this;
 }

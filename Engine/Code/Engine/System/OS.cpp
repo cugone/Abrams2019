@@ -15,8 +15,8 @@
 #endif
 
 std::ostream& System::OS::operator<<(std::ostream& out, const System::OS::OsDesc& os) noexcept {
-    auto old_fmt = out.flags();
-    auto old_w = out.width();
+    const auto old_fmt = out.flags();
+    const auto old_w = out.width();
     out << std::left << std::setw(25) << "Operating System:" << std::right << std::setw(27) << os.VersionFriendly << '\n';
     out.flags(old_fmt);
     out.width(old_w);
@@ -33,8 +33,8 @@ System::OS::OsDesc System::OS::GetOsDesc() noexcept {
 
 System::OS::OperatingSystem& System::OS::operator&=(OperatingSystem& a, const OperatingSystem& b) noexcept {
     using underlying = std::underlying_type_t<OperatingSystem>;
-    auto underlying_a = static_cast<underlying>(a);
-    auto underlying_b = static_cast<underlying>(b);
+    const auto underlying_a = static_cast<underlying>(a);
+    const auto underlying_b = static_cast<underlying>(b);
     a = static_cast<OperatingSystem>(underlying_a & underlying_b);
     return a;
 }
@@ -46,8 +46,8 @@ System::OS::OperatingSystem System::OS::operator&(OperatingSystem a, const Opera
 
 System::OS::OperatingSystem& System::OS::operator|=(OperatingSystem& a, const OperatingSystem& b) noexcept {
     using underlying = std::underlying_type_t<OperatingSystem>;
-    auto underlying_a = static_cast<underlying>(a);
-    auto underlying_b = static_cast<underlying>(b);
+    const auto underlying_a = static_cast<underlying>(a);
+    const auto underlying_b = static_cast<underlying>(b);
     a = static_cast<OperatingSystem>(underlying_a | underlying_b);
     return a;
 }
@@ -59,17 +59,17 @@ System::OS::OperatingSystem System::OS::operator|(OperatingSystem a, const Opera
 
 System::OS::OperatingSystem System::OS::operator~(const OperatingSystem& a) noexcept {
     using underlying = std::underlying_type_t<OperatingSystem>;
-    auto underlying_a = static_cast<underlying>(a);
+    const auto underlying_a = static_cast<underlying>(a);
     return static_cast<OperatingSystem>(~underlying_a);
 }
 
 System::OS::OperatingSystemArchitecture System::OS::GetOperatingSystemArchitecture() noexcept {
     OperatingSystemArchitecture arch{OperatingSystemArchitecture::Unknown};
 #ifdef HAS_VERSION_HELPERS
-    auto pid = ::GetCurrentProcess();
+    const auto pid = ::GetCurrentProcess();
     USHORT process_machine_raw{};
     USHORT native_machine_raw{};
-    bool succeeded = !!::IsWow64Process2(pid, &process_machine_raw, &native_machine_raw);
+    const auto succeeded = !!::IsWow64Process2(pid, &process_machine_raw, &native_machine_raw);
     if(!succeeded) {
         return arch;
     }
@@ -85,10 +85,10 @@ System::OS::OperatingSystemArchitecture System::OS::GetOperatingSystemArchitectu
 System::OS::OperatingSystem System::OS::GetOperatingSystemType() noexcept {
     OperatingSystem type{OperatingSystem::Unknown};
 #ifdef HAS_VERSION_HELPERS
-    auto pid = ::GetCurrentProcess();
+    const auto pid = ::GetCurrentProcess();
     USHORT process_machine_raw{};
     USHORT native_machine_raw{};
-    bool succeeded = !!::IsWow64Process2(pid, &process_machine_raw, &native_machine_raw);
+    const auto succeeded = !!::IsWow64Process2(pid, &process_machine_raw, &native_machine_raw);
     if(!succeeded) {
         return type;
     }

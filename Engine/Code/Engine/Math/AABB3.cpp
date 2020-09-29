@@ -61,13 +61,13 @@ void AABB3::AddPaddingToSides(float paddingX, float paddingY, float paddingZ) no
 }
 
 void AABB3::AddPaddingToSidesClamped(float paddingX, float paddingY, float paddingZ) noexcept {
-    auto width = maxs.x - mins.x;
-    auto height = maxs.y - mins.y;
-    auto depth = maxs.z - mins.z;
+    const auto width = maxs.x - mins.x;
+    const auto height = maxs.y - mins.y;
+    const auto depth = maxs.z - mins.z;
 
-    auto half_width = width * 0.5f;
-    auto half_height = height * 0.5f;
-    auto half_depth = depth * 0.5f;
+    const auto half_width = width * 0.5f;
+    const auto half_height = height * 0.5f;
+    const auto half_depth = depth * 0.5f;
 
     paddingX = (std::max)(-half_width, paddingX);
     paddingY = (std::max)(-half_height, paddingY);

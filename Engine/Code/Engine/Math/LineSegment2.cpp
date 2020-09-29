@@ -32,29 +32,29 @@ LineSegment2::LineSegment2(const Vector2& startPosition, float angleDegrees, flo
 }
 
 void LineSegment2::SetLengthFromStart(float length) noexcept {
-    float angleDegrees = CalcDisplacement().CalcHeadingDegrees();
+    const auto angleDegrees = CalcDisplacement().CalcHeadingDegrees();
     end = start + Vector2(length * MathUtils::CosDegrees(angleDegrees), length * MathUtils::SinDegrees(angleDegrees));
 }
 
 void LineSegment2::SetLengthFromCenter(float length) noexcept {
-    float angleDegrees = CalcDisplacement().CalcHeadingDegrees();
-    float half_length = length * 0.5f;
+    const auto angleDegrees = CalcDisplacement().CalcHeadingDegrees();
+    const auto half_length = length * 0.5f;
 
-    Vector2 center = CalcCenter();
-    Vector2 half_extent(half_length * MathUtils::CosDegrees(angleDegrees),
-                        half_length * MathUtils::SinDegrees(angleDegrees));
+    const auto center = CalcCenter();
+    const auto half_extent = Vector2(half_length * MathUtils::CosDegrees(angleDegrees),
+                                     half_length * MathUtils::SinDegrees(angleDegrees));
 
     start = center - half_extent;
     end = center + half_extent;
 }
 
 void LineSegment2::SetLengthFromEnd(float length) noexcept {
-    float angleDegrees = CalcDisplacement().CalcHeadingDegrees();
+    const auto angleDegrees = CalcDisplacement().CalcHeadingDegrees();
     start = end - Vector2(length * MathUtils::CosDegrees(angleDegrees), length * MathUtils::SinDegrees(angleDegrees));
 }
 
 Vector2 LineSegment2::CalcCenter() const noexcept {
-    Vector2 displacement = CalcDisplacement();
+    const auto displacement = CalcDisplacement();
     return start + displacement * 0.5f;
 }
 
@@ -67,21 +67,21 @@ float LineSegment2::CalcLengthSquared() const noexcept {
 }
 
 void LineSegment2::SetDirectionFromStart(float angleDegrees) noexcept {
-    Vector2 t = start;
+    const auto t = start;
     Translate(-t);
     SetAngle(angleDegrees);
     Translate(t);
 }
 
 void LineSegment2::SetDirectionFromCenter(float angleDegrees) noexcept {
-    Vector2 center = CalcCenter();
+    const auto center = CalcCenter();
     Translate(-center);
     SetAngle(angleDegrees);
     Translate(center);
 }
 
 void LineSegment2::SetDirectionFromEnd(float angleDegrees) noexcept {
-    Vector2 t = end;
+    const auto t = end;
     Translate(-t);
     SetAngle(angleDegrees);
     Translate(t);
@@ -98,19 +98,19 @@ void LineSegment2::Translate(const Vector2& translation) noexcept {
 }
 
 void LineSegment2::Rotate(float angleDegrees) noexcept {
-    float heading = (end - start).CalcHeadingDegrees();
+    const auto heading = (end - start).CalcHeadingDegrees();
     SetAngle(heading + angleDegrees);
 }
 
 void LineSegment2::RotateStartPosition(float angleDegrees) noexcept {
-    Vector2 t = end;
+    const auto t = end;
     Translate(-t);
     Rotate(angleDegrees);
     Translate(t);
 }
 
 void LineSegment2::RotateEndPosition(float angleDegrees) noexcept {
-    Vector2 t = start;
+    const auto t = start;
     Translate(-t);
     Rotate(angleDegrees);
     Translate(t);
@@ -137,13 +137,13 @@ Vector2 LineSegment2::CalcDirection() const noexcept {
 }
 
 Vector2 LineSegment2::CalcPositiveNormal() const noexcept {
-    Vector2 dir = CalcDirection();
+    auto dir = CalcDirection();
     dir.Rotate90Degrees();
     return dir;
 }
 
 Vector2 LineSegment2::CalcNegativeNormal() const noexcept {
-    Vector2 dir = CalcDirection();
+    auto dir = CalcDirection();
     dir.RotateNegative90Degrees();
     return dir;
 }
@@ -169,11 +169,11 @@ LineSegment2& LineSegment2::operator+=(const Vector2& translation) noexcept {
 }
 
 void LineSegment2::SetAngle(float angleDegrees) noexcept {
-    float oldX = start.x;
-    float oldY = start.y;
+    auto oldX = start.x;
+    auto oldY = start.y;
 
-    float c = MathUtils::CosDegrees(angleDegrees);
-    float s = MathUtils::SinDegrees(angleDegrees);
+    const auto c = MathUtils::CosDegrees(angleDegrees);
+    const auto s = MathUtils::SinDegrees(angleDegrees);
 
     start.x = oldX * c - oldY * s;
     start.y = oldX * s + oldY * c;

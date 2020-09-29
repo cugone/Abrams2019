@@ -56,8 +56,8 @@ IntVector3::IntVector3(const std::string& value) noexcept
     if(value[0] == '[') {
         if(value.back() == ']') {
             std::string contents_str = value.substr(1, value.size() - 1);
-            auto values = StringUtils::Split(contents_str);
-            auto s = values.size();
+            const auto values = StringUtils::Split(contents_str);
+            const auto s = values.size();
             for(std::size_t i = 0; i < s; ++i) {
                 switch(i) {
                 case 0: x = std::stoi(values[i]); break;
@@ -119,9 +119,9 @@ IntVector3& IntVector3::operator*=(int scalar) noexcept {
 }
 
 IntVector3 IntVector3::operator*(float scalar) const noexcept {
-    int nx = static_cast<int>(std::floor(static_cast<float>(x) * scalar));
-    int ny = static_cast<int>(std::floor(static_cast<float>(y) * scalar));
-    int nz = static_cast<int>(std::floor(static_cast<float>(z) * scalar));
+    const auto nx = static_cast<int>(std::floor(static_cast<float>(x) * scalar));
+    const auto ny = static_cast<int>(std::floor(static_cast<float>(y) * scalar));
+    const auto nz = static_cast<int>(std::floor(static_cast<float>(z) * scalar));
     return IntVector3(nx, ny, nz);
 }
 
@@ -155,9 +155,9 @@ IntVector3& IntVector3::operator/=(int scalar) noexcept {
 }
 
 IntVector3 IntVector3::operator/(float scalar) const noexcept {
-    int nx = static_cast<int>(std::floor(static_cast<float>(x) / scalar));
-    int ny = static_cast<int>(std::floor(static_cast<float>(y) / scalar));
-    int nz = static_cast<int>(std::floor(static_cast<float>(z) / scalar));
+    const auto nx = static_cast<int>(std::floor(static_cast<float>(x) / scalar));
+    const auto ny = static_cast<int>(std::floor(static_cast<float>(y) / scalar));
+    const auto nz = static_cast<int>(std::floor(static_cast<float>(z) / scalar));
     return IntVector3(nx, ny, nz);
 }
 
@@ -208,9 +208,9 @@ std::ostream& operator<<(std::ostream& out_stream, const IntVector3& v) noexcept
 }
 
 std::istream& operator>>(std::istream& in_stream, IntVector3& v) noexcept {
-    int x = 0;
-    int y = 0;
-    int z = 0;
+    auto x = 0;
+    auto y = 0;
+    auto z = 0;
 
     in_stream.ignore(); //[
     in_stream >> x;

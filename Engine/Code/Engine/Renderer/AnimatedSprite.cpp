@@ -118,7 +118,7 @@ void AnimatedSprite::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
 
 AABB2 AnimatedSprite::GetCurrentTexCoords() const noexcept {
     int length = _end_index - _start_index;
-    auto framesPerSecond = TimeUtils::FPSeconds{1.0f} / _max_seconds_per_frame;
+    const auto framesPerSecond = TimeUtils::FPSeconds{1.0f} / _max_seconds_per_frame;
     auto frameIndex = static_cast<int>(_elapsed_seconds.count() * framesPerSecond);
     switch(_playback_mode) {
     case SpriteAnimMode::Play_To_End:
@@ -285,21 +285,21 @@ int AnimatedSprite::GetIndexFromCoords(const IntVector2& coords) noexcept {
 
 void AnimatedSprite::LoadFromXml(Renderer& renderer, const XMLElement& elem) noexcept {
     DataUtils::ValidateXmlElement(elem, "animation", "animationset", "", "spritesheet", "name");
-    if(auto xml_sheet = elem.FirstChildElement("spritesheet")) {
+    if(const auto xml_sheet = elem.FirstChildElement("spritesheet")) {
         DataUtils::ValidateXmlElement(*xml_sheet, "spritesheet", "", "src,dimensions");
         _sheet = renderer.CreateSpriteSheet(*xml_sheet);
     }
 
-    auto xml_animset = elem.FirstChildElement("animationset");
+    const auto xml_animset = elem.FirstChildElement("animationset");
     DataUtils::ValidateXmlElement(*xml_animset, "animationset", "", "startindex,framelength,duration", "", "loop,reverse,pingpong");
 
     _start_index = DataUtils::ParseXmlAttribute(*xml_animset, "startindex", -1);
     if(_start_index == -1) {
-        auto start_index_coords = DataUtils::ParseXmlAttribute(*xml_animset, "startindex", IntVector2::ZERO);
+        const auto start_index_coords = DataUtils::ParseXmlAttribute(*xml_animset, "startindex", IntVector2::ZERO);
         _start_index = GetIndexFromCoords(start_index_coords);
     }
 
-    auto frameLength = DataUtils::ParseXmlAttribute(*xml_animset, "framelength", 0);
+    const auto frameLength = DataUtils::ParseXmlAttribute(*xml_animset, "framelength", 0);
     _end_index = _start_index + frameLength;
 
     TimeUtils::FPSeconds min_duration = TimeUtils::FPFrames{1};
@@ -308,11 +308,11 @@ void AnimatedSprite::LoadFromXml(Renderer& renderer, const XMLElement& elem) noe
         _duration_seconds = min_duration;
     }
 
-    bool is_looping = DataUtils::ParseXmlAttribute(*xml_animset, "loop", false);
-    bool is_reverse = DataUtils::ParseXmlAttribute(*xml_animset, "reverse", false);
-    bool is_pingpong = DataUtils::ParseXmlAttribute(*xml_animset, "pingpong", false);
+    const auto is_looping = DataUtils::ParseXmlAttribute(*xml_animset, "loop", false);
+    const auto is_reverse = DataUtils::ParseXmlAttribute(*xml_animset, "reverse", false);
+    const auto is_pingpong = DataUtils::ParseXmlAttribute(*xml_animset, "pingpong", false);
     _playback_mode = GetAnimModeFromOptions(is_looping, is_reverse, is_pingpong);
 
-    bool has_frames = frameLength > 0;
+    const auto has_frames = frameLength > 0;
     _max_seconds_per_frame = TimeUtils::FPSeconds{_duration_seconds / (has_frames ? static_cast<float>(_end_index - _start_index) : 1.0f)};
 }

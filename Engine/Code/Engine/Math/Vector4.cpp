@@ -73,8 +73,8 @@ Vector4::Vector4(const std::string& value) noexcept
     if(value[0] == '[') {
         if(value.back() == ']') {
             std::string contents_str = std::string{std::begin(value) + 1, std::end(value) - 1};
-            auto values = StringUtils::Split(contents_str);
-            auto s = values.size();
+            const auto values = StringUtils::Split(contents_str);
+            const auto s = values.size();
             for(std::size_t i = 0; i < s; ++i) {
                 switch(i) {
                 case 0: x = std::stof(values[i]); break;
@@ -126,10 +126,10 @@ std::ostream& operator<<(std::ostream& out_stream, const Vector4& v) noexcept {
 }
 
 std::istream& operator>>(std::istream& in_stream, Vector4& v) noexcept {
-    float x = 0.0f;
-    float y = 0.0f;
-    float z = 0.0f;
-    float w = 0.0f;
+    auto x = 0.0f;
+    auto y = 0.0f;
+    auto z = 0.0f;
+    auto w = 0.0f;
 
     in_stream.ignore(); //[
     in_stream >> x;
@@ -260,9 +260,9 @@ void Vector4::CalcHomogeneous() noexcept {
 }
 
 float Vector4::Normalize4D() noexcept {
-    float length = CalcLength4D();
+    const auto length = CalcLength4D();
     if(length > 0.0f) {
-        float inv_length = 1.0f / length;
+        const auto inv_length = 1.0f / length;
         x *= inv_length;
         y *= inv_length;
         z *= inv_length;
@@ -273,9 +273,9 @@ float Vector4::Normalize4D() noexcept {
 }
 
 float Vector4::Normalize3D() noexcept {
-    float length = CalcLength3D();
+    const auto length = CalcLength3D();
     if(length > 0.0f) {
-        float inv_length = 1.0f / length;
+        const auto inv_length = 1.0f / length;
         x *= inv_length;
         y *= inv_length;
         z *= inv_length;
@@ -285,18 +285,18 @@ float Vector4::Normalize3D() noexcept {
 }
 
 Vector4 Vector4::GetNormalize4D() const noexcept {
-    float length = CalcLength4D();
+    const auto length = CalcLength4D();
     if(length > 0.0f) {
-        float inv_length = 1.0f / length;
+        const auto inv_length = 1.0f / length;
         return Vector4(x * inv_length, y * inv_length, z * inv_length, w * inv_length);
     }
     return Vector4::ZERO;
 }
 
 Vector4 Vector4::GetNormalize3D() const noexcept {
-    float length = CalcLength3D();
+    const auto length = CalcLength3D();
     if(length > 0.0f) {
-        float inv_length = 1.0f / length;
+        const auto inv_length = 1.0f / length;
         return Vector4(x * inv_length, y * inv_length, z * inv_length, w);
     }
     return Vector4::ZERO_XYZ_ONE_W;

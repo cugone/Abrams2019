@@ -84,11 +84,11 @@ void RHIOutput::Present(bool vsync) noexcept {
     present_params.pDirtyRects = nullptr;
     present_params.pScrollOffset = nullptr;
     present_params.pScrollRect = nullptr;
-    bool should_tear = _parent_device.IsAllowTearingSupported();
-    bool is_vsync_off = !vsync;
-    bool use_no_sync_interval = should_tear && is_vsync_off;
-    unsigned int sync_interval = use_no_sync_interval ? 0u : 1u;
-    unsigned int present_flags = use_no_sync_interval ? DXGI_PRESENT_ALLOW_TEARING : 0;
+    const auto should_tear = _parent_device.IsAllowTearingSupported();
+    const auto is_vsync_off = !vsync;
+    const auto use_no_sync_interval = should_tear && is_vsync_off;
+    const auto sync_interval = use_no_sync_interval ? 0u : 1u;
+    const auto present_flags = use_no_sync_interval ? DXGI_PRESENT_ALLOW_TEARING : 0ul;
     auto hr_present = _parent_device.GetDxSwapChain()->Present1(sync_interval, present_flags, &present_params);
 #ifdef RENDER_DEBUG
     const auto err_str = std::string{"Present call failed: "} + StringUtils::FormatWindowsMessage(hr_present);
@@ -183,9 +183,9 @@ std::unique_ptr<Texture> RHIOutput::CreateFullscreenTexture() noexcept {
     Microsoft::WRL::ComPtr<ID3D11Texture2D> dx_tex{};
 
     //If IMMUTABLE or not multi-sampled, must use initial data.
-    bool isMultiSampled = tex_desc.SampleDesc.Count != 1 || tex_desc.SampleDesc.Quality != 0;
-    bool isImmutable = bufferUsage == BufferUsage::Static;
-    bool mustUseInitialData = isImmutable || isMultiSampled;
+    const auto isMultiSampled = tex_desc.SampleDesc.Count != 1 || tex_desc.SampleDesc.Quality != 0;
+    const auto isImmutable = bufferUsage == BufferUsage::Static;
+    const auto mustUseInitialData = isImmutable || isMultiSampled;
 
     auto hr = _parent_device.GetDxDevice()->CreateTexture2D(&tex_desc, (mustUseInitialData ? &subresource_data : nullptr), &dx_tex);
     if(FAILED(hr)) {

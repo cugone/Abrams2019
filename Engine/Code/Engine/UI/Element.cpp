@@ -217,7 +217,7 @@ void Element::DebugRenderPivot(Renderer& renderer) const {
 }
 
 void Element::DebugRenderBounds(Renderer& renderer) const {
-    auto world_transform = GetWorldTransform();
+    const auto world_transform = GetWorldTransform();
     renderer.SetModelMatrix(world_transform);
     renderer.SetMaterial(renderer.GetMaterial("__2D"));
     renderer.DrawAABB2(_edge_color, _fill_color);
@@ -331,9 +331,9 @@ AABB2 Element::CalcRelativeBounds() const noexcept {
 }
 
 AABB2 Element::CalcAbsoluteBounds() const noexcept {
-    auto size = CalcDesiredSize();
-    auto parent_bounds = GetParentBounds();
-    auto pivot_position = MathUtils::CalcPointFromNormalizedPoint(_pivot, parent_bounds);
+    const auto size = CalcDesiredSize();
+    const auto parent_bounds = GetParentBounds();
+    const auto pivot_position = MathUtils::CalcPointFromNormalizedPoint(_pivot, parent_bounds);
     AABB2 bounds;
     bounds.StretchToIncludePoint(Vector2::ZERO);
     bounds.StretchToIncludePoint(size.GetZW());
@@ -349,10 +349,10 @@ AABB2 Element::AlignBoundsToContainer(AABB2 bounds, AABB2 container, const Vecto
 
 AABB2 Element::CalcAlignedAbsoluteBounds() const noexcept {
     AABB2 parent_bounds = GetParentLocalBounds();
-    auto ratio = _position.GetXY();
+    const auto ratio = _position.GetXY();
     AABB2 alignedBounds = AlignBoundsToContainer(CalcBoundsRelativeToParent(), parent_bounds, ratio);
 
-    auto unit = _position.GetZW();
+    const auto unit = _position.GetZW();
     Vector2 normalized_ratio = MathUtils::RangeMap(ratio, Vector2(0.0f, 1.0f), Vector2(-1.0f, 1.0f));
     Vector2 scaled_ratio = normalized_ratio * unit;
     Vector2 offset(scaled_ratio);
@@ -395,9 +395,9 @@ AABB2 Element::GetBounds(const AABB2& parent, const Vector4& anchors, const Vect
 }
 
 Vector2 Element::GetSmallestOffset(AABB2 a, AABB2 b) const noexcept {
-    auto width = a.CalcDimensions().x;
-    auto height = a.CalcDimensions().y;
-    auto center = a.CalcCenter();
+    const auto width = a.CalcDimensions().x;
+    const auto height = a.CalcDimensions().y;
+    const auto center = a.CalcCenter();
     b.AddPaddingToSides(-(width * 0.5f), -(height * 0.5f));
     Vector2 closestPoint = MathUtils::CalcClosestPoint(center, b);
     return closestPoint - center;
@@ -409,7 +409,7 @@ AABB2 Element::MoveToBestFit(const AABB2& obj, const AABB2& container) const noe
 }
 
 float Element::GetAspectRatio() const noexcept {
-    auto dims = _bounds.CalcDimensions();
+    const auto dims = _bounds.CalcDimensions();
     return dims.x / dims.y;
 }
 

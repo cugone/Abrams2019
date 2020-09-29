@@ -38,8 +38,8 @@ IntVector2::IntVector2(const std::string& value) noexcept
     if(value[0] == '[') {
         if(value.back() == ']') {
             std::string contents_str = value.substr(1, value.size() - 1);
-            auto values = StringUtils::Split(contents_str);
-            auto s = values.size();
+            const auto values = StringUtils::Split(contents_str);
+            const auto s = values.size();
             for(std::size_t i = 0; i < s; ++i) {
                 switch(i) {
                 case 0: x = std::stoi(values[i]); break;
@@ -81,8 +81,8 @@ std::ostream& operator<<(std::ostream& out_stream, const IntVector2& v) noexcept
 }
 
 std::istream& operator>>(std::istream& in_stream, IntVector2& v) noexcept {
-    int x = 0;
-    int y = 0;
+    auto x = 0;
+    auto y = 0;
 
     in_stream.ignore(); //[
     in_stream >> x;
@@ -120,8 +120,8 @@ IntVector2& IntVector2::operator*=(int scalar) noexcept {
 }
 
 IntVector2 IntVector2::operator*(float scalar) const noexcept {
-    int nx = static_cast<int>(std::floor(static_cast<float>(x) * scalar));
-    int ny = static_cast<int>(std::floor(static_cast<float>(y) * scalar));
+    const auto nx = static_cast<int>(std::floor(static_cast<float>(x) * scalar));
+    const auto ny = static_cast<int>(std::floor(static_cast<float>(y) * scalar));
     return IntVector2(nx, ny);
 }
 
@@ -152,8 +152,8 @@ IntVector2& IntVector2::operator/=(int scalar) noexcept {
 }
 
 IntVector2 IntVector2::operator/(float scalar) const noexcept {
-    int nx = static_cast<int>(std::floor(static_cast<float>(x) / scalar));
-    int ny = static_cast<int>(std::floor(static_cast<float>(y) / scalar));
+    const auto nx = static_cast<int>(std::floor(static_cast<float>(x) / scalar));
+    const auto ny = static_cast<int>(std::floor(static_cast<float>(y) / scalar));
     return IntVector2(nx, ny);
 }
 

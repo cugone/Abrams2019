@@ -40,7 +40,7 @@ public:
         std::unique_ptr<RiffSubChunk> data{};
     };
 
-    RiffChunk* GetNextChunk() noexcept;
+    RiffChunk* GetNextChunk() const noexcept;
     unsigned int Load(std::filesystem::path filename) noexcept;
     unsigned int Load(const std::vector<unsigned char>& data) noexcept;
     static std::optional<std::unique_ptr<Riff::RiffChunk>> ReadListChunk(std::stringstream& stream) noexcept;
@@ -49,9 +49,9 @@ protected:
 private:
     bool ParseDataIntoChunks(std::vector<unsigned char>& buffer) noexcept;
 
-    void ShowRiffChunkHeaders() noexcept;
+    void ShowRiffChunkHeaders() const noexcept;
     std::vector<std::unique_ptr<RiffChunk>> _chunks{};
-    decltype(_chunks)::iterator _current_chunk{};
+    mutable decltype(_chunks)::iterator _current_chunk{};
 
     friend class Wav;
 };

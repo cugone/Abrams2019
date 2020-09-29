@@ -47,7 +47,7 @@ void Canvas::Render(Renderer& renderer) const {
     if(IsHidden()) {
         return;
     }
-    auto old_camera = renderer.GetCamera();
+    const auto old_camera = renderer.GetCamera();
     SetupMVPFromTargetAndCamera(renderer);
     RenderChildren(renderer);
     renderer.SetCamera(old_camera);
@@ -61,13 +61,13 @@ void Canvas::SetupMVPFromViewportAndCamera(Renderer& renderer) const {
     renderer.ResetModelViewProjection();
     const auto& vp = renderer.GetCurrentViewport();
     const auto target_dims = Vector2(vp.width, vp.height);
-    const Vector2 leftBottom = Vector2(0.0f, 1.0f) * target_dims;
-    const Vector2 rightTop = Vector2(1.0f, 0.0f) * target_dims;
-    const Vector2 nearFar{0.0f, 1.0f};
+    const auto leftBottom = Vector2(0.0f, 1.0f) * target_dims;
+    const auto rightTop = Vector2(1.0f, 0.0f) * target_dims;
+    const auto nearFar = Vector2{0.0f, 1.0f};
     const auto& [dimensions, aspect_ratio] = CalcDimensionsAndAspectRatio();
     _camera.SetupView(leftBottom, rightTop, nearFar, aspect_ratio);
-    const Vector2 view_extents{rightTop.x - leftBottom.x, leftBottom.y - rightTop.y};
-    const Vector2 view_half_extents{view_extents * 0.5f};
+    const auto view_extents = Vector2{rightTop.x - leftBottom.x, leftBottom.y - rightTop.y};
+    const auto view_half_extents = Vector2{view_extents * 0.5f};
     _camera.SetPosition(view_half_extents);
     renderer.SetCamera(_camera);
     renderer.SetModelMatrix(GetWorldTransform());
@@ -261,7 +261,7 @@ std::pair<Vector2, float> Canvas::CalcDimensionsAndAspectRatio() const {
     const auto viewport_dims = Vector2{viewport.width, viewport.height};
 
     const auto target_AR = viewport_dims.x / viewport_dims.y;
-    Vector2 dims = Vector2::ZERO;
+    auto dims = Vector2::ZERO;
     if(target_AR <= 1.0f) {
         dims.x = viewport_dims.x;
         dims.y = target_AR * viewport_dims.x;

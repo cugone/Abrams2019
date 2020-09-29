@@ -23,7 +23,7 @@ PictureBox::PictureBox(const XMLElement& elem, Panel* parent /*= nullptr*/)
 
 void PictureBox::SetImage(std::unique_ptr<AnimatedSprite> sprite) noexcept {
     _sprite.reset(sprite.release());
-    auto dims = _sprite->GetFrameDimensions();
+    const auto dims = _sprite->GetFrameDimensions();
     GetSlot()->CalcPivot();
 }
 
@@ -44,7 +44,7 @@ void PictureBox::Render(Renderer& renderer) const {
     }
     renderer.SetModelMatrix(GetWorldTransform());
     renderer.SetMaterial(_sprite->GetMaterial());
-    auto cur_tc = _sprite->GetCurrentTexCoords();
+    const auto cur_tc = _sprite->GetCurrentTexCoords();
     Vector4 tex_coords(cur_tc.mins, cur_tc.maxs);
     renderer.DrawQuad2D(tex_coords);
 }
@@ -55,9 +55,9 @@ void PictureBox::DebugRender(Renderer& renderer) const {
 
 
 Vector4 PictureBox::CalcDesiredSize() const noexcept {
-    auto dims = _sprite->GetFrameDimensions();
-    auto w = static_cast<float>(dims.x);
-    auto h = static_cast<float>(dims.y);
+    const auto dims = _sprite->GetFrameDimensions();
+    const auto w = static_cast<float>(dims.x);
+    const auto h = static_cast<float>(dims.y);
     return Vector4{Vector2::ZERO, Vector2{w, h}};
 }
 

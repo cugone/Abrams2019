@@ -65,7 +65,7 @@ bool XboxController::IsDisconnected() const noexcept {
 
 void XboxController::Update(int controller_number) noexcept {
     XINPUT_STATE state{};
-    auto error_status = ::XInputGetState(controller_number, &state);
+    const auto error_status = ::XInputGetState(controller_number, &state);
     _previousPacketNumber = _currentPacketNumber;
     _currentPacketNumber = state.dwPacketNumber;
 
@@ -90,14 +90,14 @@ void XboxController::Update(int controller_number) noexcept {
         _rightThumbDistance = Vector2(state.Gamepad.sThumbRX, state.Gamepad.sThumbRY);
         _triggerDistances = Vector2(state.Gamepad.bLeftTrigger, state.Gamepad.bRightTrigger);
 
-        float leftRadius = _leftThumbDistance.CalcLength();
+        auto leftRadius = _leftThumbDistance.CalcLength();
 
         leftRadius = MathUtils::RangeMap<float>(leftRadius, XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE, 32000, 0.0f, 1.0f);
         leftRadius = std::clamp(leftRadius, 0.0f, 1.0f);
 
         _leftThumbDistance.SetLength(leftRadius);
 
-        float rightRadius = _rightThumbDistance.CalcLength();
+        auto rightRadius = _rightThumbDistance.CalcLength();
 
         rightRadius = MathUtils::RangeMap<float>(rightRadius, XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE, 32000, 0.0f, 1.0f);
         rightRadius = std::clamp(rightRadius, 0.0f, 1.0f);

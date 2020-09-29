@@ -32,8 +32,8 @@ Vector2::Vector2(const std::string& value) noexcept
     if(value[0] == '[') {
         if(value.back() == ']') {
             std::string contents_str = value.substr(1, value.size() - 1);
-            auto values = StringUtils::Split(contents_str);
-            auto s = values.size();
+            const auto values = StringUtils::Split(contents_str);
+            const auto s = values.size();
             for(std::size_t i = 0; i < s; ++i) {
                 switch(i) {
                 case 0: x = std::stof(values[i]); break;
@@ -133,8 +133,8 @@ std::ostream& operator<<(std::ostream& out_stream, const Vector2& v) noexcept {
 }
 
 std::istream& operator>>(std::istream& in_stream, Vector2& v) noexcept {
-    float x = 0.0f;
-    float y = 0.0f;
+    auto x = 0.0f;
+    auto y = 0.0f;
 
     in_stream.ignore(); //[
     in_stream >> x;
@@ -186,8 +186,8 @@ void Vector2::SetHeadingDegrees(float headingDegrees) noexcept {
 }
 
 void Vector2::SetHeadingRadians(float headingRadians) noexcept {
-    float R = CalcLength();
-    float theta = headingRadians;
+    const auto R = CalcLength();
+    const auto theta = headingRadians;
     x = R * std::cos(theta);
     y = R * std::sin(theta);
 }
@@ -202,8 +202,8 @@ void Vector2::SetUnitLengthAndHeadingRadians(float headingRadians) noexcept {
 }
 
 float Vector2::SetLength(float length) noexcept {
-    float R = CalcLength();
-    float theta = CalcHeadingRadians();
+    const auto R = CalcLength();
+    const auto theta = CalcHeadingRadians();
     x = length * std::cos(theta);
     y = length * std::sin(theta);
     return R;
@@ -219,9 +219,9 @@ void Vector2::SetLengthAndHeadingRadians(float headingRadians, float length) noe
 }
 
 void Vector2::RotateRadians(float radians) noexcept {
-    float R = CalcLength();
-    float old_angle = std::atan2(y, x);
-    float new_angle = old_angle + radians;
+    const auto R = CalcLength();
+    const auto old_angle = std::atan2(y, x);
+    const auto new_angle = old_angle + radians;
 
     x = R * std::cos(new_angle);
     y = R * std::sin(new_angle);
@@ -232,9 +232,9 @@ void Vector2::RotateDegrees(float degrees) noexcept {
 }
 
 float Vector2::Normalize() noexcept {
-    float length = CalcLength();
+    const auto length = CalcLength();
     if(length > 0.0f) {
-        float inv_length = 1.0f / length;
+        const auto inv_length = 1.0f / length;
         x *= inv_length;
         y *= inv_length;
         return length;
@@ -243,9 +243,9 @@ float Vector2::Normalize() noexcept {
 }
 
 Vector2 Vector2::GetNormalize() const noexcept {
-    float length = CalcLength();
+    const auto length = CalcLength();
     if(length > 0.0f) {
-        float inv_length = 1.0f / length;
+        const auto inv_length = 1.0f / length;
         return Vector2(x * inv_length, y * inv_length);
     }
     return Vector2::ZERO;

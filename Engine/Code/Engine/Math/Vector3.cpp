@@ -174,9 +174,9 @@ std::ostream& operator<<(std::ostream& out_stream, const Vector3& v) noexcept {
 }
 
 std::istream& operator>>(std::istream& in_stream, Vector3& v) noexcept {
-    float x = 0.0f;
-    float y = 0.0f;
-    float z = 0.0f;
+    auto x = 0.0f;
+    auto y = 0.0f;
+    auto z = 0.0f;
 
     in_stream.ignore(); //[
     in_stream >> x;
@@ -220,9 +220,9 @@ float Vector3::CalcLengthSquared() const noexcept {
 }
 
 float Vector3::Normalize() noexcept {
-    float length = CalcLength();
+    const auto length = CalcLength();
     if(length > 0.0f) {
-        float inv_length = 1.0f / length;
+        const auto inv_length = 1.0f / length;
         x *= inv_length;
         y *= inv_length;
         z *= inv_length;
@@ -232,9 +232,9 @@ float Vector3::Normalize() noexcept {
 }
 
 Vector3 Vector3::GetNormalize() const noexcept {
-    float length = CalcLength();
+    const auto length = CalcLength();
     if(length > 0.0f) {
-        float inv_length = 1.0f / length;
+        const auto inv_length = 1.0f / length;
         return Vector3(x * inv_length, y * inv_length, z * inv_length);
     }
     return Vector3::ZERO;

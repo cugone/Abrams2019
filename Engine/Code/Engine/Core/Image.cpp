@@ -20,7 +20,7 @@ Image::Image(std::filesystem::path filepath) noexcept
     }
     filepath = FS::canonical(filepath);
     filepath.make_preferred();
-    if(auto buf = FileUtils::ReadBinaryBufferFromFile(filepath)) {
+    if(const auto& buf = FileUtils::ReadBinaryBufferFromFile(filepath); buf.has_value()) {
         const std::string bufSig{buf->begin(), buf->begin() + 6};
         const std::string gifSig89a{"GIF89a"};
         const std::string gifSig87a{"GIF87a"};

@@ -127,16 +127,16 @@ DeviceInfo RHIDevice::CreateDeviceFromFirstAdapter(const std::vector<AdapterInfo
     DebuggerPrintf(ss.str().c_str());
 
     const auto& first_adapter = first_adapter_info->adapter;
-    bool has_adapter = first_adapter != nullptr;
+    const auto has_adapter = first_adapter != nullptr;
     Microsoft::WRL::ComPtr<ID3D11Device> temp_device{};
-    auto hr_device = ::D3D11CreateDevice(has_adapter ? first_adapter.Get() : nullptr, has_adapter ? D3D_DRIVER_TYPE_UNKNOWN : D3D_DRIVER_TYPE_HARDWARE, nullptr, device_flags, feature_levels.data(), static_cast<unsigned int>(feature_levels.size()), D3D11_SDK_VERSION, temp_device.GetAddressOf(), &info.highest_supported_feature_level, info.dx_context.GetAddressOf());
+    const auto hr_device = ::D3D11CreateDevice(has_adapter ? first_adapter.Get() : nullptr, has_adapter ? D3D_DRIVER_TYPE_UNKNOWN : D3D_DRIVER_TYPE_HARDWARE, nullptr, device_flags, feature_levels.data(), static_cast<unsigned int>(feature_levels.size()), D3D11_SDK_VERSION, temp_device.GetAddressOf(), &info.highest_supported_feature_level, info.dx_context.GetAddressOf());
 
     GUARANTEE_OR_DIE(info.highest_supported_feature_level >= D3D_FEATURE_LEVEL_11_0, "Your graphics card does not support at least DirectX 11.0. Please update your drivers or hardware.");
 
     const auto hr_fail_str = StringUtils::FormatWindowsMessage(hr_device);
     GUARANTEE_OR_DIE(SUCCEEDED(hr_device), hr_fail_str.c_str());
 
-    auto hr_dxdevice5i = temp_device.As(&info.dx_device);
+    const auto hr_dxdevice5i = temp_device.As(&info.dx_device);
     const auto hrdx5i_fail_str = StringUtils::FormatWindowsMessage(hr_dxdevice5i);
     GUARANTEE_OR_DIE(SUCCEEDED(hr_dxdevice5i), hrdx5i_fail_str.c_str());
 
@@ -167,9 +167,9 @@ void RHIDevice::GetDisplayModes(const std::vector<AdapterInfo>& adapters) const 
 
 Microsoft::WRL::ComPtr<IDXGISwapChain4> RHIDevice::CreateSwapChain(const Window& window) noexcept {
     DXGI_SWAP_CHAIN_DESC1 swap_chain_desc{};
-    auto window_dims = window.GetClientDimensions();
-    auto width = static_cast<unsigned int>(window_dims.x);
-    auto height = static_cast<unsigned int>(window_dims.y);
+    const auto window_dims = window.GetClientDimensions();
+    const auto width = static_cast<unsigned int>(window_dims.x);
+    const auto height = static_cast<unsigned int>(window_dims.y);
     swap_chain_desc.Width = width;
     swap_chain_desc.Height = height;
     swap_chain_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -188,9 +188,9 @@ Microsoft::WRL::ComPtr<IDXGISwapChain4> RHIDevice::CreateSwapChain(const Window&
 
 Microsoft::WRL::ComPtr<IDXGISwapChain4> RHIDevice::RecreateSwapChain(const Window& window) noexcept {
     DXGI_SWAP_CHAIN_DESC1 swap_chain_desc{};
-    auto window_dims = window.GetClientDimensions();
-    auto width = static_cast<unsigned int>(window_dims.x);
-    auto height = static_cast<unsigned int>(window_dims.y);
+    const auto window_dims = window.GetClientDimensions();
+    const auto width = static_cast<unsigned int>(window_dims.x);
+    const auto height = static_cast<unsigned int>(window_dims.y);
     swap_chain_desc.Width = width;
     swap_chain_desc.Height = height;
     swap_chain_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -212,7 +212,7 @@ std::vector<OutputInfo> RHIDevice::GetOutputsFromAdapter(const AdapterInfo& a) c
         return {};
     }
     std::vector<OutputInfo> outputs{};
-    unsigned int i = 0u;
+    auto i = 0u;
     Microsoft::WRL::ComPtr<IDXGIOutput6> cur_output{};
     while(a.adapter->EnumOutputs(i++, reinterpret_cast<IDXGIOutput**>(cur_output.GetAddressOf())) != DXGI_ERROR_NOT_FOUND) {
         OutputInfo cur_info{};
@@ -238,8 +238,8 @@ void RHIDevice::GetDisplayModeDescriptions(const AdapterInfo& adapter, const Out
     if(!output.output) {
         return;
     }
-    unsigned int display_count = 0u;
-    unsigned int display_mode_flags = DXGI_ENUM_MODES_SCALING | DXGI_ENUM_MODES_INTERLACED | DXGI_ENUM_MODES_STEREO | DXGI_ENUM_MODES_DISABLED_STEREO;
+    auto display_count = 0u;
+    auto display_mode_flags = DXGI_ENUM_MODES_SCALING | DXGI_ENUM_MODES_INTERLACED | DXGI_ENUM_MODES_STEREO | DXGI_ENUM_MODES_DISABLED_STEREO;
 
     //Call with nullptr to get display count;
     output.output->GetDisplayModeList1(DXGI_FORMAT_R8G8B8A8_UNORM, display_mode_flags, &display_count, nullptr);
@@ -306,7 +306,7 @@ std::vector<std::unique_ptr<ConstantBuffer>> RHIDevice::CreateConstantBuffersFro
 }
 
 void RHIDevice::ResetSwapChainForHWnd() const noexcept {
-    auto hr = _dxgi_swapchain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, _rhi_factory.QueryForAllowTearingSupport(*this) ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0);
+    const auto hr = _dxgi_swapchain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, _rhi_factory.QueryForAllowTearingSupport(*this) ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0);
     GUARANTEE_OR_DIE(SUCCEEDED(hr), StringUtils::FormatWindowsMessage(hr).c_str());
 }
 
@@ -406,14 +406,14 @@ std::unique_ptr<InputLayoutInstanced> RHIDevice::CreateInputLayoutInstancedFromB
 }
 
 std::unique_ptr<ShaderProgram> RHIDevice::CreateShaderProgramFromHlslString(const std::string& name, const std::string& hlslString, const std::string& entryPointList, std::unique_ptr<InputLayout> inputLayout, const PipelineStage& target) const noexcept {
-    bool uses_vs_stage = static_cast<unsigned char>(target & PipelineStage::Vs) != 0;
-    bool uses_hs_stage = static_cast<unsigned char>(target & PipelineStage::Hs) != 0;
-    bool uses_ds_stage = static_cast<unsigned char>(target & PipelineStage::Ds) != 0;
-    bool uses_gs_stage = static_cast<unsigned char>(target & PipelineStage::Gs) != 0;
-    bool uses_ps_stage = static_cast<unsigned char>(target & PipelineStage::Ps) != 0;
-    bool uses_cs_stage = static_cast<unsigned char>(target & PipelineStage::Cs) != 0;
+    const auto uses_vs_stage = static_cast<unsigned char>(target & PipelineStage::Vs) != 0;
+    const auto uses_hs_stage = static_cast<unsigned char>(target & PipelineStage::Hs) != 0;
+    const auto uses_ds_stage = static_cast<unsigned char>(target & PipelineStage::Ds) != 0;
+    const auto uses_gs_stage = static_cast<unsigned char>(target & PipelineStage::Gs) != 0;
+    const auto uses_ps_stage = static_cast<unsigned char>(target & PipelineStage::Ps) != 0;
+    const auto uses_cs_stage = static_cast<unsigned char>(target & PipelineStage::Cs) != 0;
 
-    auto entrypoints = StringUtils::Split(entryPointList, ',', false);
+    const auto& entrypoints = StringUtils::Split(entryPointList, ',', false);
 
     enum class EntrypointIndexes : unsigned char {
         Vs,
@@ -508,7 +508,7 @@ std::unique_ptr<ShaderProgram> RHIDevice::CreateShaderProgramFromHlslString(cons
 }
 
 std::unique_ptr<ShaderProgram> RHIDevice::CreateShaderProgramFromHlslFile(std::filesystem::path filepath, const std::string& entryPoint, const PipelineStage& target) const noexcept {
-    bool retry_requested = false;
+    auto retry_requested = false;
     do {
         if(auto source = FileUtils::ReadStringBufferFromFile(filepath)) {
             auto sp = CreateShaderProgramFromHlslString(filepath.string(), source.value(), entryPoint, nullptr, target);
@@ -523,12 +523,12 @@ std::unique_ptr<ShaderProgram> RHIDevice::CreateShaderProgramFromHlslFile(std::f
 }
 
 std::unique_ptr<ShaderProgram> RHIDevice::CreateShaderProgramFromCsoBinaryBuffer(std::vector<uint8_t>& compiledShader, const std::string& name, const PipelineStage& target) const noexcept {
-    bool uses_vs_stage = static_cast<unsigned char>(target & PipelineStage::Vs) != 0;
-    bool uses_hs_stage = static_cast<unsigned char>(target & PipelineStage::Hs) != 0;
-    bool uses_ds_stage = static_cast<unsigned char>(target & PipelineStage::Ds) != 0;
-    bool uses_gs_stage = static_cast<unsigned char>(target & PipelineStage::Gs) != 0;
-    bool uses_ps_stage = static_cast<unsigned char>(target & PipelineStage::Ps) != 0;
-    bool uses_cs_stage = static_cast<unsigned char>(target & PipelineStage::Cs) != 0;
+    const auto uses_vs_stage = static_cast<unsigned char>(target & PipelineStage::Vs) != 0;
+    const auto uses_hs_stage = static_cast<unsigned char>(target & PipelineStage::Hs) != 0;
+    const auto uses_ds_stage = static_cast<unsigned char>(target & PipelineStage::Ds) != 0;
+    const auto uses_gs_stage = static_cast<unsigned char>(target & PipelineStage::Gs) != 0;
+    const auto uses_ps_stage = static_cast<unsigned char>(target & PipelineStage::Ps) != 0;
+    const auto uses_cs_stage = static_cast<unsigned char>(target & PipelineStage::Cs) != 0;
 
     ShaderProgramDesc desc{};
     desc.device = this;
@@ -604,14 +604,12 @@ std::unique_ptr<ShaderProgram> RHIDevice::CreateShaderProgramFromCsoBinaryBuffer
 }
 
 std::unique_ptr<ShaderProgram> RHIDevice::CreateShaderProgramFromCsoFile(std::filesystem::path filepath, const PipelineStage& target) const noexcept {
-    if(auto compiled_source = FileUtils::ReadBinaryBufferFromFile(filepath)) {
-        if(compiled_source) {
-            auto sp = CreateShaderProgramFromCsoBinaryBuffer(compiled_source.value(), filepath.string(), target);
-            if(sp) {
-                return sp;
-            }
-            ERROR_AND_DIE("Unrecoverable error. Cannot continue with malformed shader file.");
+    if(auto compiled_source = FileUtils::ReadBinaryBufferFromFile(filepath); compiled_source.has_value()) {
+        auto sp = CreateShaderProgramFromCsoBinaryBuffer(*compiled_source, filepath.string(), target);
+        if(sp) {
+            return sp;
         }
+        ERROR_AND_DIE("Unrecoverable error. Cannot continue with malformed shader file.");
     }
     return nullptr;
 }

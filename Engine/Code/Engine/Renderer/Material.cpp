@@ -48,9 +48,9 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
     _name = DataUtils::ParseXmlAttribute(element, "name", _name);
 
     {
-        auto xml_shader = element.FirstChildElement("shader");
+        const auto xml_shader = element.FirstChildElement("shader");
         DataUtils::ValidateXmlElement(*xml_shader, "shader", "", "src");
-        auto file = DataUtils::ParseXmlAttribute(*xml_shader, "src", "");
+        const auto file = DataUtils::ParseXmlAttribute(*xml_shader, "src", "");
         FS::path shader_src(file);
         if(!StringUtils::StartsWith(shader_src.string(), "__")) {
             std::error_code ec{};
@@ -84,32 +84,32 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
         }
     }
 
-    if(auto xml_lighting = element.FirstChildElement("lighting")) {
+    if(const auto xml_lighting = element.FirstChildElement("lighting")) {
         DataUtils::ValidateXmlElement(*xml_lighting, "lighting", "", "", "specularIntensity,specularFactor,specularPower,glossFactor,emissiveFactor");
         //specularIntensity and specularFactor are synonyms
-        if(auto xml_specInt = xml_lighting->FirstChildElement("specularIntensity")) {
+        if(const auto xml_specInt = xml_lighting->FirstChildElement("specularIntensity")) {
             _specularIntensity = DataUtils::ParseXmlElementText(*xml_specInt, _specularIntensity);
         }
-        if(auto xml_specFactor = xml_lighting->FirstChildElement("specularFactor")) {
+        if(const auto xml_specFactor = xml_lighting->FirstChildElement("specularFactor")) {
             _specularIntensity = DataUtils::ParseXmlElementText(*xml_specFactor, _specularIntensity);
         }
         //specularPower and glossFactor are synonyms
-        if(auto xml_specPower = xml_lighting->FirstChildElement("specularPower")) {
+        if(const auto xml_specPower = xml_lighting->FirstChildElement("specularPower")) {
             _specularPower = DataUtils::ParseXmlElementText(*xml_specPower, _specularPower);
         }
-        if(auto xml_glossFactor = xml_lighting->FirstChildElement("glossFactor")) {
+        if(const auto xml_glossFactor = xml_lighting->FirstChildElement("glossFactor")) {
             _specularPower = DataUtils::ParseXmlElementText(*xml_glossFactor, _specularPower);
         }
-        if(auto xml_emissiveFactor = xml_lighting->FirstChildElement("emissiveFactor")) {
+        if(const auto xml_emissiveFactor = xml_lighting->FirstChildElement("emissiveFactor")) {
             _emissiveFactor = DataUtils::ParseXmlElementText(*xml_emissiveFactor, _emissiveFactor);
         }
     }
 
-    if(auto xml_textures = element.FirstChildElement("textures")) {
-        auto invalid_tex = _renderer.GetTexture("__invalid");
+    if(const auto xml_textures = element.FirstChildElement("textures")) {
+        const auto invalid_tex = _renderer.GetTexture("__invalid");
 
-        if(auto xml_diffuse = xml_textures->FirstChildElement("diffuse")) {
-            auto file = DataUtils::ParseXmlAttribute(*xml_diffuse, "src", "");
+        if(const auto xml_diffuse = xml_textures->FirstChildElement("diffuse")) {
+            const auto file = DataUtils::ParseXmlAttribute(*xml_diffuse, "src", "");
             FS::path p(file);
             bool bad_path = false;
             if(!StringUtils::StartsWith(p.string(), "__")) {
@@ -136,8 +136,8 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
             }
         }
 
-        if(auto xml_normal = xml_textures->FirstChildElement("normal")) {
-            auto file = DataUtils::ParseXmlAttribute(*xml_normal, "src", "");
+        if(const auto xml_normal = xml_textures->FirstChildElement("normal")) {
+            const auto file = DataUtils::ParseXmlAttribute(*xml_normal, "src", "");
             FS::path p(file);
             bool bad_path = false;
             if(!StringUtils::StartsWith(p.string(), "__")) {
@@ -164,8 +164,8 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
             }
         }
 
-        if(auto xml_displacement = xml_textures->FirstChildElement("displacement")) {
-            auto file = DataUtils::ParseXmlAttribute(*xml_displacement, "src", "");
+        if(const auto xml_displacement = xml_textures->FirstChildElement("displacement")) {
+            const auto file = DataUtils::ParseXmlAttribute(*xml_displacement, "src", "");
             FS::path p(file);
             bool bad_path = false;
             if(!StringUtils::StartsWith(p.string(), "__")) {
@@ -192,8 +192,8 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
             }
         }
 
-        if(auto xml_specular = xml_textures->FirstChildElement("specular")) {
-            auto file = DataUtils::ParseXmlAttribute(*xml_specular, "src", "");
+        if(const auto xml_specular = xml_textures->FirstChildElement("specular")) {
+            const auto file = DataUtils::ParseXmlAttribute(*xml_specular, "src", "");
             FS::path p(file);
             bool bad_path = false;
             if(!StringUtils::StartsWith(p.string(), "__")) {
@@ -220,8 +220,8 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
             }
         }
 
-        if(auto xml_occlusion = xml_textures->FirstChildElement("occlusion")) {
-            auto file = DataUtils::ParseXmlAttribute(*xml_occlusion, "src", "");
+        if(const auto xml_occlusion = xml_textures->FirstChildElement("occlusion")) {
+            const auto file = DataUtils::ParseXmlAttribute(*xml_occlusion, "src", "");
             FS::path p(file);
             bool bad_path = false;
             if(!StringUtils::StartsWith(p.string(), "__")) {
@@ -248,8 +248,8 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
             }
         }
 
-        if(auto xml_emissive = xml_textures->FirstChildElement("emissive")) {
-            auto file = DataUtils::ParseXmlAttribute(*xml_emissive, "src", "");
+        if(const auto xml_emissive = xml_textures->FirstChildElement("emissive")) {
+            const auto file = DataUtils::ParseXmlAttribute(*xml_emissive, "src", "");
             FS::path p(file);
             bool bad_path = false;
             if(!StringUtils::StartsWith(p.string(), "__")) {
@@ -276,7 +276,7 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
             }
         }
         {
-            auto numTextures = DataUtils::GetChildElementCount(*xml_textures, "texture");
+            const auto numTextures = DataUtils::GetChildElementCount(*xml_textures, "texture");
             if(numTextures >= MaxCustomTextureSlotCount) {
                 DebuggerPrintf("Max custom texture count exceeded. Cannot bind more than %i custom textures.", MaxCustomTextureSlotCount);
             }
@@ -321,8 +321,8 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
 }
 
 void Material::AddTextureSlots(std::size_t count) noexcept {
-    std::size_t old_size = _textures.size();
-    std::size_t new_size = (std::min)(old_size + MaxCustomTextureSlotCount, old_size + (std::min)(MaxCustomTextureSlotCount, count));
+    const auto old_size = _textures.size();
+    const auto new_size = (std::min)(old_size + MaxCustomTextureSlotCount, old_size + (std::min)(MaxCustomTextureSlotCount, count));
     _textures.resize(new_size);
     for(std::size_t i = old_size; i < new_size; ++i) {
         _textures[i] = nullptr;

@@ -55,10 +55,10 @@ bool Sampler::CreateSamplerState(const RHIDevice* device, const SamplerDesc& des
 
     dx_desc.ComparisonFunc = ComparisonFunctionToD3DComparisonFunction(desc.compareFunc);
 
-    float r = 1.0f;
-    float g = 1.0f;
-    float b = 1.0f;
-    float a = 1.0f;
+    auto r = 1.0f;
+    auto g = 1.0f;
+    auto b = 1.0f;
+    auto a = 1.0f;
     desc.borderColor.GetAsFloats(r, g, b, a);
     dx_desc.BorderColor[0] = r;
     dx_desc.BorderColor[1] = g;

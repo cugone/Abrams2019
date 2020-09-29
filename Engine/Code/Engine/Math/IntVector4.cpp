@@ -109,8 +109,8 @@ IntVector4::IntVector4(const std::string& value) noexcept
     if(value[0] == '[') {
         if(value.back() == ']') {
             std::string contents_str = value.substr(1, value.size() - 1);
-            auto values = StringUtils::Split(contents_str);
-            auto s = values.size();
+            const auto values = StringUtils::Split(contents_str);
+            const auto s = values.size();
             for(std::size_t i = 0; i < s; ++i) {
                 switch(i) {
                 case 0: x = std::stoi(values[i]); break;

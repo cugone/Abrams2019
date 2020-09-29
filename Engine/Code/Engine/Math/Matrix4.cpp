@@ -77,12 +77,12 @@ Matrix4::Matrix4(const float* arrayOfFloats) noexcept {
 }
 
 Matrix4::Matrix4(const Quaternion& q) noexcept {
-    auto q_norm = q.GetNormalize();
+    const auto q_norm = q.GetNormalize();
 
-    float x = q.axis.x;
-    float y = q.axis.y;
-    float z = q.axis.z;
-    float w = q.w;
+    const auto x = q.axis.x;
+    const auto y = q.axis.y;
+    const auto z = q.axis.z;
+    const auto w = q.w;
 
     Matrix4 left;
     left.m_indicies[0] = w;
@@ -563,7 +563,7 @@ Matrix4 Matrix4::CreatePerspectiveProjectionMatrix(float top, float bottom, floa
 }
 
 Matrix4 Matrix4::CreateHPerspectiveProjectionMatrix(float fov, float /*aspect_ratio*/, float nearZ, float farZ) noexcept {
-    float S = 1.0f / std::tan(MathUtils::ConvertDegreesToRadians(fov / 2.0f));
+    const auto S = 1.0f / std::tan(MathUtils::ConvertDegreesToRadians(fov / 2.0f));
     return Matrix4(S, 0.0f, 0.0f, 0.0f,
                    0.0f, S, 0.0f, 0.0f,
                    0.0f, 0.0f, -(farZ / (farZ - nearZ)), -1.0f,
@@ -571,7 +571,7 @@ Matrix4 Matrix4::CreateHPerspectiveProjectionMatrix(float fov, float /*aspect_ra
 }
 
 Matrix4 Matrix4::CreateVPerspectiveProjectionMatrix(float fov, float aspect_ratio, float nearZ, float farZ) noexcept {
-    float f = std::atan(MathUtils::ConvertDegreesToRadians(fov) / 2.0f);
+    const auto f = std::atan(MathUtils::ConvertDegreesToRadians(fov) / 2.0f);
     return Matrix4(f / aspect_ratio, 0.0f, 0.0f, 0.0f,
                    0.0f, f, 0.0f, 0.0f,
                    0.0f, 0.0f, ((farZ + nearZ) / (nearZ - farZ)), (2.0f * farZ * nearZ) / (nearZ - farZ),
@@ -579,12 +579,12 @@ Matrix4 Matrix4::CreateVPerspectiveProjectionMatrix(float fov, float aspect_rati
 }
 
 Matrix4 Matrix4::CreateDXOrthographicProjection(float nx, float fx, float ny, float fy, float nz, float fz) noexcept {
-    float sx = 2.0f / (fx - nx);
-    float sy = 2.0f / (fy - ny);
-    float sz = 1.0f / (fz - nz);
-    float tx = -(fx + nx) * sx;
-    float ty = -(fy + ny) * sy;
-    float tz = -nz * sz;
+    const auto sx = 2.0f / (fx - nx);
+    const auto sy = 2.0f / (fy - ny);
+    const auto sz = 1.0f / (fz - nz);
+    const auto tx = -(fx + nx) * sx;
+    const auto ty = -(fy + ny) * sy;
+    const auto tz = -nz * sz;
     Matrix4 mat(sx, 0.0f, 0.0f, tx,
                 0.0f, sy, 0.0f, ty,
                 0.0f, 0.0f, sz, tz,
@@ -597,17 +597,17 @@ Matrix4 Matrix4::CreateDXOrthographicProjection(const AABB3& extents) noexcept {
 }
 
 Matrix4 Matrix4::CreateDXPerspectiveProjection(float vfovDegrees, float aspect, float nz, float fz) noexcept {
-    float fov_rads = MathUtils::ConvertDegreesToRadians(vfovDegrees);
-    float inv_tan = 1.0f / std::tan(fov_rads * 0.50f);
-    float inv_aspect = 1.0f / aspect;
-    float depth = fz - nz;
-    float nzfz = nz * fz;
-    float inv_depth = 1.0f / depth;
+    const auto fov_rads = MathUtils::ConvertDegreesToRadians(vfovDegrees);
+    const auto inv_tan = 1.0f / std::tan(fov_rads * 0.50f);
+    const auto inv_aspect = 1.0f / aspect;
+    const auto depth = fz - nz;
+    const auto nzfz = nz * fz;
+    const auto inv_depth = 1.0f / depth;
 
-    float sx = inv_tan * inv_aspect;
-    float sy = inv_tan;
-    float sz = fz * inv_depth;
-    float tz = -nzfz * inv_depth;
+    const auto sx = inv_tan * inv_aspect;
+    const auto sy = inv_tan;
+    const auto sz = fz * inv_depth;
+    const auto tz = -nzfz * inv_depth;
     Matrix4 mat(sx, 0.0f, 0.0f, 0.0f, 0.0f, sy, 0.0f, 0.0f, 0.0f, 0.0f, sz, tz, 0.0f, 0.0f, 1.0f, 0.0f);
     return mat;
 }
@@ -651,25 +651,25 @@ Matrix4 Matrix4::CalculateInverse(const Matrix4& mat) noexcept {
     //[30 31 32 33] [12 13 14 15]
 
     //Calculate minors
-    float m00 = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[5], mat.m_indicies[6], mat.m_indicies[7], mat.m_indicies[9], mat.m_indicies[10], mat.m_indicies[11], mat.m_indicies[13], mat.m_indicies[14], mat.m_indicies[15]);
-    float m01 = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[4], mat.m_indicies[6], mat.m_indicies[7], mat.m_indicies[8], mat.m_indicies[10], mat.m_indicies[11], mat.m_indicies[12], mat.m_indicies[14], mat.m_indicies[15]);
-    float m02 = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[4], mat.m_indicies[5], mat.m_indicies[7], mat.m_indicies[8], mat.m_indicies[9], mat.m_indicies[11], mat.m_indicies[12], mat.m_indicies[13], mat.m_indicies[15]);
-    float m03 = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[4], mat.m_indicies[5], mat.m_indicies[6], mat.m_indicies[8], mat.m_indicies[9], mat.m_indicies[10], mat.m_indicies[12], mat.m_indicies[13], mat.m_indicies[14]);
+    const auto m00 = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[5], mat.m_indicies[6], mat.m_indicies[7], mat.m_indicies[9], mat.m_indicies[10], mat.m_indicies[11], mat.m_indicies[13], mat.m_indicies[14], mat.m_indicies[15]);
+    const auto m01 = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[4], mat.m_indicies[6], mat.m_indicies[7], mat.m_indicies[8], mat.m_indicies[10], mat.m_indicies[11], mat.m_indicies[12], mat.m_indicies[14], mat.m_indicies[15]);
+    const auto m02 = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[4], mat.m_indicies[5], mat.m_indicies[7], mat.m_indicies[8], mat.m_indicies[9], mat.m_indicies[11], mat.m_indicies[12], mat.m_indicies[13], mat.m_indicies[15]);
+    const auto m03 = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[4], mat.m_indicies[5], mat.m_indicies[6], mat.m_indicies[8], mat.m_indicies[9], mat.m_indicies[10], mat.m_indicies[12], mat.m_indicies[13], mat.m_indicies[14]);
 
-    float m10 = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[1], mat.m_indicies[2], mat.m_indicies[3], mat.m_indicies[9], mat.m_indicies[10], mat.m_indicies[11], mat.m_indicies[13], mat.m_indicies[14], mat.m_indicies[15]);
-    float m11 = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[0], mat.m_indicies[2], mat.m_indicies[3], mat.m_indicies[8], mat.m_indicies[10], mat.m_indicies[11], mat.m_indicies[12], mat.m_indicies[14], mat.m_indicies[15]);
-    float m12 = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[0], mat.m_indicies[1], mat.m_indicies[3], mat.m_indicies[8], mat.m_indicies[9], mat.m_indicies[11], mat.m_indicies[12], mat.m_indicies[13], mat.m_indicies[15]);
-    float m13 = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[0], mat.m_indicies[1], mat.m_indicies[2], mat.m_indicies[8], mat.m_indicies[9], mat.m_indicies[10], mat.m_indicies[12], mat.m_indicies[13], mat.m_indicies[14]);
+    const auto m10 = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[1], mat.m_indicies[2], mat.m_indicies[3], mat.m_indicies[9], mat.m_indicies[10], mat.m_indicies[11], mat.m_indicies[13], mat.m_indicies[14], mat.m_indicies[15]);
+    const auto m11 = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[0], mat.m_indicies[2], mat.m_indicies[3], mat.m_indicies[8], mat.m_indicies[10], mat.m_indicies[11], mat.m_indicies[12], mat.m_indicies[14], mat.m_indicies[15]);
+    const auto m12 = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[0], mat.m_indicies[1], mat.m_indicies[3], mat.m_indicies[8], mat.m_indicies[9], mat.m_indicies[11], mat.m_indicies[12], mat.m_indicies[13], mat.m_indicies[15]);
+    const auto m13 = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[0], mat.m_indicies[1], mat.m_indicies[2], mat.m_indicies[8], mat.m_indicies[9], mat.m_indicies[10], mat.m_indicies[12], mat.m_indicies[13], mat.m_indicies[14]);
 
-    float m20 = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[1], mat.m_indicies[2], mat.m_indicies[3], mat.m_indicies[5], mat.m_indicies[6], mat.m_indicies[7], mat.m_indicies[13], mat.m_indicies[14], mat.m_indicies[15]);
-    float m21 = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[0], mat.m_indicies[2], mat.m_indicies[3], mat.m_indicies[4], mat.m_indicies[6], mat.m_indicies[7], mat.m_indicies[12], mat.m_indicies[14], mat.m_indicies[15]);
-    float m22 = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[0], mat.m_indicies[1], mat.m_indicies[3], mat.m_indicies[4], mat.m_indicies[5], mat.m_indicies[7], mat.m_indicies[12], mat.m_indicies[13], mat.m_indicies[15]);
-    float m23 = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[0], mat.m_indicies[1], mat.m_indicies[2], mat.m_indicies[4], mat.m_indicies[5], mat.m_indicies[6], mat.m_indicies[12], mat.m_indicies[13], mat.m_indicies[14]);
+    const auto m20 = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[1], mat.m_indicies[2], mat.m_indicies[3], mat.m_indicies[5], mat.m_indicies[6], mat.m_indicies[7], mat.m_indicies[13], mat.m_indicies[14], mat.m_indicies[15]);
+    const auto m21 = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[0], mat.m_indicies[2], mat.m_indicies[3], mat.m_indicies[4], mat.m_indicies[6], mat.m_indicies[7], mat.m_indicies[12], mat.m_indicies[14], mat.m_indicies[15]);
+    const auto m22 = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[0], mat.m_indicies[1], mat.m_indicies[3], mat.m_indicies[4], mat.m_indicies[5], mat.m_indicies[7], mat.m_indicies[12], mat.m_indicies[13], mat.m_indicies[15]);
+    const auto m23 = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[0], mat.m_indicies[1], mat.m_indicies[2], mat.m_indicies[4], mat.m_indicies[5], mat.m_indicies[6], mat.m_indicies[12], mat.m_indicies[13], mat.m_indicies[14]);
 
-    float m30 = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[1], mat.m_indicies[2], mat.m_indicies[3], mat.m_indicies[5], mat.m_indicies[6], mat.m_indicies[7], mat.m_indicies[9], mat.m_indicies[10], mat.m_indicies[11]);
-    float m31 = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[0], mat.m_indicies[2], mat.m_indicies[3], mat.m_indicies[4], mat.m_indicies[6], mat.m_indicies[7], mat.m_indicies[8], mat.m_indicies[10], mat.m_indicies[11]);
-    float m32 = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[0], mat.m_indicies[1], mat.m_indicies[3], mat.m_indicies[4], mat.m_indicies[5], mat.m_indicies[7], mat.m_indicies[8], mat.m_indicies[9], mat.m_indicies[11]);
-    float m33 = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[0], mat.m_indicies[1], mat.m_indicies[2], mat.m_indicies[4], mat.m_indicies[5], mat.m_indicies[6], mat.m_indicies[8], mat.m_indicies[9], mat.m_indicies[10]);
+    const auto m30 = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[1], mat.m_indicies[2], mat.m_indicies[3], mat.m_indicies[5], mat.m_indicies[6], mat.m_indicies[7], mat.m_indicies[9], mat.m_indicies[10], mat.m_indicies[11]);
+    const auto m31 = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[0], mat.m_indicies[2], mat.m_indicies[3], mat.m_indicies[4], mat.m_indicies[6], mat.m_indicies[7], mat.m_indicies[8], mat.m_indicies[10], mat.m_indicies[11]);
+    const auto m32 = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[0], mat.m_indicies[1], mat.m_indicies[3], mat.m_indicies[4], mat.m_indicies[5], mat.m_indicies[7], mat.m_indicies[8], mat.m_indicies[9], mat.m_indicies[11]);
+    const auto m33 = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[0], mat.m_indicies[1], mat.m_indicies[2], mat.m_indicies[4], mat.m_indicies[5], mat.m_indicies[6], mat.m_indicies[8], mat.m_indicies[9], mat.m_indicies[10]);
 
     Matrix4 cofactors(m00, -m01, m02, -m03,
                       -m10, m11, -m12, m13,
@@ -678,16 +678,16 @@ Matrix4 Matrix4::CalculateInverse(const Matrix4& mat) noexcept {
 
     Matrix4 adjugate(Matrix4::CreateTransposeMatrix(cofactors));
 
-    float det_mat = mat.CalculateDeterminant();
-    float inv_det = 1.0f / det_mat;
+    const auto det_mat = mat.CalculateDeterminant();
+    const auto inv_det = 1.0f / det_mat;
 
     return inv_det * adjugate;
 }
 
 void Matrix4::OrthoNormalizeIKJ() noexcept {
-    Vector4 i = GetIBasis();
-    Vector4 k = GetKBasis();
-    Vector4 j = GetJBasis();
+    auto i = GetIBasis();
+    auto k = GetKBasis();
+    auto j = GetJBasis();
 
     i.Normalize3D();
     k -= MathUtils::Project(k, i);
@@ -702,9 +702,9 @@ void Matrix4::OrthoNormalizeIKJ() noexcept {
 }
 
 void Matrix4::OrthoNormalizeIJK() noexcept {
-    Vector4 i = GetIBasis();
-    Vector4 k = GetKBasis();
-    Vector4 j = GetJBasis();
+    auto i = GetIBasis();
+    auto k = GetKBasis();
+    auto j = GetJBasis();
 
     i.Normalize3D();
     j -= MathUtils::Project(j, i);
@@ -719,9 +719,9 @@ void Matrix4::OrthoNormalizeIJK() noexcept {
 }
 
 void Matrix4::OrthoNormalizeKIJ() noexcept {
-    Vector4 i = GetIBasis();
-    Vector4 k = GetKBasis();
-    Vector4 j = GetJBasis();
+    auto i = GetIBasis();
+    auto k = GetKBasis();
+    auto j = GetJBasis();
 
     k.Normalize3D();
     i -= MathUtils::Project(i, k);
@@ -741,23 +741,23 @@ float Matrix4::CalculateDeterminant(const Matrix4& mat) noexcept {
     //[20 21 22 23] [8   9 10 11]
     //[30 31 32 33] [12 13 14 15]
 
-    float a = mat.m_indicies[0];
-    float det_not_a = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[5], mat.m_indicies[6], mat.m_indicies[7],
+    const auto a = mat.m_indicies[0];
+    const auto det_not_a = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[5], mat.m_indicies[6], mat.m_indicies[7],
                                                              mat.m_indicies[9], mat.m_indicies[10], mat.m_indicies[11],
                                                              mat.m_indicies[13], mat.m_indicies[14], mat.m_indicies[15]);
 
-    float b = mat.m_indicies[1];
-    float det_not_b = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[4], mat.m_indicies[6], mat.m_indicies[7],
+    const auto b = mat.m_indicies[1];
+    const auto det_not_b = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[4], mat.m_indicies[6], mat.m_indicies[7],
                                                              mat.m_indicies[8], mat.m_indicies[10], mat.m_indicies[11],
                                                              mat.m_indicies[12], mat.m_indicies[14], mat.m_indicies[15]);
 
-    float c = mat.m_indicies[2];
-    float det_not_c = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[4], mat.m_indicies[5], mat.m_indicies[7],
+    const auto c = mat.m_indicies[2];
+    const auto det_not_c = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[4], mat.m_indicies[5], mat.m_indicies[7],
                                                              mat.m_indicies[8], mat.m_indicies[9], mat.m_indicies[11],
                                                              mat.m_indicies[12], mat.m_indicies[13], mat.m_indicies[15]);
 
-    float d = mat.m_indicies[3];
-    float det_not_d = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[4], mat.m_indicies[5], mat.m_indicies[6],
+    const auto d = mat.m_indicies[3];
+    const auto det_not_d = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[4], mat.m_indicies[5], mat.m_indicies[6],
                                                              mat.m_indicies[8], mat.m_indicies[9], mat.m_indicies[10],
                                                              mat.m_indicies[12], mat.m_indicies[13], mat.m_indicies[14]);
 
@@ -837,9 +837,9 @@ void Matrix4::Rotate2DDegrees(float degrees) noexcept {
     Rotate3DZDegrees(degrees);
 }
 void Matrix4::Rotate3DXRadians(float radians) noexcept {
-    float r = radians;
-    float c = std::cos(r);
-    float s = std::sin(r);
+    const auto r = radians;
+    const auto c = std::cos(r);
+    const auto s = std::sin(r);
 
     m_indicies[5] = c;
     m_indicies[6] = -s;
@@ -847,9 +847,9 @@ void Matrix4::Rotate3DXRadians(float radians) noexcept {
     m_indicies[10] = c;
 }
 void Matrix4::Rotate3DYRadians(float radians) noexcept {
-    float r = radians;
-    float c = std::cos(r);
-    float s = std::sin(r);
+    const auto r = radians;
+    const auto c = std::cos(r);
+    const auto s = std::sin(r);
 
     m_indicies[0] = c;
     m_indicies[2] = s;
@@ -857,9 +857,9 @@ void Matrix4::Rotate3DYRadians(float radians) noexcept {
     m_indicies[10] = c;
 }
 void Matrix4::Rotate3DZRadians(float radians) noexcept {
-    float r = radians;
-    float c = std::cos(r);
-    float s = std::sin(r);
+    const auto r = radians;
+    const auto c = std::cos(r);
+    const auto s = std::sin(r);
 
     m_indicies[0] = c;
     m_indicies[1] = -s;
@@ -878,34 +878,34 @@ Matrix4 Matrix4::GetTransformed(const Matrix4& other) const noexcept {
 Vector2 Matrix4::TransformPosition(const Vector2& position) const noexcept {
     Vector4 v(position.x, position.y, 0.0f, 1.0f);
 
-    float x = MathUtils::DotProduct(GetXComponents(), v);
-    float y = MathUtils::DotProduct(GetYComponents(), v);
+    const auto x = MathUtils::DotProduct(GetXComponents(), v);
+    const auto y = MathUtils::DotProduct(GetYComponents(), v);
 
     return Vector2(x, y);
 }
 Vector3 Matrix4::TransformPosition(const Vector3& position) const noexcept {
     Vector4 v(position.x, position.y, position.z, 1.0f);
 
-    float x = MathUtils::DotProduct(GetXComponents(), v);
-    float y = MathUtils::DotProduct(GetYComponents(), v);
-    float z = MathUtils::DotProduct(GetZComponents(), v);
+    const auto x = MathUtils::DotProduct(GetXComponents(), v);
+    const auto y = MathUtils::DotProduct(GetYComponents(), v);
+    const auto z = MathUtils::DotProduct(GetZComponents(), v);
 
     return Vector3(x, y, z);
 }
 Vector2 Matrix4::TransformDirection(const Vector2& direction) const noexcept {
     Vector4 v(direction.x, direction.y, 0.0f, 0.0f);
 
-    float x = MathUtils::DotProduct(GetXComponents(), v);
-    float y = MathUtils::DotProduct(GetYComponents(), v);
+    const auto x = MathUtils::DotProduct(GetXComponents(), v);
+    const auto y = MathUtils::DotProduct(GetYComponents(), v);
 
     return Vector2(x, y).GetNormalize();
 }
 Vector3 Matrix4::TransformDirection(const Vector3& direction) const noexcept {
     Vector4 v(direction.x, direction.y, direction.z, 0.0f);
 
-    float x = MathUtils::DotProduct(GetXComponents(), v);
-    float y = MathUtils::DotProduct(GetYComponents(), v);
-    float z = MathUtils::DotProduct(GetZComponents(), v);
+    const auto x = MathUtils::DotProduct(GetXComponents(), v);
+    const auto y = MathUtils::DotProduct(GetYComponents(), v);
+    const auto z = MathUtils::DotProduct(GetZComponents(), v);
 
     return Vector3(x, y, z).GetNormalize();
 }
@@ -975,43 +975,43 @@ Matrix4 Matrix4::GetRotation() noexcept {
 Vector3 Matrix4::CalcEulerAngles() const noexcept {
     //Reference: http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.371.6578&rep=rep1&type=pdf
 
-    auto z_comps = GetZComponents();
-    auto z_i = z_comps.x;
-    bool is_z_i_near_one = MathUtils::IsEquivalent(z_i, -1.0f) || MathUtils::IsEquivalent(z_i, 1.0f);
+    const auto z_comps = GetZComponents();
+    const auto z_i = z_comps.x;
+    const auto is_z_i_near_one = MathUtils::IsEquivalent(z_i, -1.0f) || MathUtils::IsEquivalent(z_i, 1.0f);
     if(is_z_i_near_one) {
-        auto theta_1 = -std::asin(z_i);
-        auto theta_2 = MathUtils::M_PI - theta_1;
+        const auto theta_1 = -std::asin(z_i);
+        const auto theta_2 = MathUtils::M_PI - theta_1;
 
-        auto c_theta_1 = std::cos(theta_1);
-        auto c_theta_2 = std::cos(theta_2);
+        const auto c_theta_1 = std::cos(theta_1);
+        const auto c_theta_2 = std::cos(theta_2);
 
-        auto z_j = z_comps.y;
-        auto z_k = z_comps.z;
+        const auto z_j = z_comps.y;
+        const auto z_k = z_comps.z;
 
-        auto psi_1 = std::atan2(z_j / c_theta_1, z_k / c_theta_1);
-        auto psi_2 = std::atan2(z_j / c_theta_2, z_k / c_theta_2);
+        const auto psi_1 = std::atan2(z_j / c_theta_1, z_k / c_theta_1);
+        const auto psi_2 = std::atan2(z_j / c_theta_2, z_k / c_theta_2);
 
-        auto y_comps = GetYComponents();
-        auto y_i = y_comps.x;
+        const auto y_comps = GetYComponents();
+        const auto y_i = y_comps.x;
 
-        auto x_comps = GetXComponents();
-        auto x_i = x_comps.x;
+        const auto x_comps = GetXComponents();
+        const auto x_i = x_comps.x;
 
-        auto phi_1 = std::atan2(y_i / c_theta_1, x_i / c_theta_1);
-        auto phi_2 = std::atan2(y_i / c_theta_2, x_i / c_theta_2);
+        const auto phi_1 = std::atan2(y_i / c_theta_1, x_i / c_theta_1);
+        const auto phi_2 = std::atan2(y_i / c_theta_2, x_i / c_theta_2);
 
-        auto theta = (std::min)(theta_1, theta_2);
-        auto psi = (std::min)(psi_1, psi_2);
-        auto phi = (std::min)(phi_1, phi_2);
+        const auto theta = (std::min)(theta_1, theta_2);
+        const auto psi = (std::min)(psi_1, psi_2);
+        const auto phi = (std::min)(phi_1, phi_2);
         return Vector3(psi, theta, phi);
     } else {
-        auto x_comps = GetXComponents();
-        auto x_j = x_comps.y;
-        auto x_k = x_comps.z;
-        auto phi = 0.0f;
+        const auto x_comps = GetXComponents();
+        const auto x_j = x_comps.y;
+        const auto x_k = x_comps.z;
+        const auto phi = 0.0f;
         auto theta = 0.0f;
         auto psi = 0.0f;
-        bool is_z_i_near_neg_one = MathUtils::IsEquivalent(z_i, -1.0f);
+        const auto is_z_i_near_neg_one = MathUtils::IsEquivalent(z_i, -1.0f);
         if(is_z_i_near_neg_one) {
             theta = MathUtils::M_PI_2;
             psi = phi + std::atan2(x_j, x_k);
@@ -1026,40 +1026,40 @@ Vector3 Matrix4::CalcEulerAngles() const noexcept {
 Matrix4 Matrix4::operator*(const Matrix4& rhs) const noexcept {
     using namespace MathUtils;
 
-    Vector4 myI = GetIBasis();
-    Vector4 myJ = GetJBasis();
-    Vector4 myK = GetKBasis();
-    Vector4 myT = GetTBasis();
-    Vector4 myX = GetXComponents();
-    Vector4 myY = GetYComponents();
-    Vector4 myZ = GetZComponents();
-    Vector4 myW = GetWComponents();
+    const auto myI = GetIBasis();
+    const auto myJ = GetJBasis();
+    const auto myK = GetKBasis();
+    const auto myT = GetTBasis();
+    const auto myX = GetXComponents();
+    const auto myY = GetYComponents();
+    const auto myZ = GetZComponents();
+    const auto myW = GetWComponents();
 
-    Vector4 rhsI = rhs.GetIBasis();
-    Vector4 rhsJ = rhs.GetJBasis();
-    Vector4 rhsK = rhs.GetKBasis();
-    Vector4 rhsT = rhs.GetTBasis();
-    Vector4 rhsX = rhs.GetXComponents();
-    Vector4 rhsY = rhs.GetYComponents();
-    Vector4 rhsZ = rhs.GetZComponents();
-    Vector4 rhsW = rhs.GetWComponents();
+    const auto rhsI = rhs.GetIBasis();
+    const auto rhsJ = rhs.GetJBasis();
+    const auto rhsK = rhs.GetKBasis();
+    const auto rhsT = rhs.GetTBasis();
+    const auto rhsX = rhs.GetXComponents();
+    const auto rhsY = rhs.GetYComponents();
+    const auto rhsZ = rhs.GetZComponents();
+    const auto rhsW = rhs.GetWComponents();
 
-    float m00 = DotProduct(myX, rhsI);
-    float m01 = DotProduct(myX, rhsJ);
-    float m02 = DotProduct(myX, rhsK);
-    float m03 = DotProduct(myX, rhsT);
-    float m04 = DotProduct(myY, rhsI);
-    float m05 = DotProduct(myY, rhsJ);
-    float m06 = DotProduct(myY, rhsK);
-    float m07 = DotProduct(myY, rhsT);
-    float m08 = DotProduct(myZ, rhsI);
-    float m09 = DotProduct(myZ, rhsJ);
-    float m10 = DotProduct(myZ, rhsK);
-    float m11 = DotProduct(myZ, rhsT);
-    float m12 = DotProduct(myW, rhsI);
-    float m13 = DotProduct(myW, rhsJ);
-    float m14 = DotProduct(myW, rhsK);
-    float m15 = DotProduct(myW, rhsT);
+    const auto m00 = DotProduct(myX, rhsI);
+    const auto m01 = DotProduct(myX, rhsJ);
+    const auto m02 = DotProduct(myX, rhsK);
+    const auto m03 = DotProduct(myX, rhsT);
+    const auto m04 = DotProduct(myY, rhsI);
+    const auto m05 = DotProduct(myY, rhsJ);
+    const auto m06 = DotProduct(myY, rhsK);
+    const auto m07 = DotProduct(myY, rhsT);
+    const auto m08 = DotProduct(myZ, rhsI);
+    const auto m09 = DotProduct(myZ, rhsJ);
+    const auto m10 = DotProduct(myZ, rhsK);
+    const auto m11 = DotProduct(myZ, rhsT);
+    const auto m12 = DotProduct(myW, rhsI);
+    const auto m13 = DotProduct(myW, rhsJ);
+    const auto m14 = DotProduct(myW, rhsK);
+    const auto m15 = DotProduct(myW, rhsT);
 
     Matrix4 result(m00, m01, m02, m03, m04, m05, m06, m07, m08, m09, m10, m11, m12, m13, m14, m15);
     return result;
@@ -1073,85 +1073,85 @@ Matrix4 Matrix4::operator*(float scalar) const noexcept {
 }
 
 Vector4 Matrix4::operator*(const Vector4& rhs) const noexcept {
-    const Vector4 my_x{GetXComponents()};
-    const Vector4 my_y{GetYComponents()};
-    const Vector4 my_z{GetZComponents()};
-    const Vector4 my_w{GetWComponents()};
-    const float x = MathUtils::DotProduct(rhs, my_x);
-    const float y = MathUtils::DotProduct(rhs, my_y);
-    const float z = MathUtils::DotProduct(rhs, my_z);
-    const float w = MathUtils::DotProduct(rhs, my_w);
+    const auto my_x{GetXComponents()};
+    const auto my_y{GetYComponents()};
+    const auto my_z{GetZComponents()};
+    const auto my_w{GetWComponents()};
+    const auto x = MathUtils::DotProduct(rhs, my_x);
+    const auto y = MathUtils::DotProduct(rhs, my_y);
+    const auto z = MathUtils::DotProduct(rhs, my_z);
+    const auto w = MathUtils::DotProduct(rhs, my_w);
     return Vector4(x, y, z, w);
 }
 
 Vector4 operator*(const Vector4& lhs, const Matrix4& rhs) noexcept {
-    const Vector4 my_i(rhs.GetIBasis());
-    const Vector4 my_j(rhs.GetJBasis());
-    const Vector4 my_k(rhs.GetKBasis());
-    const Vector4 my_t(rhs.GetTBasis());
-    const float x = MathUtils::DotProduct(lhs, my_i);
-    const float y = MathUtils::DotProduct(lhs, my_j);
-    const float z = MathUtils::DotProduct(lhs, my_k);
-    const float w = MathUtils::DotProduct(lhs, my_t);
+    const auto my_i(rhs.GetIBasis());
+    const auto my_j(rhs.GetJBasis());
+    const auto my_k(rhs.GetKBasis());
+    const auto my_t(rhs.GetTBasis());
+    const auto x = MathUtils::DotProduct(lhs, my_i);
+    const auto y = MathUtils::DotProduct(lhs, my_j);
+    const auto z = MathUtils::DotProduct(lhs, my_k);
+    const auto w = MathUtils::DotProduct(lhs, my_t);
     return Vector4(x, y, z, w);
 }
 
 Vector3 Matrix4::operator*(const Vector3& rhs) const noexcept {
-    const Vector3 my_x(GetXComponents());
-    const Vector3 my_y(GetYComponents());
-    const Vector3 my_z(GetZComponents());
-    const float x = MathUtils::DotProduct(my_x, rhs);
-    const float y = MathUtils::DotProduct(my_y, rhs);
-    const float z = MathUtils::DotProduct(my_z, rhs);
+    const auto my_x = Vector3{GetXComponents()};
+    const auto my_y = Vector3{GetYComponents()};
+    const auto my_z = Vector3{GetZComponents()};
+    const auto x = MathUtils::DotProduct(my_x, rhs);
+    const auto y = MathUtils::DotProduct(my_y, rhs);
+    const auto z = MathUtils::DotProduct(my_z, rhs);
     return Vector3(x, y, z);
 }
 
 Vector3 operator*(const Vector3& lhs, const Matrix4& rhs) noexcept {
-    const Vector3 my_i(rhs.GetIBasis());
-    const Vector3 my_j(rhs.GetJBasis());
-    const Vector3 my_k(rhs.GetKBasis());
-    const float x = MathUtils::DotProduct(lhs, my_i);
-    const float y = MathUtils::DotProduct(lhs, my_j);
-    const float z = MathUtils::DotProduct(lhs, my_k);
+    const auto my_i = Vector3{rhs.GetIBasis()};
+    const auto my_j = Vector3{rhs.GetJBasis()};
+    const auto my_k = Vector3{rhs.GetKBasis()};
+    const auto x = MathUtils::DotProduct(lhs, my_i);
+    const auto y = MathUtils::DotProduct(lhs, my_j);
+    const auto z = MathUtils::DotProduct(lhs, my_k);
     return Vector3(x, y, z);
 }
 
 Vector2 Matrix4::operator*(const Vector2& rhs) const noexcept {
-    const Vector2 my_x{Vector3{GetXComponents()}};
-    const Vector2 my_y{Vector3{GetYComponents()}};
-    const float x = MathUtils::DotProduct(my_x, rhs);
-    const float y = MathUtils::DotProduct(my_y, rhs);
+    const auto my_x = Vector2{Vector3{GetXComponents()}};
+    const auto my_y = Vector2{Vector3{GetYComponents()}};
+    const auto x = MathUtils::DotProduct(my_x, rhs);
+    const auto y = MathUtils::DotProduct(my_y, rhs);
     return Vector2(x, y);
 }
 
 Vector2 operator*(const Vector2& lhs, const Matrix4& rhs) noexcept {
-    const Vector2 my_i{Vector3{rhs.GetIBasis()}};
-    const Vector2 my_j{Vector3{rhs.GetKBasis()}};
-    const float x = MathUtils::DotProduct(lhs, my_i);
-    const float y = MathUtils::DotProduct(lhs, my_j);
+    const auto my_i = Vector2{Vector3{rhs.GetIBasis()}};
+    const auto my_j = Vector2{Vector3{rhs.GetKBasis()}};
+    const auto x = MathUtils::DotProduct(lhs, my_i);
+    const auto y = MathUtils::DotProduct(lhs, my_j);
     return Vector2(x, y);
 }
 
 Matrix4& Matrix4::operator*=(const Matrix4& rhs) noexcept {
     using namespace MathUtils;
 
-    Vector4 myI = GetIBasis();
-    Vector4 myJ = GetJBasis();
-    Vector4 myK = GetKBasis();
-    Vector4 myT = GetTBasis();
-    Vector4 myX = GetXComponents();
-    Vector4 myY = GetYComponents();
-    Vector4 myZ = GetZComponents();
-    Vector4 myW = GetWComponents();
+    const auto myI = GetIBasis();
+    const auto myJ = GetJBasis();
+    const auto myK = GetKBasis();
+    const auto myT = GetTBasis();
+    const auto myX = GetXComponents();
+    const auto myY = GetYComponents();
+    const auto myZ = GetZComponents();
+    const auto myW = GetWComponents();
 
-    Vector4 rhsI = rhs.GetIBasis();
-    Vector4 rhsJ = rhs.GetJBasis();
-    Vector4 rhsK = rhs.GetKBasis();
-    Vector4 rhsT = rhs.GetTBasis();
-    Vector4 rhsX = rhs.GetXComponents();
-    Vector4 rhsY = rhs.GetYComponents();
-    Vector4 rhsZ = rhs.GetZComponents();
-    Vector4 rhsW = rhs.GetWComponents();
+    const auto rhsI = rhs.GetIBasis();
+    const auto rhsJ = rhs.GetJBasis();
+    const auto rhsK = rhs.GetKBasis();
+    const auto rhsT = rhs.GetTBasis();
+    const auto rhsX = rhs.GetXComponents();
+    const auto rhsY = rhs.GetYComponents();
+    const auto rhsZ = rhs.GetZComponents();
+    const auto rhsW = rhs.GetWComponents();
 
     m_indicies[0] = DotProduct(myX, rhsI);
     m_indicies[1] = DotProduct(myX, rhsJ);
@@ -1271,8 +1271,8 @@ Matrix4 Matrix4::operator/(const Matrix4& rhs) noexcept {
 }
 
 Matrix4& Matrix4::operator/=(const Matrix4& rhs) noexcept {
-    Matrix4 inv(Matrix4::CalculateInverse(rhs));
-    Matrix4 result = (*this * inv);
+    const auto inv{Matrix4::CalculateInverse(rhs)};
+    const auto result{*this * inv};
 
     m_indicies = result.m_indicies;
 

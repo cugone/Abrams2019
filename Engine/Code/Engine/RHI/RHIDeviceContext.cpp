@@ -36,7 +36,7 @@ void RHIDeviceContext::ClearColorTarget(Texture* output, const Rgba& color) noex
 }
 
 void RHIDeviceContext::ClearDepthStencilTarget(Texture* output, bool depth /*= true */, bool stencil /*= true */, float depthValue /*= 1.0f */, unsigned char stencilValue /*= 0*/) noexcept {
-    unsigned int clear_flag = 0;
+    auto clear_flag = 0u;
     if(depth) {
         clear_flag |= D3D11_CLEAR_DEPTH;
     }
@@ -51,7 +51,7 @@ void RHIDeviceContext::SetMaterial(Material* material) noexcept {
         return;
     }
     SetShader(material->GetShader());
-    auto tex_count = material->GetTextureCount();
+    const auto tex_count = material->GetTextureCount();
     for(unsigned int i = 0; i < tex_count; ++i) {
         SetTexture(i, material->GetTexture(i));
     }
@@ -87,7 +87,7 @@ void RHIDeviceContext::SetUnorderedAccessView(unsigned int index, Texture* textu
 
 void RHIDeviceContext::SetVertexBuffer(unsigned int startIndex, VertexBuffer* buffer) noexcept {
     unsigned int stride = sizeof(VertexBuffer::buffer_t);
-    unsigned int offsets = 0;
+    unsigned int offsets = 0u;
     if(buffer) {
         ID3D11Buffer* const dx_buffer = buffer->GetDxBuffer().Get();
         _dx_context->IASetVertexBuffers(startIndex, 1, &dx_buffer, &stride, &offsets);

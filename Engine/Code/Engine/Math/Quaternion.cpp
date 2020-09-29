@@ -13,16 +13,16 @@ Quaternion::Quaternion(const Matrix4& mat) noexcept
 , axis(Vector3::ZERO) {
     //From http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/
 
-    Vector4 diag = mat.GetDiagonal();
-    float trace = mat.CalculateTrace();
+    const auto diag = mat.GetDiagonal();
+    const auto trace = mat.CalculateTrace();
 
-    Vector3 row_zero = Vector3(mat.GetIBasis());
-    Vector3 row_one = Vector3(mat.GetJBasis());
-    Vector3 row_two = Vector3(mat.GetKBasis());
-    Vector3 row_three = Vector3(mat.GetTBasis());
+    const auto row_zero = Vector3(mat.GetIBasis());
+    const auto row_one = Vector3(mat.GetJBasis());
+    const auto row_two = Vector3(mat.GetKBasis());
+    const auto row_three = Vector3(mat.GetTBasis());
 
     if(trace > 0.0f) {
-        float S = 0.5f / std::sqrt(trace);
+        const auto S = 0.5f / std::sqrt(trace);
 
         w = 0.25f / S;
 
@@ -208,11 +208,11 @@ Vector4 Quaternion::CalcAxisAnglesDegrees() const noexcept {
     if(q_n.w > 1.0f) {
         q_n.Normalize();
     }
-    float s = std::sqrt(1.0f - q_n.w * q_n.w);
-    float angle = 2.0f * std::acos(q_n.w);
-    float x = 0.0f;
-    float y = 0.0f;
-    float z = 0.0f;
+    const auto s = std::sqrt(1.0f - q_n.w * q_n.w);
+    const auto angle = 2.0f * std::acos(q_n.w);
+    auto x = 0.0f;
+    auto y = 0.0f;
+    auto z = 0.0f;
     if(MathUtils::IsEquivalent(s, 0.0f)) {
         x = q_n.axis.x;
         y = q_n.axis.y;
@@ -230,11 +230,11 @@ Vector4 Quaternion::CalcAxisAnglesRadians() const noexcept {
     if(q_n.w > 1.0f) {
         q_n.Normalize();
     }
-    float s = std::sqrt(1.0f - q_n.w * q_n.w);
-    float angle = 2.0f * std::acos(q_n.w);
-    float x = 0.0f;
-    float y = 0.0f;
-    float z = 0.0f;
+    const auto s = std::sqrt(1.0f - q_n.w * q_n.w);
+    const auto angle = 2.0f * std::acos(q_n.w);
+    auto x = 0.0f;
+    auto y = 0.0f;
+    auto z = 0.0f;
     if(MathUtils::IsEquivalent(s, 0.0f)) {
         x = q_n.axis.x;
         y = q_n.axis.y;
@@ -259,7 +259,7 @@ Vector3 Quaternion::CalcEulerAnglesRadians() const noexcept {
 Vector3 Quaternion::CalcEulerAngles(bool degrees) const noexcept {
     //First pass change to non-normalized version later.
 
-    auto q_n = GetNormalize();
+    const auto q_n = GetNormalize();
 
     //Euclidean Space standards
     //Heading = rot. about y (yaw)
@@ -273,29 +273,31 @@ Vector3 Quaternion::CalcEulerAngles(bool degrees) const noexcept {
     //float s2 = std::sin(attitude);
     //float s3 = std::sin(bank);
 
-    Vector3 result;
-    float test = q_n.axis.x * q_n.axis.y + q_n.axis.z * q_n.w;
-    float y = 2.0f * std::atan2(q_n.axis.x, q_n.w);
-    float z = MathUtils::M_1PI_2;
-    float x = 0.0f;
-    if(MathUtils::IsEquivalent(test, 0.50f)) {
-        result.y = y;
-        result.z = z;
-        result.x = x;
-        return result;
-    } else if(MathUtils::IsEquivalent(test, -0.50f)) {
-        result.y = -y;
-        result.z = -z;
-        result.x = x;
-        return result;
+    Vector3 result{};
+    const auto test = q_n.axis.x * q_n.axis.y + q_n.axis.z * q_n.w;
+    {
+        const auto y = 2.0f * std::atan2(q_n.axis.x, q_n.w);
+        const auto z = MathUtils::M_1PI_2;
+        const auto x = 0.0f;
+        if(MathUtils::IsEquivalent(test, 0.50f)) {
+            result.y = y;
+            result.z = z;
+            result.x = x;
+            return result;
+        } else if(MathUtils::IsEquivalent(test, -0.50f)) {
+            result.y = -y;
+            result.z = -z;
+            result.x = x;
+            return result;
+        }
     }
 
-    float sqx = q_n.axis.x * q_n.axis.x;
-    float sqy = q_n.axis.y * q_n.axis.y;
-    float sqz = q_n.axis.z * q_n.axis.z;
-    y = std::atan2(2.0f * q_n.axis.y * w - 2.0f * q_n.axis.x * q_n.axis.z, 1.0f - sqy - 2.0f * sqz);
-    z = std::asin(2.0f * test);
-    x = std::atan2(2.0f * q_n.axis.x * w - 2.0f * q_n.axis.z, 1.0f - 2.0f * sqx - 2.0f * sqz);
+    const auto sqx = q_n.axis.x * q_n.axis.x;
+    const auto sqy = q_n.axis.y * q_n.axis.y;
+    const auto sqz = q_n.axis.z * q_n.axis.z;
+    const auto y = std::atan2(2.0f * q_n.axis.y * w - 2.0f * q_n.axis.x * q_n.axis.z, 1.0f - sqy - 2.0f * sqz);
+    const auto z = std::asin(2.0f * test);
+    const auto x = std::atan2(2.0f * q_n.axis.x * w - 2.0f * q_n.axis.z, 1.0f - 2.0f * sqx - 2.0f * sqz);
 
     if(degrees) {
         result.y = MathUtils::ConvertRadiansToDegrees(y);
@@ -318,9 +320,9 @@ float Quaternion::CalcLengthSquared() const noexcept {
 }
 
 void Quaternion::Normalize() noexcept {
-    float lengthSq = CalcLengthSquared();
+    const auto lengthSq = CalcLengthSquared();
     if(!MathUtils::IsEquivalent(lengthSq, 0.0f)) {
-        float invLength = 1.0f / std::sqrt(lengthSq);
+        const auto invLength = 1.0f / std::sqrt(lengthSq);
         w *= invLength;
         axis *= invLength;
     }
@@ -343,24 +345,24 @@ Quaternion Quaternion::GetConjugate() const noexcept {
 }
 
 void Quaternion::Inverse() noexcept {
-    float lengthSq = CalcLengthSquared();
+    const auto lengthSq = CalcLengthSquared();
     if(!MathUtils::IsEquivalent(lengthSq, 0.0f)) {
-        Quaternion q_conj = *this;
+        auto q_conj = *this;
         q_conj.Conjugate();
-        float invLengthSq = 1.0f / lengthSq;
-        Quaternion result = q_conj * invLengthSq;
+        const auto invLengthSq = 1.0f / lengthSq;
+        const auto result = q_conj * invLengthSq;
         w = result.w;
         axis = result.axis;
     }
 }
 
 Quaternion Quaternion::CalcInverse() const noexcept {
-    float lengthSq = CalcLengthSquared();
+    const auto lengthSq = CalcLengthSquared();
     Quaternion result;
     if(!MathUtils::IsEquivalent(lengthSq, 0.0f)) {
-        Quaternion q_conj = *this;
+        auto q_conj = *this;
         q_conj.Conjugate();
-        float invLengthSq = 1.0f / lengthSq;
+        const auto invLengthSq = 1.0f / lengthSq;
         result = q_conj * invLengthSq;
     }
     return result;
@@ -374,11 +376,11 @@ Quaternion Quaternion::CreatePureQuaternion(const Vector3& v) noexcept {
 }
 
 Quaternion Quaternion::CreateFromAxisAngle(const Vector3& axis, float degreesAngle) noexcept {
-    float angle = MathUtils::ConvertDegreesToRadians(degreesAngle);
-    float factor = std::sin(angle * 0.5f);
+    const auto angle = MathUtils::ConvertDegreesToRadians(degreesAngle);
+    const auto factor = std::sin(angle * 0.5f);
 
-    Vector3 factoredAxis = axis.GetNormalize() * factor;
-    float w = std::cos(angle * 0.5f);
+    const auto factoredAxis = axis.GetNormalize() * factor;
+    const auto w = std::cos(angle * 0.5f);
 
     return Quaternion(w, factoredAxis);
 }
@@ -439,18 +441,18 @@ Quaternion Quaternion::CreateFromEulerAngles(float pitch, float yaw, float roll,
     //    float iy = cx*sy*cz - sx*cy*sz;
     //    float iz = cx*cy*sz - sx*sy*cz;
 
-    Vector3 he = Vector3(pitch, yaw, roll) * 0.5f;
-    float cx = std::cos(he.x);
-    float sx = std::sin(he.x);
-    float cy = std::cos(he.y);
-    float sy = std::sin(he.y);
-    float cz = std::cos(he.z);
-    float sz = std::sin(he.z);
+    const auto he = Vector3(pitch, yaw, roll) * 0.5f;
+    const auto cx = std::cos(he.x);
+    const auto sx = std::sin(he.x);
+    const auto cy = std::cos(he.y);
+    const auto sy = std::sin(he.y);
+    const auto cz = std::cos(he.z);
+    const auto sz = std::sin(he.z);
 
-    float w = cx * cy * cz - sx * sy * sz;
-    float ix = sx * cy * cz + cx * sy * sz;
-    float iy = cx * sy * cz + sx * cy * sz;
-    float iz = cx * cy * sz - sx * sy * cz;
+    const auto w = cx * cy * cz - sx * sy * sz;
+    const auto ix = sx * cy * cz + cx * sy * sz;
+    const auto iy = cx * sy * cz + sx * cy * sz;
+    const auto iz = cx * cy * sz - sx * sy * cz;
 
     Quaternion result(w, ix, iy, iz);
 
@@ -465,12 +467,12 @@ Quaternion Conjugate(const Quaternion& q) noexcept {
 }
 
 Quaternion Inverse(const Quaternion& q) noexcept {
-    float lengthSq = q.CalcLengthSquared();
+    const auto lengthSq = q.CalcLengthSquared();
     if(!MathUtils::IsEquivalent(lengthSq, 0.0f)) {
-        Quaternion q_conj = q;
+        auto q_conj = q;
         q_conj.Conjugate();
-        float invLengthSq = 1.0f / lengthSq;
-        Quaternion result = q_conj * invLengthSq;
+        const auto invLengthSq = 1.0f / lengthSq;
+        const auto result = q_conj * invLengthSq;
         return result;
     }
     return q;
