@@ -29,7 +29,7 @@ class Quaternion;
 class Rgba;
 
 namespace MathUtils {
-
+//TODO: Consider <numbers> header when it becomes available
 constexpr const float M_1PI_6 = 0.52359877559829887307f;         // 1pi/6
 constexpr const float M_1PI_4 = 0.78539816339744830962f;         // 1pi/4
 constexpr const float M_1PI_3 = 1.04719755119659774615f;         // 1pi/3
