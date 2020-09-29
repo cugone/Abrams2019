@@ -40,12 +40,18 @@ private:
 
     void PrintErrorToDebugger(std::filesystem::path filepath, const std::string& elementType, unsigned long long line_index) const noexcept;
 
+    struct FaceIdxs {
+        std::size_t a;
+        std::size_t b;
+        std::size_t c;
+    };
+
     std::vector<Vertex3D> _vbo{};
     std::vector<unsigned int> _ibo{};
     std::vector<Vector3> _verts{};
     std::vector<Vector3> _tex_coords{};
     std::vector<Vector3> _normals{};
-    std::vector<std::tuple<std::size_t, std::size_t, std::size_t>> _face_idxs{};
+    std::vector<FaceIdxs> _face_idxs{};
     std::atomic_bool _is_loaded = false;
     std::atomic_bool _is_loading = false;
     std::atomic_bool _is_saving = false;

@@ -66,9 +66,9 @@ bool Obj::Save(std::filesystem::path filepath) noexcept {
     bool has_vt = !_tex_coords.empty();
     bool has_neither = !has_vt && !has_vn;
     for(auto iter = std::begin(_face_idxs); iter != std::end(_face_idxs); /* DO NOTHING */) {
-        auto value1 = std::get<0>(*iter);
-        auto value2 = std::get<1>(*iter);
-        auto value3 = std::get<2>(*iter);
+        auto value1 = (*iter).a;
+        auto value2 = (*iter).b;
+        auto value3 = (*iter).c;
         buffer << "f ";
         buffer << (1 + value1);
         if(!has_neither) {
@@ -82,9 +82,9 @@ bool Obj::Save(std::filesystem::path filepath) noexcept {
             }
         }
         ++iter;
-        value1 = std::get<0>(*iter);
-        value2 = std::get<1>(*iter);
-        value3 = std::get<2>(*iter);
+        value1 = (*iter).a;
+        value2 = (*iter).b;
+        value3 = (*iter).c;
         buffer << ' ';
         buffer << (1 + value1);
         if(!has_neither) {
@@ -98,9 +98,9 @@ bool Obj::Save(std::filesystem::path filepath) noexcept {
             }
         }
         ++iter;
-        value1 = std::get<0>(*iter);
-        value2 = std::get<1>(*iter);
-        value3 = std::get<2>(*iter);
+        value1 = (*iter).a;
+        value2 = (*iter).b;
+        value3 = (*iter).c;
         buffer << ' ';
         buffer << (1 + value1);
         if(!has_neither) {
@@ -275,29 +275,29 @@ bool Obj::Parse(const std::filesystem::path& filepath) noexcept {
                                 if(!elems[0].empty()) {
                                     std::size_t cur_v = std::stoul(elems[0]);
                                     cur_vbo_index = cur_v - 1;
-                                    std::get<0>(face) = cur_vbo_index;
+                                    face.a = cur_vbo_index;
                                     vertex.position = _verts[cur_vbo_index];
                                     _ibo.push_back(static_cast<unsigned int>(cur_vbo_index));
                                 } else {
-                                    std::get<0>(face) = static_cast<std::size_t>(-1);
+                                    face.a = static_cast<std::size_t>(-1);
                                 }
                                 break;
                             case 1:
                                 if(!elems[1].empty()) {
                                     std::size_t cur_vt = std::stoul(elems[1]);
-                                    std::get<1>(face) = cur_vt;
+                                    face.b = cur_vt;
                                     vertex.texcoords = Vector2{_tex_coords[cur_vt - 1]};
                                 } else {
-                                    std::get<1>(face) = static_cast<std::size_t>(-1);
+                                    face.b = static_cast<std::size_t>(-1);
                                 }
                                 break;
                             case 2:
                                 if(!elems[2].empty()) {
                                     std::size_t cur_vn = std::stoul(elems[2]);
-                                    std::get<2>(face) = cur_vn - 1;
+                                    face.c = cur_vn - 1;
                                     vertex.normal = _normals[cur_vn - 1];
                                 } else {
-                                    std::get<2>(face) = static_cast<std::size_t>(-1);
+                                    face.c = static_cast<std::size_t>(-1);
                                 }
                                 break;
                             default: break;
