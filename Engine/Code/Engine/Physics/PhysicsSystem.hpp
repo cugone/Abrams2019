@@ -75,27 +75,10 @@ public:
     void EnablePhysics(bool isPhysicsEnabled) noexcept;
 
     template<typename JointDefType>
-    Joint* CreateJoint(const JointDefType& defType) {
-        Joint* newJoint{nullptr};
-        if constexpr (std::is_same_v<JointDefType,SpringJointDef>) {
-            newJoint = new SpringJoint(defType);
-        } else if constexpr (std::is_same_v<JointDefType,RodJointDef>) {
-            newJoint = new RodJoint(defType);
-        } else if constexpr (std::is_same_v<JointDefType, CableJointDef>) {
-            newJoint = new CableJoint(defType);
-        } else {
-            static_assert(true, "CreateJoint received undeclared type.");
-        }
-        _joints.emplace_back(newJoint);
-        return newJoint;
-    }
+    Joint* CreateJoint(const JointDefType& defType);
 
     template<typename ForceGeneratorType>
-    ForceGeneratorType* CreateForceGenerator() {
-        auto* newFG = new ForceGenerator();
-        _forceGenerators.emplace_back(newFG);
-        return newFG;
-    }
+    ForceGeneratorType* CreateForceGenerator();
 
 protected:
 private:
@@ -106,38 +89,7 @@ private:
 
     using CollisionDataSet = std::set<CollisionData, std::equal_to<CollisionData>>;
     template<typename CollisionDetectionFunction, typename CollisionResolutionFunction>
-    CollisionDataSet NarrowPhaseCollision(const std::vector<RigidBody*>& potential_collisions, CollisionDetectionFunction&& cd, CollisionResolutionFunction&& cr) noexcept {
-        PROFILE_LOG_SCOPE_FUNCTION();
-        CollisionDataSet result{};
-        if(potential_collisions.size() < 2) {
-            _contacts.clear();
-            return {};
-        }
-        for(auto iter_a = std::begin(potential_collisions); iter_a != std::end(potential_collisions); ++iter_a) {
-            for(auto iter_b = iter_a + 1; iter_b != std::end(potential_collisions); ++iter_b) {
-                auto* const cur_body = *iter_a;
-                auto* const next_body = *iter_b;
-                if(cur_body == next_body) {
-                    continue;
-                }
-                const auto cdResult = std::invoke(cd, *cur_body->GetCollider(), *next_body->GetCollider());
-                if(cdResult.collides) {
-                    const auto crResult = std::invoke(cr, cdResult, *cur_body->GetCollider(), *next_body->GetCollider());
-                    const auto contact = CollisionData{cur_body, next_body, crResult.distance, crResult.normal};
-                    const auto [_, was_inserted] = result.insert(contact);
-                    if(!was_inserted) {
-                        DebuggerPrintf("Physics System: Attempting to insert already existing element.");
-                    } else {
-                        while(_contacts.size() >= 10) {
-                            _contacts.pop_front();
-                        }
-                        _contacts.push_back(contact);
-                    }
-                }
-            }
-        }
-        return result;
-    }
+    CollisionDataSet NarrowPhaseCollision(const std::vector<RigidBody*>& potential_collisions, CollisionDetectionFunction&& cd, CollisionResolutionFunction&& cr) noexcept;
 
     void SolveCollision(const CollisionDataSet& actual_collisions) noexcept;
     void SolveConstraints() const noexcept;
@@ -163,3 +115,59 @@ private:
     bool _show_contacts = false;
     bool _show_joints = false;
 };
+
+template<typename JointDefType>
+Joint* PhysicsSystem::CreateJoint(const JointDefType& defType) {
+    Joint* newJoint{nullptr};
+    if constexpr(std::is_same_v<JointDefType, SpringJointDef>) {
+        newJoint = new SpringJoint(defType);
+    } else if constexpr(std::is_same_v<JointDefType, RodJointDef>) {
+        newJoint = new RodJoint(defType);
+    } else if constexpr(std::is_same_v<JointDefType, CableJointDef>) {
+        newJoint = new CableJoint(defType);
+    } else {
+        static_assert(true, "CreateJoint received undeclared type.");
+    }
+    _joints.emplace_back(newJoint);
+    return newJoint;
+}
+
+template<typename ForceGeneratorType>
+ForceGeneratorType* PhysicsSystem::CreateForceGenerator() {
+    auto* newFG = new ForceGenerator();
+    _forceGenerators.emplace_back(newFG);
+    return newFG;
+}
+template<typename CollisionDetectionFunction, typename CollisionResolutionFunction>
+PhysicsSystem::CollisionDataSet PhysicsSystem::NarrowPhaseCollision(const std::vector<RigidBody*>& potential_collisions, CollisionDetectionFunction&& cd, CollisionResolutionFunction&& cr) noexcept {
+    PROFILE_LOG_SCOPE_FUNCTION();
+    CollisionDataSet result{};
+    if(potential_collisions.size() < 2) {
+        _contacts.clear();
+        return {};
+    }
+    for(auto iter_a = std::begin(potential_collisions); iter_a != std::end(potential_collisions); ++iter_a) {
+        for(auto iter_b = iter_a + 1; iter_b != std::end(potential_collisions); ++iter_b) {
+            auto* const cur_body = *iter_a;
+            auto* const next_body = *iter_b;
+            if(cur_body == next_body) {
+                continue;
+            }
+            const auto cdResult = std::invoke(cd, *cur_body->GetCollider(), *next_body->GetCollider());
+            if(cdResult.collides) {
+                const auto crResult = std::invoke(cr, cdResult, *cur_body->GetCollider(), *next_body->GetCollider());
+                const auto contact = CollisionData{cur_body, next_body, crResult.distance, crResult.normal};
+                const auto [_, was_inserted] = result.insert(contact);
+                if(!was_inserted) {
+                    DebuggerPrintf("Physics System: Attempting to insert already existing element.");
+                } else {
+                    while(_contacts.size() >= 10) {
+                        _contacts.pop_front();
+                    }
+                    _contacts.push_back(contact);
+                }
+            }
+        }
+    }
+    return result;
+}
