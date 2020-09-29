@@ -131,7 +131,6 @@ Rgba Image::GetTexel(const IntVector2& texelPos) const noexcept {
     return color;
 }
 void Image::SetTexel(const IntVector2& texelPos, const Rgba& color) noexcept {
-    Rgba oldColor = GetTexel(texelPos);
     std::size_t index = static_cast<std::size_t>(texelPos.x) + static_cast<std::size_t>(texelPos.y) * m_dimensions.x;
     std::size_t byteOffset = index * m_bytesPerTexel;
     m_texelBytes[byteOffset + 0] = color.r;
