@@ -266,8 +266,10 @@ void XboxController::SetMotorSpeed(int controller_number, const Motor& motor, un
     case Motor::Both:
         vibration.wLeftMotorSpeed = value;
         vibration.wRightMotorSpeed = value;
+        break;
     default:
-    /* DO NOTHING */;
+        /* DO NOTHING */
+        break;
     }
     DWORD errorStatus = ::XInputSetState(controller_number, &vibration);
     if(errorStatus == ERROR_SUCCESS) {

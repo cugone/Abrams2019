@@ -167,7 +167,8 @@ bitfield8_t GetFilterMaskFromModes(const FilterMode& minFilterMode, const Filter
         result |= COMPARISON_MASK_BITS;
         break;
     default:
-    /* DO NOTHING */;
+        /* DO NOTHING */
+        break;
     }
 
     if(mipFilterMode == FilterMode::Anisotropic) {
