@@ -305,18 +305,18 @@ void PhysicsSystem::RemoveAllObjectsImmediately() noexcept {
     }
 }
 
-void PhysicsSystem::DebugShowCollision(bool show) {
+void PhysicsSystem::Debug_ShowCollision(bool show) {
     _show_colliders = show;
 }
 
-void PhysicsSystem::DebugShowWorldPartition(bool show) {
+void PhysicsSystem::Debug_ShowWorldPartition(bool show) {
     _show_world_partition = show;
 }
 
-void PhysicsSystem::DebugShowContacts(bool show) {
+void PhysicsSystem::Debug_ShowContacts(bool show) {
     _show_contacts = show;
 }
 
-void PhysicsSystem::DebugShowJoints(bool show) {
+void PhysicsSystem::Debug_ShowJoints(bool show) {
     _show_joints = show;
 }

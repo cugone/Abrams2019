@@ -77,10 +77,10 @@ public:
 
     const std::vector<std::unique_ptr<Joint>>& Debug_GetJoints() const noexcept;
 
-    void DebugShowCollision(bool show);
-    void DebugShowWorldPartition(bool show);
-    void DebugShowContacts(bool show);
-    void DebugShowJoints(bool show);
+    void Debug_ShowCollision(bool show);
+    void Debug_ShowWorldPartition(bool show);
+    void Debug_ShowContacts(bool show);
+    void Debug_ShowJoints(bool show);
 
 protected:
 private:
