@@ -57,11 +57,6 @@ public:
     void RemoveAllObjects() noexcept;
     void RemoveAllObjectsImmediately() noexcept;
 
-    void DebugShowCollision(bool show);
-    void DebugShowWorldPartition(bool show);
-    void DebugShowContacts(bool show);
-    void DebugShowJoints(bool show);
-
     void Enable(bool enable);
     void SetGravity(const Vector2& new_gravity);
     Vector2 GetGravity() const noexcept;
@@ -81,6 +76,11 @@ public:
     ForceGeneratorType* CreateForceGenerator();
 
     const std::vector<std::unique_ptr<Joint>>& Debug_GetJoints() const noexcept;
+
+    void DebugShowCollision(bool show);
+    void DebugShowWorldPartition(bool show);
+    void DebugShowContacts(bool show);
+    void DebugShowJoints(bool show);
 
 protected:
 private:
