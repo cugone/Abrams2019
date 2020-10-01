@@ -120,18 +120,19 @@ private:
 
 template<typename JointDefType>
 Joint* PhysicsSystem::CreateJoint(const JointDefType& defType) {
-    Joint* newJoint{nullptr};
+    std::unique_ptr<Joint> newJoint{};
     if constexpr(std::is_same_v<JointDefType, SpringJointDef>) {
-        newJoint = new SpringJoint(defType);
+        newJoint.reset(new SpringJoint(defType));
     } else if constexpr(std::is_same_v<JointDefType, RodJointDef>) {
-        newJoint = new RodJoint(defType);
+        newJoint.reset(new RodJoint(defType));
     } else if constexpr(std::is_same_v<JointDefType, CableJointDef>) {
-        newJoint = new CableJoint(defType);
+        newJoint.reset(new CableJoint(defType));
     } else {
         static_assert(true, "CreateJoint received undeclared type.");
     }
-    _joints.emplace_back(newJoint);
-    return newJoint;
+    auto* joint_ptr = newJoint.get();
+    _joints.emplace_back(std::move(newJoint));
+    return joint_ptr;
 }
 
 template<typename ForceGeneratorType>
