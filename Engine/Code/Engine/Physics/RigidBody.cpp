@@ -42,7 +42,7 @@ void RigidBody::BeginFrame() {
 
 void RigidBody::Update(TimeUtils::FPSeconds deltaSeconds) {
     PROFILE_LOG_SCOPE_FUNCTION();
-    if(!is_awake || !IsPhysicsEnabled() || MathUtils::IsEquivalentToZero(GetInverseMass())) {
+    if(!IsAwake() || !IsPhysicsEnabled() || MathUtils::IsEquivalentToZero(GetInverseMass())) {
         linear_impulses.clear();
         angular_impulses.clear();
         linear_forces.clear();
@@ -226,7 +226,7 @@ Matrix4 RigidBody::GetParentTransform() const {
 }
 
 void RigidBody::ApplyImpulse(const Vector2& impulse) {
-    is_awake = true;
+    SetAwake(true);
     linear_impulses.push_back(impulse);
 }
 
@@ -235,7 +235,7 @@ void RigidBody::ApplyImpulse(const Vector2& direction, float magnitude) {
 }
 
 void RigidBody::ApplyForce(const Vector2& force, const TimeUtils::FPSeconds& duration) {
-    is_awake = true;
+    SetAwake(true);
     linear_forces.push_back(std::make_pair(force, duration));
 }
 
@@ -244,7 +244,7 @@ void RigidBody::ApplyForce(const Vector2& direction, float magnitude, const Time
 }
 
 void RigidBody::ApplyTorque(float force, const TimeUtils::FPSeconds& duration) {
-    is_awake = true;
+    SetAwake(true);
     if(duration == TimeUtils::FPSeconds::zero()) {
         angular_impulses.push_back(force);
     } else {
