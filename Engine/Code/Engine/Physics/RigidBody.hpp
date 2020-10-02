@@ -8,22 +8,22 @@
 #include <memory>
 
 struct RigidBodyDesc {
-    Vector2 initialPosition{};
-    Vector2 initialVelocity{};
-    Vector2 initialAcceleration{};
+    Position initialPosition{};
+    Velocity initialVelocity{};
+    Acceleration initialAcceleration{};
     Collider* collider{};
     PhysicsMaterial physicsMaterial{};
     PhysicsDesc physicsDesc{};
     RigidBodyDesc() noexcept {
         /* DO NOTHING */
     }
-    RigidBodyDesc(const Vector2& initialPos, const Vector2& initialVel, const Vector2& initialAcc, Collider* coll, const PhysicsMaterial& physMat, const PhysicsDesc& physDesc) noexcept
-        : initialPosition(initialPos)
-        , initialVelocity(initialVel)
-        , initialAcceleration(initialAcc)
-        , collider(coll)
-        , physicsMaterial(physMat)
-        , physicsDesc(physDesc)
+    RigidBodyDesc(Position initialPos, Velocity initialVel, Acceleration initialAcc, Collider* coll, const PhysicsMaterial& physMat, const PhysicsDesc& physDesc) noexcept
+        : initialPosition{initialPos}
+        , initialVelocity{initialVel}
+        , initialAcceleration{initialAcc}
+        , collider{coll}
+        , physicsMaterial{physMat}
+        , physicsDesc{physDesc}
     {
         /* DO NOTHING */
     }
