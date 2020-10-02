@@ -41,7 +41,6 @@ void RigidBody::BeginFrame() {
 }
 
 void RigidBody::Update(TimeUtils::FPSeconds deltaSeconds) {
-    PROFILE_LOG_SCOPE_FUNCTION();
     if(!IsPhysicsEnabled() || !IsDynamic() || !IsAwake() || MathUtils::IsEquivalentToZero(GetInverseMass())) {
         linear_impulses.clear();
         angular_impulses.clear();
@@ -390,7 +389,6 @@ const bool RigidBody::ShouldKill() const noexcept {
 }
 
 void RigidBody::SetAcceleration(const Vector2& newAccleration) noexcept {
-    DebuggerPrintf("Set Acceleration was called with: %f,%f\n", newAccleration.x, newAccleration.y);
     acceleration = newAccleration;
 }
 

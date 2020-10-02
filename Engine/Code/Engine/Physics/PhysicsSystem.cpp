@@ -87,7 +87,6 @@ void PhysicsSystem::Initialize() noexcept {
 }
 
 void PhysicsSystem::BeginFrame() noexcept {
-    PROFILE_LOG_SCOPE_FUNCTION();
     if(!_is_running) {
         return;
     }
@@ -111,7 +110,6 @@ void PhysicsSystem::BeginFrame() noexcept {
 }
 
 void PhysicsSystem::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
-    PROFILE_LOG_SCOPE_FUNCTION();
     if(!this->_is_running) {
         return;
     }
@@ -129,7 +127,6 @@ void PhysicsSystem::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
 }
 
 void PhysicsSystem::UpdateBodiesInBounds(TimeUtils::FPSeconds deltaSeconds) noexcept {
-    PROFILE_LOG_SCOPE_FUNCTION();
     for(auto body : _rigidBodies) {
         if(!body) {
             continue;
@@ -159,7 +156,6 @@ void PhysicsSystem::ApplyGravityAndDrag(TimeUtils::FPSeconds deltaSeconds) noexc
 }
 
 std::vector<RigidBody*> PhysicsSystem::BroadPhaseCollision(const AABB2& /*query_area*/) noexcept {
-    PROFILE_LOG_SCOPE_FUNCTION();
     std::vector<RigidBody*> potential_collisions{};
     for(auto iterA = std::begin(_rigidBodies); iterA != std::end(_rigidBodies); ++iterA) {
         for(auto iterB = iterA + 1; iterB != std::end(_rigidBodies); ++iterB) {

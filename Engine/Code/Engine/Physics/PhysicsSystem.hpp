@@ -146,7 +146,6 @@ ForceGeneratorType* PhysicsSystem::CreateForceGenerator() {
 
 template<typename CollisionDetectionFunction, typename CollisionResolutionFunction>
 PhysicsSystem::CollisionDataSet PhysicsSystem::NarrowPhaseCollision(const std::vector<RigidBody*>& potential_collisions, CollisionDetectionFunction&& cd, CollisionResolutionFunction&& cr) noexcept {
-    PROFILE_LOG_SCOPE_FUNCTION();
     CollisionDataSet result{};
     if(potential_collisions.size() < 2) {
         _contacts.clear();
