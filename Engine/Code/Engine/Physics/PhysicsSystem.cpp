@@ -272,6 +272,7 @@ void PhysicsSystem::EndFrame() noexcept {
     }
     _pending_removal.clear();
     _pending_removal.shrink_to_fit();
+    _joints.erase(std::remove_if(std::begin(_joints), std::end(_joints), [](auto&& joint)->bool { return joint->IsNotAttached(); }), std::end(_joints));
 }
 
 void PhysicsSystem::AddObject(RigidBody* body) {
