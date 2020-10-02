@@ -69,11 +69,29 @@ void RigidBody::Update(TimeUtils::FPSeconds deltaSeconds) {
     const auto t = deltaSeconds.count();
     dt = deltaSeconds;
 
-    const auto new_position = GetPosition() + GetVelocity() * dt.count() + GetAcceleration() * (dt.count() * dt.count() * 0.5f);
-    const auto new_acceleration = (linear_impulse_sum + linear_force_sum.first) * inv_mass;
+    auto new_position = GetPosition() + GetVelocity() * dt.count() + GetAcceleration() * (dt.count() * dt.count() * 0.5f);
+    auto new_acceleration = (linear_impulse_sum + linear_force_sum.first) * inv_mass;
     auto new_velocity = GetVelocity() + (GetAcceleration() + new_acceleration) * (dt.count() * 0.5f);
     new_velocity *= rigidbodyDesc.physicsDesc.linearDamping;
 
+    {
+        const bool is_near_zero = MathUtils::IsEquivalentToZero(new_position);
+        const bool is_inf = (std::isinf(new_position.x) || std::isinf(new_position.y));
+        const bool is_nan = (std::isnan(new_position.x) || std::isnan(new_position.y));
+        const bool should_clamp = is_near_zero || is_nan || is_inf;
+        if(should_clamp) {
+            new_position = Vector2::ZERO;
+        }
+    }
+    {
+        const bool is_near_zero = MathUtils::IsEquivalentToZero(new_acceleration);
+        const bool is_inf = (std::isinf(new_acceleration.x) || std::isinf(new_acceleration.y));
+        const bool is_nan = (std::isnan(new_acceleration.x) || std::isnan(new_acceleration.y));
+        const bool should_clamp = is_near_zero || is_nan || is_inf;
+        if(should_clamp) {
+            new_acceleration = Vector2::ZERO;
+        }
+    }
     {
         const bool is_near_zero = MathUtils::IsEquivalentToZero(new_velocity);
         const bool is_inf = (std::isinf(new_velocity.x) || std::isinf(new_velocity.y));
