@@ -14,9 +14,7 @@ struct RigidBodyDesc {
     Collider* collider{};
     PhysicsMaterial physicsMaterial{};
     PhysicsDesc physicsDesc{};
-    RigidBodyDesc() noexcept
-        : collider(new ColliderOBB(Vector2::ZERO, Vector2::ONE * 0.5f))
-    {
+    RigidBodyDesc() noexcept {
         /* DO NOTHING */
     }
     RigidBodyDesc(const Vector2& initialPos, const Vector2& initialVel, const Vector2& initialAcc, Collider* coll, const PhysicsMaterial& physMat, const PhysicsDesc& physDesc) noexcept
