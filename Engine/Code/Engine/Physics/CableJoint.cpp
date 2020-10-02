@@ -84,7 +84,7 @@ void CableJoint::Attach(RigidBody* a, RigidBody* b, Vector2 localAnchorA /*= Vec
     }
 }
 
-void CableJoint::Detach(RigidBody* body) noexcept {
+void CableJoint::Detach(const RigidBody* body) noexcept {
     if(body == _def.rigidBodyA) {
         _def.rigidBodyA = nullptr;
     } else if(body == _def.rigidBodyB) {

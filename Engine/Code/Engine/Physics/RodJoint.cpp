@@ -91,7 +91,7 @@ void RodJoint::Attach(RigidBody* a, RigidBody* b, Vector2 localAnchorA /*= Vecto
     }
 }
 
-void RodJoint::Detach(RigidBody* body) noexcept {
+void RodJoint::Detach(const RigidBody* body) noexcept {
     if(body == _def.rigidBodyA) {
         _def.rigidBodyA = nullptr;
     } else if(body == _def.rigidBodyB) {

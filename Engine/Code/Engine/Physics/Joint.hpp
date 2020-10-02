@@ -32,7 +32,7 @@ public:
     virtual ~Joint() = default;
 
     virtual void Attach(RigidBody* a, RigidBody* b, Vector2 localAnchorA = Vector2::ZERO, Vector2 localAnchorB = Vector2::ZERO) noexcept = 0;
-    virtual void Detach(RigidBody* body) noexcept = 0;
+    virtual void Detach(const RigidBody* body) noexcept = 0;
     virtual void DetachAll() noexcept = 0;
     virtual bool IsNotAttached() const noexcept = 0;
 

@@ -73,7 +73,7 @@ void SpringJoint::Attach(RigidBody* a, RigidBody* b, Vector2 localAnchorA /*= Ve
     }
 }
 
-void SpringJoint::Detach(RigidBody* body) noexcept {
+void SpringJoint::Detach(const RigidBody* body) noexcept {
     if(body == _def.rigidBodyA) {
         _def.rigidBodyA = nullptr;
     } else if(body == _def.rigidBodyB) {
