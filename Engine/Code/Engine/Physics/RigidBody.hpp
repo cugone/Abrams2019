@@ -106,6 +106,7 @@ public:
     bool IsPhysicsEnabled() const;
     bool IsGravityEnabled() const;
     bool IsDragEnabled() const;
+    bool IsDynamic() const noexcept;
 
     void SetAwake(bool awake) noexcept;
     void Wake() noexcept;

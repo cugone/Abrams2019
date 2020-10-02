@@ -187,6 +187,10 @@ bool RigidBody::IsDragEnabled() const {
     return rigidbodyDesc.physicsDesc.enableDrag;
 }
 
+bool RigidBody::IsDynamic() const noexcept {
+    return rigidbodyDesc.collider != nullptr;
+}
+
 void RigidBody::SetAwake(bool awake) noexcept {
     is_awake = awake;
 }
