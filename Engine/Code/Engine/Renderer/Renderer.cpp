@@ -2748,6 +2748,21 @@ std::unique_ptr<DepthStencilState> Renderer::CreateEnabledStencil() noexcept {
     return std::make_unique<DepthStencilState>(_rhi_device.get(), desc);
 }
 
+void Renderer::UnbindAllResourcesAndBuffers() noexcept {
+    UnbindAllResources();
+    UnbindAllBuffers();
+}
+
+void Renderer::UnbindAllResources() noexcept {
+    UnbindAllShaderResources();
+    UnbindComputeShaderResources();
+}
+
+void Renderer::UnbindAllBuffers() noexcept {
+    UnbindAllConstantBuffers();
+    UnbindComputeConstantBuffers();
+}
+
 void Renderer::UnbindAllShaderResources() noexcept {
     if(_rhi_context) {
         _materials_need_updating = true;

@@ -521,6 +521,9 @@ private:
     std::unique_ptr<DepthStencilState> CreateDisabledStencil() noexcept;
     std::unique_ptr<DepthStencilState> CreateEnabledStencil() noexcept;
 
+    void UnbindAllResourcesAndBuffers() noexcept;
+    void UnbindAllResources() noexcept;
+    void UnbindAllBuffers() noexcept;
     void UnbindAllShaderResources() noexcept;
     void UnbindAllConstantBuffers() noexcept;
     void UnbindComputeShaderResources() noexcept;
