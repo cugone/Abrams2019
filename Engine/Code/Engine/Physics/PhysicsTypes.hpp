@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Engine/Math/Vector2.hpp"
 #include "Engine/Math/Vector3.hpp"
 
 #include <vector>
@@ -23,6 +24,55 @@ struct PhysicsDesc {
     bool enablePhysics = true; //Should object be subject to physics calculations.
     bool startAwake = true;    //Should the object be awake on creation.
 };
+
+struct Position {
+    Position() = default;
+    Position(const Position& p) = default;
+    Position(Position&& p) = default;
+    Position& operator=(const Position& p) = default;
+    Position& operator=(Position&& p) = default;
+    Position(float x, float y) noexcept;
+    Position(Vector2 value) noexcept;
+    operator Vector2 const ();
+    operator Vector2();
+    Vector2 Get() const noexcept;
+    void Set(Vector2 value) noexcept;
+private:
+    Vector2 m_value{};
+};
+
+struct Velocity {
+    Velocity() = default;
+    Velocity(const Velocity& p) = default;
+    Velocity(Velocity&& p) = default;
+    Velocity& operator=(const Velocity& p) = default;
+    Velocity& operator=(Velocity&& p) = default;
+    Velocity(float x, float y) noexcept;
+    Velocity(Vector2 value) noexcept;
+    operator Vector2 const();
+    operator Vector2();
+    Vector2 Get() const noexcept;
+    void Set(Vector2 value) noexcept;
+private:
+    Vector2 m_value{};
+};
+
+struct Acceleration {
+    Acceleration() = default;
+    Acceleration(const Acceleration& p) = default;
+    Acceleration(Acceleration&& p) = default;
+    Acceleration& operator=(const Acceleration& p) = default;
+    Acceleration& operator=(Acceleration&& p) = default;
+    Acceleration(float x, float y) noexcept;
+    Acceleration(Vector2 value) noexcept;
+    operator Vector2 const();
+    operator Vector2();
+    Vector2 Get() const noexcept;
+    void Set(Vector2 value) noexcept;
+private:
+    Vector2 m_value{};
+};
+
 
 struct GJKResult {
     bool collides{false};
