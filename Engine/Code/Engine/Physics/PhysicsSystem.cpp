@@ -52,6 +52,10 @@ const std::vector<std::unique_ptr<Joint>>& PhysicsSystem::Debug_GetJoints() cons
     return _joints;
 }
 
+const std::vector<RigidBody*>& PhysicsSystem::Debug_GetBodies() const noexcept {
+    return _rigidBodies;
+}
+
 void PhysicsSystem::EnableGravity(bool isGravityEnabled) noexcept {
     for(auto* b : _rigidBodies) {
         b->EnableGravity(isGravityEnabled);

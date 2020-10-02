@@ -76,6 +76,7 @@ public:
     ForceGeneratorType* CreateForceGenerator();
 
     const std::vector<std::unique_ptr<Joint>>& Debug_GetJoints() const noexcept;
+    const std::vector<RigidBody*>& Debug_GetBodies() const noexcept;
 
     void Debug_ShowCollision(bool show);
     void Debug_ShowWorldPartition(bool show);
