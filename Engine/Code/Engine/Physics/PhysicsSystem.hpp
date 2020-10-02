@@ -130,7 +130,7 @@ Joint* PhysicsSystem::CreateJoint(const JointDefType& defType) noexcept {
     } else if constexpr(std::is_same_v<JointDefType, CableJointDef>) {
         newJoint.reset(new CableJoint(defType));
     } else {
-        static_assert(false, "CreateJoint received undeclared type.");
+        static_assert(false, "CreateJoint received type not in if-else chain.");
     }
     auto* joint_ptr = newJoint.get();
     _joints.emplace_back(std::move(newJoint));
