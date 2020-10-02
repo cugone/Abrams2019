@@ -70,7 +70,7 @@ public:
     void EnablePhysics(bool isPhysicsEnabled) noexcept;
 
     template<typename JointDefType>
-    Joint* CreateJoint(const JointDefType& defType);
+    Joint* CreateJoint(const JointDefType& defType) noexcept;
 
     template<typename ForceGeneratorType>
     ForceGeneratorType* CreateForceGenerator();
@@ -120,7 +120,7 @@ private:
 };
 
 template<typename JointDefType>
-Joint* PhysicsSystem::CreateJoint(const JointDefType& defType) {
+Joint* PhysicsSystem::CreateJoint(const JointDefType& defType) noexcept {
     std::unique_ptr<Joint> newJoint{};
     if constexpr(std::is_same_v<JointDefType, SpringJointDef>) {
         newJoint.reset(new SpringJoint(defType));
