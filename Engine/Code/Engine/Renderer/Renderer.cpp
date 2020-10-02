@@ -169,6 +169,43 @@ FileLogger& Renderer::GetFileLogger() noexcept {
 
 bool Renderer::ProcessSystemMessage(const EngineMessage& msg) noexcept {
     switch(msg.wmMessageCode) {
+    case WindowsSystemMessage::Menu_SysCommand: {
+        WPARAM wp = msg.wparam;
+        switch(wp) {
+        case SC_CLOSE: {
+            return false; //App needs to respond
+        }
+        case SC_CONTEXTHELP: break;
+        case SC_DEFAULT: break;
+        case SC_HOTKEY: break;
+        case SC_HSCROLL: break;
+        case SCF_ISSECURE: break;
+        case SC_KEYMENU: break;
+        case SC_MAXIMIZE: {
+            return false; //App needs to respond
+        }
+        case SC_MINIMIZE: {
+            return false; //App needs to respond
+        }
+        case SC_MONITORPOWER: break;
+        case SC_MOUSEMENU: break;
+        case SC_MOVE: break;
+        case SC_NEXTWINDOW: break;
+        case SC_PREVWINDOW: break;
+        case SC_RESTORE: break;
+        case SC_SCREENSAVE: {
+            return true; // Disable screen saver from activating
+        }
+        case SC_SIZE: {
+            UnbindAllResourcesAndBuffers();
+            return false; //App needs to respond
+        }
+        case SC_TASKLIST: break;
+        case SC_VSCROLL: break;
+        default: break;
+        }
+        return false;
+    }
     case WindowsSystemMessage::Window_ActivateApp: {
         WPARAM wp = msg.wparam;
         bool losing_focus = wp == FALSE;
