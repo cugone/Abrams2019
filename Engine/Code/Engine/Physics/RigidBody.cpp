@@ -42,7 +42,7 @@ void RigidBody::BeginFrame() {
 
 void RigidBody::Update(TimeUtils::FPSeconds deltaSeconds) {
     PROFILE_LOG_SCOPE_FUNCTION();
-    if(!IsAwake() || !IsPhysicsEnabled() || MathUtils::IsEquivalentToZero(GetInverseMass())) {
+    if(!IsPhysicsEnabled() || !IsDynamic() || !IsAwake() || MathUtils::IsEquivalentToZero(GetInverseMass())) {
         linear_impulses.clear();
         angular_impulses.clear();
         linear_forces.clear();
