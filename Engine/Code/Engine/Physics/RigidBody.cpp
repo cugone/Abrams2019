@@ -192,7 +192,7 @@ bool RigidBody::IsDynamic() const noexcept {
 }
 
 void RigidBody::SetAwake(bool awake) noexcept {
-    is_awake = awake;
+    is_awake = IsDynamic() && awake;
 }
 
 void RigidBody::Wake() noexcept {
@@ -204,7 +204,7 @@ void RigidBody::Sleep() noexcept {
 }
 
 bool RigidBody::IsAwake() const {
-    return is_awake;
+    return IsDynamic() && is_awake;
 }
 
 float RigidBody::GetMass() const {
