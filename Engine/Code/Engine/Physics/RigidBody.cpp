@@ -168,11 +168,11 @@ void RigidBody::EnablePhysics(bool enabled) {
 }
 
 void RigidBody::EnableGravity(bool enabled) {
-    rigidbodyDesc.physicsDesc.enableGravity = enabled;
+    rigidbodyDesc.physicsDesc.enableGravity = IsDynamic() && enabled;
 }
 
 void RigidBody::EnableDrag(bool enabled) {
-    rigidbodyDesc.physicsDesc.enableDrag = enabled;
+    rigidbodyDesc.physicsDesc.enableDrag = IsDynamic() && enabled;
 }
 
 bool RigidBody::IsPhysicsEnabled() const {
@@ -180,11 +180,11 @@ bool RigidBody::IsPhysicsEnabled() const {
 }
 
 bool RigidBody::IsGravityEnabled() const {
-    return rigidbodyDesc.physicsDesc.enableGravity;
+    return IsDynamic() && rigidbodyDesc.physicsDesc.enableGravity;
 }
 
 bool RigidBody::IsDragEnabled() const {
-    return rigidbodyDesc.physicsDesc.enableDrag;
+    return IsDynamic() && rigidbodyDesc.physicsDesc.enableDrag;
 }
 
 bool RigidBody::IsDynamic() const noexcept {
