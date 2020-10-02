@@ -305,9 +305,13 @@ void PhysicsSystem::RemoveAllObjectsImmediately() noexcept {
     for(auto&& fg : _forceGenerators) {
         fg->detach_all();
     }
+    _forceGenerators.clear();
+    _forceGenerators.shrink_to_fit();
     for(auto&& joint : _joints) {
         joint->DetachAll();
     }
+    _joints.clear();
+    _joints.shrink_to_fit();
 }
 
 void PhysicsSystem::Debug_ShowCollision(bool show) {
