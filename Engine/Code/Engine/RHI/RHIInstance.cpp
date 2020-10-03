@@ -42,7 +42,7 @@ void RHIInstance::DestroyInstance() noexcept {
 }
 
 std::unique_ptr<RHIDevice> RHIInstance::CreateDevice(Renderer& renderer) const noexcept {
-    return std::move(std::make_unique<RHIDevice>(renderer));
+    return std::make_unique<RHIDevice>(renderer);
 }
 
 void RHIInstance::ReportLiveObjects() noexcept {

@@ -186,7 +186,7 @@ Job* JobSystem::Create(const JobType& category, const std::function<void(void*)>
     j->work_cb = cb;
     j->user_data = user_data;
     j->num_dependencies = 1;
-    return std::move(j);
+    return j;
 }
 
 void JobSystem::Run(const JobType& category, const std::function<void(void*)>& cb, void* user_data) noexcept {

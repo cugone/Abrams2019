@@ -253,7 +253,7 @@ Image Image::CreateImageFromFileBuffer(const std::vector<unsigned char>& data) n
         result.m_dimensions.y *= depth;
         result.m_texelBytes = texel_bytes;
     }
-    return std::move(result);
+    return result;
 }
 
 std::string Image::GetSupportedExtensionsList() noexcept {

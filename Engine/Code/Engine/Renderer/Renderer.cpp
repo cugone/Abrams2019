@@ -938,7 +938,7 @@ std::unique_ptr<AnimatedSprite> Renderer::CreateAnimatedSprite(std::filesystem::
     auto xml_result = doc.LoadFile(filepath.string().c_str());
     if(xml_result == tinyxml2::XML_SUCCESS) {
         auto xml_root = doc.RootElement();
-        return std::move(std::make_unique<AnimatedSprite>(*this, *xml_root));
+        return std::make_unique<AnimatedSprite>(*this, *xml_root);
     }
     if(filepath.has_extension() && StringUtils::ToLowerCase(filepath.extension().string()) == ".gif") {
         return CreateAnimatedSpriteFromGif(filepath);
@@ -947,19 +947,19 @@ std::unique_ptr<AnimatedSprite> Renderer::CreateAnimatedSprite(std::filesystem::
 }
 
 std::unique_ptr<AnimatedSprite> Renderer::CreateAnimatedSprite(std::weak_ptr<SpriteSheet> sheet, const XMLElement& elem) noexcept {
-    return std::move(std::make_unique<AnimatedSprite>(*this, sheet, elem));
+    return std::make_unique<AnimatedSprite>(*this, sheet, elem);
 }
 
 std::unique_ptr<AnimatedSprite> Renderer::CreateAnimatedSprite(const XMLElement& elem) noexcept {
-    return std::move(std::make_unique<AnimatedSprite>(*this, elem));
+    return std::make_unique<AnimatedSprite>(*this, elem);
 }
 
 std::unique_ptr<AnimatedSprite> Renderer::CreateAnimatedSprite(std::weak_ptr<SpriteSheet> sheet, const IntVector2& startSpriteCoords /* = IntVector2::ZERO*/) noexcept {
-    return std::move(std::make_unique<AnimatedSprite>(*this, sheet, startSpriteCoords));
+    return std::make_unique<AnimatedSprite>(*this, sheet, startSpriteCoords);
 }
 
 std::unique_ptr<AnimatedSprite> Renderer::CreateAnimatedSprite(const AnimatedSpriteDesc& desc) noexcept {
-    return std::move(std::make_unique<AnimatedSprite>(*this, desc));
+    return std::make_unique<AnimatedSprite>(*this, desc);
 }
 
 const RenderTargetStack& Renderer::GetRenderTargetStack() const noexcept {
@@ -975,13 +975,13 @@ void Renderer::PopRenderTarget() noexcept {
 }
 
 std::shared_ptr<SpriteSheet> Renderer::CreateSpriteSheet(const XMLElement& elem) noexcept {
-    return std::move(std::make_shared<SpriteSheet>(*this, elem));
+    return std::make_shared<SpriteSheet>(*this, elem);
 }
 
 std::shared_ptr<SpriteSheet> Renderer::CreateSpriteSheet(Texture* texture, int tilesWide, int tilesHigh) noexcept {
     std::shared_ptr<SpriteSheet> spr{};
     spr.reset(new SpriteSheet(texture, tilesWide, tilesHigh));
-    return std::move(spr);
+    return spr;
 }
 
 std::shared_ptr<SpriteSheet> Renderer::CreateSpriteSheet(const std::filesystem::path& filepath, unsigned int width /*= 1*/, unsigned int height /*= 1*/) noexcept {
@@ -994,17 +994,17 @@ std::shared_ptr<SpriteSheet> Renderer::CreateSpriteSheet(const std::filesystem::
         return nullptr;
     }
     if(StringUtils::ToLowerCase(p.extension().string()) == ".gif") {
-        return std::move(CreateSpriteSheetFromGif(p));
+        return CreateSpriteSheetFromGif(p);
     }
     tinyxml2::XMLDocument doc;
     auto xml_load = doc.LoadFile(p.string().c_str());
     if(xml_load == tinyxml2::XML_SUCCESS) {
         auto xml_root = doc.RootElement();
-        return std::move(CreateSpriteSheet(*xml_root));
+        return CreateSpriteSheet(*xml_root);
     }
     std::shared_ptr<SpriteSheet> spr{};
     spr.reset(new SpriteSheet(*this, p, width, height));
-    return std::move(spr);
+    return spr;
 }
 
 std::shared_ptr<SpriteSheet> Renderer::CreateSpriteSheetFromGif(std::filesystem::path filepath) noexcept {
@@ -1042,7 +1042,7 @@ std::unique_ptr<AnimatedSprite> Renderer::CreateAnimatedSpriteFromGif(std::files
     anim->SetMaterial(anim_mat.get());
     RegisterMaterial(std::move(anim_mat));
     tex = nullptr;
-    return std::move(anim);
+    return anim;
 }
 
 void Renderer::Draw(const PrimitiveType& topology, VertexBuffer* vbo, std::size_t vertex_count) noexcept {
@@ -1563,7 +1563,7 @@ std::vector<std::unique_ptr<ConstantBuffer>> Renderer::CreateConstantBuffersFrom
     std::move(std::begin(ps_cbuffers), std::end(ps_cbuffers), std::back_inserter(cbuffers));
     std::move(std::begin(cs_cbuffers), std::end(cs_cbuffers), std::back_inserter(cbuffers));
     cbuffers.shrink_to_fit();
-    return std::move(cbuffers);
+    return cbuffers;
 }
 
 void Renderer::SetWinProc(const std::function<bool(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)>& windowProcedure) noexcept {
@@ -3506,7 +3506,7 @@ std::unique_ptr<ShaderProgram> Renderer::CreateShaderProgramFromHlslFile(std::fi
 #endif
         }
     } while(requested_retry);
-    return std::move(sp);
+    return sp;
 }
 
 std::unique_ptr<ShaderProgram> Renderer::CreateShaderProgramFromCsoFile(std::filesystem::path filepath, const PipelineStage& target) const noexcept {
@@ -3528,7 +3528,7 @@ std::unique_ptr<ShaderProgram> Renderer::CreateShaderProgramFromCsoFile(std::fil
 #endif
         }
     } while(requested_retry);
-    return std::move(sp);
+    return sp;
 }
 
 std::unique_ptr<ShaderProgram> Renderer::CreateShaderProgramFromDesc(ShaderProgramDesc&& desc) const noexcept {

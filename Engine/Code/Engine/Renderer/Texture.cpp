@@ -6,12 +6,12 @@ Texture::Texture(const RHIDevice& device) noexcept
 : _device(device) {
     /* DO NOTHING */
 }
-
+//TODO: Default Texture Move Constructor
 Texture::Texture(Texture&& r_other) noexcept
-: _device(r_other._device)
-, _dimensions(r_other._dimensions)
-, _isLoaded(r_other._isLoaded)
-, _isArray(r_other._isArray)
+: _device(std::move(r_other._device))
+, _dimensions(std::move(r_other._dimensions))
+, _isLoaded(std::move(r_other._isLoaded))
+, _isArray(std::move(r_other._isArray))
 , _dsv(std::move(r_other._dsv))
 , _rtv(std::move(r_other._rtv))
 , _srv(std::move(r_other._srv))
@@ -25,10 +25,11 @@ Texture::Texture(Texture&& r_other) noexcept
     r_other._isArray = false;
 }
 
+//TODO: Default Texture Move Assignment
 Texture& Texture::operator=(Texture&& rhs) noexcept {
-    _dimensions = rhs._dimensions;
-    _isLoaded = rhs._isLoaded;
-    _isArray = rhs._isArray;
+    _dimensions = std::move(rhs._dimensions);
+    _isLoaded = std::move(rhs._isLoaded);
+    _isArray = std::move(rhs._isArray);
     _dsv = std::move(rhs._dsv);
     _rtv = std::move(rhs._rtv);
     _srv = std::move(rhs._srv);
