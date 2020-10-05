@@ -9,11 +9,12 @@ class RHIDevice;
 
 class Texture {
 public:
+    Texture() = delete;
     Texture(const RHIDevice& device) noexcept;
-    Texture(Texture&& r_other) noexcept;
+    Texture(Texture&& r_other) noexcept = default;
     Texture(const Texture& other) noexcept = delete;
     Texture& operator=(const Texture& rhs) noexcept = delete;
-    Texture& operator=(Texture&& rhs) noexcept;
+    Texture& operator=(Texture&& rhs) noexcept = default;
     virtual ~Texture() noexcept = 0;
 
     const IntVector3& GetDimensions() const noexcept;

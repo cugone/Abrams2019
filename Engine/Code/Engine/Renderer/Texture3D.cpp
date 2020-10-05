@@ -90,16 +90,3 @@ void Texture3D::SetTexture() {
         ERROR_AND_DIE(error_str.c_str());
     }
 }
-
-Texture3D::Texture3D(Texture3D&& r_other) noexcept
-: Texture(std::move(r_other))
-, _dx_tex(std::move(r_other._dx_tex)) {
-    r_other._dx_tex = nullptr;
-}
-
-Texture3D& Texture3D::operator=(Texture3D&& rhs) noexcept {
-    Texture::operator=(std::move(rhs));
-    _dx_tex = std::move(rhs._dx_tex);
-    rhs._dx_tex = nullptr;
-    return *this;
-}

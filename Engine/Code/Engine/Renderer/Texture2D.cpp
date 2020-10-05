@@ -36,19 +36,6 @@ ID3D11Texture2D* Texture2D::GetDxTexture() noexcept {
     return static_cast<ID3D11Texture2D*>(GetDxResource());
 }
 
-Texture2D::Texture2D(Texture2D&& r_other) noexcept
-: Texture(std::move(r_other))
-, _dx_tex(std::move(r_other._dx_tex)) {
-    r_other._dx_tex = nullptr;
-}
-
-Texture2D& Texture2D::operator=(Texture2D&& rhs) noexcept {
-    Texture::operator=(std::move(rhs));
-    _dx_tex = std::move(rhs._dx_tex);
-    rhs._dx_tex = nullptr;
-    return *this;
-}
-
 void Texture2D::SetTexture() noexcept {
     D3D11_TEXTURE2D_DESC t_desc;
     _dx_tex->GetDesc(&t_desc);

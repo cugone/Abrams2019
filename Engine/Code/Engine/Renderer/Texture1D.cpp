@@ -27,19 +27,6 @@ ID3D11Resource* Texture1D::GetDxResource() const noexcept {
     return _dx_tex.Get();
 }
 
-Texture1D::Texture1D(Texture1D&& r_other) noexcept
-: Texture(std::move(r_other))
-, _dx_tex(std::move(r_other._dx_tex)) {
-    r_other._dx_tex = nullptr;
-}
-
-Texture1D& Texture1D::operator=(Texture1D&& rhs) noexcept {
-    Texture::operator=(std::move(rhs));
-    _dx_tex = std::move(rhs._dx_tex);
-    rhs._dx_tex = nullptr;
-    return *this;
-}
-
 void Texture1D::SetTexture() noexcept {
     D3D11_TEXTURE1D_DESC t_desc;
     _dx_tex->GetDesc(&t_desc);

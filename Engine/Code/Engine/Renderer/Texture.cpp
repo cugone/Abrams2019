@@ -6,45 +6,6 @@ Texture::Texture(const RHIDevice& device) noexcept
 : _device(device) {
     /* DO NOTHING */
 }
-//TODO: Default Texture Move Constructor
-Texture::Texture(Texture&& r_other) noexcept
-: _device(std::move(r_other._device))
-, _dimensions(std::move(r_other._dimensions))
-, _isLoaded(std::move(r_other._isLoaded))
-, _isArray(std::move(r_other._isArray))
-, _dsv(std::move(r_other._dsv))
-, _rtv(std::move(r_other._rtv))
-, _srv(std::move(r_other._srv))
-, _uav(std::move(r_other._uav)) {
-    r_other._dsv = nullptr;
-    r_other._rtv = nullptr;
-    r_other._srv = nullptr;
-    r_other._uav = nullptr;
-    r_other._dimensions = IntVector3::ZERO;
-    r_other._isLoaded = false;
-    r_other._isArray = false;
-}
-
-//TODO: Default Texture Move Assignment
-Texture& Texture::operator=(Texture&& rhs) noexcept {
-    _dimensions = std::move(rhs._dimensions);
-    _isLoaded = std::move(rhs._isLoaded);
-    _isArray = std::move(rhs._isArray);
-    _dsv = std::move(rhs._dsv);
-    _rtv = std::move(rhs._rtv);
-    _srv = std::move(rhs._srv);
-    _uav = std::move(rhs._uav);
-
-    rhs._dsv = nullptr;
-    rhs._rtv = nullptr;
-    rhs._srv = nullptr;
-    rhs._uav = nullptr;
-    rhs._dimensions = IntVector3::ZERO;
-    rhs._isLoaded = false;
-    rhs._isArray = false;
-
-    return *this;
-}
 
 Texture::~Texture() = default;
 
