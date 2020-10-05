@@ -124,6 +124,7 @@ void PhysicsSystem::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
     SolveCollision({}/*actual_collisions*/);
     SolveConstraints();
     UpdateBodiesInBounds(deltaSeconds);
+    SolveConstraints();
 }
 
 void PhysicsSystem::UpdateBodiesInBounds(TimeUtils::FPSeconds deltaSeconds) noexcept {
