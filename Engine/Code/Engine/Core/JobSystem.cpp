@@ -29,7 +29,7 @@ void JobSystem::GenericJobWorker(std::condition_variable* signal) noexcept {
 }
 
 void JobConsumer::AddCategory(const JobType& category) noexcept {
-    const auto categoryAsSizeT = static_cast<std::underlying_type_t<JobType>>(category);
+    const auto categoryAsSizeT = TypeUtils::GetUnderlyingValue<JobType>(category);
     if(categoryAsSizeT >= JobSystem::_queues.size()) {
         return;
     }
