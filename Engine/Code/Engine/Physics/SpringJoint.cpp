@@ -106,6 +106,14 @@ Vector2 SpringJoint::GetAnchorB() const noexcept {
     return _def.rigidBodyB ? _def.rigidBodyB->GetPosition() + (_def.rigidBodyB->CalcDimensions() * 0.5f * _def.localAnchorB) : _def.worldAnchorB;
 }
 
+float SpringJoint::GetMassA() const noexcept {
+    return _def.rigidBodyA ? _def.rigidBodyA->GetMass() : 0.0f;
+}
+
+float SpringJoint::GetMassB() const noexcept {
+    return _def.rigidBodyB ? _def.rigidBodyB->GetMass() : 0.0f;
+}
+
 bool SpringJoint::ConstraintViolated() const noexcept {
     return false;
 }

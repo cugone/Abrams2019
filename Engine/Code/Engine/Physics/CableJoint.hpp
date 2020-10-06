@@ -34,6 +34,9 @@ public:
     Vector2 GetAnchorA() const noexcept override;
     Vector2 GetAnchorB() const noexcept override;
 
+    float GetMassA() const noexcept override;
+    float GetMassB() const noexcept override;
+
 protected:
 private:
     bool ConstraintViolated() const noexcept override;

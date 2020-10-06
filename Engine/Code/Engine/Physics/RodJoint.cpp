@@ -124,6 +124,14 @@ Vector2 RodJoint::GetAnchorB() const noexcept {
     return _def.rigidBodyB ? _def.rigidBodyB->GetPosition() + (_def.rigidBodyB->CalcDimensions() * 0.5f * _def.localAnchorB) : _def.worldAnchorB;
 }
 
+float RodJoint::GetMassA() const noexcept {
+    return _def.rigidBodyA ? _def.rigidBodyA->GetMass() : 0.0f;
+}
+
+float RodJoint::GetMassB() const noexcept {
+    return _def.rigidBodyB ? _def.rigidBodyB->GetMass() : 0.0f;
+}
+
 bool RodJoint::ConstraintViolated() const noexcept {
     const bool violated = [this]()->const bool {
         const auto distance = MathUtils::CalcDistance(GetAnchorA(), GetAnchorB());

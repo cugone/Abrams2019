@@ -117,6 +117,14 @@ Vector2 CableJoint::GetAnchorB() const noexcept {
     return _def.rigidBodyB ? _def.rigidBodyB->GetPosition() + (_def.rigidBodyB->CalcDimensions() * 0.5f * _def.localAnchorB) : _def.worldAnchorB;
 }
 
+float CableJoint::GetMassA() const noexcept {
+    return _def.rigidBodyA ? _def.rigidBodyA->GetMass() : 0.0f;
+}
+
+float CableJoint::GetMassB() const noexcept {
+    return _def.rigidBodyB ? _def.rigidBodyB->GetMass() : 0.0f;
+}
+
 bool CableJoint::ConstraintViolated() const noexcept {
     const bool violated = [this]() -> const bool {
         const auto distance = MathUtils::CalcDistance(GetAnchorA(), GetAnchorB());
@@ -182,8 +190,8 @@ void CableJoint::SolveVelocityConstraint() const noexcept {
     const auto displacement_towards_second = posB - posA;
     const auto direction_to_first = displacement_towards_first.GetNormalize();
     const auto direction_to_second = displacement_towards_second.GetNormalize();
-    const auto m1 = (first_body ? first_body->GetMass() : 0.0f);
-    const auto m2 = (second_body ? second_body->GetMass() : 0.0f);
+    const auto m1 = GetMassA();
+    const auto m2 = GetMassB();
     const auto mass_sum = m1 + m2;
     const auto mass1_ratio = m1 / mass_sum;
     const auto mass2_ratio = m2 / mass_sum;
@@ -192,10 +200,8 @@ void CableJoint::SolveVelocityConstraint() const noexcept {
     auto newVelocity1 = v1;
     auto newVelocity2 = v2;
     const auto length = _def.length;
-    if(length < distance) { //Extension
-        newVelocity1 = mass1_ratio * MathUtils::Reject(v1, direction_to_second);
-        newVelocity2 = mass2_ratio * MathUtils::Reject(v2, direction_to_first);
-    }
+    newVelocity1 = mass1_ratio * MathUtils::Reject(v1, direction_to_second);
+    newVelocity2 = mass2_ratio * MathUtils::Reject(v2, direction_to_first);
     if(first_body) {
         first_body->SetVelocity(newVelocity1);
     }

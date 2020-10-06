@@ -43,6 +43,8 @@ public:
     virtual RigidBody* GetBodyB() const noexcept = 0;
     virtual Vector2 GetAnchorA() const noexcept = 0;
     virtual Vector2 GetAnchorB() const noexcept = 0;
+    virtual float GetMassA() const noexcept = 0;
+    virtual float GetMassB() const noexcept = 0;
 
 protected:
 private:
