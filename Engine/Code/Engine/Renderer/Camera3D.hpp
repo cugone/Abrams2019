@@ -24,7 +24,7 @@ public:
     void SetupView(float fovVerticalDegrees, float aspectRatio = MathUtils::M_16_BY_9_RATIO, float nearDistance = 0.01f, float farDistance = 1.0f, const Vector3& worldUp = Vector3::Y_AXIS) noexcept;
     void Update(TimeUtils::FPSeconds deltaSeconds) noexcept;
 
-    const Vector3& GetPosition() const noexcept;
+    [[nodiscard]] const Vector3& GetPosition() const noexcept;
     void SetPosition(const Vector3& newPosition) noexcept;
     void SetPosition(float x, float y, float z) noexcept;
     void SetPosition(const Vector2& newPosition) noexcept;
@@ -34,31 +34,31 @@ public:
     void Translate(const Vector2& displacement) noexcept;
     void Translate(float x, float y) noexcept;
 
-    float CalcFovYDegrees() const noexcept;
-    float CalcFovXDegrees() const noexcept;
-    float CalcNearViewWidth() const noexcept;
-    float CalcNearViewHeight() const noexcept;
-    float CalcFarViewWidth() const noexcept;
-    float CalcFarViewHeight() const noexcept;
+    [[nodiscard]] float CalcFovYDegrees() const noexcept;
+    [[nodiscard]] float CalcFovXDegrees() const noexcept;
+    [[nodiscard]] float CalcNearViewWidth() const noexcept;
+    [[nodiscard]] float CalcNearViewHeight() const noexcept;
+    [[nodiscard]] float CalcFarViewWidth() const noexcept;
+    [[nodiscard]] float CalcFarViewHeight() const noexcept;
 
-    float GetAspectRatio() const noexcept;
-    float GetInverseAspectRatio() const noexcept;
-    float GetNearDistance() const noexcept;
-    float GetFarDistance() const noexcept;
+    [[nodiscard]] float GetAspectRatio() const noexcept;
+    [[nodiscard]] float GetInverseAspectRatio() const noexcept;
+    [[nodiscard]] float GetNearDistance() const noexcept;
+    [[nodiscard]] float GetFarDistance() const noexcept;
 
-    const Matrix4& GetRotationMatrix() const noexcept;
-    Matrix4 CreateBillboardMatrix(const Matrix4& rotationMatrix) noexcept;
-    Matrix4 CreateReverseBillboardMatrix(const Matrix4& rotationMatrix) noexcept;
+    [[nodiscard]] const Matrix4& GetRotationMatrix() const noexcept;
+    [[nodiscard]] Matrix4 CreateBillboardMatrix(const Matrix4& rotationMatrix) noexcept;
+    [[nodiscard]] Matrix4 CreateReverseBillboardMatrix(const Matrix4& rotationMatrix) noexcept;
 
-    const Matrix4& GetViewMatrix() const noexcept;
-    const Matrix4& GetProjectionMatrix() const noexcept;
-    const Matrix4& GetViewProjectionMatrix() const noexcept;
+    [[nodiscard]] const Matrix4& GetViewMatrix() const noexcept;
+    [[nodiscard]] const Matrix4& GetProjectionMatrix() const noexcept;
+    [[nodiscard]] const Matrix4& GetViewProjectionMatrix() const noexcept;
 
-    const Matrix4& GetInverseViewMatrix() const noexcept;
-    const Matrix4& GetInverseProjectionMatrix() const noexcept;
-    const Matrix4& GetInverseViewProjectionMatrix() const noexcept;
+    [[nodiscard]] const Matrix4& GetInverseViewMatrix() const noexcept;
+    [[nodiscard]] const Matrix4& GetInverseProjectionMatrix() const noexcept;
+    [[nodiscard]] const Matrix4& GetInverseViewProjectionMatrix() const noexcept;
 
-    Vector3 GetEulerAngles() const noexcept;
+    [[nodiscard]] Vector3 GetEulerAngles() const noexcept;
     void SetEulerAnglesDegrees(const Vector3& eulerAnglesDegrees) noexcept;
     void SetEulerAngles(const Vector3& eulerAngles) noexcept;
     void SetForwardFromTarget(const Vector3& lookAtPosition) noexcept;
@@ -77,23 +77,23 @@ public:
     void RotateYawBy(float angleDegrees) noexcept;
     void RotateRollBy(float angleDegrees) noexcept;
 
-    Vector3 GetRight() const noexcept;
-    Vector3 GetRightXY() const noexcept;
-    Vector3 GetRightXZ() const noexcept;
-    Vector3 GetUp() const noexcept;
-    Vector3 GetUpXY() const noexcept;
-    Vector3 GetUpXZ() const noexcept;
-    Vector3 GetForward() const noexcept;
-    Vector3 GetForwardXY() const noexcept;
-    Vector3 GetForwardXZ() const noexcept;
+    [[nodiscard]] Vector3 GetRight() const noexcept;
+    [[nodiscard]] Vector3 GetRightXY() const noexcept;
+    [[nodiscard]] Vector3 GetRightXZ() const noexcept;
+    [[nodiscard]] Vector3 GetUp() const noexcept;
+    [[nodiscard]] Vector3 GetUpXY() const noexcept;
+    [[nodiscard]] Vector3 GetUpXZ() const noexcept;
+    [[nodiscard]] Vector3 GetForward() const noexcept;
+    [[nodiscard]] Vector3 GetForwardXY() const noexcept;
+    [[nodiscard]] Vector3 GetForwardXZ() const noexcept;
 
-    float GetYawDegrees() const noexcept;
-    float GetPitchDegrees() const noexcept;
-    float GetRollDegrees() const noexcept;
+    [[nodiscard]] float GetYawDegrees() const noexcept;
+    [[nodiscard]] float GetPitchDegrees() const noexcept;
+    [[nodiscard]] float GetRollDegrees() const noexcept;
 
-    float GetYaw() const noexcept;
-    float GetPitch() const noexcept;
-    float GetRoll() const noexcept;
+    [[nodiscard]] float GetYaw() const noexcept;
+    [[nodiscard]] float GetPitch() const noexcept;
+    [[nodiscard]] float GetRoll() const noexcept;
 
     float trauma = 0.0f;
     float trauma_recovery_rate = 1.0f;

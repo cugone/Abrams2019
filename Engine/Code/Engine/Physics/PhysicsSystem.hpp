@@ -59,11 +59,11 @@ public:
 
     void Enable(bool enable);
     void SetGravity(const Vector2& new_gravity);
-    Vector2 GetGravity() const noexcept;
+    [[nodiscard]] Vector2 GetGravity() const noexcept;
     void SetDragCoefficients(const Vector2& k1k2);
     void SetDragCoefficients(float linearCoefficient, float squareCoefficient);
-    std::pair<float,float> GetDragCoefficients() const noexcept;
-    const PhysicsSystemDesc& GetWorldDescription() const noexcept;
+    [[nodiscard]] std::pair<float,float> GetDragCoefficients() const noexcept;
+    [[nodiscard]] const PhysicsSystemDesc& GetWorldDescription() const noexcept;
     void SetWorldDescription(const PhysicsSystemDesc& new_desc);
     void EnableGravity(bool isGravityEnabled) noexcept;
     void EnableDrag(bool isDragEnabled) noexcept;
@@ -75,8 +75,8 @@ public:
     template<typename ForceGeneratorType>
     ForceGeneratorType* CreateForceGenerator();
 
-    const std::vector<std::unique_ptr<Joint>>& Debug_GetJoints() const noexcept;
-    const std::vector<RigidBody*>& Debug_GetBodies() const noexcept;
+    [[nodiscard]] const std::vector<std::unique_ptr<Joint>>& Debug_GetJoints() const noexcept;
+    [[nodiscard]] const std::vector<RigidBody*>& Debug_GetBodies() const noexcept;
 
     void Debug_ShowCollision(bool show);
     void Debug_ShowWorldPartition(bool show);
@@ -88,11 +88,11 @@ private:
     void UpdateBodiesInBounds(TimeUtils::FPSeconds deltaSeconds) noexcept;
     void ApplyCustomAndJointForces(TimeUtils::FPSeconds deltaSeconds) noexcept;
     void ApplyGravityAndDrag(TimeUtils::FPSeconds deltaSeconds) noexcept;
-    std::vector<RigidBody*> BroadPhaseCollision(const AABB2& query_area) noexcept;
+    [[nodiscard]] std::vector<RigidBody*> BroadPhaseCollision(const AABB2& query_area) noexcept;
 
     using CollisionDataSet = std::set<CollisionData, std::equal_to<CollisionData>>;
     template<typename CollisionDetectionFunction, typename CollisionResolutionFunction>
-    CollisionDataSet NarrowPhaseCollision(const std::vector<RigidBody*>& potential_collisions, CollisionDetectionFunction&& cd, CollisionResolutionFunction&& cr) noexcept;
+    [[nodiscard]] CollisionDataSet NarrowPhaseCollision(const std::vector<RigidBody*>& potential_collisions, CollisionDetectionFunction&& cd, CollisionResolutionFunction&& cr) noexcept;
 
     void SolveCollision(const CollisionDataSet& actual_collisions) noexcept;
     void SolveConstraints() const noexcept;

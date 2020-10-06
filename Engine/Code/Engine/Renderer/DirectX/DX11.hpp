@@ -39,9 +39,9 @@ enum class AdapterPreference {
     MinimumPower
 };
 
-DXGI_GPU_PREFERENCE AdapterPreferenceToDxgiGpuPreference(const AdapterPreference& preference);
+[[nodiscard]] DXGI_GPU_PREFERENCE AdapterPreferenceToDxgiGpuPreference(const AdapterPreference& preference);
 
-GraphicsCardDesc AdapterInfoToGraphicsCardDesc(const AdapterInfo& adapterInfo) noexcept;
+[[nodiscard]] GraphicsCardDesc AdapterInfoToGraphicsCardDesc(const AdapterInfo& adapterInfo) noexcept;
 
 struct OutputInfo {
     Microsoft::WRL::ComPtr<IDXGIOutput6> output{};
@@ -58,52 +58,52 @@ using bitfield8_t = std::uint8_t;
 using bitfield16_t = std::uint16_t;
 using bitfield32_t = std::uint32_t;
 using bitfield64_t = std::uint64_t;
-bitfield8_t GetFilterMaskFromModes(const FilterMode& minFilterMode, const FilterMode& magFilterMode, const FilterMode& mipFilterMode, const FilterComparisonMode& minMaxComparison) noexcept;
+[[nodiscard]] bitfield8_t GetFilterMaskFromModes(const FilterMode& minFilterMode, const FilterMode& magFilterMode, const FilterMode& mipFilterMode, const FilterComparisonMode& minMaxComparison) noexcept;
 
-D3D11_FILTER FilterModeToD3DFilter(const FilterMode& minFilterMode, const FilterMode& magFilterMode, const FilterMode& mipFilterMode, const FilterComparisonMode& minMaxComparison) noexcept;
-FilterMode FilterModeFromString(const char* str) noexcept;
-FilterMode FilterModeFromString(std::string str) noexcept;
+[[nodiscard]] D3D11_FILTER FilterModeToD3DFilter(const FilterMode& minFilterMode, const FilterMode& magFilterMode, const FilterMode& mipFilterMode, const FilterComparisonMode& minMaxComparison) noexcept;
+[[nodiscard]] FilterMode FilterModeFromString(const char* str) noexcept;
+[[nodiscard]] FilterMode FilterModeFromString(std::string str) noexcept;
 
-FilterComparisonMode FilterComparisonModeFromString(const char* str) noexcept;
-FilterComparisonMode FilterComparisonModeFromString(std::string str) noexcept;
+[[nodiscard]] FilterComparisonMode FilterComparisonModeFromString(const char* str) noexcept;
+[[nodiscard]] FilterComparisonMode FilterComparisonModeFromString(std::string str) noexcept;
 
-D3D11_TEXTURE_ADDRESS_MODE AddressModeToD3DAddressMode(const TextureAddressMode& address_mode) noexcept;
-TextureAddressMode TextureAddressModeFromString(const char* str) noexcept;
-TextureAddressMode TextureAddressModeFromString(std::string str) noexcept;
+[[nodiscard]] D3D11_TEXTURE_ADDRESS_MODE AddressModeToD3DAddressMode(const TextureAddressMode& address_mode) noexcept;
+[[nodiscard]] TextureAddressMode TextureAddressModeFromString(const char* str) noexcept;
+[[nodiscard]] TextureAddressMode TextureAddressModeFromString(std::string str) noexcept;
 
-D3D11_COMPARISON_FUNC ComparisonFunctionToD3DComparisonFunction(const ComparisonFunction& compareFunc) noexcept;
-ComparisonFunction D3DComparisonFunctionToComparisonFunction(D3D11_COMPARISON_FUNC d3dcompareFunc) noexcept;
-ComparisonFunction ComparisonFunctionFromString(std::string str) noexcept;
-ComparisonFunction ComparisonFunctionFromString(const char* str) noexcept;
+[[nodiscard]] D3D11_COMPARISON_FUNC ComparisonFunctionToD3DComparisonFunction(const ComparisonFunction& compareFunc) noexcept;
+[[nodiscard]] ComparisonFunction D3DComparisonFunctionToComparisonFunction(D3D11_COMPARISON_FUNC d3dcompareFunc) noexcept;
+[[nodiscard]] ComparisonFunction ComparisonFunctionFromString(std::string str) noexcept;
+[[nodiscard]] ComparisonFunction ComparisonFunctionFromString(const char* str) noexcept;
 
-D3D11_STENCIL_OP StencilOperationToD3DStencilOperation(const StencilOperation& stencil_operation) noexcept;
-StencilOperation StencilOperationFromString(const char* str) noexcept;
-StencilOperation StencilOperationFromString(std::string str) noexcept;
+[[nodiscard]] D3D11_STENCIL_OP StencilOperationToD3DStencilOperation(const StencilOperation& stencil_operation) noexcept;
+[[nodiscard]] StencilOperation StencilOperationFromString(const char* str) noexcept;
+[[nodiscard]] StencilOperation StencilOperationFromString(std::string str) noexcept;
 
-D3D11_USAGE BufferUsageToD3DUsage(const BufferUsage& usage) noexcept;
-D3D11_BIND_FLAG BufferBindUsageToD3DBindFlags(const BufferBindUsage& bindFlags) noexcept;
-D3D11_CPU_ACCESS_FLAG CPUAccessFlagFromUsage(const BufferUsage& usage) noexcept;
+[[nodiscard]] D3D11_USAGE BufferUsageToD3DUsage(const BufferUsage& usage) noexcept;
+[[nodiscard]] D3D11_BIND_FLAG BufferBindUsageToD3DBindFlags(const BufferBindUsage& bindFlags) noexcept;
+[[nodiscard]] D3D11_CPU_ACCESS_FLAG CPUAccessFlagFromUsage(const BufferUsage& usage) noexcept;
 
-D3D11_PRIMITIVE_TOPOLOGY PrimitiveTypeToD3dTopology(const PrimitiveType& topology) noexcept;
+[[nodiscard]] D3D11_PRIMITIVE_TOPOLOGY PrimitiveTypeToD3dTopology(const PrimitiveType& topology) noexcept;
 
-DXGI_FORMAT ImageFormatToDxgiFormat(const ImageFormat& format) noexcept;
-ImageFormat DxgiFormatToImageFormat(DXGI_FORMAT format) noexcept;
+[[nodiscard]] DXGI_FORMAT ImageFormatToDxgiFormat(const ImageFormat& format) noexcept;
+[[nodiscard]] ImageFormat DxgiFormatToImageFormat(DXGI_FORMAT format) noexcept;
 
-D3D11_BLEND BlendFactorToD3DBlendFactor(const BlendFactor& factor) noexcept;
-D3D11_BLEND_OP BlendOpToD3DBlendOp(const BlendOperation& op) noexcept;
-UINT8 BlendColorWriteEnableToD3DBlendColorWriteEnable(const BlendColorWriteEnable& rt_mask) noexcept;
+[[nodiscard]] D3D11_BLEND BlendFactorToD3DBlendFactor(const BlendFactor& factor) noexcept;
+[[nodiscard]] D3D11_BLEND_OP BlendOpToD3DBlendOp(const BlendOperation& op) noexcept;
+[[nodiscard]] UINT8 BlendColorWriteEnableToD3DBlendColorWriteEnable(const BlendColorWriteEnable& rt_mask) noexcept;
 
-BlendFactor BlendFactorFromString(std::string str) noexcept;
-BlendOperation BlendOperationFromString(std::string str) noexcept;
-BlendColorWriteEnable BlendColorWriteEnableFromString(std::string str) noexcept;
+[[nodiscard]] BlendFactor BlendFactorFromString(std::string str) noexcept;
+[[nodiscard]] BlendOperation BlendOperationFromString(std::string str) noexcept;
+[[nodiscard]] BlendColorWriteEnable BlendColorWriteEnableFromString(std::string str) noexcept;
 
-D3D11_FILL_MODE FillModeToD3DFillMode(const FillMode& fillmode) noexcept;
-D3D11_CULL_MODE CullModeToD3DCullMode(const CullMode& fillmode) noexcept;
-FillMode FillModeFromString(std::string str) noexcept;
-CullMode CullModeFromString(std::string str) noexcept;
-WindingOrder WindingOrderFromString(std::string str) noexcept;
+[[nodiscard]] D3D11_FILL_MODE FillModeToD3DFillMode(const FillMode& fillmode) noexcept;
+[[nodiscard]] D3D11_CULL_MODE CullModeToD3DCullMode(const CullMode& fillmode) noexcept;
+[[nodiscard]] FillMode FillModeFromString(std::string str) noexcept;
+[[nodiscard]] CullMode CullModeFromString(std::string str) noexcept;
+[[nodiscard]] WindingOrder WindingOrderFromString(std::string str) noexcept;
 
-D3D11_RESOURCE_MISC_FLAG ResourceMiscFlagToD3DMiscFlag(const ResourceMiscFlag& flags) noexcept;
+[[nodiscard]] D3D11_RESOURCE_MISC_FLAG ResourceMiscFlagToD3DMiscFlag(const ResourceMiscFlag& flags) noexcept;
 
-std::string PipelineStageToString(const PipelineStage& stage) noexcept;
-PipelineStage PipelineStageFromString(std::string stage) noexcept;
+[[nodiscard]] std::string PipelineStageToString(const PipelineStage& stage) noexcept;
+[[nodiscard]] PipelineStage PipelineStageFromString(std::string stage) noexcept;

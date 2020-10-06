@@ -8,13 +8,13 @@ class ThreadSafeQueue {
 public:
     void push(const T& t) noexcept;
     void pop() noexcept;
-    decltype(auto) size() const noexcept;
-    bool empty() const noexcept;
+    [[nodiscard]] decltype(auto) size() const noexcept;
+    [[nodiscard]] bool empty() const noexcept;
 
-    T& back() const noexcept;
-    T& back() noexcept;
-    T& front() const noexcept;
-    T& front() noexcept;
+    [[nodiscard]] T& back() const noexcept;
+    [[nodiscard]] T& back() noexcept;
+    [[nodiscard]] T& front() const noexcept;
+    [[nodiscard]] T& front() noexcept;
 
     void swap(ThreadSafeQueue<T>& b) noexcept;
 

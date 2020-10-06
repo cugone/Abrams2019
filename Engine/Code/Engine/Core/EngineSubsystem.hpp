@@ -148,13 +148,13 @@ public:
     virtual void Render() const = 0;
     virtual void EndFrame() = 0;
 
-    virtual bool ProcessSystemMessage(const EngineMessage& msg) noexcept;
+    [[nodiscard]] virtual bool ProcessSystemMessage(const EngineMessage& msg) noexcept;
 
-    static WindowsSystemMessage GetWindowsSystemMessageFromUintMessage(unsigned int wmMessage) noexcept;
+    [[nodiscard]] static WindowsSystemMessage GetWindowsSystemMessageFromUintMessage(unsigned int wmMessage) noexcept;
     void SetNextHandler(EngineSubsystem* next_handler) noexcept;
 
 protected:
-    static WindowResizeType GetResizeTypeFromWmSize(const EngineMessage& msg) noexcept;
+    [[nodiscard]] static WindowResizeType GetResizeTypeFromWmSize(const EngineMessage& msg) noexcept;
 private:
     EngineSubsystem* _next_subsystem = nullptr;
 };

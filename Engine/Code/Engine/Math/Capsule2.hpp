@@ -30,10 +30,10 @@ public:
     void SetLengthFromCenter(float length) noexcept;
     void SetLengthFromEnd(float length) noexcept;
 
-    Vector2 CalcCenter() const noexcept;
+    [[nodiscard]] Vector2 CalcCenter() const noexcept;
 
-    float CalcLength() const noexcept;
-    float CalcLengthSquared() const noexcept;
+    [[nodiscard]] float CalcLength() const noexcept;
+    [[nodiscard]] float CalcLengthSquared() const noexcept;
 
     void SetDirectionFromStart(float angle_degrees) noexcept;
     void SetDirectionFromCenter(float angle_degrees) noexcept;
@@ -50,14 +50,14 @@ public:
     void RotateNegative90Degrees() noexcept;
     void Rotate180Degrees() noexcept;
 
-    Vector2 CalcDisplacement() const noexcept;
-    Vector2 CalcDirection() const noexcept;
+    [[nodiscard]] Vector2 CalcDisplacement() const noexcept;
+    [[nodiscard]] Vector2 CalcDirection() const noexcept;
 
-    Vector2 CalcPositiveNormal() const noexcept;
-    Vector2 CalcNegativeNormal() const noexcept;
+    [[nodiscard]] Vector2 CalcPositiveNormal() const noexcept;
+    [[nodiscard]] Vector2 CalcNegativeNormal() const noexcept;
 
-    Capsule2 operator+(const Vector2& translation) const noexcept;
-    Capsule2 operator-(const Vector2& antiTranslation) const noexcept;
+    [[nodiscard]] Capsule2 operator+(const Vector2& translation) const noexcept;
+    [[nodiscard]] Capsule2 operator-(const Vector2& antiTranslation) const noexcept;
 
     Capsule2& operator+=(const Vector2& translation) noexcept;
     Capsule2& operator-=(const Vector2& antiTranslation) noexcept;

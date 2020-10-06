@@ -7,8 +7,8 @@ class Buffer {
 public:
     using buffer_t = T;
     virtual ~Buffer() noexcept = 0;
-    Microsoft::WRL::ComPtr<ID3D11Buffer> GetDxBuffer() const noexcept;
-    bool IsValid() const noexcept;
+    [[nodiscard]] Microsoft::WRL::ComPtr<ID3D11Buffer> GetDxBuffer() const noexcept;
+    [[nodiscard]] bool IsValid() const noexcept;
 
 protected:
     Microsoft::WRL::ComPtr<ID3D11Buffer> _dx_buffer{};

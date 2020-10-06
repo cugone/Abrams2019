@@ -32,12 +32,12 @@ public:
     void AddPaddingToSidesClamped(float paddingX, float paddingY) noexcept;
     void Translate(const Vector2& translation) noexcept;
 
-    Vector2 CalcDimensions() const noexcept;
-    Vector2 CalcCenter() const noexcept;
+    [[nodiscard]] Vector2 CalcDimensions() const noexcept;
+    [[nodiscard]] Vector2 CalcCenter() const noexcept;
     void SetPosition(const Vector2& center) noexcept;
 
-    AABB2 operator+(const Vector2& translation) const noexcept;
-    AABB2 operator-(const Vector2& antiTranslation) const noexcept;
+    [[nodiscard]] AABB2 operator+(const Vector2& translation) const noexcept;
+    [[nodiscard]] AABB2 operator-(const Vector2& antiTranslation) const noexcept;
     AABB2& operator+=(const Vector2& translation) noexcept;
     AABB2& operator-=(const Vector2& antiTranslation) noexcept;
 

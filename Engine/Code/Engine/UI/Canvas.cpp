@@ -21,7 +21,9 @@ Canvas::Canvas(Widget* owner, Renderer& renderer)
 {
 
     const auto [dimensions, aspect_ratio] = CalcDimensionsAndAspectRatio();
-    CalcDesiredSize();
+    const auto desired_size = CalcDesiredSize();
+    _bounds.mins = desired_size.GetXY();
+    _bounds.maxs = desired_size.GetZW();
 
     auto desc = DepthStencilDesc{};
     desc.stencil_enabled = true;
@@ -33,7 +35,7 @@ Canvas::Canvas(Widget* owner, Renderer& renderer)
 : Panel(owner)
 , _renderer(renderer)
 {
-     LoadFromXml(elem);
+     GUARANTEE_OR_DIE(LoadFromXml(elem), "Canvas constructor failed to load.");
 }
 
 void Canvas::Update(TimeUtils::FPSeconds deltaSeconds) {

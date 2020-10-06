@@ -11,7 +11,7 @@ public:
 
     void SetOrientationDegrees(float angleDegrees);
     void SetOrientationRadians(float angleRadians);
-    Vector2 Interpolate(float t);
+    [[nodiscard]] Vector2 Interpolate(float t);
 
 protected:
 private:

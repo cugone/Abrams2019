@@ -1,5 +1,6 @@
 #include "Engine/UI/Label.hpp"
 
+#include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/KerningFont.hpp"
 #include "Engine/Renderer/Camera2D.hpp"
 #include "Engine/Renderer/Renderer.hpp"
@@ -19,14 +20,15 @@ Label::Label(Panel* parent, KerningFont* font, const std::string& text /*= "Labe
 : Element(parent)
 , _font(font)
 , _text(text) {
-    DirtyElement(InvalidateElementReason::Layout);
-    CalcBoundsFromFont(_font);
+    const auto desired_size = CalcDesiredSize();
+    _bounds.mins = desired_size.GetXY();
+    _bounds.maxs = desired_size.GetZW();
 }
 
 Label::Label(const XMLElement& elem, Panel* parent /*= nullptr*/)
 : Element(parent)
 {
-    LoadFromXml(elem);
+    GUARANTEE_OR_DIE(LoadFromXml(elem), "Label constructor failed to load.");
 }
 
 void Label::Render(Renderer& renderer) const {
@@ -49,13 +51,13 @@ const KerningFont* const Label::GetFont() const {
 void Label::SetFont(KerningFont* font) {
     _font = font;
     DirtyElement();
-    CalcBoundsFromFont(_font);
+    CalcBounds();
 }
 
 void Label::SetText(const std::string& text) {
     _text = text;
     DirtyElement();
-    CalcBoundsFromFont(_font);
+    CalcBounds();
 }
 
 const std::string& Label::GetText() const {
@@ -81,7 +83,7 @@ Rgba& Label::GetColor() {
 void Label::SetScale(float value) {
     _scale = value;
     DirtyElement();
-    CalcBoundsFromFont(_font);
+    CalcBounds();
 }
 
 float Label::GetScale() const {
@@ -94,17 +96,14 @@ float Label::GetScale() {
 
 void Label::SetPosition(const Vector4& position) {
     Element::SetPosition(position);
-    CalcBoundsFromFont(_font);
 }
 
 void Label::SetPositionOffset(const Vector2& offset) {
     Element::SetPositionOffset(offset);
-    CalcBoundsFromFont(_font);
 }
 
 void Label::SetPositionRatio(const Vector2& ratio) {
     Element::SetPositionRatio(ratio);
-    CalcBoundsFromFont(_font);
 }
 
 Vector4 Label::CalcDesiredSize() const noexcept {

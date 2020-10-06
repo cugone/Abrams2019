@@ -33,9 +33,9 @@ enum class OperatingSystemArchitecture : uint8_t {
 
 OperatingSystem& operator&=(OperatingSystem& a, const OperatingSystem& b) noexcept;
 OperatingSystem& operator|=(OperatingSystem& a, const OperatingSystem& b) noexcept;
-OperatingSystem operator&(OperatingSystem a, const OperatingSystem& b) noexcept;
-OperatingSystem operator|(OperatingSystem a, const OperatingSystem& b) noexcept;
-OperatingSystem operator~(const OperatingSystem& a) noexcept;
+[[nodiscard]] OperatingSystem operator&(OperatingSystem a, const OperatingSystem& b) noexcept;
+[[nodiscard]] OperatingSystem operator|(OperatingSystem a, const OperatingSystem& b) noexcept;
+[[nodiscard]] OperatingSystem operator~(const OperatingSystem& a) noexcept;
 
 struct OsDesc {
     OperatingSystem type{};
@@ -44,10 +44,10 @@ struct OsDesc {
 };
 std::ostream& operator<<(std::ostream& out, const OsDesc& cpu) noexcept;
 
-OsDesc GetOsDesc() noexcept;
+[[nodiscard]] OsDesc GetOsDesc() noexcept;
 
-OperatingSystem GetOperatingSystemType() noexcept;
-OperatingSystemArchitecture GetOperatingSystemArchitecture() noexcept;
-std::string GetFriendlyStringFromOperatingSystemType(System::OS::OperatingSystem type) noexcept;
+[[nodiscard]] OperatingSystem GetOperatingSystemType() noexcept;
+[[nodiscard]] OperatingSystemArchitecture GetOperatingSystemArchitecture() noexcept;
+[[nodiscard]] std::string GetFriendlyStringFromOperatingSystemType(System::OS::OperatingSystem type) noexcept;
 
 } // namespace System:OS

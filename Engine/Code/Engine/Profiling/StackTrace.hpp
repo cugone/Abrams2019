@@ -14,8 +14,8 @@ public:
     StackTrace([[maybe_unused]] unsigned long framesToSkip,
                [[maybe_unused]] unsigned long framesToCapture) noexcept;
     ~StackTrace() noexcept;
-    bool operator==(const StackTrace& rhs) const noexcept;
-    bool operator!=(const StackTrace& rhs) const noexcept;
+    [[nodiscard]] bool operator==(const StackTrace& rhs) const noexcept;
+    [[nodiscard]] bool operator!=(const StackTrace& rhs) const noexcept;
 
 protected:
 private:

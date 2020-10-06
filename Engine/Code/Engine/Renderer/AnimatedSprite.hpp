@@ -29,26 +29,26 @@ public:
     ~AnimatedSprite() noexcept;
 
     void Update(TimeUtils::FPSeconds deltaSeconds) noexcept;
-    AABB2 GetCurrentTexCoords() const noexcept;
-    const Texture* const GetTexture() const noexcept;
-    int GetNumSprites() const noexcept;
-    IntVector2 GetFrameDimensions() const noexcept;
+    [[nodiscard]] AABB2 GetCurrentTexCoords() const noexcept;
+    [[nodiscard]] const Texture* const GetTexture() const noexcept;
+    [[nodiscard]] int GetNumSprites() const noexcept;
+    [[nodiscard]] IntVector2 GetFrameDimensions() const noexcept;
     void TogglePause() noexcept;
     void Pause() noexcept;                                    // Starts unpaused (playing) by default
     void Resume() noexcept;                                   // Resume after pausing
     void Reset() noexcept;                                    // Rewinds to time 0 and starts (re)playing
-    bool IsFinished() const noexcept;                         //{ return m_isFinished; }
-    bool IsPlaying() const noexcept;                          //{ return m_isPlaying; }
-    TimeUtils::FPSeconds GetDurationSeconds() const noexcept; //{ return m_durationSeconds; }
-    TimeUtils::FPSeconds GetSecondsElapsed() const noexcept;  //{ return m_elapsedSeconds; }
-    TimeUtils::FPSeconds GetSecondsRemaining() const noexcept;
-    float GetFractionElapsed() const noexcept;
-    float GetFractionRemaining() const noexcept;
+    [[nodiscard]] bool IsFinished() const noexcept;                         //{ return m_isFinished; }
+    [[nodiscard]] bool IsPlaying() const noexcept;                          //{ return m_isPlaying; }
+    [[nodiscard]] TimeUtils::FPSeconds GetDurationSeconds() const noexcept; //{ return m_durationSeconds; }
+    [[nodiscard]] TimeUtils::FPSeconds GetSecondsElapsed() const noexcept;  //{ return m_elapsedSeconds; }
+    [[nodiscard]] TimeUtils::FPSeconds GetSecondsRemaining() const noexcept;
+    [[nodiscard]] float GetFractionElapsed() const noexcept;
+    [[nodiscard]] float GetFractionRemaining() const noexcept;
     void SetSecondsElapsed(TimeUtils::FPSeconds secondsElapsed) noexcept; // Jump to specific time
     void SetFractionElapsed(float fractionElapsed) noexcept;              // e.g. 0.33f for one-third in
     void SetDuration(TimeUtils::FPSeconds durationSeconds) noexcept;
     void SetMaterial(Material* mat) noexcept;
-    Material* GetMaterial() const noexcept;
+    [[nodiscard]] Material* GetMaterial() const noexcept;
 
 protected:
 private:
@@ -56,8 +56,8 @@ private:
     AnimatedSprite(Renderer& renderer, std::weak_ptr<SpriteSheet> spriteSheet, TimeUtils::FPSeconds durationSeconds, const IntVector2& startSpriteCoords, int frameLength, SpriteAnimMode playbackMode = SpriteAnimMode::Looping) noexcept;
 
     void LoadFromXml(Renderer& renderer, const XMLElement& elem) noexcept;
-    SpriteAnimMode GetAnimModeFromOptions(bool looping, bool backwards, bool ping_pong /*= false*/) noexcept;
-    int GetIndexFromCoords(const IntVector2& coords) noexcept;
+    [[nodiscard]] SpriteAnimMode GetAnimModeFromOptions(bool looping, bool backwards, bool ping_pong /*= false*/) noexcept;
+    [[nodiscard]] int GetIndexFromCoords(const IntVector2& coords) noexcept;
 
     Renderer& _renderer;
     Material* _material = nullptr;

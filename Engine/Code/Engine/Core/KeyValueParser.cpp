@@ -32,7 +32,7 @@ bool KeyValueParser::HasKey(const std::string& key) const noexcept {
     return _kv_pairs.find(key) != _kv_pairs.end();
 }
 
-bool KeyValueParser::Parse(const std::string& input) noexcept {
+void KeyValueParser::Parse(const std::string& input) noexcept {
     auto lines = StringUtils::SplitOnUnquoted(input, '\n', true);
 
     for(auto& cur_line : lines) {
@@ -98,49 +98,39 @@ bool KeyValueParser::Parse(const std::string& input) noexcept {
                 value = value.substr(ffno, flno);
             }
         }
-
         SetValue(key, value);
     }
-    return true;
 }
 
-bool KeyValueParser::Parse(std::ifstream& input) noexcept {
+void KeyValueParser::Parse(std::ifstream& input) noexcept {
     if(input.is_open() == false) {
-        return false;
+        return;
     }
     if(input.good() == false) {
-        return false;
+        return;
     }
-    return Parse(static_cast<std::istream&>(input));
+    Parse(static_cast<std::istream&>(input));
 }
 
-bool KeyValueParser::Parse(std::istream& input) noexcept {
+void KeyValueParser::Parse(std::istream& input) noexcept {
     std::string cur_line;
     while(std::getline(input, cur_line)) {
-        const auto did_parse = Parse(cur_line);
-        if(!did_parse) {
-            return false;
-        }
+        Parse(cur_line);
     }
-    return true;
 }
 
 std::map<std::string, std::string>&& KeyValueParser::Release() noexcept {
     return std::move(_kv_pairs);
 }
 
-bool KeyValueParser::ParseMultiParams(const std::string& input) noexcept {
+void KeyValueParser::ParseMultiParams(const std::string& input) noexcept {
     std::string whole_line = input;
     CollapseMultiParamWhitespace(whole_line);
     ConvertFromMultiParam(whole_line);
     const auto lines = StringUtils::SplitOnUnquoted(whole_line, '\n');
     for(const auto& line : lines) {
-        const auto did_parse = Parse(line);
-        if(!did_parse) {
-            return false;
-        }
+        Parse(line);
     }
-    return true;
 }
 
 void KeyValueParser::ConvertFromMultiParam(std::string& whole_line) noexcept {

@@ -24,21 +24,21 @@ public:
     Image(const std::vector<Rgba>& data, unsigned int width, unsigned int height) noexcept;
     Image(const std::vector<unsigned char>& data, unsigned int width, unsigned int height) noexcept;
 
-    Rgba GetTexel(const IntVector2& texelPos) const noexcept;
+    [[nodiscard]] Rgba GetTexel(const IntVector2& texelPos) const noexcept;
     void SetTexel(const IntVector2& texelPos, const Rgba& color) noexcept;
 
-    const std::filesystem::path& GetFilepath() const noexcept;
-    const IntVector2& GetDimensions() const noexcept;
+    [[nodiscard]] const std::filesystem::path& GetFilepath() const noexcept;
+    [[nodiscard]] const IntVector2& GetDimensions() const noexcept;
 
-    const unsigned char* GetData() const noexcept;
-    unsigned char* GetData() noexcept;
-    std::size_t GetDataLength() const noexcept;
-    int GetBytesPerTexel() const noexcept;
+    [[nodiscard]] const unsigned char* GetData() const noexcept;
+    [[nodiscard]] unsigned char* GetData() noexcept;
+    [[nodiscard]] std::size_t GetDataLength() const noexcept;
+    [[nodiscard]] int GetBytesPerTexel() const noexcept;
 
-    const std::vector<int>& GetDelaysIfGif() const noexcept;
-    bool Export(std::filesystem::path filepath, int bytes_per_pixel = 4, int jpg_quality = 100) noexcept;
-    static Image CreateImageFromFileBuffer(const std::vector<unsigned char>& data) noexcept;
-    static std::string GetSupportedExtensionsList() noexcept;
+    [[nodiscard]] const std::vector<int>& GetDelaysIfGif() const noexcept;
+    [[nodiscard]] bool Export(std::filesystem::path filepath, int bytes_per_pixel = 4, int jpg_quality = 100) noexcept;
+    [[nodiscard]] static Image CreateImageFromFileBuffer(const std::vector<unsigned char>& data) noexcept;
+    [[nodiscard]] static std::string GetSupportedExtensionsList() noexcept;
 
     friend void swap(Image& a, Image& b) noexcept;
 

@@ -14,8 +14,8 @@ public:
     static const Vector2 XY_AXIS;
     static const Vector2 YX_AXIS;
 
-    static Vector2 CreateFromPolarCoordinatesDegrees(float length, float directionDegrees);
-    static Vector2 CreateFromPolarCoordinatesRadians(float length, float directionRadians);
+    [[nodiscard]] static Vector2 CreateFromPolarCoordinatesDegrees(float length, float directionDegrees);
+    [[nodiscard]] static Vector2 CreateFromPolarCoordinatesRadians(float length, float directionRadians);
 
     Vector2() noexcept = default;
     explicit Vector2(const std::string& value) noexcept;
@@ -23,37 +23,38 @@ public:
     explicit Vector2(const Vector3& rhs) noexcept;
     explicit Vector2(const IntVector2& intvec2) noexcept;
 
-    Vector2 operator+(const Vector2& rhs) const noexcept;
+    [[nodiscard]] Vector2 operator+(const Vector2& rhs) const noexcept;
     Vector2& operator+=(const Vector2& rhs) noexcept;
 
-    Vector2 operator-() const noexcept;
-    Vector2 operator-(const Vector2& rhs) const noexcept;
+    [[nodiscard]] Vector2 operator-() const noexcept;
+    [[nodiscard]] Vector2 operator-(const Vector2& rhs) const noexcept;
     Vector2& operator-=(const Vector2& rhs) noexcept;
 
     friend Vector2 operator*(float lhs, const Vector2& rhs) noexcept;
-    Vector2 operator*(float scalar) const noexcept;
+    [[nodiscard]] Vector2 operator*(float scalar) const noexcept;
     Vector2& operator*=(float scalar) noexcept;
-    Vector2 operator*(const Vector2& rhs) const noexcept;
+    [[nodiscard]] Vector2 operator*(const Vector2& rhs) const noexcept;
     Vector2& operator*=(const Vector2& rhs) noexcept;
 
-    Vector2 operator/(float scalar) const noexcept;
+    [[nodiscard]] Vector2 operator/(float scalar) const noexcept;
     Vector2 operator/=(float scalar) noexcept;
-    Vector2 operator/(const Vector2& rhs) const noexcept;
+    [[nodiscard]] Vector2 operator/(const Vector2& rhs) const noexcept;
     Vector2 operator/=(const Vector2& rhs) noexcept;
 
-    bool operator==(const Vector2& rhs) const noexcept;
-    bool operator!=(const Vector2& rhs) const noexcept;
+    [[nodiscard]] bool operator==(const Vector2& rhs) const noexcept;
+    [[nodiscard]] bool operator!=(const Vector2& rhs) const noexcept;
 
     friend std::ostream& operator<<(std::ostream& out_stream, const Vector2& v) noexcept;
     friend std::istream& operator>>(std::istream& in_stream, Vector2& v) noexcept;
 
+    //TODO: Vector2::GetXY should return a tuple
     void GetXY(float& outX, float& outY) const noexcept;
-    float* GetAsFloatArray() noexcept;
+    [[nodiscard]] float* GetAsFloatArray() noexcept;
 
-    float CalcHeadingRadians() const noexcept;
-    float CalcHeadingDegrees() const noexcept;
-    float CalcLength() const noexcept;
-    float CalcLengthSquared() const noexcept;
+    [[nodiscard]] float CalcHeadingRadians() const noexcept;
+    [[nodiscard]] float CalcHeadingDegrees() const noexcept;
+    [[nodiscard]] float CalcLength() const noexcept;
+    [[nodiscard]] float CalcLengthSquared() const noexcept;
 
     void SetHeadingDegrees(float headingDegrees) noexcept;
     void SetHeadingRadians(float headingRadians) noexcept;
@@ -65,10 +66,10 @@ public:
     void SetLengthAndHeadingRadians(float headingRadians, float length) noexcept;
 
     float Normalize() noexcept;
-    Vector2 GetNormalize() const noexcept;
+    [[nodiscard]] Vector2 GetNormalize() const noexcept;
 
-    Vector2 GetLeftHandNormal() const noexcept;
-    Vector2 GetRightHandNormal() const noexcept;
+    [[nodiscard]] Vector2 GetLeftHandNormal() const noexcept;
+    [[nodiscard]] Vector2 GetRightHandNormal() const noexcept;
     void Rotate90Degrees() noexcept;
     void RotateNegative90Degrees() noexcept;
     void RotateRadians(float radians) noexcept;
@@ -85,5 +86,5 @@ private:
 };
 
 namespace StringUtils {
-std::string to_string(const Vector2& v) noexcept;
+[[nodiscard]] std::string to_string(const Vector2& v) noexcept;
 }

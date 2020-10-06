@@ -22,7 +22,7 @@ public:
     explicit OBB2(const AABB2& aabb) noexcept;
     ~OBB2() = default;
 
-    AABB2 AsAABB2() const;
+    [[nodiscard]] AABB2 AsAABB2() const;
 
     void SetOrientationDegrees(float newOrientationDegrees) noexcept;
     void SetOrientation(float newOrientationRadians) noexcept;
@@ -36,26 +36,26 @@ public:
     void AddPaddingToSidesClamped(const Vector2& padding) noexcept;
     void Translate(const Vector2& translation) noexcept;
 
-    Vector2 GetRight() const noexcept;
-    Vector2 GetUp() const noexcept;
-    Vector2 GetLeft() const noexcept;
-    Vector2 GetDown() const noexcept;
+    [[nodiscard]] Vector2 GetRight() const noexcept;
+    [[nodiscard]] Vector2 GetUp() const noexcept;
+    [[nodiscard]] Vector2 GetLeft() const noexcept;
+    [[nodiscard]] Vector2 GetDown() const noexcept;
 
-    Vector2 GetRightEdge() const noexcept;
-    Vector2 GetTopEdge() const noexcept;
-    Vector2 GetLeftEdge() const noexcept;
-    Vector2 GetBottomEdge() const noexcept;
+    [[nodiscard]] Vector2 GetRightEdge() const noexcept;
+    [[nodiscard]] Vector2 GetTopEdge() const noexcept;
+    [[nodiscard]] Vector2 GetLeftEdge() const noexcept;
+    [[nodiscard]] Vector2 GetBottomEdge() const noexcept;
 
-    Vector2 GetBottomLeft() const noexcept;
-    Vector2 GetTopLeft() const noexcept;
-    Vector2 GetTopRight() const noexcept;
-    Vector2 GetBottomRight() const noexcept;
+    [[nodiscard]] Vector2 GetBottomLeft() const noexcept;
+    [[nodiscard]] Vector2 GetTopLeft() const noexcept;
+    [[nodiscard]] Vector2 GetTopRight() const noexcept;
+    [[nodiscard]] Vector2 GetBottomRight() const noexcept;
 
-    Vector2 CalcDimensions() const noexcept;
-    Vector2 CalcCenter() const noexcept;
+    [[nodiscard]] Vector2 CalcDimensions() const noexcept;
+    [[nodiscard]] Vector2 CalcCenter() const noexcept;
 
-    OBB2 operator+(const Vector2& translation) const noexcept;
-    OBB2 operator-(const Vector2& antiTranslation) const noexcept;
+    [[nodiscard]] OBB2 operator+(const Vector2& translation) const noexcept;
+    [[nodiscard]] OBB2 operator-(const Vector2& antiTranslation) const noexcept;
     OBB2& operator+=(const Vector2& translation) noexcept;
     OBB2& operator-=(const Vector2& antiTranslation) noexcept;
 

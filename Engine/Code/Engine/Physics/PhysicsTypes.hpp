@@ -35,7 +35,7 @@ struct Position {
     Position(Vector2 value) noexcept;
     operator Vector2 const ();
     operator Vector2();
-    Vector2 Get() const noexcept;
+    [[nodiscard]] Vector2 Get() const noexcept;
     void Set(Vector2 value) noexcept;
 private:
     Vector2 m_value{};
@@ -51,7 +51,7 @@ struct Velocity {
     Velocity(Vector2 value) noexcept;
     operator Vector2 const();
     operator Vector2();
-    Vector2 Get() const noexcept;
+    [[nodiscard]] Vector2 Get() const noexcept;
     void Set(Vector2 value) noexcept;
 private:
     Vector2 m_value{};
@@ -67,7 +67,7 @@ struct Acceleration {
     Acceleration(Vector2 value) noexcept;
     operator Vector2 const();
     operator Vector2();
-    Vector2 Get() const noexcept;
+    [[nodiscard]] Vector2 Get() const noexcept;
     void Set(Vector2 value) noexcept;
 private:
     Vector2 m_value{};
@@ -90,6 +90,6 @@ struct CollisionData {
     float distance = 0.0f;
     Vector3 normal{};
     CollisionData(RigidBody* const a, RigidBody* const b, float distance, const Vector3& normal);
-    bool operator==(const CollisionData& rhs) const noexcept;
-    bool operator!=(const CollisionData& rhs) const noexcept;
+    [[nodiscard]] bool operator==(const CollisionData& rhs) const noexcept;
+    [[nodiscard]] bool operator!=(const CollisionData& rhs) const noexcept;
 };

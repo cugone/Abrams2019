@@ -60,7 +60,7 @@ public:
     bool ConsumeJob() noexcept;
     unsigned int ConsumeAll() noexcept;
     void ConsumeFor(TimeUtils::FPMilliseconds consume_duration) noexcept;
-    bool HasJobs() const noexcept;
+    [[nodiscard]] bool HasJobs() const noexcept;
 
 private:
     std::vector<ThreadSafeQueue<Job*>*> _consumables{};
@@ -76,17 +76,17 @@ public:
     void Shutdown() noexcept;
 
     void SetCategorySignal(const JobType& category_id, std::condition_variable* signal) noexcept;
-    Job* Create(const JobType& category, const std::function<void(void*)>& cb, void* user_data) noexcept;
+    [[nodiscard]] Job* Create(const JobType& category, const std::function<void(void*)>& cb, void* user_data) noexcept;
     void Run(const JobType& category, const std::function<void(void*)>& cb, void* user_data) noexcept;
     void Dispatch(Job* job) noexcept;
     bool Release(Job* job) noexcept;
     void Wait(Job* job) noexcept;
     void DispatchAndRelease(Job* job) noexcept;
     void WaitAndRelease(Job* job) noexcept;
-    bool IsRunning() const noexcept;
+    [[nodiscard]] bool IsRunning() const noexcept;
     void SetIsRunning(bool value = true) noexcept;
 
-    std::condition_variable* GetMainJobSignal() const noexcept;
+    [[nodiscard]] std::condition_variable* GetMainJobSignal() const noexcept;
 
 protected:
 private:

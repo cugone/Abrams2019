@@ -18,7 +18,7 @@ constexpr const uint32_t AVIH = StringUtils::FourCC("avih");
 constexpr const uint32_t LIST = StringUtils::FourCC("LIST");
 constexpr const uint32_t INFO = StringUtils::FourCC("INFO");
 constexpr const uint32_t JUNK = StringUtils::FourCC("JUNK");
-constexpr const bool IsValid(const char* id) noexcept;
+[[nodiscard]] constexpr const bool IsValid(const char* id) noexcept;
 } // namespace AviChunkID
 
 class Avi {
@@ -71,13 +71,13 @@ public:
     static constexpr const unsigned int AVI_ERROR_NOT_A_AVI = 1;
     static constexpr const unsigned int AVI_ERROR_BAD_FILE = 2;
 
-    unsigned int Load(std::filesystem::path filepath) noexcept;
-    const AviHdrlChunk& GetHdrlChunk() const noexcept;
-    const AviMoviChunk* GetFrame(std::size_t frame_idx) const noexcept;
-    const std::size_t GetFrameCount() const noexcept;
-    TimeUtils::FPSeconds GetLengthInSeconds() const noexcept;
-    TimeUtils::FPMicroseconds GetLengthInMicroSeconds() const noexcept;
-    IntVector2 GetFrameDimensions() const noexcept;
+    [[nodiscard]] unsigned int Load(std::filesystem::path filepath) noexcept;
+    [[nodiscard]] const AviHdrlChunk& GetHdrlChunk() const noexcept;
+    [[nodiscard]] const AviMoviChunk* GetFrame(std::size_t frame_idx) const noexcept;
+    [[nodiscard]] const std::size_t GetFrameCount() const noexcept;
+    [[nodiscard]] TimeUtils::FPSeconds GetLengthInSeconds() const noexcept;
+    [[nodiscard]] TimeUtils::FPMicroseconds GetLengthInMicroSeconds() const noexcept;
+    [[nodiscard]] IntVector2 GetFrameDimensions() const noexcept;
 
 protected:
 private:

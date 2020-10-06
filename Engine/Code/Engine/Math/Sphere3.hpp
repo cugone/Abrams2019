@@ -23,8 +23,8 @@ public:
     void AddPadding(float paddingRadius) noexcept;
     void Translate(const Vector3& translation) noexcept;
 
-    Sphere3 operator+(const Vector3& translation) const noexcept;
-    Sphere3 operator-(const Vector3& antiTranslation) const noexcept;
+    [[nodiscard]] Sphere3 operator+(const Vector3& translation) const noexcept;
+    [[nodiscard]] Sphere3 operator-(const Vector3& antiTranslation) const noexcept;
 
     Sphere3& operator+=(const Vector3& translation) noexcept;
     Sphere3& operator-=(const Vector3& antiTranslation) noexcept;

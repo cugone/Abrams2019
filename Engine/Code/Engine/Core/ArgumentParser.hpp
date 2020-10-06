@@ -31,12 +31,12 @@ public:
     template<typename T>
     friend ArgumentParser& operator>>(ArgumentParser& parser, T&& arg) noexcept;
     void clear() noexcept;
-    bool fail() const noexcept;
-    bool good() const noexcept;
-    bool bad() const noexcept;
-    bool eof() const noexcept;
-    operator bool() const noexcept;
-    bool operator!() const noexcept;
+    [[nodiscard]] bool fail() const noexcept;
+    [[nodiscard]] bool good() const noexcept;
+    [[nodiscard]] bool bad() const noexcept;
+    [[nodiscard]] bool eof() const noexcept;
+    [[nodiscard]] operator bool() const noexcept;
+    [[nodiscard]] bool operator!() const noexcept;
     bool GetNext(Rgba& value) const noexcept;
     bool GetNext(Vector2& value) const noexcept;
     bool GetNext(Vector3& value) const noexcept;
@@ -45,7 +45,7 @@ public:
     bool GetNext(IntVector3& value) const noexcept;
     bool GetNext(IntVector4& value) const noexcept;
     bool GetNext(Matrix4& value) const noexcept;
-    bool GetNext(std::string& value) const noexcept;
+    [[nodiscard]] bool GetNext(std::string& value) const noexcept;
     bool GetNext(bool& value) const noexcept;
     bool GetNext(unsigned char& value) const noexcept;
     bool GetNext(signed char& value) const noexcept;
@@ -72,6 +72,6 @@ private:
 
 template<typename T>
 ArgumentParser& operator>>(ArgumentParser& parser, T&& arg) noexcept {
-    parser.GetNext(std::forward<T>(arg));
-    return parser;
+    (void)parser.GetNext(std::forward<T>(arg)); //GetNext sets the state of the parser.
+    return parser; //It is implicitly converted to bool, a bad state from the previous read is false.
 }

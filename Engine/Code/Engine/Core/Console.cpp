@@ -100,7 +100,7 @@ bool Console::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         auto id = LOWORD(wp);
         switch(id) {
         case IDM_COPY:
-            HandleClipboardCopy();
+            (void)HandleClipboardCopy(); //Return value only useful for Cut operation
             break;
         case IDM_PASTE:
             HandleClipboardPaste();
@@ -831,7 +831,7 @@ void Console::RegisterDefaultFont() noexcept {
             }
             tex_name += font_system32->GetName();
             tex->SetDebugName(tex_name);
-            _renderer.RegisterTexture(tex_name, std::move(tex));
+            GUARANTEE_OR_DIE(_renderer.RegisterTexture(tex_name, std::move(tex)), "Failed to load default font for Console.");
         }
         std::string name = font_system32->GetName();
         std::string shader = "__2D";

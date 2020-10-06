@@ -29,20 +29,20 @@ public:
     void SetLengthFromCenter(float length) noexcept;
     void SetLengthFromEnd(float length) noexcept;
 
-    Vector3 CalcCenter() const noexcept;
+    [[nodiscard]] Vector3 CalcCenter() const noexcept;
 
-    float CalcLength() const noexcept;
-    float CalcLengthSquared() const noexcept;
+    [[nodiscard]] float CalcLength() const noexcept;
+    [[nodiscard]] float CalcLengthSquared() const noexcept;
 
     void SetStartEndPositions(const Vector3& startPosition, const Vector3& endPosition) noexcept;
 
     void Translate(const Vector3& translation) noexcept;
 
-    Vector3 CalcDisplacement() const noexcept;
-    Vector3 CalcDirection() const noexcept;
+    [[nodiscard]] Vector3 CalcDisplacement() const noexcept;
+    [[nodiscard]] Vector3 CalcDirection() const noexcept;
 
-    LineSegment3 operator+(const Vector3& translation) const noexcept;
-    LineSegment3 operator-(const Vector3& antiTranslation) const noexcept;
+    [[nodiscard]] LineSegment3 operator+(const Vector3& translation) const noexcept;
+    [[nodiscard]] LineSegment3 operator-(const Vector3& antiTranslation) const noexcept;
     LineSegment3& operator+=(const Vector3& translation) noexcept;
     LineSegment3& operator-=(const Vector3& antiTranslation) noexcept;
 

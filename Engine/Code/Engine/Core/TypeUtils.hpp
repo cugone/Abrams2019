@@ -24,7 +24,7 @@ namespace TypeUtils {
     constexpr bool is_scoped_enum_v = is_scoped_enum<E>::value;
 
     template<typename E, typename = std::enable_if_t<TypeUtils::is_scoped_enum_v<E>>>
-    const auto GetUnderlyingValue(E a) {
+    [[nodiscard]] const auto GetUnderlyingValue(E a) {
         using underlying = std::underlying_type_t<E>;
         return static_cast<underlying>(a);
     }
@@ -68,7 +68,7 @@ namespace TypeUtils {
         constexpr bool is_dereferenceable_enum_v = is_dereferenceable_enum<E>::value;
 
         template<typename E, typename = std::enable_if_t<TypeUtils::is_scoped_enum_v<E>>>
-        const auto GetUnderlyingValues(E a, E b) {
+        [[nodiscard]] const auto GetUnderlyingValues(E a, E b) {
             using underlying = std::underlying_type_t<E>;
             return std::make_pair(static_cast<underlying>(a), static_cast<underlying>(b));
         }

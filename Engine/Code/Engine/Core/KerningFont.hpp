@@ -84,54 +84,54 @@ public:
     explicit KerningFont(Renderer& renderer) noexcept;
     ~KerningFont() = default;
 
-    static float CalculateTextWidth(const KerningFont& font, const std::string& text, float scale = 1.0f) noexcept;
-    static float CalculateTextHeight(const KerningFont& font, const std::string& text, float scale = 1.0f) noexcept;
+    [[nodiscard]] static float CalculateTextWidth(const KerningFont& font, const std::string& text, float scale = 1.0f) noexcept;
+    [[nodiscard]] static float CalculateTextHeight(const KerningFont& font, const std::string& text, float scale = 1.0f) noexcept;
 
-    float CalculateTextWidth(const std::string& text, float scale = 1.0f) const noexcept;
-    float CalculateTextHeight(const std::string& text, float scale = 1.0f) const noexcept;
+    [[nodiscard]] float CalculateTextWidth(const std::string& text, float scale = 1.0f) const noexcept;
+    [[nodiscard]] float CalculateTextHeight(const std::string& text, float scale = 1.0f) const noexcept;
 
-    float GetLineHeight() const noexcept;
-    float GetLineHeightAsUV() const noexcept;
+    [[nodiscard]] float GetLineHeight() const noexcept;
+    [[nodiscard]] float GetLineHeightAsUV() const noexcept;
 
-    const std::string& GetName() const noexcept;
-    KerningFont::CharDef GetCharDef(int ch) const noexcept;
-    const KerningFont::CommonDef& GetCommonDef() const noexcept;
-    const KerningFont::InfoDef& GetInfoDef() const noexcept;
+    [[nodiscard]] const std::string& GetName() const noexcept;
+    [[nodiscard]] KerningFont::CharDef GetCharDef(int ch) const noexcept;
+    [[nodiscard]] const KerningFont::CommonDef& GetCommonDef() const noexcept;
+    [[nodiscard]] const KerningFont::InfoDef& GetInfoDef() const noexcept;
 
-    const std::vector<std::string>& GetImagePaths() const noexcept;
-    const std::filesystem::path& GetFilePath() const noexcept;
-    bool LoadFromFile(std::filesystem::path filepath) noexcept;
-    bool LoadFromBuffer(const std::vector<unsigned char>& buffer) noexcept;
+    [[nodiscard]] const std::vector<std::string>& GetImagePaths() const noexcept;
+    [[nodiscard]] const std::filesystem::path& GetFilePath() const noexcept;
+    [[nodiscard]] bool LoadFromFile(std::filesystem::path filepath) noexcept;
+    [[nodiscard]] bool LoadFromBuffer(const std::vector<unsigned char>& buffer) noexcept;
 
-    Material* GetMaterial() const noexcept;
+    [[nodiscard]] Material* GetMaterial() const noexcept;
     void SetMaterial(Material* mat) noexcept;
 
-    int GetKerningValue(int first, int second) const noexcept;
+    [[nodiscard]] int GetKerningValue(int first, int second) const noexcept;
 
 protected:
 private:
-    static float CalculateLongestMultiline(const KerningFont& font, const std::string& text, float scale = 1.0f) noexcept;
-    float CalculateLongestMultiline(const std::string& text, float scale = 1.0f) const noexcept;
+    [[nodiscard]] static float CalculateLongestMultiline(const KerningFont& font, const std::string& text, float scale = 1.0f) noexcept;
+    [[nodiscard]] float CalculateLongestMultiline(const std::string& text, float scale = 1.0f) const noexcept;
 
-    bool LoadFromText(std::vector<unsigned char>& buffer) noexcept;
-    bool LoadFromXml(std::vector<unsigned char>& buffer) noexcept;
-    bool LoadFromBinary(std::vector<unsigned char>& buffer) noexcept;
+    [[nodiscard]] bool LoadFromText(std::vector<unsigned char>& buffer) noexcept;
+    [[nodiscard]] bool LoadFromXml(std::vector<unsigned char>& buffer) noexcept;
+    [[nodiscard]] bool LoadFromBinary(std::vector<unsigned char>& buffer) noexcept;
 
-    bool IsInfoLine(const std::string& cur_line) noexcept;
-    bool IsCommonLine(const std::string& cur_line) noexcept;
-    bool IsPageLine(const std::string& cur_line) noexcept;
-    bool IsCharsLine(const std::string& cur_line) noexcept;
-    bool IsCharLine(const std::string& cur_line) noexcept;
-    bool IsKerningsLine(const std::string& cur_line) noexcept;
-    bool IsKerningLine(const std::string& cur_line) noexcept;
+    [[nodiscard]] bool IsInfoLine(const std::string& cur_line) noexcept;
+    [[nodiscard]] bool IsCommonLine(const std::string& cur_line) noexcept;
+    [[nodiscard]] bool IsPageLine(const std::string& cur_line) noexcept;
+    [[nodiscard]] bool IsCharsLine(const std::string& cur_line) noexcept;
+    [[nodiscard]] bool IsCharLine(const std::string& cur_line) noexcept;
+    [[nodiscard]] bool IsKerningsLine(const std::string& cur_line) noexcept;
+    [[nodiscard]] bool IsKerningLine(const std::string& cur_line) noexcept;
 
-    bool ParseInfoLine(const std::string& infoLine) noexcept;
-    bool ParseCommonLine(const std::string& commonLine) noexcept;
-    bool ParsePageLine(const std::string& pageLine) noexcept;
-    bool ParseCharsLine(const std::string& charsLine) noexcept;
-    bool ParseCharLine(const std::string& charLine) noexcept;
-    bool ParseKerningsLine(const std::string& kerningsLine) noexcept;
-    bool ParseKerningLine(const std::string& kerningLine) noexcept;
+    [[nodiscard]] bool ParseInfoLine(const std::string& infoLine) noexcept;
+    [[nodiscard]] bool ParseCommonLine(const std::string& commonLine) noexcept;
+    [[nodiscard]] bool ParsePageLine(const std::string& pageLine) noexcept;
+    [[nodiscard]] bool ParseCharsLine(const std::string& charsLine) noexcept;
+    [[nodiscard]] bool ParseCharLine(const std::string& charLine) noexcept;
+    [[nodiscard]] bool ParseKerningsLine(const std::string& kerningsLine) noexcept;
+    [[nodiscard]] bool ParseKerningLine(const std::string& kerningLine) noexcept;
 
     Renderer& _renderer;
     Material* _material = nullptr;

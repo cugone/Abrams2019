@@ -37,7 +37,7 @@ Material::Material(Renderer& renderer, const XMLElement& element) noexcept
     std::size_t count = _renderer.GetMaterialCount();
     _name += "_" + std::to_string(count);
 
-    LoadFromXml(element);
+    GUARANTEE_OR_DIE(LoadFromXml(element), "Material constructor failed to load.");
 }
 
 bool Material::LoadFromXml(const XMLElement& element) noexcept {

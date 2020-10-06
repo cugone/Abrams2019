@@ -57,14 +57,14 @@ public:
     IntVector4& operator=(const IntVector4& rhs) = default;
     IntVector4& operator=(IntVector4&& rhs) = default;
 
-    bool operator==(const IntVector4& rhs) noexcept;
-    bool operator!=(const IntVector4& rhs) noexcept;
+    [[nodiscard]] bool operator==(const IntVector4& rhs) noexcept;
+    [[nodiscard]] bool operator!=(const IntVector4& rhs) noexcept;
 
-    IntVector2 GetXY() const noexcept;
-    IntVector2 GetZW() const noexcept;
+    [[nodiscard]] IntVector2 GetXY() const noexcept;
+    [[nodiscard]] IntVector2 GetZW() const noexcept;
 
     void SetXYZW(int newX, int newY, int newZ, int newW) noexcept;
-    std::tuple<int, int, int, int> GetXYZW() const noexcept;
+    [[nodiscard]] std::tuple<int, int, int, int> GetXYZW() const noexcept;
 
     int x = 0;
     int y = 0;

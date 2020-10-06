@@ -21,41 +21,41 @@ public:
 
     void Update(TimeUtils::FPSeconds deltaSeconds) noexcept;
 
-    const Vector2& GetPosition() const noexcept;
+    [[nodiscard]] const Vector2& GetPosition() const noexcept;
     void SetPosition(const Vector3& newPosition) noexcept;
     void SetPosition(const Vector2& newPosition) noexcept;
     void Translate(const Vector3& displacement) noexcept;
     void Translate(const Vector2& displacement) noexcept;
-    float GetOrientationDegrees() const noexcept;
+    [[nodiscard]] float GetOrientationDegrees() const noexcept;
     void SetOrientationDegrees(float newAngleDegrees) noexcept;
     void ApplyOrientationDegrees(float addAngleDegrees) noexcept;
-    float GetOrientation() const noexcept;
+    [[nodiscard]] float GetOrientation() const noexcept;
     void SetOrientation(float newAngleRadians) noexcept;
     void ApplyOrientation(float addAngleRadians) noexcept;
-    float GetAspectRatio() const noexcept;
-    float GetInverseAspectRatio() const noexcept;
-    float GetNearDistance() const noexcept;
-    float GetFarDistance() const noexcept;
+    [[nodiscard]] float GetAspectRatio() const noexcept;
+    [[nodiscard]] float GetInverseAspectRatio() const noexcept;
+    [[nodiscard]] float GetNearDistance() const noexcept;
+    [[nodiscard]] float GetFarDistance() const noexcept;
 
-    const Matrix4& GetViewMatrix() const noexcept;
-    const Matrix4& GetProjectionMatrix() const noexcept;
-    const Matrix4& GetViewProjectionMatrix() const noexcept;
+    [[nodiscard]] const Matrix4& GetViewMatrix() const noexcept;
+    [[nodiscard]] const Matrix4& GetProjectionMatrix() const noexcept;
+    [[nodiscard]] const Matrix4& GetViewProjectionMatrix() const noexcept;
 
-    const Matrix4& GetInverseViewMatrix() const noexcept;
-    const Matrix4& GetInverseProjectionMatrix() const noexcept;
-    const Matrix4& GetInverseViewProjectionMatrix() const noexcept;
+    [[nodiscard]] const Matrix4& GetInverseViewMatrix() const noexcept;
+    [[nodiscard]] const Matrix4& GetInverseProjectionMatrix() const noexcept;
+    [[nodiscard]] const Matrix4& GetInverseViewProjectionMatrix() const noexcept;
 
-    const RenderTargetStack::Node& GetRenderTarget() const noexcept;
-    RenderTargetStack::Node& GetRenderTarget() noexcept;
+    [[nodiscard]] const RenderTargetStack::Node& GetRenderTarget() const noexcept;
+    [[nodiscard]] RenderTargetStack::Node& GetRenderTarget() noexcept;
 
-    Vector2 GetViewDimensions() const noexcept;
-    float GetViewHeight() const noexcept;
-    float GetViewWidth() const noexcept;
+    [[nodiscard]] Vector2 GetViewDimensions() const noexcept;
+    [[nodiscard]] float GetViewHeight() const noexcept;
+    [[nodiscard]] float GetViewWidth() const noexcept;
 
-    float GetShake() const noexcept;
+    [[nodiscard]] float GetShake() const noexcept;
 
-    static Vector2 WindowToWorldPoint(const Camera2D& camera, const Vector2& screenPoint) noexcept;
-    Vector2 WindowToWorldPoint(const Vector2& screenPoint) const noexcept;
+    [[nodiscard]] static Vector2 WindowToWorldPoint(const Camera2D& camera, const Vector2& screenPoint) noexcept;
+    [[nodiscard]] Vector2 WindowToWorldPoint(const Vector2& screenPoint) const noexcept;
 
     float trauma = 0.0f;
     float trauma_recovery_rate = 1.0f;

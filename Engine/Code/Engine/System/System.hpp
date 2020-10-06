@@ -17,10 +17,10 @@ struct SystemDesc {
 
 std::ostream& operator<<(std::ostream& out, const SystemDesc& desc) noexcept;
 
-SystemDesc GetSystemDesc() noexcept;
+[[nodiscard]] SystemDesc GetSystemDesc() noexcept;
 
 } // namespace System
 
 namespace StringUtils {
-std::string to_string(const System::SystemDesc& system) noexcept;
+[[nodiscard]] std::string to_string(const System::SystemDesc& system) noexcept;
 }

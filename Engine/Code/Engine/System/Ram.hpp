@@ -10,6 +10,6 @@ struct RamDesc {
 };
 std::ostream& operator<<(std::ostream& out, const RamDesc& desc) noexcept;
 
-RamDesc GetRamDesc() noexcept;
+[[nodiscard]] RamDesc GetRamDesc() noexcept;
 
 } // namespace System::Ram

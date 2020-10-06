@@ -25,7 +25,7 @@ public:
     int zOrder{};
     bool autoSize{false};
     void CalcPivot() override;
-    Vector2 CalcPosition() const override;
+    [[nodiscard]] Vector2 CalcPosition() const override;
 };
 
 class Canvas : public Panel {
@@ -39,15 +39,15 @@ public:
     void SetupMVPFromViewportAndCamera(Renderer& renderer) const;
     void DebugRender(Renderer& renderer) const override;
     void EndFrame() override;
-    const Camera2D& GetUICamera() const;
+    [[nodiscard]] const Camera2D& GetUICamera() const;
 
     void UpdateChildren(TimeUtils::FPSeconds deltaSeconds) override;
     void RenderChildren(Renderer& renderer) const override;
 
-    const Renderer& GetRenderer() const;
-    Renderer& GetRenderer();
+    [[nodiscard]] const Renderer& GetRenderer() const;
+    [[nodiscard]] Renderer& GetRenderer();
 
-    static Vector4 AnchorTextToAnchorValues(const std::string& text) noexcept;
+    [[nodiscard]] static Vector4 AnchorTextToAnchorValues(const std::string& text) noexcept;
 
     CanvasSlot* AddChild(Element* child) override;
     CanvasSlot* AddChildAt(Element* child, std::size_t index) override;
@@ -58,18 +58,18 @@ public:
     void RemoveChild(Element* child) override;
     void RemoveAllChildren() override;
 
-    Vector4 CalcDesiredSize() const noexcept override;
+    [[nodiscard]] Vector4 CalcDesiredSize() const noexcept override;
 
 protected:
-    AABB2 CalcChildrenDesiredBounds() const override;
+    [[nodiscard]] AABB2 CalcChildrenDesiredBounds() const override;
     void ArrangeChildren() noexcept override;
 
 private:
     void ReorderAllChildren();
 
-    bool LoadFromXml(const XMLElement& elem) noexcept;
-    std::pair<Vector2, float> CalcDimensionsAndAspectRatio() const;
-    AABB2 CalcAlignedAbsoluteBounds() const noexcept;
+    [[nodiscard]] bool LoadFromXml(const XMLElement& elem) noexcept;
+    [[nodiscard]] std::pair<Vector2, float> CalcDimensionsAndAspectRatio() const;
+    [[nodiscard]] AABB2 CalcAlignedAbsoluteBounds() const noexcept;
 
     mutable Camera2D _camera{};
     Renderer& _renderer;

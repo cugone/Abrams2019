@@ -38,25 +38,25 @@ public:
         Right,
         Both
     };
-    const Vector2& GetLeftThumbPosition() const noexcept;
-    const Vector2& GetRightThumbPosition() const noexcept;
+    [[nodiscard]] const Vector2& GetLeftThumbPosition() const noexcept;
+    [[nodiscard]] const Vector2& GetRightThumbPosition() const noexcept;
 
-    float GetLeftTriggerPosition() const noexcept;
-    float GetRightTriggerPosition() const noexcept;
+    [[nodiscard]] float GetLeftTriggerPosition() const noexcept;
+    [[nodiscard]] float GetRightTriggerPosition() const noexcept;
 
-    bool IsButtonUp(const Button& button) const noexcept;
-    bool WasButtonJustPressed(const Button& button) const noexcept;
-    bool IsButtonDown(const Button& button) const noexcept;
-    bool WasButtonJustReleased(const Button& button) const noexcept;
+    [[nodiscard]] bool IsButtonUp(const Button& button) const noexcept;
+    [[nodiscard]] bool WasButtonJustPressed(const Button& button) const noexcept;
+    [[nodiscard]] bool IsButtonDown(const Button& button) const noexcept;
+    [[nodiscard]] bool WasButtonJustReleased(const Button& button) const noexcept;
 
-    bool WasJustConnected() const noexcept;
-    bool IsConnected() const noexcept;
-    bool WasJustDisconnected() const noexcept;
-    bool IsDisconnected() const noexcept;
+    [[nodiscard]] bool WasJustConnected() const noexcept;
+    [[nodiscard]] bool IsConnected() const noexcept;
+    [[nodiscard]] bool WasJustDisconnected() const noexcept;
+    [[nodiscard]] bool IsDisconnected() const noexcept;
 
-    bool WasAnyButtonJustPressed() const noexcept;
-    bool WasAnyButtonJustReleased() const noexcept;
-    bool IsAnyButtonDown() const noexcept;
+    [[nodiscard]] bool WasAnyButtonJustPressed() const noexcept;
+    [[nodiscard]] bool WasAnyButtonJustReleased() const noexcept;
+    [[nodiscard]] bool IsAnyButtonDown() const noexcept;
 
     void Update(int controller_number) noexcept;
 
@@ -90,7 +90,7 @@ private:
     void UpdateState() noexcept;
     void SetMotorSpeed(int controller_number, const Motor& motor, unsigned short value) noexcept;
 
-    bool DidMotorStateChange() const noexcept;
+    [[nodiscard]] bool DidMotorStateChange() const noexcept;
 
     enum class ActiveState {
         Connected,

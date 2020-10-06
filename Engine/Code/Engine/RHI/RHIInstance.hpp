@@ -12,10 +12,10 @@ class Renderer;
 
 class RHIInstance {
 public:
-    static RHIInstance* const CreateInstance() noexcept;
+    [[nodiscard]] static RHIInstance* const CreateInstance() noexcept;
     static void DestroyInstance() noexcept;
 
-    std::unique_ptr<RHIDevice> CreateDevice(Renderer& renderer) const noexcept;
+    [[nodiscard]] std::unique_ptr<RHIDevice> CreateDevice(Renderer& renderer) const noexcept;
     static void ReportLiveObjects() noexcept;
 
 protected:

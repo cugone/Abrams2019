@@ -49,8 +49,8 @@ public:
     void Draw(std::size_t vertexCount, std::size_t startVertex = 0) noexcept;
     void DrawIndexed(std::size_t vertexCount, std::size_t startVertex = 0, std::size_t baseVertexLocation = 0) noexcept;
 
-    const RHIDevice* GetParentDevice() const noexcept;
-    ID3D11DeviceContext* GetDxContext() noexcept;
+    [[nodiscard]] const RHIDevice* GetParentDevice() const noexcept;
+    [[nodiscard]] ID3D11DeviceContext* GetDxContext() noexcept;
 
     void UnbindAllShaderResources() noexcept;
     void UnbindAllConstantBuffers() noexcept;

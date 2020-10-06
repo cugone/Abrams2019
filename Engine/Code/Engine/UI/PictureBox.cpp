@@ -1,5 +1,6 @@
 #include "Engine/UI/PictureBox.hpp"
 
+#include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/FileUtils.hpp"
 
 #include "Engine/Renderer/AnimatedSprite.hpp"
@@ -18,7 +19,7 @@ PictureBox::PictureBox(Panel* parent /*= nullptr*/)
 PictureBox::PictureBox(const XMLElement& elem, Panel* parent /*= nullptr*/)
 : Element(parent)
 {
-    LoadFromXml(elem);
+    GUARANTEE_OR_DIE(!LoadFromXml(elem), "PictureBox constructor failed to load.");
 }
 
 void PictureBox::SetImage(std::unique_ptr<AnimatedSprite> sprite) noexcept {
@@ -64,12 +65,13 @@ Vector4 PictureBox::CalcDesiredSize() const noexcept {
 bool PictureBox::LoadFromXml(const XMLElement& elem) noexcept {
     DataUtils::ValidateXmlElement(elem, "picturebox", "", "name,src", "");
     _name = DataUtils::ParseXmlAttribute(elem, "name", _name);
-    const auto src = DataUtils::ParseXmlAttribute(elem, "src", "");
-    FileUtils::IsSafeReadPath(src);
-    if(const auto* parent = GetParent()) {
-        _sprite = parent->GetOwningWidget()->GetRenderer().CreateAnimatedSprite(src);
+    if(const auto src = DataUtils::ParseXmlAttribute(elem, "src", ""); FileUtils::IsSafeReadPath(src)) {
+        if(const auto* parent = GetParent()) {
+            _sprite = parent->GetOwningWidget()->GetRenderer().CreateAnimatedSprite(src);
+            return true;
+        }
     }
-    return true;
+    return false;
 }
 
 

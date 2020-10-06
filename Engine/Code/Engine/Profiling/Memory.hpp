@@ -115,7 +115,7 @@ public:
 #endif
     }
 
-    static bool is_enabled() noexcept {
+    [[nodiscard]] static bool is_enabled() noexcept {
 #ifdef TRACK_MEMORY
         return _active;
 #else
@@ -168,11 +168,11 @@ public:
 #endif
     }
 
-    static status_t status() noexcept {
+    [[nodiscard]] static status_t status() noexcept {
         return {allocCount - freeCount, allocSize - freeSize};
     }
 
-    static status_frame_t frame_status() noexcept {
+    [[nodiscard]] static status_frame_t frame_status() noexcept {
         return {frameCounter, frameCount - framefreeCount, frameSize - framefreeSize};
     }
 

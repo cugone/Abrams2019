@@ -2,7 +2,7 @@
 
 Clipboard::Clipboard(void* hwnd) noexcept
 : _hwnd(static_cast<HWND>(hwnd)) {
-    Open(_hwnd);
+    (void)Open(_hwnd); //Used as a helper here. All other uses check if the clipboard is open first.
 }
 
 Clipboard::~Clipboard() noexcept {

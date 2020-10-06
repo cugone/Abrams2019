@@ -24,22 +24,22 @@ public:
     void Notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept override;
     void DebugRender(Renderer& renderer) const noexcept override;
 
-    bool IsNotAttached() const noexcept override;
+    [[nodiscard]] bool IsNotAttached() const noexcept override;
     void Attach(RigidBody* a, RigidBody* b, Vector2 localAnchorA = Vector2::ZERO, Vector2 localAnchorB = Vector2::ZERO) noexcept override;
     void Detach(const RigidBody* body) noexcept override;
     void DetachAll() noexcept override;
 
-    RigidBody* GetBodyA() const noexcept override;
-    RigidBody* GetBodyB() const noexcept override;
-    Vector2 GetAnchorA() const noexcept override;
-    Vector2 GetAnchorB() const noexcept override;
+    [[nodiscard]] RigidBody* GetBodyA() const noexcept override;
+    [[nodiscard]] RigidBody* GetBodyB() const noexcept override;
+    [[nodiscard]] Vector2 GetAnchorA() const noexcept override;
+    [[nodiscard]] Vector2 GetAnchorB() const noexcept override;
 
-    float GetMassA() const noexcept override;
-    float GetMassB() const noexcept override;
+    [[nodiscard]] float GetMassA() const noexcept override;
+    [[nodiscard]] float GetMassB() const noexcept override;
 
 protected:
 private:
-    bool ConstraintViolated() const noexcept override;
+    [[nodiscard]] bool ConstraintViolated() const noexcept override;
     void SolvePositionConstraint() const noexcept override;
     void SolveVelocityConstraint() const noexcept override;
 

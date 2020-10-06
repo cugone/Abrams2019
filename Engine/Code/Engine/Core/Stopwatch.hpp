@@ -18,10 +18,10 @@ public:
 
     void SetSeconds(const TimeUtils::FPSeconds& seconds) noexcept;
     void SetFrequency(unsigned int hz) noexcept;
-    bool Check() const noexcept;
-    bool CheckAndDecrement() noexcept;
-    bool CheckAndReset() noexcept;
-    unsigned int DecrementAll() noexcept;
+    [[nodiscard]] bool Check() const noexcept;
+    [[nodiscard]] bool CheckAndDecrement() noexcept;
+    [[nodiscard]] bool CheckAndReset() noexcept;
+    [[nodiscard]] unsigned int DecrementAll() noexcept;
     void Reset() noexcept;
 
 private:

@@ -18,7 +18,7 @@ public:
 
     virtual ~Texture3D() noexcept = default;
 
-    virtual ID3D11Resource* GetDxResource() const noexcept override;
+    [[nodiscard]] virtual ID3D11Resource* GetDxResource() const noexcept override;
 
 protected:
 private:

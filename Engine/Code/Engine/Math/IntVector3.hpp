@@ -37,40 +37,40 @@ public:
     IntVector3& operator=(const IntVector3& rhs) = default;
     IntVector3& operator=(IntVector3&& rhs) = default;
 
-    IntVector3 operator+(const IntVector3& rhs) const noexcept;
+    [[nodiscard]] IntVector3 operator+(const IntVector3& rhs) const noexcept;
     IntVector3& operator+=(const IntVector3& rhs) noexcept;
 
-    IntVector3 operator-() const noexcept;
-    IntVector3 operator-(const IntVector3& rhs) const noexcept;
+    [[nodiscard]] IntVector3 operator-() const noexcept;
+    [[nodiscard]] IntVector3 operator-(const IntVector3& rhs) const noexcept;
     IntVector3& operator-=(const IntVector3& rhs) noexcept;
 
     friend IntVector3 operator*(int lhs, const IntVector3& rhs) noexcept;
-    IntVector3 operator*(const IntVector3& rhs) const noexcept;
+    [[nodiscard]] IntVector3 operator*(const IntVector3& rhs) const noexcept;
     IntVector3& operator*=(const IntVector3& rhs) noexcept;
-    IntVector3 operator*(int scalar) const noexcept;
+    [[nodiscard]] IntVector3 operator*(int scalar) const noexcept;
     IntVector3& operator*=(int scalar) noexcept;
-    IntVector3 operator*(float scalar) const noexcept;
+    [[nodiscard]] IntVector3 operator*(float scalar) const noexcept;
     IntVector3& operator*=(float scalar) noexcept;
 
-    IntVector3 operator/(const IntVector3& rhs) const noexcept;
+    [[nodiscard]] IntVector3 operator/(const IntVector3& rhs) const noexcept;
     IntVector3& operator/=(const IntVector3& rhs) noexcept;
-    IntVector3 operator/(int scalar) const noexcept;
+    [[nodiscard]] IntVector3 operator/(int scalar) const noexcept;
     IntVector3& operator/=(int scalar) noexcept;
-    IntVector3 operator/(float scalar) const noexcept;
+    [[nodiscard]] IntVector3 operator/(float scalar) const noexcept;
     IntVector3& operator/=(float scalar) noexcept;
 
-    bool operator==(const IntVector3& rhs) const noexcept;
-    bool operator!=(const IntVector3& rhs) const noexcept;
-    bool operator<(const IntVector3& rhs) const noexcept;
-    bool operator>=(const IntVector3& rhs) const noexcept;
-    bool operator>(const IntVector3& rhs) const noexcept;
-    bool operator<=(const IntVector3& rhs) const noexcept;
+    [[nodiscard]] bool operator==(const IntVector3& rhs) const noexcept;
+    [[nodiscard]] bool operator!=(const IntVector3& rhs) const noexcept;
+    [[nodiscard]] bool operator<(const IntVector3& rhs) const noexcept;
+    [[nodiscard]] bool operator>=(const IntVector3& rhs) const noexcept;
+    [[nodiscard]] bool operator>(const IntVector3& rhs) const noexcept;
+    [[nodiscard]] bool operator<=(const IntVector3& rhs) const noexcept;
 
     friend std::ostream& operator<<(std::ostream& out_stream, const IntVector3& v) noexcept;
     friend std::istream& operator>>(std::istream& in_stream, IntVector3& v) noexcept;
 
     void SetXYZ(int newX, int newY, int newZ) noexcept;
-    std::tuple<int, int, int> GetXYZ() const noexcept;
+    [[nodiscard]] std::tuple<int, int, int> GetXYZ() const noexcept;
 
     int x = 0;
     int y = 0;

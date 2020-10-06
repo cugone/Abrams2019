@@ -8,7 +8,7 @@ public:
     Vector3 direction;
 
     void SetDirection(const Vector3& newDirection) noexcept;
-    Vector3 Interpolate(float t);
+    [[nodiscard]] Vector3 Interpolate(float t);
 
 protected:
 private:

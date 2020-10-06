@@ -34,5 +34,5 @@ private:
     std::stack<RenderTargetStack::Node, std::vector<RenderTargetStack::Node>> _stack{};
 };
 
-bool operator==(const RenderTargetStack::Node& lhs, const RenderTargetStack::Node& rhs);
-bool operator!=(const RenderTargetStack::Node& lhs, const RenderTargetStack::Node& rhs);
+[[nodiscard]] bool operator==(const RenderTargetStack::Node& lhs, const RenderTargetStack::Node& rhs);
+[[nodiscard]] bool operator!=(const RenderTargetStack::Node& lhs, const RenderTargetStack::Node& rhs);

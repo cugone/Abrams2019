@@ -16,62 +16,62 @@ public:
     static const Matrix4 I;
     [[deprecated("Use Matrix::I instead.")]] static Matrix4 GetIdentity() noexcept;
 
-    static Matrix4 CreateTranslationMatrix(const Vector2& position) noexcept;
-    static Matrix4 CreateTranslationMatrix(const Vector3& position) noexcept;
+    [[nodiscard]] static Matrix4 CreateTranslationMatrix(const Vector2& position) noexcept;
+    [[nodiscard]] static Matrix4 CreateTranslationMatrix(const Vector3& position) noexcept;
 
-    static Matrix4 Create2DRotationDegreesMatrix(float angleDegrees) noexcept;
-    static Matrix4 Create3DXRotationDegreesMatrix(float angleDegrees) noexcept;
-    static Matrix4 Create3DYRotationDegreesMatrix(float angleDegrees) noexcept;
-    static Matrix4 Create3DZRotationDegreesMatrix(float angleDegrees) noexcept;
+    [[nodiscard]] static Matrix4 Create2DRotationDegreesMatrix(float angleDegrees) noexcept;
+    [[nodiscard]] static Matrix4 Create3DXRotationDegreesMatrix(float angleDegrees) noexcept;
+    [[nodiscard]] static Matrix4 Create3DYRotationDegreesMatrix(float angleDegrees) noexcept;
+    [[nodiscard]] static Matrix4 Create3DZRotationDegreesMatrix(float angleDegrees) noexcept;
 
-    static Matrix4 CreateZYXRotationMatrix(const Vector3& pitchYawRollRadians) noexcept;
-    static Matrix4 CreateZYXRotationMatrix(float pitchRadians, float yawRadians, float rollRadians) noexcept;
-    static Matrix4 CreateZYXRotationMatrixDegrees(const Vector3& anglesDegrees) noexcept;
-    static Matrix4 CreateZYXRotationMatrixDegrees(float pitchDegrees, float yawDegrees, float rollDegrees) noexcept;
-    static Matrix4 CreateRotationRollYawPitchMatrix(const Vector3& pitchYawRollRadians) noexcept;
-    static Matrix4 CreateRotationRollYawPitchMatrix(float pitchRadians, float yawRadians, float rollRadians) noexcept;
-    static Matrix4 CreateRotationRollYawPitchMatrixDegrees(const Vector3& pitchYawRollDegrees) noexcept;
-    static Matrix4 CreateRotationRollYawPitchMatrixDegrees(float pitchDegrees, float yawDegrees, float rollDegrees) noexcept;
+    [[nodiscard]] static Matrix4 CreateZYXRotationMatrix(const Vector3& pitchYawRollRadians) noexcept;
+    [[nodiscard]] static Matrix4 CreateZYXRotationMatrix(float pitchRadians, float yawRadians, float rollRadians) noexcept;
+    [[nodiscard]] static Matrix4 CreateZYXRotationMatrixDegrees(const Vector3& anglesDegrees) noexcept;
+    [[nodiscard]] static Matrix4 CreateZYXRotationMatrixDegrees(float pitchDegrees, float yawDegrees, float rollDegrees) noexcept;
+    [[nodiscard]] static Matrix4 CreateRotationRollYawPitchMatrix(const Vector3& pitchYawRollRadians) noexcept;
+    [[nodiscard]] static Matrix4 CreateRotationRollYawPitchMatrix(float pitchRadians, float yawRadians, float rollRadians) noexcept;
+    [[nodiscard]] static Matrix4 CreateRotationRollYawPitchMatrixDegrees(const Vector3& pitchYawRollDegrees) noexcept;
+    [[nodiscard]] static Matrix4 CreateRotationRollYawPitchMatrixDegrees(float pitchDegrees, float yawDegrees, float rollDegrees) noexcept;
 
-    static Matrix4 CreateZXYRotationMatrix(const Vector3& pitchYawRollRadians) noexcept;
-    static Matrix4 CreateZXYRotationMatrix(float pitchRadians, float yawRadians, float rollRadians) noexcept;
-    static Matrix4 CreateZXYRotationMatrixDegrees(const Vector3& anglesDegrees) noexcept;
-    static Matrix4 CreateZXYRotationMatrixDegrees(float pitchDegrees, float yawDegrees, float rollDegrees) noexcept;
-    static Matrix4 CreateRotationRollPitchYawMatrix(const Vector3& pitchYawRollRadians) noexcept;
-    static Matrix4 CreateRotationRollPitchYawMatrix(float pitchRadians, float yawRadians, float rollRadians) noexcept;
-    static Matrix4 CreateRotationRollPitchYawMatrixDegrees(const Vector3& pitchYawRollDegrees) noexcept;
-    static Matrix4 CreateRotationRollPitchYawMatrixDegrees(float pitchDegrees, float yawDegrees, float rollDegrees) noexcept;
+    [[nodiscard]] static Matrix4 CreateZXYRotationMatrix(const Vector3& pitchYawRollRadians) noexcept;
+    [[nodiscard]] static Matrix4 CreateZXYRotationMatrix(float pitchRadians, float yawRadians, float rollRadians) noexcept;
+    [[nodiscard]] static Matrix4 CreateZXYRotationMatrixDegrees(const Vector3& anglesDegrees) noexcept;
+    [[nodiscard]] static Matrix4 CreateZXYRotationMatrixDegrees(float pitchDegrees, float yawDegrees, float rollDegrees) noexcept;
+    [[nodiscard]] static Matrix4 CreateRotationRollPitchYawMatrix(const Vector3& pitchYawRollRadians) noexcept;
+    [[nodiscard]] static Matrix4 CreateRotationRollPitchYawMatrix(float pitchRadians, float yawRadians, float rollRadians) noexcept;
+    [[nodiscard]] static Matrix4 CreateRotationRollPitchYawMatrixDegrees(const Vector3& pitchYawRollDegrees) noexcept;
+    [[nodiscard]] static Matrix4 CreateRotationRollPitchYawMatrixDegrees(float pitchDegrees, float yawDegrees, float rollDegrees) noexcept;
 
-    static Matrix4 CreateYZXRotationMatrix(const Vector3& pitchYawRollRadians) noexcept;
-    static Matrix4 CreateYZXRotationMatrix(float pitchRadians, float yawRadians, float rollRadians) noexcept;
-    static Matrix4 CreateYZXRotationMatrixDegrees(const Vector3& anglesDegrees) noexcept;
-    static Matrix4 CreateYZXRotationMatrixDegrees(float pitchDegrees, float yawDegrees, float rollDegrees) noexcept;
-    static Matrix4 CreateRotationYawRollPitchMatrix(const Vector3& pitchYawRollRadians) noexcept;
-    static Matrix4 CreateRotationYawRollPitchMatrix(float pitchRadians, float yawRadians, float rollRadians) noexcept;
-    static Matrix4 CreateRotationYawRollPitchMatrixDegrees(const Vector3& pitchYawRollDegrees) noexcept;
-    static Matrix4 CreateRotationYawRollPitchMatrixDegrees(float pitchDegrees, float yawDegrees, float rollDegrees) noexcept;
+    [[nodiscard]] static Matrix4 CreateYZXRotationMatrix(const Vector3& pitchYawRollRadians) noexcept;
+    [[nodiscard]] static Matrix4 CreateYZXRotationMatrix(float pitchRadians, float yawRadians, float rollRadians) noexcept;
+    [[nodiscard]] static Matrix4 CreateYZXRotationMatrixDegrees(const Vector3& anglesDegrees) noexcept;
+    [[nodiscard]] static Matrix4 CreateYZXRotationMatrixDegrees(float pitchDegrees, float yawDegrees, float rollDegrees) noexcept;
+    [[nodiscard]] static Matrix4 CreateRotationYawRollPitchMatrix(const Vector3& pitchYawRollRadians) noexcept;
+    [[nodiscard]] static Matrix4 CreateRotationYawRollPitchMatrix(float pitchRadians, float yawRadians, float rollRadians) noexcept;
+    [[nodiscard]] static Matrix4 CreateRotationYawRollPitchMatrixDegrees(const Vector3& pitchYawRollDegrees) noexcept;
+    [[nodiscard]] static Matrix4 CreateRotationYawRollPitchMatrixDegrees(float pitchDegrees, float yawDegrees, float rollDegrees) noexcept;
 
-    static Matrix4 Create2DRotationMatrix(float angleRadians) noexcept;
-    static Matrix4 Create3DXRotationMatrix(float angleRadians) noexcept;
-    static Matrix4 Create3DYRotationMatrix(float angleRadians) noexcept;
-    static Matrix4 Create3DZRotationMatrix(float angleRadians) noexcept;
-    static Matrix4 CreateScaleMatrix(float scale) noexcept;
-    static Matrix4 CreateScaleMatrix(const Vector2& scale) noexcept;
-    static Matrix4 CreateScaleMatrix(const Vector3& scale) noexcept;
-    static Matrix4 CreateTransposeMatrix(const Matrix4& mat) noexcept;
-    static Matrix4 CreatePerspectiveProjectionMatrix(float top, float bottom, float right, float left, float nearZ, float farZ) noexcept;
-    static Matrix4 CreateHPerspectiveProjectionMatrix(float fov, float aspect_ratio, float nearZ, float farZ) noexcept;
-    static Matrix4 CreateVPerspectiveProjectionMatrix(float fov, float aspect_ratio, float nearZ, float farZ) noexcept;
-    static Matrix4 CreateDXOrthographicProjection(float nx, float fx, float ny, float fy, float nz, float fz) noexcept;
-    static Matrix4 CreateDXOrthographicProjection(const AABB3& extents) noexcept;
-    static Matrix4 CreateDXPerspectiveProjection(float vfovDegrees, float aspect, float nz, float fz) noexcept;
-    static Matrix4 CreateOrthographicProjectionMatrix(float top, float bottom, float right, float left, float nearZ, float farZ) noexcept;
-    static Matrix4 CreateLookAtMatrix(const Vector3& cameraPosition, const Vector3& lookAt, const Vector3& worldUp) noexcept;
-    static Matrix4 CalculateChangeOfBasisMatrix(const Matrix4& output_basis, const Matrix4& input_basis = Matrix4::GetIdentity()) noexcept;
+    [[nodiscard]] static Matrix4 Create2DRotationMatrix(float angleRadians) noexcept;
+    [[nodiscard]] static Matrix4 Create3DXRotationMatrix(float angleRadians) noexcept;
+    [[nodiscard]] static Matrix4 Create3DYRotationMatrix(float angleRadians) noexcept;
+    [[nodiscard]] static Matrix4 Create3DZRotationMatrix(float angleRadians) noexcept;
+    [[nodiscard]] static Matrix4 CreateScaleMatrix(float scale) noexcept;
+    [[nodiscard]] static Matrix4 CreateScaleMatrix(const Vector2& scale) noexcept;
+    [[nodiscard]] static Matrix4 CreateScaleMatrix(const Vector3& scale) noexcept;
+    [[nodiscard]] static Matrix4 CreateTransposeMatrix(const Matrix4& mat) noexcept;
+    [[nodiscard]] static Matrix4 CreatePerspectiveProjectionMatrix(float top, float bottom, float right, float left, float nearZ, float farZ) noexcept;
+    [[nodiscard]] static Matrix4 CreateHPerspectiveProjectionMatrix(float fov, float aspect_ratio, float nearZ, float farZ) noexcept;
+    [[nodiscard]] static Matrix4 CreateVPerspectiveProjectionMatrix(float fov, float aspect_ratio, float nearZ, float farZ) noexcept;
+    [[nodiscard]] static Matrix4 CreateDXOrthographicProjection(float nx, float fx, float ny, float fy, float nz, float fz) noexcept;
+    [[nodiscard]] static Matrix4 CreateDXOrthographicProjection(const AABB3& extents) noexcept;
+    [[nodiscard]] static Matrix4 CreateDXPerspectiveProjection(float vfovDegrees, float aspect, float nz, float fz) noexcept;
+    [[nodiscard]] static Matrix4 CreateOrthographicProjectionMatrix(float top, float bottom, float right, float left, float nearZ, float farZ) noexcept;
+    [[nodiscard]] static Matrix4 CreateLookAtMatrix(const Vector3& cameraPosition, const Vector3& lookAt, const Vector3& worldUp) noexcept;
+    [[nodiscard]] static Matrix4 CalculateChangeOfBasisMatrix(const Matrix4& output_basis, const Matrix4& input_basis = Matrix4::GetIdentity()) noexcept;
 
-    static Matrix4 MakeSRT(const Matrix4& S, const Matrix4& R, const Matrix4& T) noexcept;
-    static Matrix4 MakeRT(const Matrix4& R, const Matrix4& T) noexcept;
-    static Matrix4 MakeViewProjection(const Matrix4& viewMatrix, const Matrix4& projectionMatrix) noexcept;
+    [[nodiscard]] static Matrix4 MakeSRT(const Matrix4& S, const Matrix4& R, const Matrix4& T) noexcept;
+    [[nodiscard]] static Matrix4 MakeRT(const Matrix4& R, const Matrix4& T) noexcept;
+    [[nodiscard]] static Matrix4 MakeViewProjection(const Matrix4& viewMatrix, const Matrix4& projectionMatrix) noexcept;
 
     Matrix4() = default;
     explicit Matrix4(const std::string& value) noexcept;
@@ -89,19 +89,19 @@ public:
 
     void Identity() noexcept;
     void Transpose() noexcept;
-    float CalculateTrace() const noexcept;
-    float CalculateTrace() noexcept;
-    Vector4 GetDiagonal() const noexcept;
-    static Vector4 GetDiagonal(const Matrix4& mat) noexcept;
+    [[nodiscard]] float CalculateTrace() const noexcept;
+    [[nodiscard]] float CalculateTrace() noexcept;
+    [[nodiscard]] Vector4 GetDiagonal() const noexcept;
+    [[nodiscard]] static Vector4 GetDiagonal(const Matrix4& mat) noexcept;
 
-    bool IsInvertable() const noexcept;
-    bool IsSingular() const noexcept;
+    [[nodiscard]] bool IsInvertable() const noexcept;
+    [[nodiscard]] bool IsSingular() const noexcept;
 
     void CalculateInverse() noexcept;
-    static float CalculateDeterminant(const Matrix4& mat) noexcept;
-    float CalculateDeterminant() const noexcept;
-    float CalculateDeterminant() noexcept;
-    static Matrix4 CalculateInverse(const Matrix4& mat) noexcept;
+    [[nodiscard]] static float CalculateDeterminant(const Matrix4& mat) noexcept;
+    [[nodiscard]] float CalculateDeterminant() const noexcept;
+    [[nodiscard]] float CalculateDeterminant() noexcept;
+    [[nodiscard]] static Matrix4 CalculateInverse(const Matrix4& mat) noexcept;
 
     void OrthoNormalizeIKJ() noexcept;
     void OrthoNormalizeIJK() noexcept;
@@ -126,93 +126,93 @@ public:
     void Rotate2DRadians(float radians) noexcept;
 
     void ConcatenateTransform(const Matrix4& other) noexcept;
-    Matrix4 GetTransformed(const Matrix4& other) const noexcept;
+    [[nodiscard]] Matrix4 GetTransformed(const Matrix4& other) const noexcept;
 
-    Vector2 TransformPosition(const Vector2& position) const noexcept;
-    Vector2 TransformDirection(const Vector2& direction) const noexcept;
+    [[nodiscard]] Vector2 TransformPosition(const Vector2& position) const noexcept;
+    [[nodiscard]] Vector2 TransformDirection(const Vector2& direction) const noexcept;
 
-    Vector3 TransformPosition(const Vector3& position) const noexcept;
-    Vector3 TransformDirection(const Vector3& direction) const noexcept;
+    [[nodiscard]] Vector3 TransformPosition(const Vector3& position) const noexcept;
+    [[nodiscard]] Vector3 TransformDirection(const Vector3& direction) const noexcept;
 
-    Vector4 TransformVector(const Vector4& homogeneousVector) const noexcept;
-    Vector3 TransformVector(const Vector3& homogeneousVector) const noexcept;
-    Vector2 TransformVector(const Vector2& homogeneousVector) const noexcept;
+    [[nodiscard]] Vector4 TransformVector(const Vector4& homogeneousVector) const noexcept;
+    [[nodiscard]] Vector3 TransformVector(const Vector3& homogeneousVector) const noexcept;
+    [[nodiscard]] Vector2 TransformVector(const Vector2& homogeneousVector) const noexcept;
 
-    const float* GetAsFloatArray() const noexcept;
-    float* GetAsFloatArray() noexcept;
+    [[nodiscard]] const float* GetAsFloatArray() const noexcept;
+    [[nodiscard]] float* GetAsFloatArray() noexcept;
 
-    Vector3 GetTranslation() const noexcept;
-    Vector3 GetTranslation() noexcept;
+    [[nodiscard]] Vector3 GetTranslation() const noexcept;
+    [[nodiscard]] Vector3 GetTranslation() noexcept;
 
-    Vector3 GetScale() const noexcept;
-    Vector3 GetScale() noexcept;
+    [[nodiscard]] Vector3 GetScale() const noexcept;
+    [[nodiscard]] Vector3 GetScale() noexcept;
 
-    Matrix4 GetRotation() const noexcept;
-    Matrix4 GetRotation() noexcept;
+    [[nodiscard]] Matrix4 GetRotation() const noexcept;
+    [[nodiscard]] Matrix4 GetRotation() noexcept;
 
-    Vector3 CalcEulerAngles() const noexcept;
+    [[nodiscard]] Vector3 CalcEulerAngles() const noexcept;
 
     //SRTs must be calculated as T * R * S
-    Matrix4 operator*(const Matrix4& rhs) const noexcept;
-    Vector4 operator*(const Vector4& rhs) const noexcept;
+    [[nodiscard]] Matrix4 operator*(const Matrix4& rhs) const noexcept;
+    [[nodiscard]] Vector4 operator*(const Vector4& rhs) const noexcept;
     friend Vector4 operator*(const Vector4& lhs, const Matrix4& rhs) noexcept;
-    Vector3 operator*(const Vector3& rhs) const noexcept;
+    [[nodiscard]] Vector3 operator*(const Vector3& rhs) const noexcept;
     friend Vector3 operator*(const Vector3& lhs, const Matrix4& rhs) noexcept;
-    Vector2 operator*(const Vector2& rhs) const noexcept;
+    [[nodiscard]] Vector2 operator*(const Vector2& rhs) const noexcept;
     friend Vector2 operator*(const Vector2& lhs, const Matrix4& rhs) noexcept;
     Matrix4& operator*=(const Matrix4& rhs) noexcept;
     friend Matrix4 operator*(float lhs, const Matrix4& rhs) noexcept;
-    const float* operator*() const noexcept;
-    float* operator*() noexcept;
+    [[nodiscard]] const float* operator*() const noexcept;
+    [[nodiscard]] float* operator*() noexcept;
 
-    bool operator==(const Matrix4& rhs) const noexcept;
-    bool operator==(const Matrix4& rhs) noexcept;
-    bool operator!=(const Matrix4& rhs) const noexcept;
-    bool operator!=(const Matrix4& rhs) noexcept;
-    Matrix4 operator*(float scalar) const noexcept;
+    [[nodiscard]] bool operator==(const Matrix4& rhs) const noexcept;
+    [[nodiscard]] bool operator==(const Matrix4& rhs) noexcept;
+    [[nodiscard]] bool operator!=(const Matrix4& rhs) const noexcept;
+    [[nodiscard]] bool operator!=(const Matrix4& rhs) noexcept;
+    [[nodiscard]] Matrix4 operator*(float scalar) const noexcept;
     Matrix4& operator*=(float scalar) noexcept;
-    Matrix4 operator+(const Matrix4& rhs) const noexcept;
+    [[nodiscard]] Matrix4 operator+(const Matrix4& rhs) const noexcept;
     Matrix4& operator+=(const Matrix4& rhs) noexcept;
-    Matrix4 operator-(const Matrix4& rhs) const noexcept;
+    [[nodiscard]] Matrix4 operator-(const Matrix4& rhs) const noexcept;
     Matrix4& operator-=(const Matrix4& rhs) noexcept;
-    Matrix4 operator-() const noexcept;
-    Matrix4 operator/(const Matrix4& rhs) noexcept;
+    [[nodiscard]] Matrix4 operator-() const noexcept;
+    [[nodiscard]] Matrix4 operator/(const Matrix4& rhs) noexcept;
     Matrix4& operator/=(const Matrix4& rhs) noexcept;
 
     friend std::ostream& operator<<(std::ostream& out_stream, const Matrix4& m) noexcept;
     friend std::istream& operator>>(std::istream& in_stream, Matrix4& m) noexcept;
 
-    Vector3 GetRight() const noexcept;
-    Vector3 GetUp() const noexcept;
-    Vector3 GetForward() const noexcept;
-    
-    Vector2 GetRight2D() const noexcept;
-    Vector2 GetUp2D() const noexcept;
-    Vector2 GetForward2D() const noexcept;
+    [[nodiscard]] Vector3 GetRight() const noexcept;
+    [[nodiscard]] Vector3 GetUp() const noexcept;
+    [[nodiscard]] Vector3 GetForward() const noexcept;
 
-    Vector4 GetIBasis() const noexcept;
-    Vector4 GetIBasis() noexcept;
+    [[nodiscard]] Vector2 GetRight2D() const noexcept;
+    [[nodiscard]] Vector2 GetUp2D() const noexcept;
+    [[nodiscard]] Vector2 GetForward2D() const noexcept;
 
-    Vector4 GetJBasis() const noexcept;
-    Vector4 GetJBasis() noexcept;
+    [[nodiscard]] Vector4 GetIBasis() const noexcept;
+    [[nodiscard]] Vector4 GetIBasis() noexcept;
 
-    Vector4 GetKBasis() const noexcept;
-    Vector4 GetKBasis() noexcept;
+    [[nodiscard]] Vector4 GetJBasis() const noexcept;
+    [[nodiscard]] Vector4 GetJBasis() noexcept;
 
-    Vector4 GetTBasis() const noexcept;
-    Vector4 GetTBasis() noexcept;
+    [[nodiscard]] Vector4 GetKBasis() const noexcept;
+    [[nodiscard]] Vector4 GetKBasis() noexcept;
 
-    Vector4 GetXComponents() const noexcept;
-    Vector4 GetXComponents() noexcept;
+    [[nodiscard]] Vector4 GetTBasis() const noexcept;
+    [[nodiscard]] Vector4 GetTBasis() noexcept;
 
-    Vector4 GetYComponents() const noexcept;
-    Vector4 GetYComponents() noexcept;
+    [[nodiscard]] Vector4 GetXComponents() const noexcept;
+    [[nodiscard]] Vector4 GetXComponents() noexcept;
 
-    Vector4 GetZComponents() const noexcept;
-    Vector4 GetZComponents() noexcept;
+    [[nodiscard]] Vector4 GetYComponents() const noexcept;
+    [[nodiscard]] Vector4 GetYComponents() noexcept;
 
-    Vector4 GetWComponents() const noexcept;
-    Vector4 GetWComponents() noexcept;
+    [[nodiscard]] Vector4 GetZComponents() const noexcept;
+    [[nodiscard]] Vector4 GetZComponents() noexcept;
+
+    [[nodiscard]] Vector4 GetWComponents() const noexcept;
+    [[nodiscard]] Vector4 GetWComponents() noexcept;
 
     void SetIBasis(const Vector4& basis) noexcept;
     void SetJBasis(const Vector4& basis) noexcept;
@@ -225,16 +225,16 @@ public:
     void SetWComponents(const Vector4& components) noexcept;
 
 protected:
-    const float& operator[](std::size_t index) const;
-    float& operator[](std::size_t index);
+    [[nodiscard]] const float& operator[](std::size_t index) const;
+    [[nodiscard]] float& operator[](std::size_t index);
 
     void SetIndex(unsigned int index, float value) noexcept;
-    float GetIndex(unsigned int index) const noexcept;
-    float GetIndex(unsigned int index) noexcept;
-    float GetIndex(unsigned int col, unsigned int row) const noexcept;
+    [[nodiscard]] float GetIndex(unsigned int index) const noexcept;
+    [[nodiscard]] float GetIndex(unsigned int index) noexcept;
+    [[nodiscard]] float GetIndex(unsigned int col, unsigned int row) const noexcept;
 
-    static Matrix4 CreateTranslationMatrix(float x, float y, float z) noexcept;
-    static Matrix4 CreateScaleMatrix(float scale_x, float scale_y, float scale_z) noexcept;
+    [[nodiscard]] static Matrix4 CreateTranslationMatrix(float x, float y, float z) noexcept;
+    [[nodiscard]] static Matrix4 CreateScaleMatrix(float scale_x, float scale_y, float scale_z) noexcept;
 
     explicit Matrix4(float m00, float m01, float m02, float m03, float m10, float m11, float m12, float m13, float m20, float m21, float m22, float m23, float m30, float m31, float m32, float m33) noexcept;
 
@@ -253,5 +253,5 @@ private:
 };
 
 namespace StringUtils {
-std::string to_string(const Matrix4& m) noexcept;
+[[nodiscard]] std::string to_string(const Matrix4& m) noexcept;
 }

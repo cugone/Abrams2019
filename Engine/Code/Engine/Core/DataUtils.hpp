@@ -127,94 +127,94 @@ void ValidateXmlElement(const XMLElement& element,
                         const std::string& optionalChildElements = std::string{},
                         const std::string& optionalAttributes = std::string{}) noexcept;
 
-std::size_t GetAttributeCount(const XMLElement& element) noexcept;
-std::size_t GetChildElementCount(const XMLElement& element, const std::string& elementName = std::string{}) noexcept;
+[[nodiscard]] std::size_t GetAttributeCount(const XMLElement& element) noexcept;
+[[nodiscard]] std::size_t GetChildElementCount(const XMLElement& element, const std::string& elementName = std::string{}) noexcept;
 
-std::string GetElementName(const XMLElement& elem) noexcept;
-std::vector<std::string> GetChildElementNames(const XMLElement& element) noexcept;
-bool HasChild(const XMLElement& elem) noexcept;
-bool HasChild(const XMLElement& elem, const std::string& name) noexcept;
+[[nodiscard]] std::string GetElementName(const XMLElement& elem) noexcept;
+[[nodiscard]] std::vector<std::string> GetChildElementNames(const XMLElement& element) noexcept;
+[[nodiscard]] bool HasChild(const XMLElement& elem) noexcept;
+[[nodiscard]] bool HasChild(const XMLElement& elem, const std::string& name) noexcept;
 
-std::string GetAttributeName(const XMLAttribute& attrib) noexcept;
-std::vector<std::string> GetAttributeNames(const XMLElement& element) noexcept;
-bool HasAttribute(const XMLElement& element) noexcept;
-bool HasAttribute(const XMLElement& element, const std::string& name);
+[[nodiscard]] std::string GetAttributeName(const XMLAttribute& attrib) noexcept;
+[[nodiscard]] std::vector<std::string> GetAttributeNames(const XMLElement& element) noexcept;
+[[nodiscard]] bool HasAttribute(const XMLElement& element) noexcept;
+[[nodiscard]] bool HasAttribute(const XMLElement& element, const std::string& name);
 
-bool ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, bool defaultValue) noexcept;
+[[nodiscard]] bool ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, bool defaultValue) noexcept;
 
-unsigned char ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, unsigned char defaultValue) noexcept;
-signed char ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, signed char defaultValue) noexcept;
-char ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, char defaultValue) noexcept;
+[[nodiscard]] unsigned char ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, unsigned char defaultValue) noexcept;
+[[nodiscard]] signed char ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, signed char defaultValue) noexcept;
+[[nodiscard]] char ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, char defaultValue) noexcept;
 
-unsigned short ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, unsigned short defaultValue) noexcept;
-short ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, short defaultValue) noexcept;
+[[nodiscard]] unsigned short ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, unsigned short defaultValue) noexcept;
+[[nodiscard]] short ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, short defaultValue) noexcept;
 
-unsigned int ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, unsigned int defaultValue) noexcept;
-int ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, int defaultValue) noexcept;
+[[nodiscard]] unsigned int ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, unsigned int defaultValue) noexcept;
+[[nodiscard]] int ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, int defaultValue) noexcept;
 
-unsigned long ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, unsigned long defaultValue) noexcept;
-long ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, long defaultValue) noexcept;
+[[nodiscard]] unsigned long ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, unsigned long defaultValue) noexcept;
+[[nodiscard]] long ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, long defaultValue) noexcept;
 
-unsigned long long ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, unsigned long long defaultValue) noexcept;
-long long ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, long long defaultValue) noexcept;
+[[nodiscard]] unsigned long long ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, unsigned long long defaultValue) noexcept;
+[[nodiscard]] long long ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, long long defaultValue) noexcept;
 
-float ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, float defaultValue) noexcept;
-double ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, double defaultValue) noexcept;
-long double ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, long double defaultValue) noexcept;
+[[nodiscard]] float ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, float defaultValue) noexcept;
+[[nodiscard]] double ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, double defaultValue) noexcept;
+[[nodiscard]] long double ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, long double defaultValue) noexcept;
 
-Rgba ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const Rgba& defaultValue) noexcept;
+[[nodiscard]] Rgba ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const Rgba& defaultValue) noexcept;
 
-Vector2 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const Vector2& defaultValue) noexcept;
-IntVector2 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const IntVector2& defaultValue) noexcept;
+[[nodiscard]] Vector2 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const Vector2& defaultValue) noexcept;
+[[nodiscard]] IntVector2 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const IntVector2& defaultValue) noexcept;
 
-Vector3 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const Vector3& defaultValue) noexcept;
-IntVector3 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const IntVector3& defaultValue) noexcept;
+[[nodiscard]] Vector3 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const Vector3& defaultValue) noexcept;
+[[nodiscard]] IntVector3 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const IntVector3& defaultValue) noexcept;
 
-Vector4 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const Vector4& defaultValue) noexcept;
-IntVector4 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const IntVector4& defaultValue) noexcept;
+[[nodiscard]] Vector4 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const Vector4& defaultValue) noexcept;
+[[nodiscard]] IntVector4 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const IntVector4& defaultValue) noexcept;
 
-Matrix4 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const Matrix4& defaultValue) noexcept;
+[[nodiscard]] Matrix4 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const Matrix4& defaultValue) noexcept;
 
-std::string ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const std::string& defaultValue) noexcept;
-std::string ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const char* defaultValue) noexcept;
+[[nodiscard]] std::string ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const std::string& defaultValue) noexcept;
+[[nodiscard]] std::string ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const char* defaultValue) noexcept;
 
-bool ParseXmlElementText(const XMLElement& element, bool defaultValue) noexcept;
+[[nodiscard]] bool ParseXmlElementText(const XMLElement& element, bool defaultValue) noexcept;
 
-unsigned char ParseXmlElementText(const XMLElement& element, unsigned char defaultValue) noexcept;
-signed char ParseXmlElementText(const XMLElement& element, signed char defaultValue) noexcept;
-char ParseXmlElementText(const XMLElement& element, char defaultValue) noexcept;
+[[nodiscard]] unsigned char ParseXmlElementText(const XMLElement& element, unsigned char defaultValue) noexcept;
+[[nodiscard]] signed char ParseXmlElementText(const XMLElement& element, signed char defaultValue) noexcept;
+[[nodiscard]] char ParseXmlElementText(const XMLElement& element, char defaultValue) noexcept;
 
-unsigned short ParseXmlElementText(const XMLElement& element, unsigned short defaultValue) noexcept;
-short ParseXmlElementText(const XMLElement& element, short defaultValue) noexcept;
+[[nodiscard]] unsigned short ParseXmlElementText(const XMLElement& element, unsigned short defaultValue) noexcept;
+[[nodiscard]] short ParseXmlElementText(const XMLElement& element, short defaultValue) noexcept;
 
-unsigned int ParseXmlElementText(const XMLElement& element, unsigned int defaultValue) noexcept;
-int ParseXmlElementText(const XMLElement& element, int defaultValue) noexcept;
+[[nodiscard]] unsigned int ParseXmlElementText(const XMLElement& element, unsigned int defaultValue) noexcept;
+[[nodiscard]] int ParseXmlElementText(const XMLElement& element, int defaultValue) noexcept;
 
-unsigned long ParseXmlElementText(const XMLElement& element, unsigned long defaultValue) noexcept;
-long ParseXmlElementText(const XMLElement& element, long defaultValue) noexcept;
+[[nodiscard]] unsigned long ParseXmlElementText(const XMLElement& element, unsigned long defaultValue) noexcept;
+[[nodiscard]] long ParseXmlElementText(const XMLElement& element, long defaultValue) noexcept;
 
-unsigned long long ParseXmlElementText(const XMLElement& element, unsigned long long defaultValue) noexcept;
-long long ParseXmlElementText(const XMLElement& element, long long defaultValue) noexcept;
+[[nodiscard]] unsigned long long ParseXmlElementText(const XMLElement& element, unsigned long long defaultValue) noexcept;
+[[nodiscard]] long long ParseXmlElementText(const XMLElement& element, long long defaultValue) noexcept;
 
-float ParseXmlElementText(const XMLElement& element, float defaultValue) noexcept;
-double ParseXmlElementText(const XMLElement& element, double defaultValue) noexcept;
-long double ParseXmlElementText(const XMLElement& element, long double defaultValue) noexcept;
+[[nodiscard]] float ParseXmlElementText(const XMLElement& element, float defaultValue) noexcept;
+[[nodiscard]] double ParseXmlElementText(const XMLElement& element, double defaultValue) noexcept;
+[[nodiscard]] long double ParseXmlElementText(const XMLElement& element, long double defaultValue) noexcept;
 
-Rgba ParseXmlElementText(const XMLElement& element, const Rgba& defaultValue) noexcept;
+[[nodiscard]] Rgba ParseXmlElementText(const XMLElement& element, const Rgba& defaultValue) noexcept;
 
-Vector2 ParseXmlElementText(const XMLElement& element, const Vector2& defaultValue) noexcept;
-IntVector2 ParseXmlElementText(const XMLElement& element, const IntVector2& defaultValue) noexcept;
+[[nodiscard]] Vector2 ParseXmlElementText(const XMLElement& element, const Vector2& defaultValue) noexcept;
+[[nodiscard]] IntVector2 ParseXmlElementText(const XMLElement& element, const IntVector2& defaultValue) noexcept;
 
-Vector3 ParseXmlElementText(const XMLElement& element, const Vector3& defaultValue) noexcept;
-IntVector3 ParseXmlElementText(const XMLElement& element, const IntVector3& defaultValue) noexcept;
+[[nodiscard]] Vector3 ParseXmlElementText(const XMLElement& element, const Vector3& defaultValue) noexcept;
+[[nodiscard]] IntVector3 ParseXmlElementText(const XMLElement& element, const IntVector3& defaultValue) noexcept;
 
-Vector4 ParseXmlElementText(const XMLElement& element, const Vector4& defaultValue) noexcept;
-IntVector4 ParseXmlElementText(const XMLElement& element, const IntVector4& defaultValue) noexcept;
+[[nodiscard]] Vector4 ParseXmlElementText(const XMLElement& element, const Vector4& defaultValue) noexcept;
+[[nodiscard]] IntVector4 ParseXmlElementText(const XMLElement& element, const IntVector4& defaultValue) noexcept;
 
-Matrix4 ParseXmlElementText(const XMLElement& element, const Matrix4& defaultValue) noexcept;
+[[nodiscard]] Matrix4 ParseXmlElementText(const XMLElement& element, const Matrix4& defaultValue) noexcept;
 
-std::string ParseXmlElementText(const XMLElement& element, const char* defaultValue) noexcept;
-std::string ParseXmlElementText(const XMLElement& element, const std::string& defaultValue) noexcept;
+[[nodiscard]] std::string ParseXmlElementText(const XMLElement& element, const char* defaultValue) noexcept;
+[[nodiscard]] std::string ParseXmlElementText(const XMLElement& element, const std::string& defaultValue) noexcept;
 
 //************************************
 // Method:    ForEachChildElement
@@ -254,7 +254,7 @@ UnaryFunction ForEachAttribute(const XMLElement& element, UnaryFunction&& f) noe
 
 namespace detail {
 template<typename T>
-const T CalculateIntegerRangeResult(const std::string& txt) {
+[[nodiscard]] const T CalculateIntegerRangeResult(const std::string& txt) {
     const auto values = StringUtils::Split(txt, '~');
     if(values.empty() && !txt.empty()) {
         constexpr auto lower = (std::numeric_limits<T>::min)();
@@ -280,7 +280,7 @@ const T CalculateIntegerRangeResult(const std::string& txt) {
 }
 
 template<typename T>
-const T CalculateUnsignedIntegerRangeResult(const std::string& txt) {
+[[nodiscard]] const T CalculateUnsignedIntegerRangeResult(const std::string& txt) {
     const auto values = StringUtils::Split(txt, '~');
     if(values.empty() && !txt.empty()) {
         constexpr auto lower = (std::numeric_limits<T>::min)();
@@ -306,7 +306,7 @@ const T CalculateUnsignedIntegerRangeResult(const std::string& txt) {
 }
 
 template<typename T>
-const T CalculateLongLongRangeResult(const std::string& txt) {
+[[nodiscard]] const T CalculateLongLongRangeResult(const std::string& txt) {
     const auto values = StringUtils::Split(txt, '~');
     if(values.empty() && !txt.empty()) {
         constexpr auto lower = (std::numeric_limits<T>::min)();
@@ -332,7 +332,7 @@ const T CalculateLongLongRangeResult(const std::string& txt) {
 }
 
 template<typename T>
-const T CalculateUnsignedLongLongRangeResult(const std::string& txt) {
+[[nodiscard]] const T CalculateUnsignedLongLongRangeResult(const std::string& txt) {
     const auto values = StringUtils::Split(txt, '~');
     if(values.empty() && !txt.empty()) {
         constexpr auto lower = (std::numeric_limits<T>::min)();
@@ -358,7 +358,7 @@ const T CalculateUnsignedLongLongRangeResult(const std::string& txt) {
 }
 
 template<typename T>
-const T CalculateFloatRangeResult(const std::string& txt) {
+[[nodiscard]] const T CalculateFloatRangeResult(const std::string& txt) {
     const auto values = StringUtils::Split(txt, '~');
     if(values.empty() && !txt.empty()) {
         constexpr auto lower = (std::numeric_limits<T>::min)();
@@ -384,7 +384,7 @@ const T CalculateFloatRangeResult(const std::string& txt) {
 }
 
 template<typename T>
-const T CalculateDoubleRangeResult(const std::string& txt) {
+[[nodiscard]] const T CalculateDoubleRangeResult(const std::string& txt) {
     const auto values = StringUtils::Split(txt, '~');
     if(values.empty() && !txt.empty()) {
         constexpr auto lower = (std::numeric_limits<T>::min)();
@@ -410,7 +410,7 @@ const T CalculateDoubleRangeResult(const std::string& txt) {
 }
 
 template<typename T>
-const T CalculateLongDoubleRangeResult(const std::string& txt) {
+[[nodiscard]] const T CalculateLongDoubleRangeResult(const std::string& txt) {
     const auto values = StringUtils::Split(txt, '~');
     if(values.empty() && !txt.empty()) {
         constexpr auto lower = (std::numeric_limits<T>::min)();

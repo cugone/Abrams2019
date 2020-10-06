@@ -72,32 +72,32 @@ enum class KnownPathID {
     Max
 };
 
-bool WriteBufferToFile(const std::any& buffer, std::size_t size, std::filesystem::path filepath) noexcept;
-bool WriteBufferToFile(const std::string& buffer, std::filesystem::path filepath) noexcept;
-std::optional<std::vector<uint8_t>> ReadBinaryBufferFromFile(std::filesystem::path filepath) noexcept;
-std::optional<std::string> ReadStringBufferFromFile(std::filesystem::path filepath) noexcept;
-bool CreateFolders(const std::filesystem::path& filepath) noexcept;
-bool IsSystemPathId(const KnownPathID& pathid) noexcept;
-bool IsContentPathId(const KnownPathID& pathid) noexcept;
-std::filesystem::path GetKnownFolderPath(const KnownPathID& pathid) noexcept;
-std::filesystem::path GetExePath() noexcept;
-std::filesystem::path GetWorkingDirectory() noexcept;
-void SetWorkingDirectory(const std::filesystem::path& p) noexcept;
-bool IsSafeWritePath(const std::filesystem::path& p) noexcept;
-bool IsSafeReadPath(const std::filesystem::path& p) noexcept;
-bool HasWritePermissions(const std::filesystem::path& p) noexcept;
-bool HasReadPermissions(const std::filesystem::path& p) noexcept;
-bool HasDeletePermissions(const std::filesystem::path& p) noexcept;
-bool HasExecuteOrSearchPermissions(const std::filesystem::path& p) noexcept;
-bool HasExecutePermissions(const std::filesystem::path& p) noexcept;
-bool HasSearchPermissions(const std::filesystem::path& p) noexcept;
-bool IsParentOf(const std::filesystem::path& p, const std::filesystem::path& child) noexcept;
-bool IsSiblingOf(const std::filesystem::path& p, const std::filesystem::path& sibling) noexcept;
-bool IsChildOf(const std::filesystem::path& p, const std::filesystem::path& parent) noexcept;
+[[nodiscard]] bool WriteBufferToFile(const std::any& buffer, std::size_t size, std::filesystem::path filepath) noexcept;
+[[nodiscard]] bool WriteBufferToFile(const std::string& buffer, std::filesystem::path filepath) noexcept;
+[[nodiscard]] std::optional<std::vector<uint8_t>> ReadBinaryBufferFromFile(std::filesystem::path filepath) noexcept;
+[[nodiscard]] std::optional<std::string> ReadStringBufferFromFile(std::filesystem::path filepath) noexcept;
+[[nodiscard]] bool CreateFolders(const std::filesystem::path& filepath) noexcept;
+[[nodiscard]] bool IsSystemPathId(const KnownPathID& pathid) noexcept;
+[[nodiscard]] bool IsContentPathId(const KnownPathID& pathid) noexcept;
+[[nodiscard]] std::filesystem::path GetKnownFolderPath(const KnownPathID& pathid) noexcept;
+[[nodiscard]] std::filesystem::path GetExePath() noexcept;
+[[nodiscard]] std::filesystem::path GetWorkingDirectory() noexcept;
+[[nodiscard]] void SetWorkingDirectory(const std::filesystem::path& p) noexcept;
+[[nodiscard]] bool IsSafeWritePath(const std::filesystem::path& p) noexcept;
+[[nodiscard]] bool IsSafeReadPath(const std::filesystem::path& p) noexcept;
+[[nodiscard]] bool HasWritePermissions(const std::filesystem::path& p) noexcept;
+[[nodiscard]] bool HasReadPermissions(const std::filesystem::path& p) noexcept;
+[[nodiscard]] bool HasDeletePermissions(const std::filesystem::path& p) noexcept;
+[[nodiscard]] bool HasExecuteOrSearchPermissions(const std::filesystem::path& p) noexcept;
+[[nodiscard]] bool HasExecutePermissions(const std::filesystem::path& p) noexcept;
+[[nodiscard]] bool HasSearchPermissions(const std::filesystem::path& p) noexcept;
+[[nodiscard]] bool IsParentOf(const std::filesystem::path& p, const std::filesystem::path& child) noexcept;
+[[nodiscard]] bool IsSiblingOf(const std::filesystem::path& p, const std::filesystem::path& sibling) noexcept;
+[[nodiscard]] bool IsChildOf(const std::filesystem::path& p, const std::filesystem::path& parent) noexcept;
 
-std::size_t CountFilesInFolders(const std::filesystem::path& folderpath, const std::string& validExtensionList = std::string{}, bool recursive = false) noexcept;
+[[nodiscard]] std::size_t CountFilesInFolders(const std::filesystem::path& folderpath, const std::string& validExtensionList = std::string{}, bool recursive = false) noexcept;
 void RemoveExceptMostRecentFiles(const std::filesystem::path& folderpath, std::size_t mostRecentCountToKeep, const std::string& validExtensionList = std::string{}) noexcept;
-std::vector<std::filesystem::path> GetAllPathsInFolders(const std::filesystem::path& folderpath, const std::string& validExtensionList = std::string{}, bool recursive = false) noexcept;
+[[nodiscard]] std::vector<std::filesystem::path> GetAllPathsInFolders(const std::filesystem::path& folderpath, const std::string& validExtensionList = std::string{}, bool recursive = false) noexcept;
 
 namespace detail {
 

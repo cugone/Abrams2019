@@ -17,22 +17,22 @@ public:
     explicit Polygon2(const OBB2& obb) noexcept;
     //~Polygon2() = default;
 
-    std::vector<LineSegment2> GetEdges() const noexcept;
+    [[nodiscard]] std::vector<LineSegment2> GetEdges() const noexcept;
 
-    AABB2 GetBounds() const noexcept;
+    [[nodiscard]] AABB2 GetBounds() const noexcept;
 
-    int GetSides() const;
+    [[nodiscard]] int GetSides() const;
     void SetSides(int sides);
-    const Vector2& GetPosition() const;
+    [[nodiscard]] const Vector2& GetPosition() const;
     void SetPosition(const Vector2& position);
     void Translate(const Vector2& translation);
     void RotateDegrees(float displacementDegrees);
     void Rotate(float displacementRadians);
-    float GetOrientationDegrees() const;
+    [[nodiscard]] float GetOrientationDegrees() const;
     void SetOrientationDegrees(float degrees);
-    const std::vector<Vector2>& GetVerts() const;
-    const std::vector<Vector2>& GetNormals() const;
-    const Vector2& GetHalfExtents() const;
+    [[nodiscard]] const std::vector<Vector2>& GetVerts() const;
+    [[nodiscard]] const std::vector<Vector2>& GetNormals() const;
+    [[nodiscard]] const Vector2& GetHalfExtents() const;
     void SetHalfExtents(const Vector2& newHalfExtents);
     void AddPaddingToSides(const Vector2& padding);
     void AddPaddingToSides(float paddingX, float paddingY);

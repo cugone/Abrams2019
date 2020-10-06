@@ -23,20 +23,20 @@ public:
     explicit Obj(std::filesystem::path filepath) noexcept;
     ~Obj() = default;
 
-    const std::vector<Vertex3D>& GetVbo() const noexcept;
-    const std::vector<unsigned int>& GetIbo() const noexcept;
+    [[nodiscard]] const std::vector<Vertex3D>& GetVbo() const noexcept;
+    [[nodiscard]] const std::vector<unsigned int>& GetIbo() const noexcept;
 
     void Unload() noexcept;
-    bool Load(std::filesystem::path filepath) noexcept;
-    bool Save(std::filesystem::path filepath) noexcept;
-    bool IsLoaded() const noexcept;
-    bool IsLoading() const noexcept;
-    bool IsSaving() const noexcept;
-    bool IsSaved() const noexcept;
+    [[nodiscard]] bool Load(std::filesystem::path filepath) noexcept;
+    [[nodiscard]] bool Save(std::filesystem::path filepath) noexcept;
+    [[nodiscard]] bool IsLoaded() const noexcept;
+    [[nodiscard]] bool IsLoading() const noexcept;
+    [[nodiscard]] bool IsSaving() const noexcept;
+    [[nodiscard]] bool IsSaved() const noexcept;
 
 protected:
 private:
-    bool Parse(const std::filesystem::path& filepath) noexcept;
+    [[nodiscard]] bool Parse(const std::filesystem::path& filepath) noexcept;
 
     void PrintErrorToDebugger(std::filesystem::path filepath, const std::string& elementType, unsigned long long line_index) const noexcept;
 

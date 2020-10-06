@@ -30,7 +30,7 @@ public:
     void DebugRender(Renderer& renderer) const;
 
     void SetWorldBounds(const AABB2& bounds) noexcept;
-    std::vector<std::add_pointer_t<T>> Query(const AABB2& area) noexcept;
+    [[nodiscard]] std::vector<std::add_pointer_t<T>> Query(const AABB2& area) noexcept;
 
 protected:
 private:
@@ -45,15 +45,15 @@ private:
     };
 
     void DebugRender_helper(Renderer& renderer) const;
-    bool IsParent(const QuadTree<T>* node) const;
-    bool IsChild(const QuadTree<T>* node) const;
-    bool IsLeaf(const QuadTree<T>* node) const;
-    bool IsParent() const;
-    bool IsChild() const;
-    bool IsLeaf() const;
-    bool IsElementIntersectingMe(std::add_pointer_t<T> new_element) const;
-    bool NeedsSubdivide() const;
-    bool NeedsUnSubdivide() const;
+    [[nodiscard]] bool IsParent(const QuadTree<T>* node) const;
+    [[nodiscard]] bool IsChild(const QuadTree<T>* node) const;
+    [[nodiscard]] bool IsLeaf(const QuadTree<T>* node) const;
+    [[nodiscard]] bool IsParent() const;
+    [[nodiscard]] bool IsChild() const;
+    [[nodiscard]] bool IsLeaf() const;
+    [[nodiscard]] bool IsElementIntersectingMe(std::add_pointer_t<T> new_element) const;
+    [[nodiscard]] bool NeedsSubdivide() const;
+    [[nodiscard]] bool NeedsUnSubdivide() const;
     void Subdivide();
     void UnSubdivide();
     void MakeChildren();
@@ -61,17 +61,17 @@ private:
     void AddElement(std::add_pointer_t<T> old_element);
     void GiveElementsToChildren();
     void TakeElementsFromChildren();
-    const QuadTree<T>* GetChild(const ChildID& id) const;
-    QuadTree<T>* GetChild(const ChildID& id);
+    [[nodiscard]] const QuadTree<T>* GetChild(const ChildID& id) const;
+    [[nodiscard]] QuadTree<T>* GetChild(const ChildID& id);
     void CreateChild(const ChildID& id);
     void DeleteChild(const ChildID& id);
     void SetChild(const ChildID& id, std::unique_ptr<QuadTree<T>> child);
 
-    const std::size_t ChildIdToIndex(const ChildID& id) const;
-    bool IsLeaf(const QuadTree<T>& node) const;
-    AABB2 GetBounds() const;
-    AABB2 GetParentBounds() const;
-    std::vector<QuadTree<T>*> GetNodesByElement(const T& object) const noexcept;
+    [[nodiscard]] const std::size_t ChildIdToIndex(const ChildID& id) const;
+    [[nodiscard]] bool IsLeaf(const QuadTree<T>& node) const;
+    [[nodiscard]] AABB2 GetBounds() const;
+    [[nodiscard]] AABB2 GetParentBounds() const;
+    [[nodiscard]] std::vector<QuadTree<T>*> GetNodesByElement(const T& object) const noexcept;
 
     QuadTree<T>* m_parent = nullptr;
     Vector2 m_half_extents = Vector2::ONE;

@@ -29,110 +29,112 @@ public:
     void SetPivotColor(const Rgba& color);
     void SetDebugColors(const Rgba& edge, const Rgba& fill, const Rgba& pivot = Rgba::Red);
 
-    const Vector4& GetPosition() const;
+    [[nodiscard]] const Vector4& GetPosition() const;
     virtual void SetPosition(const Vector4& position);
     virtual void SetPositionOffset(const Vector2& offset);
     virtual void SetPositionRatio(const Vector2& ratio);
 
-    virtual Vector4 CalcDesiredSize() const noexcept = 0;
+    [[nodiscard]] virtual Vector4 CalcDesiredSize() const noexcept = 0;
 
     void SetPivot(const Vector2& pivotPosition);
-    const Vector2& GetPivot() const;
+    [[nodiscard]] const Vector2& GetPivot() const;
     void SetPivot(const PivotPosition& pivotPosition);
 
     void SetOrientationDegrees(float value);
     void SetOrientationRadians(float value);
-    float GetOrientationDegrees() const;
-    float GetOrientationRadians() const;
+    [[nodiscard]] float GetOrientationDegrees() const;
+    [[nodiscard]] float GetOrientationRadians() const;
 
-    bool HasParent() const;
-    AABB2 GetParentBounds() const noexcept;
+    [[nodiscard]] bool HasParent() const;
+    [[nodiscard]] AABB2 GetParentBounds() const noexcept;
 
-    Panel* GetParent() const noexcept;
+    [[nodiscard]] Panel* GetParent() const noexcept;
 
-    bool IsHidden() const;
-    bool IsVisible() const;
+    [[nodiscard]] bool IsHidden() const;
+    [[nodiscard]] bool IsVisible() const;
     void Hide();
     void Show();
     void SetHidden(bool hidden = true);
     void ToggleHidden();
     void ToggleVisibility();
 
-    bool IsEnabled() const;
-    bool IsDisabled() const;
+    [[nodiscard]] bool IsEnabled() const;
+    [[nodiscard]] bool IsDisabled() const;
     void Enable();
     void Disable();
     void SetEnabled(bool enabled = true);
     void ToggleEnabled();
 
-    const std::string& GetName() const;
-    std::string& GetName();
+    [[nodiscard]] const std::string& GetName() const;
+    [[nodiscard]] std::string& GetName();
 
     void RemoveSelf();
 
-    bool HasSlot() const noexcept;
+    [[nodiscard]] bool HasSlot() const noexcept;
     void ResetSlot() noexcept;
     void SetSlot(PanelSlot* newSlot) noexcept;
-    const PanelSlot* const GetSlot() const noexcept;
-    PanelSlot* GetSlot() noexcept;
+    [[nodiscard]] const PanelSlot* const GetSlot() const noexcept;
+    [[nodiscard]] PanelSlot* GetSlot() noexcept;
 
 protected:
-    Vector2 CalcLocalPosition() const;
-    Vector2 CalcLocalScale() const;
-    float CalcLocalRotationRadians() const;
-    float CalcLocalRotationDegrees() const;
-    float CalcWorldRotationRadians() const;
-    float CalcWorldRotationDegrees() const;
+    [[nodiscard]] Vector2 CalcLocalPosition() const;
+    [[nodiscard]] Vector2 CalcLocalScale() const;
+    [[nodiscard]] float CalcLocalRotationRadians() const;
+    [[nodiscard]] float CalcLocalRotationDegrees() const;
+    [[nodiscard]] float CalcWorldRotationRadians() const;
+    [[nodiscard]] float CalcWorldRotationDegrees() const;
 
-    Vector2 CalcRelativePosition() const;
-    Vector2 CalcRelativePosition(const Vector2& position) const;
+    [[nodiscard]] Vector2 CalcRelativePosition() const;
+    [[nodiscard]] Vector2 CalcRelativePosition(const Vector2& position) const;
 
     void CalcBounds() noexcept;
     void CalcBoundsAndPivot() noexcept;
-    AABB2 CalcBoundsRelativeToParent() const noexcept;
+    [[nodiscard]] AABB2 CalcBoundsRelativeToParent() const noexcept;
 
-    AABB2 AlignBoundsToContainer(AABB2 bounds, AABB2 container, const Vector2& alignment) const noexcept;
-    AABB2 CalcRelativeBounds() const noexcept;
-    AABB2 CalcAbsoluteBounds() const noexcept;
-    AABB2 CalcAlignedAbsoluteBounds() const noexcept;
-    AABB2 CalcLocalBounds() const noexcept;
+    [[nodiscard]] AABB2 AlignBoundsToContainer(AABB2 bounds, AABB2 container, const Vector2& alignment) const noexcept;
+    [[nodiscard]] AABB2 CalcRelativeBounds() const noexcept;
+    [[nodiscard]] AABB2 CalcAbsoluteBounds() const noexcept;
+    [[nodiscard]] AABB2 CalcAlignedAbsoluteBounds() const noexcept;
+    [[nodiscard]] AABB2 CalcLocalBounds() const noexcept;
 
-    Matrix4 GetLocalTransform() const noexcept;
-    Matrix4 GetWorldTransform() const noexcept;
-    Matrix4 GetParentWorldTransform() const noexcept;
+    [[nodiscard]] Matrix4 GetLocalTransform() const noexcept;
+    [[nodiscard]] Matrix4 GetWorldTransform() const noexcept;
+    [[nodiscard]] Matrix4 GetParentWorldTransform() const noexcept;
 
     void DirtyElement(InvalidateElementReason reason = InvalidateElementReason::Any);
-    bool IsDirty(InvalidateElementReason reason = InvalidateElementReason::Any) const;
-    bool IsParent() const;
-    bool IsChild() const;
+    [[nodiscard]] bool IsDirty(InvalidateElementReason reason = InvalidateElementReason::Any) const;
+    [[nodiscard]] bool IsParent() const;
+    [[nodiscard]] bool IsChild() const;
 
     void DebugRenderBoundsAndPivot(Renderer& renderer) const;
     void DebugRenderPivot(Renderer& renderer) const;
     void DebugRenderBounds(Renderer& renderer) const;
 
-    AABB2 GetParentLocalBounds() const;
-    AABB2 GetParentRelativeBounds() const;
+    [[nodiscard]] AABB2 GetParentLocalBounds() const;
+    [[nodiscard]] AABB2 GetParentRelativeBounds() const;
 
-    AABB2 GetBounds(const AABB2& parent, const Vector4& anchors, const Vector4& offsets) const noexcept;
-    Vector2 GetSmallestOffset(AABB2 a, AABB2 b) const noexcept;
-    AABB2 MoveToBestFit(const AABB2& obj, const AABB2& container) const noexcept;
+    [[nodiscard]] AABB2 GetBounds(const AABB2& parent, const Vector4& anchors, const Vector4& offsets) const noexcept;
+    [[nodiscard]] Vector2 GetSmallestOffset(AABB2 a, AABB2 b) const noexcept;
+    [[nodiscard]] AABB2 MoveToBestFit(const AABB2& obj, const AABB2& container) const noexcept;
 
-    float GetAspectRatio() const noexcept;
-    float GetInvAspectRatio() const noexcept;
+    [[nodiscard]] float GetAspectRatio() const noexcept;
+    [[nodiscard]] float GetInvAspectRatio() const noexcept;
 
-    Vector2 GetTopLeft() const noexcept;
-    Vector2 GetTopRight() const noexcept;
-    Vector2 GetBottomLeft() const noexcept;
-    Vector2 GetBottomRight() const noexcept;
+    [[nodiscard]] Vector2 GetTopLeft() const noexcept;
+    [[nodiscard]] Vector2 GetTopRight() const noexcept;
+    [[nodiscard]] Vector2 GetBottomLeft() const noexcept;
+    [[nodiscard]] Vector2 GetBottomRight() const noexcept;
 
     std::string _name{};
     Rgba _fill_color = Rgba::NoAlpha;
     Rgba _edge_color = Rgba::White;
 
+    AABB2 _bounds{};
+
 private:
     Vector4 _position{};
     Vector2 _pivot{};
-    AABB2 _bounds{};
+    
     Rgba _pivot_color = Rgba::Red;
     PanelSlot* _slot = &s_NullPanelSlot;
     float _orientationRadians = 0.0f;
@@ -140,8 +142,8 @@ private:
     bool _hidden = false;
     bool _enabled = true;
 
-    float GetParentOrientationRadians() const;
-    float GetParentOrientationDegrees() const;
+    [[nodiscard]] float GetParentOrientationRadians() const;
+    [[nodiscard]] float GetParentOrientationDegrees() const;
 
     friend class Panel;
     friend struct PanelSlot;

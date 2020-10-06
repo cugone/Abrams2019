@@ -52,7 +52,7 @@ private:
 
     void Log_worker() noexcept;
     void RequestFlush() noexcept;
-    bool IsRunning() const noexcept;
+    [[nodiscard]] bool IsRunning() const noexcept;
 
     void DoCopyLog() noexcept;
     void CopyLog(void* user_data) noexcept;

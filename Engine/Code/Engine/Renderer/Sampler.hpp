@@ -29,12 +29,12 @@ public:
     explicit Sampler(const RHIDevice* device, const SamplerDesc& desc) noexcept;
     explicit Sampler(const RHIDevice* device, const XMLElement& element) noexcept;
     ~Sampler() noexcept;
-    ID3D11SamplerState* GetDxSampler() const noexcept;
+    [[nodiscard]] ID3D11SamplerState* GetDxSampler() const noexcept;
     void SetDebugName([[maybe_unused]] const std::string& name) const noexcept;
 
 protected:
 private:
-    bool CreateSamplerState(const RHIDevice* device, const SamplerDesc& desc = SamplerDesc()) noexcept;
+    [[nodiscard]] bool CreateSamplerState(const RHIDevice* device, const SamplerDesc& desc = SamplerDesc()) noexcept;
 
     SamplerDesc _desc{};
     ID3D11SamplerState* _dx_state = nullptr;

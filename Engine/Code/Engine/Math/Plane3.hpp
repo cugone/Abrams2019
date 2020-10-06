@@ -16,7 +16,7 @@ public:
     ~Plane3() = default;
 
     float Normalize() noexcept;
-    Plane3 GetNormalize() const noexcept;
+    [[nodiscard]] Plane3 GetNormalize() const noexcept;
 
 protected:
 private:

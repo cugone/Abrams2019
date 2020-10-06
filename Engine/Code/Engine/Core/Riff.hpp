@@ -16,7 +16,7 @@ constexpr const uint32_t LIST = StringUtils::FourCC("LIST");
 constexpr const uint32_t WAVE = StringUtils::FourCC("WAVE");
 constexpr const uint32_t INFO = StringUtils::FourCC("INFO");
 constexpr const uint32_t AVI = StringUtils::FourCC("AVI ");
-constexpr const bool IsValid(const char* id) noexcept;
+[[nodiscard]] constexpr const bool IsValid(const char* id) noexcept;
 } // namespace RiffChunkID
 
 class Riff {
@@ -40,14 +40,14 @@ public:
         std::unique_ptr<RiffSubChunk> data{};
     };
 
-    RiffChunk* GetNextChunk() const noexcept;
-    unsigned int Load(std::filesystem::path filename) noexcept;
-    unsigned int Load(const std::vector<unsigned char>& data) noexcept;
-    static std::optional<std::unique_ptr<Riff::RiffChunk>> ReadListChunk(std::stringstream& stream) noexcept;
+    [[nodiscard]] RiffChunk* GetNextChunk() const noexcept;
+    [[nodiscard]] unsigned int Load(std::filesystem::path filename) noexcept;
+    [[nodiscard]] unsigned int Load(const std::vector<unsigned char>& data) noexcept;
+    [[nodiscard]] static std::optional<std::unique_ptr<Riff::RiffChunk>> ReadListChunk(std::stringstream& stream) noexcept;
 
 protected:
 private:
-    bool ParseDataIntoChunks(std::vector<unsigned char>& buffer) noexcept;
+    [[nodiscard]] bool ParseDataIntoChunks(std::vector<unsigned char>& buffer) noexcept;
 
     void ShowRiffChunkHeaders() const noexcept;
     std::vector<std::unique_ptr<RiffChunk>> _chunks{};

@@ -123,7 +123,9 @@ Renderer::Renderer(FileLogger& fileLogger, Config& theConfig) noexcept
         _theConfig.SetValue("height", height);
         return IntVector2{width, height};
     }(); //IIIL
-    _theConfig.SaveToFile("Data/Config/options.config");
+    if(std::string path{"Data/Config/options.config"}; _theConfig.SaveToFile(path)) {
+        DebuggerPrintf("Could not save configuration to %s", path.c_str());
+    }
 }
 
 Renderer::~Renderer() noexcept {
@@ -1641,7 +1643,7 @@ void Renderer::SetWindowedMode() noexcept {
 
 void Renderer::CreateAndRegisterDefaultFonts() noexcept {
     std::filesystem::path p = FileUtils::GetKnownFolderPath(FileUtils::KnownPathID::EngineData) / std::filesystem::path{"Fonts"};
-    FileUtils::CreateFolders(p);
+    (void)FileUtils::CreateFolders(p); //If the directory wasn't created, they either already exist or the install was corrupted.
     RegisterFontsFromFolder(p);
 }
 
@@ -3002,7 +3004,7 @@ bool Renderer::RegisterFont(std::filesystem::path filepath) noexcept {
             FS::path texture_path = folderpath / FS::path{texture_filename};
             texture_path = FS::canonical(texture_path);
             texture_path.make_preferred();
-            CreateTexture(texture_path.string(), IntVector3::XY_AXIS);
+            (void)CreateTexture(texture_path.string(), IntVector3::XY_AXIS); //Don't want to store texture for later use.
         }
         if(auto mat = CreateMaterialFromFont(font.get())) {
             font->SetMaterial(mat.get());
@@ -3026,7 +3028,10 @@ void Renderer::RegisterFontsFromFolder(std::filesystem::path folderpath, bool re
     folderpath.make_preferred();
     auto cb =
     [this](const FS::path& p) {
-        RegisterFont(p);
+        if(!RegisterFont(p)) {
+            const auto pathAsString = p.string();
+            DebuggerPrintf("Failed to load font at %s\n", pathAsString.c_str());
+        }
     };
     FileUtils::ForEachFileInFolder(folderpath, ".fnt", cb, recursive);
 }
@@ -3035,42 +3040,42 @@ void Renderer::CreateAndRegisterDefaultTextures() noexcept {
     auto default_texture = CreateDefaultTexture();
     auto name = "__default";
     default_texture->SetDebugName(name);
-    RegisterTexture(name, std::move(default_texture));
+    GUARANTEE_OR_DIE(RegisterTexture(name, std::move(default_texture)), "Failed to register default texture.");
 
     auto invalid_texture = CreateInvalidTexture();
     name = "__invalid";
     invalid_texture->SetDebugName(name);
-    RegisterTexture(name, std::move(invalid_texture));
+    GUARANTEE_OR_DIE(RegisterTexture(name, std::move(invalid_texture)), "Failed to register default invalid texture.");
 
     auto diffuse_texture = CreateDefaultDiffuseTexture();
     name = "__diffuse";
     diffuse_texture->SetDebugName(name);
-    RegisterTexture(name, std::move(diffuse_texture));
+    GUARANTEE_OR_DIE(RegisterTexture(name, std::move(diffuse_texture)), "Failed to register default diffuse texture.");
 
     auto normal_texture = CreateDefaultNormalTexture();
     name = "__normal";
     normal_texture->SetDebugName(name);
-    RegisterTexture(name, std::move(normal_texture));
+    GUARANTEE_OR_DIE(RegisterTexture(name, std::move(normal_texture)), "Failed to register default normal texture.");
 
     auto displacement_texture = CreateDefaultDisplacementTexture();
     name = "__displacement";
     displacement_texture->SetDebugName(name);
-    RegisterTexture(name, std::move(displacement_texture));
+    GUARANTEE_OR_DIE(RegisterTexture(name, std::move(displacement_texture)), "Failed to register default displacement texture.");
 
     auto specular_texture = CreateDefaultSpecularTexture();
     name = "__specular";
     specular_texture->SetDebugName(name);
-    RegisterTexture(name, std::move(specular_texture));
+    GUARANTEE_OR_DIE(RegisterTexture(name, std::move(specular_texture)), "Failed to register default specular texture.");
 
     auto occlusion_texture = CreateDefaultOcclusionTexture();
     name = "__occlusion";
     occlusion_texture->SetDebugName(name);
-    RegisterTexture(name, std::move(occlusion_texture));
+    GUARANTEE_OR_DIE(RegisterTexture(name, std::move(occlusion_texture)), "Failed to register default occlusion texture.");
 
     auto emissive_texture = CreateDefaultEmissiveTexture();
     name = "__emissive";
     emissive_texture->SetDebugName(name);
-    RegisterTexture(name, std::move(emissive_texture));
+    GUARANTEE_OR_DIE(RegisterTexture(name, std::move(emissive_texture)), "Failed to register default emissive texture.");
 
     CreateDefaultColorTextures();
 }
@@ -3143,7 +3148,8 @@ void Renderer::CreateDefaultColorTextures() noexcept {
     for(std::size_t i = 0; i < n_s; ++i) {
         auto tex = CreateDefaultColorTexture(colors[i]);
         tex->SetDebugName(names[i]);
-        RegisterTexture(names[i], std::move(tex));
+        const std::string error_str{"Failed to register default color " + names[i]};
+        GUARANTEE_OR_DIE(RegisterTexture(names[i], std::move(tex)), error_str);
     }
 }
 
@@ -3423,7 +3429,10 @@ void Renderer::RegisterMaterialsFromFolder(std::filesystem::path folderpath, boo
     folderpath.make_preferred();
     auto cb =
     [this](const FS::path& p) {
-        RegisterMaterial(p);
+        const auto pathAsString = p.string();
+        if(!RegisterMaterial(p)) {
+            DebuggerPrintf("Failed to load material at %s\n", pathAsString.c_str());
+        }
     };
     FileUtils::ForEachFileInFolder(folderpath, ".material", cb, recursive);
 }
@@ -3675,7 +3684,10 @@ void Renderer::RegisterShadersFromFolder(std::filesystem::path folderpath, bool 
     folderpath.make_preferred();
     auto cb =
     [this](const FS::path& p) {
-        RegisterShader(p);
+        const auto pathAsString = p.string();
+        if(!RegisterShader(p)) {
+            DebuggerPrintf("Failed to load shader at %s\n", pathAsString.c_str());
+        }
     };
     FileUtils::ForEachFileInFolder(folderpath, ".shader", cb, recursive);
 }
@@ -4224,7 +4236,10 @@ void Renderer::RegisterTexturesFromFolder(std::filesystem::path folderpath, bool
     folderpath.make_preferred();
     auto cb =
     [this](const FS::path& p) {
-        RegisterTexture(p);
+        const auto pathAsString = p.string();
+        if(!RegisterTexture(p)) {
+            DebuggerPrintf("Failed to load texture at %s\n", pathAsString.c_str());
+        }
     };
     FileUtils::ForEachFileInFolder(folderpath, std::string{}, cb, recursive);
 }

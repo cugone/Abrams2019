@@ -22,31 +22,31 @@ public:
 
     virtual void Render(Renderer& renderer) const override;
 
-    const KerningFont* const GetFont() const;
+    [[nodiscard]] const KerningFont* const GetFont() const;
     void SetFont(KerningFont* font);
     void SetText(const std::string& text);
-    const std::string& GetText() const;
-    std::string& GetText();
+    [[nodiscard]] const std::string& GetText() const;
+    [[nodiscard]] std::string& GetText();
 
     void SetColor(const Rgba& color);
-    const Rgba& GetColor() const;
-    Rgba& GetColor();
+    [[nodiscard]] const Rgba& GetColor() const;
+    [[nodiscard]] Rgba& GetColor();
 
     void SetScale(float value);
-    float GetScale() const;
-    float GetScale();
+    [[nodiscard]] float GetScale() const;
+    [[nodiscard]] float GetScale();
 
     virtual void SetPosition(const Vector4& position) override;
     virtual void SetPositionOffset(const Vector2& offset) override;
     virtual void SetPositionRatio(const Vector2& ratio) override;
 
-    Vector4 CalcDesiredSize() const noexcept override;
+    [[nodiscard]] Vector4 CalcDesiredSize() const noexcept override;
 
 protected:
-    Vector2 CalcBoundsFromFont(KerningFont* font) const;
+    [[nodiscard]] Vector2 CalcBoundsFromFont(KerningFont* font) const;
 
 private:
-    bool LoadFromXml(const XMLElement& elem) noexcept;
+    [[nodiscard]] bool LoadFromXml(const XMLElement& elem) noexcept;
 
     KerningFont* _font = nullptr;
     std::string _fontname{"System32"};

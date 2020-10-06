@@ -39,13 +39,13 @@ public:
     virtual void Update(TimeUtils::FPSeconds deltaSeconds) override;
     virtual void Render() const override;
     virtual void EndFrame() override;
-    virtual bool ProcessSystemMessage(const EngineMessage& msg) noexcept override;
+    [[nodiscard]] virtual bool ProcessSystemMessage(const EngineMessage& msg) noexcept override;
 
-    bool HasFocus() const noexcept;
+    [[nodiscard]] bool HasFocus() const noexcept;
 
-    bool WantsInputCapture() const noexcept;
-    bool WantsInputKeyboardCapture() const noexcept;
-    bool WantsInputMouseCapture() const noexcept;
+    [[nodiscard]] bool WantsInputCapture() const noexcept;
+    [[nodiscard]] bool WantsInputKeyboardCapture() const noexcept;
+    [[nodiscard]] bool WantsInputMouseCapture() const noexcept;
 
     void ToggleImguiDemoWindow() noexcept;
 
@@ -55,13 +55,13 @@ public:
 
     void AddUiWidgetToViewport(UI::Widget& widget);
     void RemoveUiWidgetFromViewport(UI::Widget& widget);
-    UI::Widget* GetWidgetByName(const std::string& nameOrFilepath) const;
+    [[nodiscard]] UI::Widget* GetWidgetByName(const std::string& nameOrFilepath) const;
     void RegisterUiWidgetsFromFolder(std::filesystem::path folderpath, bool recursive = false);
 
 protected:
 private:
     
-    bool IsWidgetLoaded(const UI::Widget& widget) const noexcept;
+    [[nodiscard]] bool IsWidgetLoaded(const UI::Widget& widget) const noexcept;
 
     FileLogger& _fileLogger;
     Renderer& _renderer;
@@ -82,10 +82,10 @@ class Vector4;
 namespace ImGui {
 void Image(const Texture* texture, const Vector2& size, const Vector2& uv0, const Vector2& uv1, const Rgba& tint_col, const Rgba& border_col) noexcept;
 void Image(Texture* texture, const Vector2& size, const Vector2& uv0, const Vector2& uv1, const Rgba& tint_col, const Rgba& border_col) noexcept;
-bool ColorEdit3(const char* label, Rgba& color, ImGuiColorEditFlags flags = 0) noexcept;
-bool ColorEdit4(const char* label, Rgba& color, ImGuiColorEditFlags flags = 0) noexcept;
-bool ColorPicker3(const char* label, Rgba& color, ImGuiColorEditFlags flags = 0) noexcept;
-bool ColorPicker4(const char* label, Rgba& color, ImGuiColorEditFlags flags = 0, Rgba* refColor = nullptr) noexcept;
-bool ColorButton(const char* desc_id, Rgba& color, ImGuiColorEditFlags flags = 0, Vector2 size = Vector2::ZERO) noexcept;
+[[nodiscard]] bool ColorEdit3(const char* label, Rgba& color, ImGuiColorEditFlags flags = 0) noexcept;
+[[nodiscard]] bool ColorEdit4(const char* label, Rgba& color, ImGuiColorEditFlags flags = 0) noexcept;
+[[nodiscard]] bool ColorPicker3(const char* label, Rgba& color, ImGuiColorEditFlags flags = 0) noexcept;
+[[nodiscard]] bool ColorPicker4(const char* label, Rgba& color, ImGuiColorEditFlags flags = 0, Rgba* refColor = nullptr) noexcept;
+[[nodiscard]] bool ColorButton(const char* desc_id, Rgba& color, ImGuiColorEditFlags flags = 0, Vector2 size = Vector2::ZERO) noexcept;
 void TextColored(const Rgba& color, const char* fmt, ...) noexcept;
 } // namespace ImGui

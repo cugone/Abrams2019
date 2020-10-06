@@ -17,11 +17,11 @@ class Camera {
 public:
 
     void SetProjectionMode(ProjectionMode newProjectionMode) noexcept;
-    ProjectionMode GetProjectionMode() const noexcept;
+    [[nodiscard]] ProjectionMode GetProjectionMode() const noexcept;
 
     void Update(TimeUtils::FPSeconds deltaSeconds) noexcept;
 
-    const Vector3& GetPosition() const noexcept;
+    [[nodiscard]] const Vector3& GetPosition() const noexcept;
     void SetPosition(const Vector3& newPosition) noexcept;
     void SetPosition(const Vector2& newPosition) noexcept;
 
@@ -32,45 +32,45 @@ public:
     void AddOffsets(const Matrix4& transform, float fov) noexcept;
     void ClearOffsets() noexcept;
 
-    float GetAspectRatio() const noexcept;
-    float GetInverseAspectRatio() const noexcept;
-    float GetNearDistance() const noexcept;
-    float GetFarDistance() const noexcept;
+    [[nodiscard]] float GetAspectRatio() const noexcept;
+    [[nodiscard]] float GetInverseAspectRatio() const noexcept;
+    [[nodiscard]] float GetNearDistance() const noexcept;
+    [[nodiscard]] float GetFarDistance() const noexcept;
 
-    const Matrix4& GetViewMatrix() const noexcept;
-    const Matrix4& GetProjectionMatrix() const noexcept;
-    const Matrix4& GetViewProjectionMatrix() const noexcept;
+    [[nodiscard]] const Matrix4& GetViewMatrix() const noexcept;
+    [[nodiscard]] const Matrix4& GetProjectionMatrix() const noexcept;
+    [[nodiscard]] const Matrix4& GetViewProjectionMatrix() const noexcept;
 
-    const Matrix4& GetInverseViewMatrix() const noexcept;
-    const Matrix4& GetInverseProjectionMatrix() const noexcept;
-    const Matrix4& GetInverseViewProjectionMatrix() const noexcept;
+    [[nodiscard]] const Matrix4& GetInverseViewMatrix() const noexcept;
+    [[nodiscard]] const Matrix4& GetInverseProjectionMatrix() const noexcept;
+    [[nodiscard]] const Matrix4& GetInverseViewProjectionMatrix() const noexcept;
 
-    const RenderTargetStack::Node& GetRenderTarget() const noexcept;
-    RenderTargetStack::Node& GetRenderTarget() noexcept;
+    [[nodiscard]] const RenderTargetStack::Node& GetRenderTarget() const noexcept;
+    [[nodiscard]] RenderTargetStack::Node& GetRenderTarget() noexcept;
 
-    float GetShake() const noexcept;
+    [[nodiscard]] float GetShake() const noexcept;
 
-    const Matrix4& GetRotationMatrix() const noexcept;
-    Matrix4 CreateBillboardMatrix(const Matrix4& rotationMatrix) noexcept;
-    Matrix4 CreateReverseBillboardMatrix(const Matrix4& rotationMatrix) noexcept;
+    [[nodiscard]] const Matrix4& GetRotationMatrix() const noexcept;
+    [[nodiscard]] Matrix4 CreateBillboardMatrix(const Matrix4& rotationMatrix) noexcept;
+    [[nodiscard]] Matrix4 CreateReverseBillboardMatrix(const Matrix4& rotationMatrix) noexcept;
 
-    Vector3 GetEulerAngles() const noexcept;
-    Vector3 GetEulerAnglesDegrees() const noexcept;
-    void SetEulerAnglesDegrees(const Vector3& eulerAnglesDegrees) noexcept;
-    void SetEulerAngles(const Vector3& eulerAngles) noexcept;
-    void SetForwardFromTarget(const Vector3& lookAtPosition) noexcept;
+    [[nodiscard]] Vector3 GetEulerAngles() const noexcept;
+    [[nodiscard]] Vector3 GetEulerAnglesDegrees() const noexcept;
+    [[nodiscard]] void SetEulerAnglesDegrees(const Vector3& eulerAnglesDegrees) noexcept;
+    [[nodiscard]] void SetEulerAngles(const Vector3& eulerAngles) noexcept;
+    [[nodiscard]] void SetForwardFromTarget(const Vector3& lookAtPosition) noexcept;
 
-    Vector3 GetRight() const noexcept;
-    Vector3 GetUp() const noexcept;
-    Vector3 GetForward() const noexcept;
+    [[nodiscard]] Vector3 GetRight() const noexcept;
+    [[nodiscard]] Vector3 GetUp() const noexcept;
+    [[nodiscard]] Vector3 GetForward() const noexcept;
 
-    float GetYawDegrees() const noexcept;
-    float GetPitchDegrees() const noexcept;
-    float GetRollDegrees() const noexcept;
+    [[nodiscard]] float GetYawDegrees() const noexcept;
+    [[nodiscard]] float GetPitchDegrees() const noexcept;
+    [[nodiscard]] float GetRollDegrees() const noexcept;
 
-    float GetYaw() const noexcept;
-    float GetPitch() const noexcept;
-    float GetRoll() const noexcept;
+    [[nodiscard]] float GetYaw() const noexcept;
+    [[nodiscard]] float GetPitch() const noexcept;
+    [[nodiscard]] float GetRoll() const noexcept;
 
     float trauma = 0.0f;
     float trauma_recovery_rate = 1.0f;

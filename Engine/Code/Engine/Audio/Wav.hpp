@@ -48,12 +48,12 @@ public:
     static constexpr const unsigned int WAV_ERROR_NOT_A_WAV = 1;
     static constexpr const unsigned int WAV_ERROR_BAD_FILE = 2;
 
-    unsigned int Load(std::filesystem::path filepath) noexcept;
-    unsigned char* GetFormatAsBuffer() noexcept;
-    unsigned char* GetDataBuffer() const noexcept;
-    const WavFormatChunk& GetFormatChunk() const noexcept;
-    const WavDataChunk& GetDataChunk() const noexcept;
-    uint32_t GetDataBufferSize() const noexcept;
+    [[nodiscard]] unsigned int Load(std::filesystem::path filepath) noexcept;
+    [[nodiscard]] unsigned char* GetFormatAsBuffer() noexcept;
+    [[nodiscard]] unsigned char* GetDataBuffer() const noexcept;
+    [[nodiscard]] const WavFormatChunk& GetFormatChunk() const noexcept;
+    [[nodiscard]] const WavDataChunk& GetDataChunk() const noexcept;
+    [[nodiscard]] uint32_t GetDataBufferSize() const noexcept;
 
 protected:
 private:

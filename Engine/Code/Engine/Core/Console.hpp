@@ -32,7 +32,7 @@ public:
         void AddCommand(const Command& command);
         void RemoveCommand(const std::string& name);
         void RemoveAllCommands() noexcept;
-        const std::vector<Command>& GetCommands() const noexcept;
+        [[nodiscard]] const std::vector<Command>& GetCommands() const noexcept;
 
     private:
         Console* _console = nullptr;
@@ -51,7 +51,7 @@ public:
     virtual void Update([[maybe_unused]] TimeUtils::FPSeconds) override;
     virtual void Render() const override;
     virtual void EndFrame() override;
-    virtual bool ProcessSystemMessage(const EngineMessage& msg) noexcept override;
+    [[nodiscard]] virtual bool ProcessSystemMessage(const EngineMessage& msg) noexcept override;
 
     void RunCommand(std::string name_and_args) noexcept;
     void RegisterCommand(const Console::Command& command) noexcept;
@@ -64,9 +64,9 @@ public:
     void WarnMsg(const std::string& msg) noexcept;
     void ErrorMsg(const std::string& msg) noexcept;
 
-    void* GetAcceleratorTable() const noexcept;
-    bool IsOpen() const noexcept;
-    bool IsClosed() const noexcept;
+    [[nodiscard]] void* GetAcceleratorTable() const noexcept;
+    [[nodiscard]] bool IsOpen() const noexcept;
+    [[nodiscard]] bool IsClosed() const noexcept;
 
 protected:
 private:
@@ -84,19 +84,19 @@ private:
     void MoveCursorToFront() noexcept;
     void UpdateSelectedRange(std::string::difference_type distance) noexcept;
 
-    bool HandleLeftKey() noexcept;
-    bool HandleRightKey() noexcept;
-    bool HandleDelKey() noexcept;
-    bool HandleHomeKey() noexcept;
-    bool HandleEndKey() noexcept;
-    bool HandleTildeKey() noexcept;
-    bool HandleReturnKey() noexcept;
-    bool HandleUpKey() noexcept;
-    bool HandleDownKey() noexcept;
-    bool HandleBackspaceKey() noexcept;
-    bool HandleEscapeKey() noexcept;
-    bool HandleTabKey() noexcept;
-    bool HandleClipboardCopy() const noexcept;
+    [[nodiscard]] bool HandleLeftKey() noexcept;
+    [[nodiscard]] bool HandleRightKey() noexcept;
+    [[nodiscard]] bool HandleDelKey() noexcept;
+    [[nodiscard]] bool HandleHomeKey() noexcept;
+    [[nodiscard]] bool HandleEndKey() noexcept;
+    [[nodiscard]] bool HandleTildeKey() noexcept;
+    [[nodiscard]] bool HandleReturnKey() noexcept;
+    [[nodiscard]] bool HandleUpKey() noexcept;
+    [[nodiscard]] bool HandleDownKey() noexcept;
+    [[nodiscard]] bool HandleBackspaceKey() noexcept;
+    [[nodiscard]] bool HandleEscapeKey() noexcept;
+    [[nodiscard]] bool HandleTabKey() noexcept;
+    [[nodiscard]] bool HandleClipboardCopy() const noexcept;
     void HandleClipboardPaste() noexcept;
     void HandleClipboardCut() noexcept;
     void HandleSelectAll() noexcept;
@@ -109,7 +109,7 @@ private:
     void RemoveTextInFrontOfCaret() noexcept;
     void RemoveTextBehindCaret() noexcept;
     void RemoveText(std::string::const_iterator start, std::string::const_iterator end) noexcept;
-    std::string CopyText(std::string::const_iterator start, std::string::const_iterator end) const noexcept;
+    [[nodiscard]] std::string CopyText(std::string::const_iterator start, std::string::const_iterator end) const noexcept;
     void PasteText(const std::string& text, std::string::const_iterator loc) noexcept;
     void DrawBackground(const Vector2& view_half_extents) const noexcept;
     void DrawEntryLine(const Vector2& view_half_extents) const noexcept;
@@ -128,18 +128,18 @@ private:
 
     void ToggleHighlightMode() noexcept;
     void SetHighlightMode(bool value) noexcept;
-    bool IsHighlighting() const noexcept;
+    [[nodiscard]] bool IsHighlighting() const noexcept;
     void SetOutputChanged(bool value) noexcept;
     void SetSkipNonWhitespaceMode(bool value) noexcept;
 
     void AutoCompleteEntryline() noexcept;
 
-    Vector2 SetupViewFromCamera() const noexcept;
+    [[nodiscard]] Vector2 SetupViewFromCamera() const noexcept;
 
-    int GetMouseWheelPositionNormalized() const noexcept;
+    [[nodiscard]] int GetMouseWheelPositionNormalized() const noexcept;
 
-    bool WasMouseWheelJustScrolledUp() const noexcept;
-    bool WasMouseWheelJustScrolledDown() const noexcept;
+    [[nodiscard]] bool WasMouseWheelJustScrolledUp() const noexcept;
+    [[nodiscard]] bool WasMouseWheelJustScrolledDown() const noexcept;
 
     FileLogger& _fileLogger;
     Renderer& _renderer;

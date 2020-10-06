@@ -80,19 +80,19 @@ public:
     Material(Renderer& renderer, const XMLElement& element) noexcept;
     ~Material() = default;
 
-    std::string GetName() const noexcept;
-    Shader* GetShader() const noexcept;
-    std::size_t GetTextureCount() const noexcept;
-    Texture* GetTexture(std::size_t i) const noexcept;
-    Texture* GetTexture(const TextureID& id) const noexcept;
-    float GetSpecularIntensity() const noexcept;
-    float GetGlossyFactor() const noexcept;
-    float GetEmissiveFactor() const noexcept;
-    Vector3 GetSpecGlossEmitFactors() const noexcept;
+    [[nodiscard]] std::string GetName() const noexcept;
+    [[nodiscard]] Shader* GetShader() const noexcept;
+    [[nodiscard]] std::size_t GetTextureCount() const noexcept;
+    [[nodiscard]] Texture* GetTexture(std::size_t i) const noexcept;
+    [[nodiscard]] Texture* GetTexture(const TextureID& id) const noexcept;
+    [[nodiscard]] float GetSpecularIntensity() const noexcept;
+    [[nodiscard]] float GetGlossyFactor() const noexcept;
+    [[nodiscard]] float GetEmissiveFactor() const noexcept;
+    [[nodiscard]] Vector3 GetSpecGlossEmitFactors() const noexcept;
 
 protected:
 private:
-    bool LoadFromXml(const XMLElement& element) noexcept;
+    [[nodiscard]] bool LoadFromXml(const XMLElement& element) noexcept;
     void AddTextureSlots(std::size_t count) noexcept;
     void AddTextureSlot() noexcept;
 

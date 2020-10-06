@@ -89,7 +89,7 @@ Window::~Window() noexcept {
     if(_refCount != 0) {
         --_refCount;
         if(_refCount == 0) {
-            Unregister();
+            GUARANTEE_OR_DIE(Unregister(), "Failed to unregister window class");
         }
     }
 }

@@ -33,19 +33,19 @@ public:
     virtual void RemoveChild(Element* child) = 0;
     virtual void RemoveAllChildren() = 0;
 
-    const Widget* const GetOwningWidget() const noexcept;
+    [[nodiscard]] const Widget* const GetOwningWidget() const noexcept;
     void SetOwningWidget(Widget* owner) noexcept;
 
-    Vector4 CalcDesiredSize() const noexcept override;
+    [[nodiscard]] Vector4 CalcDesiredSize() const noexcept override;
 
     void DebugRenderBottomUp(Renderer& renderer) const;
     void DebugRenderTopDown(Renderer& renderer) const;
     void DebugRenderChildren(Renderer& renderer) const;
 protected:
 
-    virtual AABB2 CalcChildrenDesiredBounds() const = 0;
+    [[nodiscard]] virtual AABB2 CalcChildrenDesiredBounds() const = 0;
     virtual void ArrangeChildren() noexcept = 0;
-    virtual bool LoadFromXml(const XMLElement& elem) noexcept = 0;
+    [[nodiscard]] virtual bool LoadFromXml(const XMLElement& elem) noexcept = 0;
     virtual void UpdateChildren(TimeUtils::FPSeconds);
     virtual void RenderChildren(Renderer&) const;
     virtual void SortChildren();
@@ -54,7 +54,7 @@ protected:
     void CalcBoundsForMeThenMyChildren() noexcept;
     void CalcBoundsMyChildrenThenMe() noexcept;
 
-    virtual bool CanHaveManyChildren() const noexcept;
+    [[nodiscard]] virtual bool CanHaveManyChildren() const noexcept;
     std::vector<std::shared_ptr<PanelSlot>> _slots{};
 
 private:

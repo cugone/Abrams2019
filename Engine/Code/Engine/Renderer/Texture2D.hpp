@@ -19,10 +19,10 @@ public:
 
     virtual ~Texture2D() noexcept = default;
 
-    IntVector2 GetDimensions() const noexcept;
+    [[nodiscard]] IntVector2 GetDimensions() const noexcept;
 
-    virtual ID3D11Resource* GetDxResource() const noexcept override;
-    ID3D11Texture2D* GetDxTexture() noexcept;
+    [[nodiscard]] virtual ID3D11Resource* GetDxResource() const noexcept override;
+    [[nodiscard]] ID3D11Texture2D* GetDxTexture() noexcept;
 
 protected:
 private:

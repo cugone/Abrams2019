@@ -27,41 +27,42 @@ public:
     explicit Vector3(const Vector4& vec4) noexcept;
     explicit Vector3(const Quaternion& q) noexcept;
 
-    Vector3 operator+(const Vector3& rhs) const noexcept;
+    [[nodiscard]] Vector3 operator+(const Vector3& rhs) const noexcept;
     Vector3& operator+=(const Vector3& rhs) noexcept;
 
-    Vector3 operator-() const noexcept;
-    Vector3 operator-(const Vector3& rhs) const noexcept;
+    [[nodiscard]] Vector3 operator-() const noexcept;
+    [[nodiscard]] Vector3 operator-(const Vector3& rhs) const noexcept;
     Vector3& operator-=(const Vector3& rhs) noexcept;
 
     friend Vector3 operator*(float lhs, const Vector3& rhs) noexcept;
-    Vector3 operator*(float scalar) const noexcept;
+    [[nodiscard]] Vector3 operator*(float scalar) const noexcept;
     Vector3& operator*=(float scalar) noexcept;
-    Vector3 operator*(const Vector3& rhs) const noexcept;
+    [[nodiscard]] Vector3 operator*(const Vector3& rhs) const noexcept;
     Vector3& operator*=(const Vector3& rhs) noexcept;
 
     friend Vector3 operator/(float lhs, const Vector3& v) noexcept;
-    Vector3 operator/(float scalar) const noexcept;
+    [[nodiscard]] Vector3 operator/(float scalar) const noexcept;
     Vector3 operator/=(float scalar) noexcept;
-    Vector3 operator/(const Vector3& rhs) const noexcept;
+    [[nodiscard]] Vector3 operator/(const Vector3& rhs) const noexcept;
     Vector3 operator/=(const Vector3& rhs) noexcept;
 
-    bool operator==(const Vector3& rhs) const noexcept;
-    bool operator!=(const Vector3& rhs) const noexcept;
+    [[nodiscard]] bool operator==(const Vector3& rhs) const noexcept;
+    [[nodiscard]] bool operator!=(const Vector3& rhs) const noexcept;
 
     friend std::ostream& operator<<(std::ostream& out_stream, const Vector3& v) noexcept;
     friend std::istream& operator>>(std::istream& in_stream, Vector3& v) noexcept;
 
+    //TODO: Consider removing Vector3::GetXYZ(float&, float&, float&)
     void GetXYZ(float& outX, float& outY, float& outZ) const noexcept;
-    Vector2 GetXY() const noexcept;
-    Vector3 GetXYZ() const noexcept;
-    float* GetAsFloatArray() noexcept;
+    [[nodiscard]] Vector2 GetXY() const noexcept;
+    [[nodiscard]] Vector3 GetXYZ() const noexcept;
+    [[nodiscard]] float* GetAsFloatArray() noexcept;
 
-    float CalcLength() const noexcept;
-    float CalcLengthSquared() const noexcept;
+    [[nodiscard]] float CalcLength() const noexcept;
+    [[nodiscard]] float CalcLengthSquared() const noexcept;
 
     float Normalize() noexcept;
-    Vector3 GetNormalize() const noexcept;
+    [[nodiscard]] Vector3 GetNormalize() const noexcept;
 
     void SetXYZ(float newX, float newY, float newZ) noexcept;
 
@@ -76,5 +77,5 @@ private:
 };
 
 namespace StringUtils {
-std::string to_string(const Vector3& v) noexcept;
+[[nodiscard]] std::string to_string(const Vector3& v) noexcept;
 }

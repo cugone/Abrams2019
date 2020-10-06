@@ -18,8 +18,8 @@ public:
     void AddPadding(float paddingRadius) noexcept;
     void Translate(const Vector2& translation) noexcept;
 
-    Disc2 operator-(const Vector2& antiTranslation) noexcept;
-    Disc2 operator+(const Vector2& translation) noexcept;
+    [[nodiscard]] Disc2 operator-(const Vector2& antiTranslation) noexcept;
+    [[nodiscard]] Disc2 operator+(const Vector2& translation) noexcept;
     Disc2& operator+=(const Vector2& translation) noexcept;
     Disc2& operator-=(const Vector2& antiTranslation) noexcept;
 

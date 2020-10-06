@@ -15,16 +15,16 @@ public:
     SpriteSheet(Renderer& renderer, const XMLElement& elem) noexcept;
     ~SpriteSheet() = default;
 
-    AABB2 GetTexCoordsFromSpriteCoords(int spriteX, int spriteY) const noexcept;
-    AABB2 GetTexCoordsFromSpriteCoords(const IntVector2& spriteCoords) const noexcept;
-    AABB2 GetTexCoordsFromSpriteIndex(int spriteIndex) const noexcept;
-    int GetNumSprites() const noexcept;
-    int GetFrameWidth() const noexcept;
-    int GetFrameHeight() const noexcept;
-    IntVector2 GetFrameDimensions() const noexcept;
-    const IntVector2& GetLayout() const noexcept;
-    const Texture* GetTexture() const noexcept;
-    Texture* GetTexture() noexcept;
+    [[nodiscard]] AABB2 GetTexCoordsFromSpriteCoords(int spriteX, int spriteY) const noexcept;
+    [[nodiscard]] AABB2 GetTexCoordsFromSpriteCoords(const IntVector2& spriteCoords) const noexcept;
+    [[nodiscard]] AABB2 GetTexCoordsFromSpriteIndex(int spriteIndex) const noexcept;
+    [[nodiscard]] int GetNumSprites() const noexcept;
+    [[nodiscard]] int GetFrameWidth() const noexcept;
+    [[nodiscard]] int GetFrameHeight() const noexcept;
+    [[nodiscard]] IntVector2 GetFrameDimensions() const noexcept;
+    [[nodiscard]] const IntVector2& GetLayout() const noexcept;
+    [[nodiscard]] const Texture* GetTexture() const noexcept;
+    [[nodiscard]] Texture* GetTexture() noexcept;
 
 protected:
 private:

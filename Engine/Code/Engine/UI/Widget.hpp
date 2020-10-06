@@ -26,12 +26,12 @@ public:
 
     Renderer& GetRenderer() const;
 protected:
-    bool LoadFromXML(const std::filesystem::path& path);
+    [[nodiscard]] bool LoadFromXML(const std::filesystem::path& path);
     void LoadUI(const XMLElement& element);
 
-    std::shared_ptr<Element> CreateWigetTypeFromTypename(std::string nameString, const XMLElement& elem);
+    [[nodiscard]] std::shared_ptr<Element> CreateWigetTypeFromTypename(std::string nameString, const XMLElement& elem);
 private:
-    bool HasPanelChild(const XMLElement& elem);
+    [[nodiscard]] bool HasPanelChild(const XMLElement& elem);
 
     std::vector<std::shared_ptr<Element>> _elements{};
     Renderer& _renderer;

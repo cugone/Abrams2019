@@ -22,20 +22,20 @@ public:
     Shader(Renderer& renderer, const XMLElement& element) noexcept;
     ~Shader() = default;
 
-    const std::string& GetName() const noexcept;
-    ShaderProgram* GetShaderProgram() const noexcept;
-    RasterState* GetRasterState() const noexcept;
-    DepthStencilState* GetDepthStencilState() const noexcept;
-    BlendState* GetBlendState() const noexcept;
-    Sampler* GetSampler() const noexcept;
-    std::vector<std::reference_wrapper<ConstantBuffer>> GetConstantBuffers() const noexcept;
+    [[nodiscard]] const std::string& GetName() const noexcept;
+    [[nodiscard]] ShaderProgram* GetShaderProgram() const noexcept;
+    [[nodiscard]] RasterState* GetRasterState() const noexcept;
+    [[nodiscard]] DepthStencilState* GetDepthStencilState() const noexcept;
+    [[nodiscard]] BlendState* GetBlendState() const noexcept;
+    [[nodiscard]] Sampler* GetSampler() const noexcept;
+    [[nodiscard]] std::vector<std::reference_wrapper<ConstantBuffer>> GetConstantBuffers() const noexcept;
 
 protected:
 private:
     bool LoadFromXml(const XMLElement& element) noexcept;
 
-    PipelineStage ParseTargets(const XMLElement& element) noexcept;
-    std::string ParseEntrypointList(const XMLElement& element) noexcept;
+    [[nodiscard]] PipelineStage ParseTargets(const XMLElement& element) noexcept;
+    [[nodiscard]] std::string ParseEntrypointList(const XMLElement& element) noexcept;
 
     void ValidatePipelineStages(const PipelineStage& targets) noexcept;
 

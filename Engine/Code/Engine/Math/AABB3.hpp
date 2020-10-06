@@ -26,11 +26,11 @@ public:
     void AddPaddingToSidesClamped(float paddingX, float paddingY, float paddingZ) noexcept;
     void Translate(const Vector3& translation) noexcept;
 
-    const Vector3 CalcDimensions() const noexcept;
-    const Vector3 CalcCenter() const noexcept;
+    [[nodiscard]] const Vector3 CalcDimensions() const noexcept;
+    [[nodiscard]] const Vector3 CalcCenter() const noexcept;
 
-    AABB3 operator+(const Vector3& translation) const noexcept;
-    AABB3 operator-(const Vector3& antiTranslation) const noexcept;
+    [[nodiscard]] AABB3 operator+(const Vector3& translation) const noexcept;
+    [[nodiscard]] AABB3 operator-(const Vector3& antiTranslation) const noexcept;
     AABB3& operator+=(const Vector3& translation) noexcept;
     AABB3& operator-=(const Vector3& antiTranslation) noexcept;
 

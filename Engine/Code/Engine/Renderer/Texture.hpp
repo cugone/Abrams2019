@@ -17,24 +17,24 @@ public:
     Texture& operator=(Texture&& rhs) noexcept = default;
     virtual ~Texture() noexcept = 0;
 
-    const IntVector3& GetDimensions() const noexcept;
+    [[nodiscard]] const IntVector3& GetDimensions() const noexcept;
 
     void IsLoaded(bool is_loaded) noexcept;
-    bool IsLoaded() const noexcept;
+    [[nodiscard]] bool IsLoaded() const noexcept;
 
-    bool IsArray() const noexcept;
+    [[nodiscard]] bool IsArray() const noexcept;
 
-    ID3D11DepthStencilView* GetDepthStencilView() noexcept;
-    ID3D11RenderTargetView* GetRenderTargetView() noexcept;
-    ID3D11ShaderResourceView* GetShaderResourceView() noexcept;
-    ID3D11UnorderedAccessView* GetUnorderedAccessView() noexcept;
-    ID3D11DepthStencilView* GetDepthStencilView() const noexcept;
-    ID3D11RenderTargetView* GetRenderTargetView() const noexcept;
-    ID3D11ShaderResourceView* GetShaderResourceView() const noexcept;
-    ID3D11UnorderedAccessView* GetUnorderedAccessView() const noexcept;
+    [[nodiscard]] ID3D11DepthStencilView* GetDepthStencilView() noexcept;
+    [[nodiscard]] ID3D11RenderTargetView* GetRenderTargetView() noexcept;
+    [[nodiscard]] ID3D11ShaderResourceView* GetShaderResourceView() noexcept;
+    [[nodiscard]] ID3D11UnorderedAccessView* GetUnorderedAccessView() noexcept;
+    [[nodiscard]] ID3D11DepthStencilView* GetDepthStencilView() const noexcept;
+    [[nodiscard]] ID3D11RenderTargetView* GetRenderTargetView() const noexcept;
+    [[nodiscard]] ID3D11ShaderResourceView* GetShaderResourceView() const noexcept;
+    [[nodiscard]] ID3D11UnorderedAccessView* GetUnorderedAccessView() const noexcept;
 
     virtual void SetDebugName([[maybe_unused]] const std::string& name) const noexcept = 0;
-    virtual ID3D11Resource* GetDxResource() const noexcept = 0;
+    [[nodiscard]] virtual ID3D11Resource* GetDxResource() const noexcept = 0;
 
 protected:
     const RHIDevice& _device;

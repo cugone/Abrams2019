@@ -48,9 +48,9 @@ public:
         Sound(AudioSystem& audiosystem, std::filesystem::path filepath);
         void AddChannel(Channel* channel) noexcept;
         void RemoveChannel(Channel* channel) noexcept;
-        const std::size_t GetId() const noexcept;
-        const std::size_t GetCount() const noexcept;
-        const FileUtils::Wav* const GetWav() const noexcept;
+        [[nodiscard]] const std::size_t GetId() const noexcept;
+        [[nodiscard]] const std::size_t GetCount() const noexcept;
+        [[nodiscard]] const FileUtils::Wav* const GetWav() const noexcept;
 
     private:
         static std::size_t _id;
@@ -107,16 +107,16 @@ private:
         void SetStopWhenFinishedLooping(bool value);
 
         void SetLoopCount(int count) noexcept;
-        uint32_t GetLoopCount() const noexcept;
+        [[nodiscard]] uint32_t GetLoopCount() const noexcept;
         
         void SetLoopBegin(TimeUtils::FPSeconds start);
         void SetLoopEnd(TimeUtils::FPSeconds end);
         void SetLoopRange(TimeUtils::FPSeconds start, TimeUtils::FPSeconds end);
         
-        float GetVolume() const noexcept;
+        [[nodiscard]] float GetVolume() const noexcept;
         void SetVolume(float newVolume) noexcept;
         
-        float GetFrequency() const noexcept;
+        [[nodiscard]] float GetFrequency() const noexcept;
         void SetFrequency(float newFrequency) noexcept;
 
     private:
@@ -135,9 +135,9 @@ private:
         void SetVolume(float newVolume) noexcept;
         void SetFrequency(float newFrequency) noexcept;
 
-        constexpr std::pair<float, float> GetVolumeAndFrequency() const noexcept;
-        float GetFrequency() const noexcept;
-        float GetVolume() const noexcept;
+        [[nodiscard]] constexpr std::pair<float, float> GetVolumeAndFrequency() const noexcept;
+        [[nodiscard]] float GetFrequency() const noexcept;
+        [[nodiscard]] float GetVolume() const noexcept;
     };
 
 public:
@@ -152,7 +152,7 @@ public:
     virtual void Update([[maybe_unused]] TimeUtils::FPSeconds) override;
     virtual void Render() const override;
     virtual void EndFrame() override;
-    virtual bool ProcessSystemMessage(const EngineMessage& msg) noexcept override;
+    [[nodiscard]] virtual bool ProcessSystemMessage(const EngineMessage& msg) noexcept override;
 
     void SetFormat(const WAVEFORMATEXTENSIBLE& format) noexcept;
     void SetFormat(const FileUtils::Wav::WavFormatChunk& format) noexcept;
@@ -162,10 +162,10 @@ public:
 
     void Play(Sound& snd, const SoundDesc& desc = SoundDesc{}) noexcept;
     void Play(std::filesystem::path filepath, const SoundDesc& desc = SoundDesc{}) noexcept;
-    Sound* CreateSound(std::filesystem::path filepath) noexcept;
+    [[nodiscard]] Sound* CreateSound(std::filesystem::path filepath) noexcept;
 
-    ChannelGroup* GetChannelGroup(const std::string& name) const noexcept;
-    ChannelGroup* GetChannelGroup(Sound* snd) const noexcept;
+    [[nodiscard]] ChannelGroup* GetChannelGroup(const std::string& name) const noexcept;
+    [[nodiscard]] ChannelGroup* GetChannelGroup(Sound* snd) const noexcept;
     void AddChannelGroup(const std::string& name) noexcept;
     void RemoveChannelGroup(const std::string& name) noexcept;
     void AddSoundToChannelGroup(const std::string& channelGroupName, Sound* snd) noexcept;
@@ -174,8 +174,8 @@ public:
     void RemoveSoundFromChannelGroup(const std::string& channelGroupName, const std::filesystem::path& filepath) noexcept;
 
     void SetEngineCallback(EngineCallback* callback) noexcept;
-    const WAVEFORMATEXTENSIBLE& GetFormat() const noexcept;
-    FileUtils::Wav::WavFormatChunk GetLoadedWavFileFormat() const noexcept;
+    [[nodiscard]] const WAVEFORMATEXTENSIBLE& GetFormat() const noexcept;
+    [[nodiscard]] FileUtils::Wav::WavFormatChunk GetLoadedWavFileFormat() const noexcept;
 
 protected:
 private:

@@ -42,25 +42,25 @@ public:
     ShaderProgram& operator=(const ShaderProgram& other) = delete;
     ~ShaderProgram() = default;
 
-    ShaderProgramDesc&& GetDescription() noexcept;
+    [[nodiscard]] ShaderProgramDesc&& GetDescription() noexcept;
     void SetDescription(ShaderProgramDesc&& description) noexcept;
 
-    const std::string& GetName() const noexcept;
-    const RHIDevice* GetParentDevice() const noexcept;
-    ID3DBlob* GetVSByteCode() const noexcept;
-    ID3DBlob* GetHSByteCode() const noexcept;
-    ID3DBlob* GetDSByteCode() const noexcept;
-    ID3DBlob* GetGSByteCode() const noexcept;
-    ID3DBlob* GetPSByteCode() const noexcept;
-    ID3DBlob* GetCSByteCode() const noexcept;
-    InputLayout* GetInputLayout() const noexcept;
-    InputLayoutInstanced* GetInputLayoutInstanced() const noexcept;
-    ID3D11VertexShader* GetVS() const noexcept;
-    ID3D11HullShader* GetHS() const noexcept;
-    ID3D11DomainShader* GetDS() const noexcept;
-    ID3D11GeometryShader* GetGS() const noexcept;
-    ID3D11PixelShader* GetPS() const noexcept;
-    ID3D11ComputeShader* GetCS() const noexcept;
+    [[nodiscard]] const std::string& GetName() const noexcept;
+    [[nodiscard]] const RHIDevice* GetParentDevice() const noexcept;
+    [[nodiscard]] ID3DBlob* GetVSByteCode() const noexcept;
+    [[nodiscard]] ID3DBlob* GetHSByteCode() const noexcept;
+    [[nodiscard]] ID3DBlob* GetDSByteCode() const noexcept;
+    [[nodiscard]] ID3DBlob* GetGSByteCode() const noexcept;
+    [[nodiscard]] ID3DBlob* GetPSByteCode() const noexcept;
+    [[nodiscard]] ID3DBlob* GetCSByteCode() const noexcept;
+    [[nodiscard]] InputLayout* GetInputLayout() const noexcept;
+    [[nodiscard]] InputLayoutInstanced* GetInputLayoutInstanced() const noexcept;
+    [[nodiscard]] ID3D11VertexShader* GetVS() const noexcept;
+    [[nodiscard]] ID3D11HullShader* GetHS() const noexcept;
+    [[nodiscard]] ID3D11DomainShader* GetDS() const noexcept;
+    [[nodiscard]] ID3D11GeometryShader* GetGS() const noexcept;
+    [[nodiscard]] ID3D11PixelShader* GetPS() const noexcept;
+    [[nodiscard]] ID3D11ComputeShader* GetCS() const noexcept;
 
 protected:
 private:

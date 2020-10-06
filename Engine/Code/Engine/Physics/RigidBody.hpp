@@ -101,22 +101,22 @@ public:
     void EnablePhysics(bool enabled);
     void EnableGravity(bool enabled);
     void EnableDrag(bool enabled);
-    bool IsPhysicsEnabled() const;
-    bool IsGravityEnabled() const;
-    bool IsDragEnabled() const;
-    bool IsDynamic() const noexcept;
+    [[nodiscard]] bool IsPhysicsEnabled() const;
+    [[nodiscard]] bool IsGravityEnabled() const;
+    [[nodiscard]] bool IsDragEnabled() const;
+    [[nodiscard]] bool IsDynamic() const noexcept;
 
     void SetAwake(bool awake) noexcept;
     void Wake() noexcept;
     void Sleep() noexcept;
-    bool IsAwake() const;
+    [[nodiscard]] bool IsAwake() const;
 
-    float GetMass() const;
-    float GetInverseMass() const;
+    [[nodiscard]] float GetMass() const;
+    [[nodiscard]] float GetInverseMass() const;
 
-    Matrix4 GetParentTransform() const;
+    [[nodiscard]] Matrix4 GetParentTransform() const;
 
-    Vector2 CalcForceVector() noexcept;
+    [[nodiscard]] Vector2 CalcForceVector() noexcept;
 
     void ApplyImpulse(const Vector2& impulse);
     void ApplyImpulse(const Vector2& direction, float magnitude);
@@ -136,25 +136,25 @@ public:
     void ApplyImpulseAt(const Vector2& position_on_object, const Vector2& direction, float magnitude);
     void ApplyImpulseAt(const Vector2& position_on_object, const Vector2& force);
 
-    const OBB2 GetBounds() const;
+    [[nodiscard]] const OBB2 GetBounds() const;
 
     void SetPosition(const Vector2& newPosition, bool teleport = false) noexcept;
-    const Vector2& GetPosition() const;
+    [[nodiscard]] const Vector2& GetPosition() const;
 
     void SetVelocity(const Vector2& newVelocity) noexcept;
-    const Vector2& GetVelocity() const;
+    [[nodiscard]] const Vector2& GetVelocity() const;
 
-    const Vector2& GetAcceleration() const;
-    Vector2 CalcDimensions() const;
-    float GetOrientationDegrees() const;
-    float GetAngularVelocityDegrees() const;
-    float GetAngularAccelerationDegrees() const;
+    [[nodiscard]] const Vector2& GetAcceleration() const;
+    [[nodiscard]] Vector2 CalcDimensions() const;
+    [[nodiscard]] float GetOrientationDegrees() const;
+    [[nodiscard]] float GetAngularVelocityDegrees() const;
+    [[nodiscard]] float GetAngularAccelerationDegrees() const;
 
-    const Collider* GetCollider() const noexcept;
-    Collider* GetCollider() noexcept;
+    [[nodiscard]] const Collider* GetCollider() const noexcept;
+    [[nodiscard]] Collider* GetCollider() noexcept;
 
     void FellOutOfWorld() noexcept;
-    const bool ShouldKill() const noexcept;
+    [[nodiscard]] const bool ShouldKill() const noexcept;
 protected:
 private:
     void SetAcceleration(const Vector2& newAccleration) noexcept;

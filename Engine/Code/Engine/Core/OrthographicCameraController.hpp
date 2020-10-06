@@ -17,7 +17,7 @@ public:
     void SetupCameraShake(float maxShakeOffsetHorizontal, float maxShakeOffsetVertical, float maxShakeAngleDegrees);
 
     void SetAspectRatio(float aspectRatio) noexcept;
-    float GetAspectRatio() const noexcept;
+    [[nodiscard]] float GetAspectRatio() const noexcept;
 
     void SetPosition(const Vector2& newPosition) noexcept;
     void Translate(const Vector2& offset) noexcept;
@@ -36,10 +36,10 @@ public:
     void SetMinZoomLevel(float minimumLevel) noexcept;
     void SetMaxZoomLevel(float maximumValue) noexcept;
 
-    const Camera2D& GetCamera() const noexcept;
-    Camera2D& GetCamera() noexcept;
+    [[nodiscard]] const Camera2D& GetCamera() const noexcept;
+    [[nodiscard]] Camera2D& GetCamera() noexcept;
 
-    float GetShake() const noexcept;
+    [[nodiscard]] float GetShake() const noexcept;
 
     template<typename F>
     void DoCameraShake(F&& f) {

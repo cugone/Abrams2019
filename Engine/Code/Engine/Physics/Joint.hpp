@@ -34,23 +34,23 @@ public:
     virtual void Attach(RigidBody* a, RigidBody* b, Vector2 localAnchorA = Vector2::ZERO, Vector2 localAnchorB = Vector2::ZERO) noexcept = 0;
     virtual void Detach(const RigidBody* body) noexcept = 0;
     virtual void DetachAll() noexcept = 0;
-    virtual bool IsNotAttached() const noexcept = 0;
+    [[nodiscard]] virtual bool IsNotAttached() const noexcept = 0;
 
     virtual void Notify([[maybe_unused]]TimeUtils::FPSeconds deltaSeconds) noexcept = 0;
     virtual void DebugRender(Renderer& renderer) const noexcept = 0;
 
-    virtual RigidBody* GetBodyA() const noexcept = 0;
-    virtual RigidBody* GetBodyB() const noexcept = 0;
-    virtual Vector2 GetAnchorA() const noexcept = 0;
-    virtual Vector2 GetAnchorB() const noexcept = 0;
-    virtual float GetMassA() const noexcept = 0;
-    virtual float GetMassB() const noexcept = 0;
+    [[nodiscard]] virtual RigidBody* GetBodyA() const noexcept = 0;
+    [[nodiscard]] virtual RigidBody* GetBodyB() const noexcept = 0;
+    [[nodiscard]] virtual Vector2 GetAnchorA() const noexcept = 0;
+    [[nodiscard]] virtual Vector2 GetAnchorB() const noexcept = 0;
+    [[nodiscard]] virtual float GetMassA() const noexcept = 0;
+    [[nodiscard]] virtual float GetMassB() const noexcept = 0;
 
 protected:
 private:
-    virtual bool ConstraintViolated() const noexcept = 0;
-    virtual void SolvePositionConstraint() const noexcept = 0;
-    virtual void SolveVelocityConstraint() const noexcept = 0;
+    [[nodiscard]] virtual bool ConstraintViolated() const noexcept = 0;
+    [[nodiscard]] virtual void SolvePositionConstraint() const noexcept = 0;
+    [[nodiscard]] virtual void SolveVelocityConstraint() const noexcept = 0;
 
     friend class PhysicsSystem;
 };

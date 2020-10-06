@@ -138,10 +138,10 @@ public:
         std::size_t count;
         std::size_t baseVertexLocation;
         Material* material;
-        bool operator==(const DrawInstruction& rhs) {
+        [[nodiscard]] bool operator==(const DrawInstruction& rhs) {
             return material == rhs.material && type == rhs.type;
         }
-        bool operator!=(const DrawInstruction& rhs) {
+        [[nodiscard]] bool operator!=(const DrawInstruction& rhs) {
             return !(*this == rhs);
         }
     };
@@ -149,45 +149,45 @@ public:
     Renderer(FileLogger& fileLogger, Config& theConfig) noexcept;
     ~Renderer() noexcept;
 
-    FileLogger& GetFileLogger() noexcept;
+    [[nodiscard]] FileLogger& GetFileLogger() noexcept;
 
-    bool ProcessSystemMessage(const EngineMessage& msg) noexcept override;
+    [[nodiscard]] bool ProcessSystemMessage(const EngineMessage& msg) noexcept override;
     void Initialize() override;
     void BeginFrame() override;
     void Update(TimeUtils::FPSeconds deltaSeconds) override;
     void Render() const override;
     void EndFrame() override;
 
-    TimeUtils::FPSeconds GetGameFrameTime() const noexcept;
-    TimeUtils::FPSeconds GetSystemFrameTime() const noexcept;
-    TimeUtils::FPSeconds GetGameTime() const noexcept;
-    TimeUtils::FPSeconds GetSystemTime() const noexcept;
+    [[nodiscard]] TimeUtils::FPSeconds GetGameFrameTime() const noexcept;
+    [[nodiscard]] TimeUtils::FPSeconds GetSystemFrameTime() const noexcept;
+    [[nodiscard]] TimeUtils::FPSeconds GetGameTime() const noexcept;
+    [[nodiscard]] TimeUtils::FPSeconds GetSystemTime() const noexcept;
 
     void SetFullscreen(bool isFullscreen) noexcept;
     void SetFullscreenMode() noexcept;
     void SetWindowedMode() noexcept;
     void SetWindowTitle(const std::string& newTitle) noexcept;
-    std::string GetWindowTitle() const noexcept;
+    [[nodiscard]] std::string GetWindowTitle() const noexcept;
 
-    std::unique_ptr<VertexBuffer> CreateVertexBuffer(const VertexBuffer::buffer_t& vbo) const noexcept;
-    std::unique_ptr<IndexBuffer> CreateIndexBuffer(const IndexBuffer::buffer_t& ibo) const noexcept;
-    std::unique_ptr<ConstantBuffer> CreateConstantBuffer(void* const& buffer, const std::size_t& buffer_size) const noexcept;
-    std::unique_ptr<StructuredBuffer> CreateStructuredBuffer(const StructuredBuffer::buffer_t& sbo, std::size_t element_size, std::size_t element_count) const noexcept;
+    [[nodiscard]] std::unique_ptr<VertexBuffer> CreateVertexBuffer(const VertexBuffer::buffer_t& vbo) const noexcept;
+    [[nodiscard]] std::unique_ptr<IndexBuffer> CreateIndexBuffer(const IndexBuffer::buffer_t& ibo) const noexcept;
+    [[nodiscard]] std::unique_ptr<ConstantBuffer> CreateConstantBuffer(void* const& buffer, const std::size_t& buffer_size) const noexcept;
+    [[nodiscard]] std::unique_ptr<StructuredBuffer> CreateStructuredBuffer(const StructuredBuffer::buffer_t& sbo, std::size_t element_size, std::size_t element_count) const noexcept;
 
-    Texture* CreateOrGetTexture(const std::filesystem::path& filepath, const IntVector3& dimensions) noexcept;
+    [[nodiscard]] Texture* CreateOrGetTexture(const std::filesystem::path& filepath, const IntVector3& dimensions) noexcept;
     void RegisterTexturesFromFolder(std::filesystem::path folderpath, bool recursive = false) noexcept;
-    bool RegisterTexture(const std::string& name, std::unique_ptr<Texture> texture) noexcept;
+    [[nodiscard]] bool RegisterTexture(const std::string& name, std::unique_ptr<Texture> texture) noexcept;
     void SetTexture(Texture* texture, unsigned int registerIndex = 0) noexcept;
 
-    Texture* GetFullscreenTexture() const noexcept;
-    Texture* GetTexture(const std::string& nameOrFile) noexcept;
+    [[nodiscard]] Texture* GetFullscreenTexture() const noexcept;
+    [[nodiscard]] Texture* GetTexture(const std::string& nameOrFile) noexcept;
 
-    std::unique_ptr<Texture> CreateDepthStencil(const RHIDevice& owner, const IntVector2& dimensions) noexcept;
-    std::unique_ptr<Texture> CreateRenderableDepthStencil(const RHIDevice& owner, const IntVector2& dimensions) noexcept;
+    [[nodiscard]] std::unique_ptr<Texture> CreateDepthStencil(const RHIDevice& owner, const IntVector2& dimensions) noexcept;
+    [[nodiscard]] std::unique_ptr<Texture> CreateRenderableDepthStencil(const RHIDevice& owner, const IntVector2& dimensions) noexcept;
 
-    Texture* GetDefaultDepthStencil() const noexcept;
+    [[nodiscard]] Texture* GetDefaultDepthStencil() const noexcept;
     void SetDepthStencilState(DepthStencilState* depthstencil) noexcept;
-    DepthStencilState* GetDepthStencilState(const std::string& name) noexcept;
+    [[nodiscard]] DepthStencilState* GetDepthStencilState(const std::string& name) noexcept;
     void CreateAndRegisterDepthStencilStateFromDepthStencilDescription(const std::string& name, const DepthStencilDesc& desc) noexcept;
     void EnableDepth(bool isDepthEnabled) noexcept;
     void EnableDepth() noexcept;
@@ -197,44 +197,44 @@ public:
     void DisableDepthWrite() noexcept;
 
     void SetDepthComparison(ComparisonFunction cf) noexcept;
-    ComparisonFunction GetDepthComparison() const noexcept;
+    [[nodiscard]] ComparisonFunction GetDepthComparison() const noexcept;
     void SetStencilFrontComparison(ComparisonFunction cf) noexcept;
     void SetStencilBackComparison(ComparisonFunction cf) noexcept;
     void EnableStencilWrite() noexcept;
     void DisableStencilWrite() noexcept;
 
-    Texture* Create1DTexture(std::filesystem::path filepath, const BufferUsage& bufferUsage, const BufferBindUsage& bindUsage, const ImageFormat& imageFormat) noexcept;
-    std::unique_ptr<Texture> Create1DTextureFromMemory(const unsigned char* data, unsigned int width = 1, const BufferUsage& bufferUsage = BufferUsage::Static, const BufferBindUsage& bindUsage = BufferBindUsage::Shader_Resource, const ImageFormat& imageFormat = ImageFormat::R8G8B8A8_UNorm) noexcept;
-    std::unique_ptr<Texture> Create1DTextureFromMemory(const std::vector<Rgba>& data, unsigned int width = 1, const BufferUsage& bufferUsage = BufferUsage::Static, const BufferBindUsage& bindUsage = BufferBindUsage::Shader_Resource, const ImageFormat& imageFormat = ImageFormat::R8G8B8A8_UNorm) noexcept;
-    Texture* Create2DTexture(std::filesystem::path filepath, const BufferUsage& bufferUsage, const BufferBindUsage& bindUsage, const ImageFormat& imageFormat) noexcept;
-    std::unique_ptr<Texture> Create2DTextureFromMemory(const unsigned char* data, unsigned int width = 1, unsigned int height = 1, const BufferUsage& bufferUsage = BufferUsage::Static, const BufferBindUsage& bindUsage = BufferBindUsage::Shader_Resource, const ImageFormat& imageFormat = ImageFormat::R8G8B8A8_UNorm) noexcept;
-    std::unique_ptr<Texture> Create2DTextureFromMemory(const std::vector<Rgba>& data, unsigned int width = 1, unsigned int height = 1, const BufferUsage& bufferUsage = BufferUsage::Static, const BufferBindUsage& bindUsage = BufferBindUsage::Shader_Resource, const ImageFormat& imageFormat = ImageFormat::R8G8B8A8_UNorm) noexcept;
-    std::unique_ptr<Texture> Create2DTextureFromMemory(const void* data, std::size_t elementSize, unsigned int width = 1, unsigned int height = 1, const BufferUsage& bufferUsage = BufferUsage::Static, const BufferBindUsage& bindUsage = BufferBindUsage::Shader_Resource, const ImageFormat& imageFormat = ImageFormat::R8G8B8A8_UNorm) noexcept;
-    std::unique_ptr<Texture> Create2DTextureArrayFromMemory(const unsigned char* data, unsigned int width = 1, unsigned int height = 1, unsigned int depth = 1, const BufferUsage& bufferUsage = BufferUsage::Static, const BufferBindUsage& bindUsage = BufferBindUsage::Shader_Resource, const ImageFormat& imageFormat = ImageFormat::R8G8B8A8_UNorm) noexcept;
-    std::unique_ptr<Texture> Create2DTextureFromGifBuffer(const unsigned char* data, unsigned int width = 1, unsigned int height = 1, unsigned int depth = 1, const BufferUsage& bufferUsage = BufferUsage::Static, const BufferBindUsage& bindUsage = BufferBindUsage::Shader_Resource, const ImageFormat& imageFormat = ImageFormat::R8G8B8A8_UNorm) noexcept;
-    std::unique_ptr<Texture> Create2DTextureArrayFromGifBuffer(const unsigned char* data, unsigned int width = 1, unsigned int height = 1, unsigned int depth = 1, const BufferUsage& bufferUsage = BufferUsage::Static, const BufferBindUsage& bindUsage = BufferBindUsage::Shader_Resource, const ImageFormat& imageFormat = ImageFormat::R8G8B8A8_UNorm) noexcept;
-    Texture* Create3DTexture(std::filesystem::path filepath, const IntVector3& dimensions, const BufferUsage& bufferUsage, const BufferBindUsage& bindUsage, const ImageFormat& imageFormat) noexcept;
-    std::unique_ptr<Texture> Create3DTextureFromMemory(const unsigned char* data, unsigned int width = 1, unsigned int height = 1, unsigned int depth = 1, const BufferUsage& bufferUsage = BufferUsage::Static, const BufferBindUsage& bindUsage = BufferBindUsage::Shader_Resource, const ImageFormat& imageFormat = ImageFormat::R8G8B8A8_UNorm) noexcept;
-    std::unique_ptr<Texture> Create3DTextureFromMemory(const std::vector<Rgba>& data, unsigned int width = 1, unsigned int height = 1, unsigned int depth = 1, const BufferUsage& bufferUsage = BufferUsage::Static, const BufferBindUsage& bindUsage = BufferBindUsage::Shader_Resource, const ImageFormat& imageFormat = ImageFormat::R8G8B8A8_UNorm) noexcept;
-    Texture* CreateTexture(std::filesystem::path filepath, const IntVector3& dimensions, const BufferUsage& bufferUsage = BufferUsage::Static, const BufferBindUsage& bindUsage = BufferBindUsage::Shader_Resource, const ImageFormat& imageFormat = ImageFormat::R8G8B8A8_UNorm) noexcept;
+    [[nodiscard]] Texture* Create1DTexture(std::filesystem::path filepath, const BufferUsage& bufferUsage, const BufferBindUsage& bindUsage, const ImageFormat& imageFormat) noexcept;
+    [[nodiscard]] std::unique_ptr<Texture> Create1DTextureFromMemory(const unsigned char* data, unsigned int width = 1, const BufferUsage& bufferUsage = BufferUsage::Static, const BufferBindUsage& bindUsage = BufferBindUsage::Shader_Resource, const ImageFormat& imageFormat = ImageFormat::R8G8B8A8_UNorm) noexcept;
+    [[nodiscard]] std::unique_ptr<Texture> Create1DTextureFromMemory(const std::vector<Rgba>& data, unsigned int width = 1, const BufferUsage& bufferUsage = BufferUsage::Static, const BufferBindUsage& bindUsage = BufferBindUsage::Shader_Resource, const ImageFormat& imageFormat = ImageFormat::R8G8B8A8_UNorm) noexcept;
+    [[nodiscard]] Texture* Create2DTexture(std::filesystem::path filepath, const BufferUsage& bufferUsage, const BufferBindUsage& bindUsage, const ImageFormat& imageFormat) noexcept;
+    [[nodiscard]] std::unique_ptr<Texture> Create2DTextureFromMemory(const unsigned char* data, unsigned int width = 1, unsigned int height = 1, const BufferUsage& bufferUsage = BufferUsage::Static, const BufferBindUsage& bindUsage = BufferBindUsage::Shader_Resource, const ImageFormat& imageFormat = ImageFormat::R8G8B8A8_UNorm) noexcept;
+    [[nodiscard]] std::unique_ptr<Texture> Create2DTextureFromMemory(const std::vector<Rgba>& data, unsigned int width = 1, unsigned int height = 1, const BufferUsage& bufferUsage = BufferUsage::Static, const BufferBindUsage& bindUsage = BufferBindUsage::Shader_Resource, const ImageFormat& imageFormat = ImageFormat::R8G8B8A8_UNorm) noexcept;
+    [[nodiscard]] std::unique_ptr<Texture> Create2DTextureFromMemory(const void* data, std::size_t elementSize, unsigned int width = 1, unsigned int height = 1, const BufferUsage& bufferUsage = BufferUsage::Static, const BufferBindUsage& bindUsage = BufferBindUsage::Shader_Resource, const ImageFormat& imageFormat = ImageFormat::R8G8B8A8_UNorm) noexcept;
+    [[nodiscard]] std::unique_ptr<Texture> Create2DTextureArrayFromMemory(const unsigned char* data, unsigned int width = 1, unsigned int height = 1, unsigned int depth = 1, const BufferUsage& bufferUsage = BufferUsage::Static, const BufferBindUsage& bindUsage = BufferBindUsage::Shader_Resource, const ImageFormat& imageFormat = ImageFormat::R8G8B8A8_UNorm) noexcept;
+    [[nodiscard]] std::unique_ptr<Texture> Create2DTextureFromGifBuffer(const unsigned char* data, unsigned int width = 1, unsigned int height = 1, unsigned int depth = 1, const BufferUsage& bufferUsage = BufferUsage::Static, const BufferBindUsage& bindUsage = BufferBindUsage::Shader_Resource, const ImageFormat& imageFormat = ImageFormat::R8G8B8A8_UNorm) noexcept;
+    [[nodiscard]] std::unique_ptr<Texture> Create2DTextureArrayFromGifBuffer(const unsigned char* data, unsigned int width = 1, unsigned int height = 1, unsigned int depth = 1, const BufferUsage& bufferUsage = BufferUsage::Static, const BufferBindUsage& bindUsage = BufferBindUsage::Shader_Resource, const ImageFormat& imageFormat = ImageFormat::R8G8B8A8_UNorm) noexcept;
+    [[nodiscard]] Texture* Create3DTexture(std::filesystem::path filepath, const IntVector3& dimensions, const BufferUsage& bufferUsage, const BufferBindUsage& bindUsage, const ImageFormat& imageFormat) noexcept;
+    [[nodiscard]] std::unique_ptr<Texture> Create3DTextureFromMemory(const unsigned char* data, unsigned int width = 1, unsigned int height = 1, unsigned int depth = 1, const BufferUsage& bufferUsage = BufferUsage::Static, const BufferBindUsage& bindUsage = BufferBindUsage::Shader_Resource, const ImageFormat& imageFormat = ImageFormat::R8G8B8A8_UNorm) noexcept;
+    [[nodiscard]] std::unique_ptr<Texture> Create3DTextureFromMemory(const std::vector<Rgba>& data, unsigned int width = 1, unsigned int height = 1, unsigned int depth = 1, const BufferUsage& bufferUsage = BufferUsage::Static, const BufferBindUsage& bindUsage = BufferBindUsage::Shader_Resource, const ImageFormat& imageFormat = ImageFormat::R8G8B8A8_UNorm) noexcept;
+    [[nodiscard]] Texture* CreateTexture(std::filesystem::path filepath, const IntVector3& dimensions, const BufferUsage& bufferUsage = BufferUsage::Static, const BufferBindUsage& bindUsage = BufferBindUsage::Shader_Resource, const ImageFormat& imageFormat = ImageFormat::R8G8B8A8_UNorm) noexcept;
 
-    std::shared_ptr<SpriteSheet> CreateSpriteSheet(const std::filesystem::path& filepath, unsigned int width = 1, unsigned int height = 1) noexcept;
-    std::shared_ptr<SpriteSheet> CreateSpriteSheet(const XMLElement& elem) noexcept;
-    std::unique_ptr<AnimatedSprite> CreateAnimatedSprite(std::filesystem::path filepath) noexcept;
-    std::unique_ptr<AnimatedSprite> CreateAnimatedSprite(const AnimatedSpriteDesc& desc) noexcept;
-    std::unique_ptr<AnimatedSprite> CreateAnimatedSprite(std::weak_ptr<SpriteSheet> sheet, const IntVector2& startSpriteCoords = IntVector2::ZERO) noexcept;
-    std::unique_ptr<AnimatedSprite> CreateAnimatedSprite(std::weak_ptr<SpriteSheet> sheet, const XMLElement& elem) noexcept;
-    std::unique_ptr<AnimatedSprite> CreateAnimatedSprite(const XMLElement& elem) noexcept;
+    [[nodiscard]] std::shared_ptr<SpriteSheet> CreateSpriteSheet(const std::filesystem::path& filepath, unsigned int width = 1, unsigned int height = 1) noexcept;
+    [[nodiscard]] std::shared_ptr<SpriteSheet> CreateSpriteSheet(const XMLElement& elem) noexcept;
+    [[nodiscard]] std::unique_ptr<AnimatedSprite> CreateAnimatedSprite(std::filesystem::path filepath) noexcept;
+    [[nodiscard]] std::unique_ptr<AnimatedSprite> CreateAnimatedSprite(const AnimatedSpriteDesc& desc) noexcept;
+    [[nodiscard]] std::unique_ptr<AnimatedSprite> CreateAnimatedSprite(std::weak_ptr<SpriteSheet> sheet, const IntVector2& startSpriteCoords = IntVector2::ZERO) noexcept;
+    [[nodiscard]] std::unique_ptr<AnimatedSprite> CreateAnimatedSprite(std::weak_ptr<SpriteSheet> sheet, const XMLElement& elem) noexcept;
+    [[nodiscard]] std::unique_ptr<AnimatedSprite> CreateAnimatedSprite(const XMLElement& elem) noexcept;
 
-    const RenderTargetStack& GetRenderTargetStack() const noexcept;
+    [[nodiscard]] const RenderTargetStack& GetRenderTargetStack() const noexcept;
     void PushRenderTarget(const RenderTargetStack::Node& newRenderTarget = RenderTargetStack::Node{}) noexcept;
     void PopRenderTarget() noexcept;
     void ClearRenderTargets(const RenderTargetType& rtt) noexcept;
     void SetRenderTarget(Texture* color_target = nullptr, Texture* depthstencil_target = nullptr) noexcept;
     void SetRenderTargetsToBackBuffer() noexcept;
-    ViewportDesc GetCurrentViewport() const;
-    float GetCurrentViewportAspectRatio() const;
-    std::vector<ViewportDesc> GetAllViewports() const;
+    [[nodiscard]] ViewportDesc GetCurrentViewport() const;
+    [[nodiscard]] float GetCurrentViewportAspectRatio() const;
+    [[nodiscard]] std::vector<ViewportDesc> GetAllViewports() const;
     void SetViewport(const ViewportDesc& desc) noexcept;
     void SetViewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height) noexcept;
     void SetViewport(const AABB2& viewport) noexcept;
@@ -283,64 +283,64 @@ public:
     void SetSpecGlossEmitFactors(Material* mat) noexcept;
     void SetUseVertexNormalsForLighting(bool value) noexcept;
 
-    const light_t& GetLight(unsigned int index) const noexcept;
+    [[nodiscard]] const light_t& GetLight(unsigned int index) const noexcept;
     void SetPointLight(unsigned int index, const PointLightDesc& desc) noexcept;
     void SetDirectionalLight(unsigned int index, const DirectionalLightDesc& desc) noexcept;
     void SetSpotlight(unsigned int index, const SpotLightDesc& desc) noexcept;
 
-    RHIDeviceContext* GetDeviceContext() const noexcept;
-    const RHIDevice* GetDevice() const noexcept;
-    RHIOutput* GetOutput() const noexcept;
-    RHIInstance* GetInstance() const noexcept;
+    [[nodiscard]] RHIDeviceContext* GetDeviceContext() const noexcept;
+    [[nodiscard]] const RHIDevice* GetDevice() const noexcept;
+    [[nodiscard]] RHIOutput* GetOutput() const noexcept;
+    [[nodiscard]] RHIInstance* GetInstance() const noexcept;
 
-    ShaderProgram* GetShaderProgram(const std::string& nameOrFile) noexcept;
-    std::unique_ptr<ShaderProgram> CreateShaderProgramFromHlslFile(std::filesystem::path filepath, const std::string& entryPointList, const PipelineStage& target) const noexcept;
-    std::unique_ptr<ShaderProgram> CreateShaderProgramFromCsoFile(std::filesystem::path filepath, const PipelineStage& target) const noexcept;
-    std::unique_ptr<ShaderProgram> CreateShaderProgramFromDesc(ShaderProgramDesc&& desc) const noexcept;
+    [[nodiscard]] ShaderProgram* GetShaderProgram(const std::string& nameOrFile) noexcept;
+    [[nodiscard]] std::unique_ptr<ShaderProgram> CreateShaderProgramFromHlslFile(std::filesystem::path filepath, const std::string& entryPointList, const PipelineStage& target) const noexcept;
+    [[nodiscard]] std::unique_ptr<ShaderProgram> CreateShaderProgramFromCsoFile(std::filesystem::path filepath, const PipelineStage& target) const noexcept;
+    [[nodiscard]] std::unique_ptr<ShaderProgram> CreateShaderProgramFromDesc(ShaderProgramDesc&& desc) const noexcept;
     void CreateAndRegisterShaderProgramFromHlslFile(std::filesystem::path filepath, const std::string& entryPointList, const PipelineStage& target) noexcept;
     void CreateAndRegisterShaderProgramFromCsoFile(std::filesystem::path filepath, const PipelineStage& target) noexcept;
     void CreateAndRegisterRasterStateFromRasterDescription(const std::string& name, const RasterDesc& desc) noexcept;
     void SetRasterState(RasterState* raster) noexcept;
     void SetRasterState(FillMode fillmode, CullMode cullmode) noexcept;
-    RasterState* GetRasterState(const std::string& name) noexcept;
+    [[nodiscard]] RasterState* GetRasterState(const std::string& name) noexcept;
 
     void SetWireframeRaster(CullMode cullmode = CullMode::Back) noexcept;
     void SetSolidRaster(CullMode cullmode = CullMode::Back) noexcept;
 
     void CreateAndRegisterSamplerFromSamplerDescription(const std::string& name, const SamplerDesc& desc) noexcept;
-    Sampler* GetSampler(const std::string& name) noexcept;
+    [[nodiscard]] Sampler* GetSampler(const std::string& name) noexcept;
     void SetSampler(Sampler* sampler) noexcept;
 
     void SetVSync(bool value) noexcept;
 
-    std::unique_ptr<Material> CreateMaterialFromFont(KerningFont* font) noexcept;
-    bool RegisterMaterial(std::filesystem::path filepath) noexcept;
+    [[nodiscard]] std::unique_ptr<Material> CreateMaterialFromFont(KerningFont* font) noexcept;
+    [[nodiscard]] bool RegisterMaterial(std::filesystem::path filepath) noexcept;
     void RegisterMaterial(std::unique_ptr<Material> mat) noexcept;
     void RegisterMaterialsFromFolder(std::filesystem::path folderpath, bool recursive = false) noexcept;
 
-    std::size_t GetMaterialCount() noexcept;
-    Material* GetMaterial(const std::string& nameOrFile) noexcept;
+    [[nodiscard]] std::size_t GetMaterialCount() noexcept;
+    [[nodiscard]] Material* GetMaterial(const std::string& nameOrFile) noexcept;
     void SetMaterial(Material* material) noexcept;
     void SetMaterial(const std::string& nameOrFile) noexcept;
 
-    bool IsTextureLoaded(const std::string& nameOrFile) const noexcept;
-    bool IsTextureNotLoaded(const std::string& nameOrFile) const noexcept;
+    [[nodiscard]] bool IsTextureLoaded(const std::string& nameOrFile) const noexcept;
+    [[nodiscard]] bool IsTextureNotLoaded(const std::string& nameOrFile) const noexcept;
 
-    bool RegisterShader(std::filesystem::path filepath) noexcept;
+    [[nodiscard]] bool RegisterShader(std::filesystem::path filepath) noexcept;
     void RegisterShader(std::unique_ptr<Shader> shader) noexcept;
 
-    std::size_t GetShaderCount() const noexcept;
-    Shader* GetShader(const std::string& nameOrFile) noexcept;
-    std::string GetShaderName(const std::filesystem::path filepath) noexcept;
+    [[nodiscard]] std::size_t GetShaderCount() const noexcept;
+    [[nodiscard]] Shader* GetShader(const std::string& nameOrFile) noexcept;
+    [[nodiscard]] std::string GetShaderName(const std::filesystem::path filepath) noexcept;
 
     void SetComputeShader(Shader* shader) noexcept;
     void DispatchComputeJob(const ComputeJob& job) noexcept;
 
-    std::size_t GetFontCount() const noexcept;
-    KerningFont* GetFont(const std::string& nameOrFile) noexcept;
+    [[nodiscard]] std::size_t GetFontCount() const noexcept;
+    [[nodiscard]] KerningFont* GetFont(const std::string& nameOrFile) noexcept;
 
     void RegisterFont(std::unique_ptr<KerningFont> font) noexcept;
-    bool RegisterFont(std::filesystem::path filepath) noexcept;
+    [[nodiscard]] bool RegisterFont(std::filesystem::path filepath) noexcept;
     void RegisterFontsFromFolder(std::filesystem::path folderpath, bool recursive = false) noexcept;
 
     void UpdateGameTime(TimeUtils::FPSeconds deltaSeconds) noexcept;
@@ -359,19 +359,19 @@ public:
     void SetPerspectiveProjectionFromCamera(const Camera3D& camera) noexcept;
     void SetCamera(const Camera3D& camera) noexcept;
     void SetCamera(const Camera2D& camera) noexcept;
-    Camera3D GetCamera() const noexcept;
+    [[nodiscard]] Camera3D GetCamera() const noexcept;
 
-    Vector2 ConvertWorldToScreenCoords(const Vector3& worldCoords) const noexcept;
-    Vector2 ConvertWorldToScreenCoords(const Vector2& worldCoords) const noexcept;
-    Vector2 ConvertWorldToScreenCoords(const Camera3D& camera, const Vector3& worldCoords) const noexcept;
-    Vector2 ConvertWorldToScreenCoords(const Camera2D& camera, const Vector2& worldCoords) const noexcept;
-    Vector3 ConvertScreenToWorldCoords(const Vector2& mouseCoords) const noexcept;
-    Vector3 ConvertScreenToWorldCoords(const Camera3D& camera, const Vector2& mouseCoords) const noexcept;
-    Vector2 ConvertScreenToWorldCoords(const Camera2D& camera, const Vector2& mouseCoords) const noexcept;
+    [[nodiscard]] Vector2 ConvertWorldToScreenCoords(const Vector3& worldCoords) const noexcept;
+    [[nodiscard]] Vector2 ConvertWorldToScreenCoords(const Vector2& worldCoords) const noexcept;
+    [[nodiscard]] Vector2 ConvertWorldToScreenCoords(const Camera3D& camera, const Vector3& worldCoords) const noexcept;
+    [[nodiscard]] Vector2 ConvertWorldToScreenCoords(const Camera2D& camera, const Vector2& worldCoords) const noexcept;
+    [[nodiscard]] Vector3 ConvertScreenToWorldCoords(const Vector2& mouseCoords) const noexcept;
+    [[nodiscard]] Vector3 ConvertScreenToWorldCoords(const Camera3D& camera, const Vector2& mouseCoords) const noexcept;
+    [[nodiscard]] Vector2 ConvertScreenToWorldCoords(const Camera2D& camera, const Vector2& mouseCoords) const noexcept;
 
-    Vector3 ConvertScreenToNdcCoords(const Camera3D& camera, const Vector2& mouseCoords) const noexcept;
-    Vector2 ConvertScreenToNdcCoords(const Camera2D& camera, const Vector2& mouseCoords) const noexcept;
-    Vector3 ConvertScreenToNdcCoords(const Vector2& mouseCoords) const noexcept;
+    [[nodiscard]] Vector3 ConvertScreenToNdcCoords(const Camera3D& camera, const Vector2& mouseCoords) const noexcept;
+    [[nodiscard]] Vector2 ConvertScreenToNdcCoords(const Camera2D& camera, const Vector2& mouseCoords) const noexcept;
+    [[nodiscard]] Vector3 ConvertScreenToNdcCoords(const Vector2& mouseCoords) const noexcept;
 
 
     void SetConstantBuffer(unsigned int index, ConstantBuffer* buffer) noexcept;
@@ -417,7 +417,7 @@ public:
     constexpr static unsigned int STRUCTURED_BUFFER_START_INDEX = 64;
     constexpr static unsigned int MAX_LIGHT_COUNT = max_light_count;
 
-    std::vector<std::unique_ptr<ConstantBuffer>> CreateConstantBuffersFromShaderProgram(const ShaderProgram* _shader_program) const noexcept;
+    [[nodiscard]] std::vector<std::unique_ptr<ConstantBuffer>> CreateConstantBuffersFromShaderProgram(const ShaderProgram* _shader_program) const noexcept;
 
     void SetWinProc(const std::function<bool(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)>& windowProcedure) noexcept;
 
@@ -428,7 +428,7 @@ public:
 protected:
 private:
     void UpdateSystemTime(TimeUtils::FPSeconds deltaSeconds) noexcept;
-    bool RegisterTexture(const std::filesystem::path& filepath) noexcept;
+    [[nodiscard]] bool RegisterTexture(const std::filesystem::path& filepath) noexcept;
     void RegisterShaderProgram(const std::string& name, std::unique_ptr<ShaderProgram> sp) noexcept;
     void RegisterShaderProgramsFromFolder(std::filesystem::path folderpath, const std::string& entrypoint, const PipelineStage& target, bool recursive = false) noexcept;
     void RegisterShader(const std::string& name, std::unique_ptr<Shader> shader) noexcept;
@@ -447,9 +447,9 @@ private:
     void Draw(const PrimitiveType& topology, VertexBuffer* vbo, std::size_t vertex_count) noexcept;
     void DrawIndexed(const PrimitiveType& topology, VertexBuffer* vbo, IndexBuffer* ibo, std::size_t index_count, std::size_t startVertex = 0, std::size_t baseVertexLocation = 0) noexcept;
 
-    std::shared_ptr<SpriteSheet> CreateSpriteSheetFromGif(std::filesystem::path filepath) noexcept;
-    std::shared_ptr<SpriteSheet> CreateSpriteSheet(Texture* texture, int tilesWide, int tilesHigh) noexcept;
-    std::unique_ptr<AnimatedSprite> CreateAnimatedSpriteFromGif(std::filesystem::path filepath) noexcept;
+    [[nodiscard]] std::shared_ptr<SpriteSheet> CreateSpriteSheetFromGif(std::filesystem::path filepath) noexcept;
+    [[nodiscard]] std::shared_ptr<SpriteSheet> CreateSpriteSheet(Texture* texture, int tilesWide, int tilesHigh) noexcept;
+    [[nodiscard]] std::unique_ptr<AnimatedSprite> CreateAnimatedSpriteFromGif(std::filesystem::path filepath) noexcept;
 
     void SetLightAtIndex(unsigned int index, const light_t& light) noexcept;
     void SetPointLight(unsigned int index, const light_t& light) noexcept;
@@ -457,69 +457,69 @@ private:
     void SetSpotlight(unsigned int index, const light_t& light) noexcept;
 
     void CreateAndRegisterDefaultTextures() noexcept;
-    std::unique_ptr<Texture> CreateDefaultTexture() noexcept;
-    std::unique_ptr<Texture> CreateInvalidTexture() noexcept;
-    std::unique_ptr<Texture> CreateDefaultDiffuseTexture() noexcept;
-    std::unique_ptr<Texture> CreateDefaultNormalTexture() noexcept;
-    std::unique_ptr<Texture> CreateDefaultDisplacementTexture() noexcept;
-    std::unique_ptr<Texture> CreateDefaultSpecularTexture() noexcept;
-    std::unique_ptr<Texture> CreateDefaultOcclusionTexture() noexcept;
-    std::unique_ptr<Texture> CreateDefaultEmissiveTexture() noexcept;
-    std::unique_ptr<Texture> CreateDefaultFullscreenTexture() noexcept;
+    [[nodiscard]] std::unique_ptr<Texture> CreateDefaultTexture() noexcept;
+    [[nodiscard]] std::unique_ptr<Texture> CreateInvalidTexture() noexcept;
+    [[nodiscard]] std::unique_ptr<Texture> CreateDefaultDiffuseTexture() noexcept;
+    [[nodiscard]] std::unique_ptr<Texture> CreateDefaultNormalTexture() noexcept;
+    [[nodiscard]] std::unique_ptr<Texture> CreateDefaultDisplacementTexture() noexcept;
+    [[nodiscard]] std::unique_ptr<Texture> CreateDefaultSpecularTexture() noexcept;
+    [[nodiscard]] std::unique_ptr<Texture> CreateDefaultOcclusionTexture() noexcept;
+    [[nodiscard]] std::unique_ptr<Texture> CreateDefaultEmissiveTexture() noexcept;
+    [[nodiscard]] std::unique_ptr<Texture> CreateDefaultFullscreenTexture() noexcept;
 
     void CreateDefaultColorTextures() noexcept;
-    std::unique_ptr<Texture> CreateDefaultColorTexture(const Rgba& color) noexcept;
+    [[nodiscard]] std::unique_ptr<Texture> CreateDefaultColorTexture(const Rgba& color) noexcept;
 
     void CreateAndRegisterDefaultShaderPrograms() noexcept;
-    std::unique_ptr<ShaderProgram> CreateDefaultShaderProgram() noexcept;
-    std::unique_ptr<ShaderProgram> CreateDefaultUnlitShaderProgram() noexcept;
-    std::unique_ptr<ShaderProgram> CreateDefaultNormalShaderProgram() noexcept;
-    std::unique_ptr<ShaderProgram> CreateDefaultNormalMapShaderProgram() noexcept;
-    std::unique_ptr<ShaderProgram> CreateDefaultFontShaderProgram() noexcept;
+    [[nodiscard]] std::unique_ptr<ShaderProgram> CreateDefaultShaderProgram() noexcept;
+    [[nodiscard]] std::unique_ptr<ShaderProgram> CreateDefaultUnlitShaderProgram() noexcept;
+    [[nodiscard]] std::unique_ptr<ShaderProgram> CreateDefaultNormalShaderProgram() noexcept;
+    [[nodiscard]] std::unique_ptr<ShaderProgram> CreateDefaultNormalMapShaderProgram() noexcept;
+    [[nodiscard]] std::unique_ptr<ShaderProgram> CreateDefaultFontShaderProgram() noexcept;
 
-    void CreateAndRegisterDefaultShaders() noexcept;
-    std::unique_ptr<Shader> CreateDefaultShader() noexcept;
-    std::unique_ptr<Shader> CreateDefaultUnlitShader() noexcept;
-    std::unique_ptr<Shader> CreateDefault2DShader() noexcept;
-    std::unique_ptr<Shader> CreateDefaultNormalShader() noexcept;
-    std::unique_ptr<Shader> CreateDefaultNormalMapShader() noexcept;
-    std::unique_ptr<Shader> CreateDefaultInvalidShader() noexcept;
-    std::unique_ptr<Shader> CreateDefaultFontShader() noexcept;
-    std::unique_ptr<Shader> CreateShaderFromFile(std::filesystem::path filepath) noexcept;
+    [[nodiscard]] void CreateAndRegisterDefaultShaders() noexcept;
+    [[nodiscard]] std::unique_ptr<Shader> CreateDefaultShader() noexcept;
+    [[nodiscard]] std::unique_ptr<Shader> CreateDefaultUnlitShader() noexcept;
+    [[nodiscard]] std::unique_ptr<Shader> CreateDefault2DShader() noexcept;
+    [[nodiscard]] std::unique_ptr<Shader> CreateDefaultNormalShader() noexcept;
+    [[nodiscard]] std::unique_ptr<Shader> CreateDefaultNormalMapShader() noexcept;
+    [[nodiscard]] std::unique_ptr<Shader> CreateDefaultInvalidShader() noexcept;
+    [[nodiscard]] std::unique_ptr<Shader> CreateDefaultFontShader() noexcept;
+    [[nodiscard]] std::unique_ptr<Shader> CreateShaderFromFile(std::filesystem::path filepath) noexcept;
 
     void CreateAndRegisterDefaultMaterials() noexcept;
-    std::unique_ptr<Material> CreateDefaultMaterial() noexcept;
-    std::unique_ptr<Material> CreateDefaultUnlitMaterial() noexcept;
-    std::unique_ptr<Material> CreateDefault2DMaterial() noexcept;
-    std::unique_ptr<Material> CreateDefaultNormalMaterial() noexcept;
-    std::unique_ptr<Material> CreateDefaultNormalMapMaterial() noexcept;
-    std::unique_ptr<Material> CreateDefaultInvalidMaterial() noexcept;
+    [[nodiscard]] std::unique_ptr<Material> CreateDefaultMaterial() noexcept;
+    [[nodiscard]] std::unique_ptr<Material> CreateDefaultUnlitMaterial() noexcept;
+    [[nodiscard]] std::unique_ptr<Material> CreateDefault2DMaterial() noexcept;
+    [[nodiscard]] std::unique_ptr<Material> CreateDefaultNormalMaterial() noexcept;
+    [[nodiscard]] std::unique_ptr<Material> CreateDefaultNormalMapMaterial() noexcept;
+    [[nodiscard]] std::unique_ptr<Material> CreateDefaultInvalidMaterial() noexcept;
 
     void CreateAndRegisterDefaultFonts() noexcept;
 
     void CreateAndRegisterDefaultSamplers() noexcept;
-    std::unique_ptr<Sampler> CreateDefaultSampler() noexcept;
-    std::unique_ptr<Sampler> CreateLinearSampler() noexcept;
-    std::unique_ptr<Sampler> CreatePointSampler() noexcept;
-    std::unique_ptr<Sampler> CreateInvalidSampler() noexcept;
+    [[nodiscard]] std::unique_ptr<Sampler> CreateDefaultSampler() noexcept;
+    [[nodiscard]] std::unique_ptr<Sampler> CreateLinearSampler() noexcept;
+    [[nodiscard]] std::unique_ptr<Sampler> CreatePointSampler() noexcept;
+    [[nodiscard]] std::unique_ptr<Sampler> CreateInvalidSampler() noexcept;
 
     void CreateAndRegisterDefaultRasterStates() noexcept;
-    std::unique_ptr<RasterState> CreateDefaultRaster() noexcept;
-    std::unique_ptr<RasterState> CreateScissorEnableRaster() noexcept;
-    std::unique_ptr<RasterState> CreateScissorDisableRaster() noexcept;
-    std::unique_ptr<RasterState> CreateWireframeRaster() noexcept;
-    std::unique_ptr<RasterState> CreateSolidRaster() noexcept;
-    std::unique_ptr<RasterState> CreateWireframeNoCullingRaster() noexcept;
-    std::unique_ptr<RasterState> CreateSolidNoCullingRaster() noexcept;
-    std::unique_ptr<RasterState> CreateWireframeFrontCullingRaster() noexcept;
-    std::unique_ptr<RasterState> CreateSolidFrontCullingRaster() noexcept;
+    [[nodiscard]] std::unique_ptr<RasterState> CreateDefaultRaster() noexcept;
+    [[nodiscard]] std::unique_ptr<RasterState> CreateScissorEnableRaster() noexcept;
+    [[nodiscard]] std::unique_ptr<RasterState> CreateScissorDisableRaster() noexcept;
+    [[nodiscard]] std::unique_ptr<RasterState> CreateWireframeRaster() noexcept;
+    [[nodiscard]] std::unique_ptr<RasterState> CreateSolidRaster() noexcept;
+    [[nodiscard]] std::unique_ptr<RasterState> CreateWireframeNoCullingRaster() noexcept;
+    [[nodiscard]] std::unique_ptr<RasterState> CreateSolidNoCullingRaster() noexcept;
+    [[nodiscard]] std::unique_ptr<RasterState> CreateWireframeFrontCullingRaster() noexcept;
+    [[nodiscard]] std::unique_ptr<RasterState> CreateSolidFrontCullingRaster() noexcept;
 
     void CreateAndRegisterDefaultDepthStencilStates() noexcept;
-    std::unique_ptr<DepthStencilState> CreateDefaultDepthStencilState() noexcept;
-    std::unique_ptr<DepthStencilState> CreateDisabledDepth() noexcept;
-    std::unique_ptr<DepthStencilState> CreateEnabledDepth() noexcept;
-    std::unique_ptr<DepthStencilState> CreateDisabledStencil() noexcept;
-    std::unique_ptr<DepthStencilState> CreateEnabledStencil() noexcept;
+    [[nodiscard]] std::unique_ptr<DepthStencilState> CreateDefaultDepthStencilState() noexcept;
+    [[nodiscard]] std::unique_ptr<DepthStencilState> CreateDisabledDepth() noexcept;
+    [[nodiscard]] std::unique_ptr<DepthStencilState> CreateEnabledDepth() noexcept;
+    [[nodiscard]] std::unique_ptr<DepthStencilState> CreateDisabledStencil() noexcept;
+    [[nodiscard]] std::unique_ptr<DepthStencilState> CreateEnabledStencil() noexcept;
 
     void UnbindAllResourcesAndBuffers() noexcept;
     void UnbindAllResources() noexcept;
@@ -531,9 +531,9 @@ private:
 
     void LogAvailableDisplays() noexcept;
 
-    Vector2 GetScreenCenter() const noexcept;
-    Vector2 GetWindowCenter() const noexcept;
-    Vector2 GetWindowCenter(const Window& window) const noexcept;
+    [[nodiscard]] Vector2 GetScreenCenter() const noexcept;
+    [[nodiscard]] Vector2 GetWindowCenter() const noexcept;
+    [[nodiscard]] Vector2 GetWindowCenter(const Window& window) const noexcept;
 
     Camera3D _camera{};
     matrix_buffer_t _matrix_data{};

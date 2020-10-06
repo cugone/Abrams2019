@@ -18,11 +18,11 @@ public:
     explicit Config(KeyValueParser&& kvp) noexcept;
     ~Config() = default;
 
-    bool LoadFromFile(const std::filesystem::path& filepath) noexcept;
-    bool AppendFromFile(const std::filesystem::path& filepath) noexcept;
-    bool SaveToFile(const std::filesystem::path& filepath) noexcept;
+    [[nodiscard]] bool LoadFromFile(const std::filesystem::path& filepath) noexcept;
+    [[nodiscard]] bool AppendFromFile(const std::filesystem::path& filepath) noexcept;
+    [[nodiscard]] bool SaveToFile(const std::filesystem::path& filepath) noexcept;
 
-    bool HasKey(const std::string& key) const noexcept;
+    [[nodiscard]] bool HasKey(const std::string& key) const noexcept;
 
     void GetValue(const std::string& key, bool& value) const noexcept;
     void GetValue(const std::string& key, char& value) const noexcept;

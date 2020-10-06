@@ -11,8 +11,8 @@ class Camera3D;
 
 class Frustum {
 public:
-    static Frustum CreateFromViewProjectionMatrix(const Matrix4& viewProjection, float aspectRatio, float vfovDegrees, const Vector3& forward, float near, float far, bool normalize) noexcept;
-    static Frustum CreateFromCamera(const Camera3D& camera, bool normalize) noexcept;
+    [[nodiscard]] static Frustum CreateFromViewProjectionMatrix(const Matrix4& viewProjection, float aspectRatio, float vfovDegrees, const Vector3& forward, float near, float far, bool normalize) noexcept;
+    [[nodiscard]] static Frustum CreateFromCamera(const Camera3D& camera, bool normalize) noexcept;
 
     Frustum(const Frustum& other) = default;
     Frustum(Frustum&& other) = default;
@@ -20,21 +20,21 @@ public:
     Frustum& operator=(Frustum&& rhs) = default;
     ~Frustum() = default;
 
-    const Plane3& GetLeft() const noexcept;
-    const Plane3& GetRight() const noexcept;
-    const Plane3& GetTop() const noexcept;
-    const Plane3& GetBottom() const noexcept;
-    const Plane3& GetNear() const noexcept;
-    const Plane3& GetFar() const noexcept;
+    [[nodiscard]] const Plane3& GetLeft() const noexcept;
+    [[nodiscard]] const Plane3& GetRight() const noexcept;
+    [[nodiscard]] const Plane3& GetTop() const noexcept;
+    [[nodiscard]] const Plane3& GetBottom() const noexcept;
+    [[nodiscard]] const Plane3& GetNear() const noexcept;
+    [[nodiscard]] const Plane3& GetFar() const noexcept;
 
-    const Vector3& GetNearBottomLeft() const noexcept;
-    const Vector3& GetNearTopLeft() const noexcept;
-    const Vector3& GetNearTopRight() const noexcept;
-    const Vector3& GetNearBottomRight() const noexcept;
-    const Vector3& GetFarBottomLeft() const noexcept;
-    const Vector3& GetFarTopLeft() const noexcept;
-    const Vector3& GetFarTopRight() const noexcept;
-    const Vector3& GetFarBottomRight() const noexcept;
+    [[nodiscard]] const Vector3& GetNearBottomLeft() const noexcept;
+    [[nodiscard]] const Vector3& GetNearTopLeft() const noexcept;
+    [[nodiscard]] const Vector3& GetNearTopRight() const noexcept;
+    [[nodiscard]] const Vector3& GetNearBottomRight() const noexcept;
+    [[nodiscard]] const Vector3& GetFarBottomLeft() const noexcept;
+    [[nodiscard]] const Vector3& GetFarTopLeft() const noexcept;
+    [[nodiscard]] const Vector3& GetFarTopRight() const noexcept;
+    [[nodiscard]] const Vector3& GetFarBottomRight() const noexcept;
 
 protected:
 private:

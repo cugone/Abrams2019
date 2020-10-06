@@ -295,81 +295,81 @@ public:
     void RegisterKeyDown(unsigned char keyIndex) noexcept;
     void RegisterKeyUp(unsigned char keyIndex) noexcept;
 
-    virtual bool ProcessSystemMessage(const EngineMessage& msg) noexcept override;
+    [[nodiscard]] virtual bool ProcessSystemMessage(const EngineMessage& msg) noexcept override;
     virtual void Initialize() override;
     virtual void BeginFrame() override;
     virtual void Update([[maybe_unused]] TimeUtils::FPSeconds) override;
     virtual void Render() const override;
     virtual void EndFrame() override;
 
-    bool WasAnyKeyPressed() const noexcept;
-    bool WasAnyMouseButtonPressed() const noexcept;
-    bool WasMouseMoved() const noexcept;
-    bool WasMouseJustUsed() const noexcept;
-    bool IsKeyUp(const KeyCode& key) const noexcept;
-    bool WasKeyJustPressed(const KeyCode& key) const noexcept;
-    bool IsKeyDown(const KeyCode& key) const noexcept;
-    bool WasKeyJustPressedOrIsKeyDown(const KeyCode& key) const noexcept;
-    bool IsAnyKeyDown() const noexcept;
-    bool WasKeyJustReleased(const KeyCode& key) const noexcept;
-    bool WasMouseWheelJustScrolledUp() const noexcept;
-    bool WasMouseWheelJustScrolledDown() const noexcept;
-    bool WasMouseWheelJustScrolledLeft() const noexcept;
-    bool WasMouseWheelJustScrolledRight() const noexcept;
+    [[nodiscard]] bool WasAnyKeyPressed() const noexcept;
+    [[nodiscard]] bool WasAnyMouseButtonPressed() const noexcept;
+    [[nodiscard]] bool WasMouseMoved() const noexcept;
+    [[nodiscard]] bool WasMouseJustUsed() const noexcept;
+    [[nodiscard]] bool IsKeyUp(const KeyCode& key) const noexcept;
+    [[nodiscard]] bool WasKeyJustPressed(const KeyCode& key) const noexcept;
+    [[nodiscard]] bool IsKeyDown(const KeyCode& key) const noexcept;
+    [[nodiscard]] bool WasKeyJustPressedOrIsKeyDown(const KeyCode& key) const noexcept;
+    [[nodiscard]] bool IsAnyKeyDown() const noexcept;
+    [[nodiscard]] bool WasKeyJustReleased(const KeyCode& key) const noexcept;
+    [[nodiscard]] bool WasMouseWheelJustScrolledUp() const noexcept;
+    [[nodiscard]] bool WasMouseWheelJustScrolledDown() const noexcept;
+    [[nodiscard]] bool WasMouseWheelJustScrolledLeft() const noexcept;
+    [[nodiscard]] bool WasMouseWheelJustScrolledRight() const noexcept;
 
-    const bool IsMouseRawInputEnabled() const noexcept;
+    [[nodiscard]] const bool IsMouseRawInputEnabled() const noexcept;
     void SetMouseRawInput(bool value) noexcept;
     void ToggleMouseRawInput() noexcept;
     void EnableMouseRawInput() noexcept;
     void DisableMouseRawInput() noexcept;
 
-    std::size_t GetConnectedControllerCount() const noexcept;
-    bool IsAnyControllerConnected() const noexcept;
-    const XboxController& GetXboxController(const std::size_t& controllerIndex) const noexcept;
-    XboxController& GetXboxController(const std::size_t& controllerIndex) noexcept;
+    [[nodiscard]] std::size_t GetConnectedControllerCount() const noexcept;
+    [[nodiscard]] bool IsAnyControllerConnected() const noexcept;
+    [[nodiscard]] const XboxController& GetXboxController(const std::size_t& controllerIndex) const noexcept;
+    [[nodiscard]] XboxController& GetXboxController(const std::size_t& controllerIndex) noexcept;
 
-    static unsigned char ConvertKeyCodeToWinVK(const KeyCode& code) noexcept;
-    static KeyCode ConvertWinVKToKeyCode(unsigned char winVK) noexcept;
+    [[nodiscard]] static unsigned char ConvertKeyCodeToWinVK(const KeyCode& code) noexcept;
+    [[nodiscard]] static KeyCode ConvertWinVKToKeyCode(unsigned char winVK) noexcept;
 
     void ToggleMouseCursorVisibility() noexcept;
     void HideMouseCursor() noexcept;
     void ShowMouseCursor() noexcept;
 
     void SetCursorScreenPosition(const Vector2& screen_pos) noexcept;
-    Vector2 GetCursorScreenPosition() const noexcept;
+    [[nodiscard]] Vector2 GetCursorScreenPosition() const noexcept;
 
     void SetCursorWindowPosition(const Window& window, const Vector2& window_pos) noexcept;
-    Vector2 GetCursorWindowPosition(const Window& window_ref) const noexcept;
+    [[nodiscard]] Vector2 GetCursorWindowPosition(const Window& window_ref) const noexcept;
 
     void SetCursorWindowPosition(const Vector2& window_pos) noexcept;
-    Vector2 GetCursorWindowPosition() noexcept;
+    [[nodiscard]] Vector2 GetCursorWindowPosition() noexcept;
 
     void SetCursorToScreenCenter() noexcept;
     void SetCursorToWindowCenter(const Window& window_ref) noexcept;
     void SetCursorToWindowCenter() noexcept;
 
-    Vector2 GetMouseDeltaFromWindowCenter() const noexcept;
-    Vector2 GetMouseDeltaFromWindowCenter(const Window& window_ref) const noexcept;
-    const Vector2& GetMouseCoords() const noexcept;
-    const Vector2& GetMouseDelta() const noexcept;
+    [[nodiscard]] Vector2 GetMouseDeltaFromWindowCenter() const noexcept;
+    [[nodiscard]] Vector2 GetMouseDeltaFromWindowCenter(const Window& window_ref) const noexcept;
+    [[nodiscard]] const Vector2& GetMouseCoords() const noexcept;
+    [[nodiscard]] const Vector2& GetMouseDelta() const noexcept;
 
-    int GetMouseWheelPosition() const noexcept;
-    int GetMouseWheelPositionNormalized() const noexcept;
+    [[nodiscard]] int GetMouseWheelPosition() const noexcept;
+    [[nodiscard]] int GetMouseWheelPositionNormalized() const noexcept;
 
-    int GetMouseWheelHorizontalPosition() const noexcept;
-    int GetMouseWheelHorizontalPositionNormalized() const noexcept;
+    [[nodiscard]] int GetMouseWheelHorizontalPosition() const noexcept;
+    [[nodiscard]] int GetMouseWheelHorizontalPositionNormalized() const noexcept;
 
-    IntVector2 GetMouseWheelPositionAsIntVector2() const noexcept;
+    [[nodiscard]] IntVector2 GetMouseWheelPositionAsIntVector2() const noexcept;
 
-    bool IsMouseLockedToViewport() const noexcept;
+    [[nodiscard]] bool IsMouseLockedToViewport() const noexcept;
     void LockMouseToViewport(const Window& window) const noexcept;
     void LockMouseToWindowViewport() const noexcept;
     void UnlockMouseFromViewport() const noexcept;
 
-    Vector2 GetScreenCenter() const noexcept;
-    Vector2 GetWindowCenter() const noexcept;
-    Vector2 GetWindowCenter(const Window& window) const noexcept;
-    bool WasAnyControllerJustUsed() const noexcept;
+    [[nodiscard]] Vector2 GetScreenCenter() const noexcept;
+    [[nodiscard]] Vector2 GetWindowCenter() const noexcept;
+    [[nodiscard]] Vector2 GetWindowCenter(const Window& window) const noexcept;
+    [[nodiscard]] bool WasAnyControllerJustUsed() const noexcept;
 protected:
 private:
     void InitializeMouseRawInput() noexcept;

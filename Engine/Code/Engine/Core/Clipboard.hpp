@@ -14,22 +14,22 @@ public:
     Clipboard& operator=(Clipboard&& other) = default;
     ~Clipboard() noexcept;
 
-    bool Open(void* hwnd) noexcept;
-    bool IsOpen() const noexcept;
-    bool IsClosed() const noexcept;
-    static bool HasText() noexcept;
-    static bool HasUnicodeText() noexcept;
-    bool Copy(const std::string& text) noexcept;
-    bool Copy(const std::wstring& text) noexcept;
+    [[nodiscard]] bool Open(void* hwnd) noexcept;
+    [[nodiscard]] bool IsOpen() const noexcept;
+    [[nodiscard]] bool IsClosed() const noexcept;
+    [[nodiscard]] static bool HasText() noexcept;
+    [[nodiscard]] static bool HasUnicodeText() noexcept;
+    [[nodiscard]] bool Copy(const std::string& text) noexcept;
+    [[nodiscard]] bool Copy(const std::wstring& text) noexcept;
 
-    std::string Paste() noexcept;
-    bool Empty() noexcept;
+    [[nodiscard]] std::string Paste() noexcept;
+    [[nodiscard]] bool Empty() noexcept;
     void Close() noexcept;
 
 protected:
 private:
     template<typename T>
-    bool Copy_helper(const T& text);
+    [[nodiscard]] bool Copy_helper(const T& text);
 
     HWND _hwnd{};
     bool _is_open{false};
@@ -50,10 +50,10 @@ bool Clipboard::Copy_helper(const T& text) {
                 if(auto lpstrcopy = static_cast<LPTSTR>(::GlobalLock(hgblcopy))) {
                     std::memcpy(lpstrcopy, text.data(), text.size() + 1);
                     lpstrcopy[text.size() + 1] = '\0';
+                    did_copy = true;
                 }
                 ::GlobalUnlock(hgblcopy);
                 ::SetClipboardData(CF_TEXT, hgblcopy);
-                did_copy = true;
             }
         }
         Close();

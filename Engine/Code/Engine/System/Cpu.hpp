@@ -32,10 +32,10 @@ struct CpuDesc {
 };
 std::ostream& operator<<(std::ostream& out, const CpuDesc& cpu) noexcept;
 
-CpuDesc GetCpuDesc() noexcept;
+[[nodiscard]] CpuDesc GetCpuDesc() noexcept;
 
 } // namespace System::Cpu
 
 namespace StringUtils {
-std::string to_string(const System::Cpu::ProcessorArchitecture& architecture) noexcept;
+[[nodiscard]] std::string to_string(const System::Cpu::ProcessorArchitecture& architecture) noexcept;
 }

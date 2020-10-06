@@ -12,16 +12,16 @@ static std::vector<char> base64encodingtable = {
 static char base64paddingchar = '=';
 } // namespace detail
 
-std::string Encode(std::istream& input) noexcept;
-std::string Encode(const std::string& input) noexcept;
-std::string Encode(const std::vector<unsigned char>& input) noexcept;
+[[nodiscard]] std::string Encode(std::istream& input) noexcept;
+[[nodiscard]] std::string Encode(const std::string& input) noexcept;
+[[nodiscard]] std::string Encode(const std::vector<unsigned char>& input) noexcept;
 
-std::string Decode(std::istream& input) noexcept;
-std::string Decode(const std::string& input) noexcept;
+[[nodiscard]] std::string Decode(std::istream& input) noexcept;
+[[nodiscard]] std::string Decode(const std::string& input) noexcept;
 void Decode(const std::string& input, std::vector<unsigned char>& output) noexcept;
 namespace detail {
-std::string Encode(std::istream& input, std::size_t size) noexcept;
-std::string Decode(std::istream& input, std::size_t size) noexcept;
+[[nodiscard]] std::string Encode(std::istream& input, std::size_t size) noexcept;
+[[nodiscard]] std::string Decode(std::istream& input, std::size_t size) noexcept;
 } // namespace detail
 
 } // namespace FileUtils::Base64

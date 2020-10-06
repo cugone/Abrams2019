@@ -17,8 +17,8 @@ public:
     ~Address() = default;
     explicit Address(const std::string& value) noexcept;
 
-    bool operator==(const Address& rhs) const noexcept;
-    bool operator!=(const Address& rhs) const noexcept;
+    [[nodiscard]] bool operator==(const Address& rhs) const noexcept;
+    [[nodiscard]] bool operator!=(const Address& rhs) const noexcept;
 
 protected:
 private:

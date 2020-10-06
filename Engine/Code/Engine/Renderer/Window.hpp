@@ -28,16 +28,16 @@ public:
     void Show() noexcept;
     void Hide() noexcept;
     void UnHide() noexcept;
-    bool IsOpen() const noexcept;
-    bool IsClosed() const noexcept;
-    bool IsWindowed() const noexcept;
-    bool IsFullscreen() const noexcept;
+    [[nodiscard]] bool IsOpen() const noexcept;
+    [[nodiscard]] bool IsClosed() const noexcept;
+    [[nodiscard]] bool IsWindowed() const noexcept;
+    [[nodiscard]] bool IsFullscreen() const noexcept;
 
-    IntVector2 GetDimensions() const noexcept;
-    IntVector2 GetClientDimensions() const noexcept;
-    IntVector2 GetPosition() const noexcept;
+    [[nodiscard]] IntVector2 GetDimensions() const noexcept;
+    [[nodiscard]] IntVector2 GetClientDimensions() const noexcept;
+    [[nodiscard]] IntVector2 GetPosition() const noexcept;
 
-    static IntVector2 GetDesktopResolution() noexcept;
+    [[nodiscard]] static IntVector2 GetDesktopResolution() noexcept;
 
     void SetDimensionsAndPosition(const IntVector2& new_position, const IntVector2& new_size) noexcept;
     void SetPosition(const IntVector2& new_position) noexcept;
@@ -45,22 +45,22 @@ public:
     void SetForegroundWindow() noexcept;
     void SetFocus() noexcept;
 
-    void* GetWindowHandle() const noexcept;
+    [[nodiscard]] void* GetWindowHandle() const noexcept;
     void SetWindowHandle(void* hWnd) noexcept;
 
-    HDC GetWindowDeviceContext() const noexcept;
+    [[nodiscard]] HDC GetWindowDeviceContext() const noexcept;
 
-    const RHIOutputMode& GetDisplayMode() const noexcept;
+    [[nodiscard]] const RHIOutputMode& GetDisplayMode() const noexcept;
     void SetDisplayMode(const RHIOutputMode& display_mode) noexcept;
 
     std::function<bool(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)> custom_message_handler;
 
     void SetTitle(const std::string& title) noexcept;
-    const std::string& GetTitle() const noexcept;
+    [[nodiscard]] const std::string& GetTitle() const noexcept;
 protected:
-    bool Register() noexcept;
-    bool Unregister() noexcept;
-    bool Create() noexcept;
+    [[nodiscard]] bool Register() noexcept;
+    [[nodiscard]] bool Unregister() noexcept;
+    [[nodiscard]] bool Create() noexcept;
 
 private:
     RHIOutputMode _currentDisplayMode = RHIOutputMode::Windowed;

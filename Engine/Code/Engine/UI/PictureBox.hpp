@@ -18,16 +18,16 @@ public:
     virtual ~PictureBox() = default;
 
     void SetImage(std::unique_ptr<AnimatedSprite> sprite) noexcept;
-    const AnimatedSprite* const GetImage() const noexcept;
+    [[nodiscard]] const AnimatedSprite* const GetImage() const noexcept;
     virtual void Update(TimeUtils::FPSeconds deltaSeconds) override;
     virtual void Render(Renderer& renderer) const override;
     virtual void DebugRender(Renderer& renderer) const override;
 
-    Vector4 CalcDesiredSize() const noexcept override;
+    [[nodiscard]] Vector4 CalcDesiredSize() const noexcept override;
 
 protected:
 private:
-    bool LoadFromXml(const XMLElement& elem) noexcept;
+    [[nodiscard]] bool LoadFromXml(const XMLElement& elem) noexcept;
 
     std::unique_ptr<AnimatedSprite> _sprite{};
 };

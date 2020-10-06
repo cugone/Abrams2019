@@ -27,13 +27,13 @@ public:
     RasterState(const RHIDevice* device, const XMLElement& element) noexcept;
     ~RasterState() noexcept;
 
-    const RasterDesc& GetDesc() const noexcept;
-    ID3D11RasterizerState* GetDxRasterState() noexcept;
+    [[nodiscard]] const RasterDesc& GetDesc() const noexcept;
+    [[nodiscard]] ID3D11RasterizerState* GetDxRasterState() noexcept;
 
     void SetDebugName([[maybe_unused]] const std::string& name) const noexcept;
 
 protected:
-    bool CreateRasterState(const RHIDevice* device, const RasterDesc& raster_desc = RasterDesc{}) noexcept;
+    [[nodiscard]] bool CreateRasterState(const RHIDevice* device, const RasterDesc& raster_desc = RasterDesc{}) noexcept;
 
 private:
     RasterDesc _desc{};
