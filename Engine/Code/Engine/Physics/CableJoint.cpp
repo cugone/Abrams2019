@@ -37,8 +37,8 @@ void CableJoint::Notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noex
         return;
     }
 
-    const auto fb_pos = _def.worldAnchorA;
-    const auto sb_pos = _def.worldAnchorB;
+    const auto fb_pos = GetAnchorA();
+    const auto sb_pos = GetAnchorB();
 
     const auto distance = MathUtils::CalcDistance(fb_pos, sb_pos);
     const auto displacement_towards_first = fb_pos - sb_pos;
