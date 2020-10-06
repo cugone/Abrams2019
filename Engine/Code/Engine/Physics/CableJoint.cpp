@@ -31,8 +31,8 @@ CableJoint::CableJoint(const CableJointDef& def) noexcept {
 }
 
 void CableJoint::Notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept {
-    auto* first_body =  _def.rigidBodyA;
-    auto* second_body = _def.rigidBodyB;
+    auto* first_body = GetBodyA();
+    auto* second_body = GetBodyB();
     if(first_body == nullptr && second_body == nullptr) {
         return;
     }
@@ -168,8 +168,8 @@ void CableJoint::SolvePositionConstraint() const noexcept {
 }
 
 void CableJoint::SolveVelocityConstraint() const noexcept {
-    auto* first_body =  _def.rigidBodyA;
-    auto* second_body = _def.rigidBodyB;
+    auto* first_body = GetBodyA();
+    auto* second_body = GetBodyB();
     if(first_body == nullptr && second_body == nullptr) {
         return;
     }
