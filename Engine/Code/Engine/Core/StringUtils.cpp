@@ -195,22 +195,38 @@ std::vector<std::wstring> SplitOnUnquoted(const std::wstring& string, wchar_t de
 
 std::pair<std::string, std::string> SplitOnFirst(const std::string& string, char delim) noexcept {
     auto eq_loc = string.find_first_of(delim);
-    return std::make_pair(string.substr(0, eq_loc), string.substr(eq_loc + 1));
+    if(eq_loc != std::string::npos) {
+        return std::make_pair(string.substr(0, eq_loc), string.substr(eq_loc + 1));
+    } else {
+        return std::make_pair(string, std::string{});
+    }
 }
 
 std::pair<std::wstring, std::wstring> SplitOnFirst(const std::wstring& string, wchar_t delim) noexcept {
     auto eq_loc = string.find_first_of(delim);
-    return std::make_pair(string.substr(0, eq_loc), string.substr(eq_loc + 1));
+    if(eq_loc != std::wstring::npos) {
+        return std::make_pair(string.substr(0, eq_loc), string.substr(eq_loc + 1));
+    } else {
+        return std::make_pair(string.substr(0, eq_loc), std::wstring{});
+    }
 }
 
 std::pair<std::string, std::string> SplitOnLast(const std::string& string, char delim) noexcept {
     auto eq_loc = string.find_last_of(delim);
-    return std::make_pair(string.substr(0, eq_loc), string.substr(eq_loc + 1));
+    if(eq_loc != std::string::npos) {
+        return std::make_pair(string.substr(0, eq_loc), string.substr(eq_loc + 1));
+    } else {
+        return std::make_pair(std::string{}, string.substr(eq_loc + 1));
+    }
 }
 
 std::pair<std::wstring, std::wstring> SplitOnLast(const std::wstring& string, wchar_t delim) noexcept {
     auto eq_loc = string.find_last_of(delim);
-    return std::make_pair(string.substr(0, eq_loc), string.substr(eq_loc + 1));
+    if(eq_loc != std::wstring::npos) {
+        return std::make_pair(string.substr(0, eq_loc), string.substr(eq_loc + 1));
+    } else {
+        return std::make_pair(std::wstring{}, string.substr(eq_loc + 1));
+    }
 }
 
 std::string Join(const std::vector<std::string>& strings, char delim, bool skip_empty /*= true*/) noexcept {
