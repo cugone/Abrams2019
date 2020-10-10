@@ -682,21 +682,21 @@ void Console::RegisterDefaultCommands() noexcept {
     help.help_text_long = "help [command|string]: Displays command's long description or all commands starting with \'string\'.";
     help.command_function = [this](const std::string& args) -> void {
         ArgumentParser arg_set(args);
-        std::string line{};
-        if(arg_set >> line) {
-            line = StringUtils::TrimWhitespace(line);
-            const auto found_iter = _commands.find(line);
+        std::string cur_arg{};
+        if(arg_set >> cur_arg) { //help ...
+            cur_arg = StringUtils::TrimWhitespace(cur_arg);
+            const auto found_iter = _commands.find(cur_arg);
             if(found_iter != _commands.end()) {
                 PrintMsg(std::string{found_iter->second.command_name + ": " + found_iter->second.help_text_short});
                 return;
             }
             for(auto& [key,value] : _commands) {
-                if(StringUtils::StartsWith(key, line)) {
+                if(StringUtils::StartsWith(key, cur_arg)) {
                     PrintMsg(std::string{value.command_name + ": " + value.help_text_short});
                 }
             }
         } else {
-            for(auto& [_,value] : _commands) {
+            for(auto& [_, value] : _commands) {
                 PrintMsg(std::string{value.command_name + ": " + value.help_text_short});
             }
         }
