@@ -4,7 +4,7 @@ This is a living document and can change at any time.
 We welcome any contributions you may have to the project.
 
 Current areas lacking in features are:
-- Linux OS support
+- Ubuntu Linux OS support
 - Physics Subsystem
 - OpenGL Renderer
 
