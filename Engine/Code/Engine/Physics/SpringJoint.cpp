@@ -32,21 +32,24 @@ SpringJoint::SpringJoint(const SpringJointDef& def) noexcept {
 void SpringJoint::Notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept {
     auto* first_body = GetBodyA();
     auto* second_body = GetBodyB();
-    if(first_body == nullptr && second_body == nullptr) {
+    if(first_body == nullptr || second_body == nullptr) {
         return;
     }
 
-    const auto posA = GetAnchorA();
-    const auto posB = GetAnchorB();
-    const auto velA = first_body ? first_body->GetVelocity() : Vector2::ZERO;
-    const auto velB = second_body ? second_body->GetVelocity() : Vector2::ZERO;
-    const auto position_displacement = posB - posA;
-    const auto velocity_displacement = velB - velA;
-    const auto force = _def.k * (position_displacement.CalcLength() - _def.length) * position_displacement.GetNormalize();
-    const auto damping_force = _def.k * MathUtils::DotProduct(velocity_displacement, position_displacement) * (position_displacement / position_displacement.CalcLengthSquared());
+    auto left_direction = Vector2{first_body->GetPosition() - second_body->GetPosition()};
+    auto left_magnitude = left_direction.Normalize();
+    auto current_compression = left_magnitude - _def.length;
+    left_magnitude = _def.k * current_compression;
 
-    first_body->ApplyImpulse(force + damping_force);
-    second_body->ApplyImpulse(-force + -damping_force);
+    auto right_direction = Vector2{second_body->GetPosition() - first_body->GetPosition()};
+    auto right_magnitude = right_direction.Normalize();
+    current_compression = right_magnitude - _def.length;
+    right_magnitude = _def.k * current_compression;
+
+    //Apply Right Force to Left Object.
+    first_body->ApplyImpulse(right_direction * right_magnitude);
+    //Apply Left Force to Right Object.
+    second_body->ApplyImpulse(left_direction * left_magnitude);
 
 }
 
