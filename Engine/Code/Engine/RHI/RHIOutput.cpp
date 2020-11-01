@@ -89,13 +89,28 @@ void RHIOutput::Present(bool vsync) noexcept {
     const auto use_no_sync_interval = should_tear && is_vsync_off;
     const auto sync_interval = use_no_sync_interval ? 0u : 1u;
     const auto present_flags = use_no_sync_interval ? DXGI_PRESENT_ALLOW_TEARING : 0ul;
-    auto hr_present = _parent_device.GetDxSwapChain()->Present1(sync_interval, present_flags, &present_params);
+    if(const auto hr_present = _parent_device.GetDxSwapChain()->Present1(sync_interval, present_flags, &present_params); FAILED(hr_present)) {
+        switch(hr_present) {
+        case DXGI_ERROR_DEVICE_REMOVED: /** FALLTHROUGH **/
+        case DXGI_ERROR_DEVICE_RESET: {
+            _parent_device.HandleDeviceLost();
+            const auto hr_removed_reset = _parent_device.GetDxDevice()->GetDeviceRemovedReason();
+            const auto err_str = std::string{"Your GPU device has been lost. Please restart the application. The returned error message follows:\n"} + StringUtils::FormatWindowsMessage(hr_removed_reset);
+            ERROR_AND_DIE(err_str.c_str());
+            break;
+        }
+        default:
 #ifdef RENDER_DEBUG
-    const auto err_str = std::string{"Present call failed: "} + StringUtils::FormatWindowsMessage(hr_present);
-    GUARANTEE_OR_DIE(SUCCEEDED(hr_present), err_str.c_str());
+        const auto err_str = std::string{"Present call failed: "} + StringUtils::FormatWindowsMessage(hr_present);
+        this->GetWindow()->Hide();
+        GUARANTEE_OR_DIE(SUCCEEDED(hr_present), err_str.c_str());
 #else
-    GUARANTEE_OR_DIE(SUCCEEDED(hr_present), "Present call failed.");
+        this->GetWindow()->Hide();
+        GUARANTEE_OR_DIE(SUCCEEDED(hr_present), "Present call failed.");
 #endif
+        break;
+        }
+    }
 }
 
 void RHIOutput::CreateBuffers() noexcept {
