@@ -76,7 +76,6 @@ std::pair<std::unique_ptr<RHIOutput>, std::unique_ptr<RHIDeviceContext>> RHIDevi
 
     Microsoft::WRL::ComPtr<ID3D11DeviceContext> context{};
     {
-        DeviceInfo device_info{};
         std::vector<AdapterInfo> adapters = _rhi_factory.GetAdaptersByHighPerformancePreference();
         if(adapters.empty()) {
             window.reset();
@@ -84,7 +83,7 @@ std::pair<std::unique_ptr<RHIOutput>, std::unique_ptr<RHIDeviceContext>> RHIDevi
         }
         OutputAdapterInfo(adapters);
         GetDisplayModes(adapters);
-        device_info = CreateDeviceFromFirstAdapter(adapters);
+        DeviceInfo device_info = CreateDeviceFromFirstAdapter(adapters);
         _dx_device = device_info.dx_device;
         _dx_highestSupportedFeatureLevel = device_info.highest_supported_feature_level;
         context = device_info.dx_context;
