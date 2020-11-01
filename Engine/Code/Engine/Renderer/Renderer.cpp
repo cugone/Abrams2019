@@ -1592,6 +1592,7 @@ void Renderer::CopyTexture(Texture* src, Texture* dst) noexcept {
 
 void Renderer::ResizeBuffers() noexcept {
     _materials_need_updating = true;
+    UnbindWorkingVboAndIbo();
     UnbindAllShaderResources();
     UnbindAllConstantBuffers();
     ClearState();
@@ -2804,6 +2805,7 @@ void Renderer::UnbindAllResources() noexcept {
 }
 
 void Renderer::UnbindAllBuffers() noexcept {
+    UnbindWorkingVboAndIbo();
     UnbindAllConstantBuffers();
     UnbindComputeConstantBuffers();
 }
