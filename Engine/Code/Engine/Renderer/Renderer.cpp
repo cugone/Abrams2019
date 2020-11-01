@@ -277,6 +277,7 @@ bool Renderer::ProcessSystemMessage(const EngineMessage& msg) noexcept {
             }
             }
             ResizeBuffers();
+            ReloadMaterials();
         }
         return false; //App must be able to respond.
     }
