@@ -237,9 +237,12 @@ bool Renderer::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         LPARAM lp = msg.lparam;
         const auto resize_type = EngineSubsystem::GetResizeTypeFromWmSize(msg);
         if(auto* window = GetOutput()->GetWindow(); window != nullptr) {
-            if(resize_type == WindowResizeType::Maximized) {
+            switch(resize_type) {
+            case WindowResizeType::Maximized: {
                 window->SetDisplayMode(RHIOutputMode::Borderless_Fullscreen);
-            } else if(resize_type == WindowResizeType::Restored) {
+                break;
+            }
+            case WindowResizeType::Restored: {
                 if(const auto prev_displaymode = window->GetDisplayMode(); prev_displaymode == RHIOutputMode::Borderless_Fullscreen) {
                     const auto w = LOWORD(lp);
                     const auto h = HIWORD(lp);
@@ -252,6 +255,12 @@ bool Renderer::ProcessSystemMessage(const EngineMessage& msg) noexcept {
                     const auto new_size = IntVector2{w, h};
                     window->SetDimensions(new_size);
                 }
+
+                break;
+            }
+            case WindowResizeType::Minimized: {
+                return false; //App must be able to respond.
+            }
             }
             ResizeBuffers();
         }
