@@ -495,7 +495,7 @@ private:
     [[nodiscard]] std::unique_ptr<Material> CreateDefaultNormalMapMaterial() noexcept;
     [[nodiscard]] std::unique_ptr<Material> CreateDefaultInvalidMaterial() noexcept;
 
-    void CreateAndRegisterDefaultFonts() noexcept;
+    void CreateAndRegisterDefaultEngineFonts() noexcept;
 
     void CreateAndRegisterDefaultSamplers() noexcept;
     [[nodiscard]] std::unique_ptr<Sampler> CreateDefaultSampler() noexcept;
