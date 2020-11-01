@@ -187,6 +187,7 @@ bool Renderer::ProcessSystemMessage(const EngineMessage& msg) noexcept {
             return false; //App needs to respond
         }
         case SC_MINIMIZE: {
+            _is_minimized = true;
             return false; //App needs to respond
         }
         case SC_MONITORPOWER: break;
@@ -194,7 +195,12 @@ bool Renderer::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         case SC_MOVE: break;
         case SC_NEXTWINDOW: break;
         case SC_PREVWINDOW: break;
-        case SC_RESTORE: break;
+        case SC_RESTORE: {
+            if(_is_minimized) {
+                _is_minimized = false;
+            }
+            return false; //UI needs to respond
+        }
         case SC_SCREENSAVE: {
             return true; // Disable screen saver from activating
         }
