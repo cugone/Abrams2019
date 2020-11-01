@@ -521,6 +521,9 @@ private:
     [[nodiscard]] std::unique_ptr<DepthStencilState> CreateDisabledStencil() noexcept;
     [[nodiscard]] std::unique_ptr<DepthStencilState> CreateEnabledStencil() noexcept;
 
+    void CreateAndRegisterDefaultFonts() noexcept;
+    [[nodiscard]] std::unique_ptr<KerningFont> CreateDefaultSystem32Font() noexcept;
+
     void UnbindAllResourcesAndBuffers() noexcept;
     void UnbindAllResources() noexcept;
     void UnbindAllBuffers() noexcept;

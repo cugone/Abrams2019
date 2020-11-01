@@ -119,7 +119,6 @@ private:
     void OutputMsg(const std::string& msg, const Rgba& color) noexcept;
 
     void RegisterDefaultCommands() noexcept;
-    void RegisterDefaultFont() noexcept;
     void UnregisterAllCommands() noexcept;
 
     void ToggleConsole() noexcept;
