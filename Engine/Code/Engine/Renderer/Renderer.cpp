@@ -3521,6 +3521,30 @@ void Renderer::RegisterMaterialsFromFolder(std::filesystem::path folderpath, boo
     FileUtils::ForEachFileInFolder(folderpath, ".material", cb, recursive);
 }
 
+void Renderer::ReloadMaterials() noexcept {
+    _textures.clear();
+    
+    CreateAndRegisterDefaultTextures();
+
+    std::vector<std::string> paths{};
+    paths.reserve(_materials.size());
+    for(const auto& [key, _] : _materials) {
+        if(!StringUtils::StartsWith(key, "__")) {
+            paths.push_back(key);
+        }
+    }
+    _materials.clear();
+    CreateAndRegisterDefaultMaterials();
+    _fonts.clear();
+    CreateAndRegisterDefaultFonts();
+
+    for(const auto& path : paths) {
+        if(!RegisterMaterial(path)) {
+            DebuggerPrintf("Failed to reload material at %s\n", path.c_str());
+        }
+    }
+}
+
 void Renderer::RegisterShaderProgram(const std::string& name, std::unique_ptr<ShaderProgram> sp) noexcept {
     if(!sp) {
         return;

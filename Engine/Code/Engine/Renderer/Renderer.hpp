@@ -317,6 +317,7 @@ public:
     [[nodiscard]] bool RegisterMaterial(std::filesystem::path filepath) noexcept;
     void RegisterMaterial(std::unique_ptr<Material> mat) noexcept;
     void RegisterMaterialsFromFolder(std::filesystem::path folderpath, bool recursive = false) noexcept;
+    void ReloadMaterials() noexcept;
 
     [[nodiscard]] std::size_t GetMaterialCount() noexcept;
     [[nodiscard]] Material* GetMaterial(const std::string& nameOrFile) noexcept;
