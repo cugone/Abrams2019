@@ -239,6 +239,14 @@ bool Renderer::ProcessSystemMessage(const EngineMessage& msg) noexcept {
             return false; //App needs to respond
         }
     }
+    case WindowsSystemMessage::Window_EnterSizeMove: {
+        _sizemove_in_progress = true;
+        return false; //UI needs to respond
+    }
+    case WindowsSystemMessage::Window_ExitSizeMove: {
+        _sizemove_in_progress = false;
+        return false; //UI needs to respond
+    }
     case WindowsSystemMessage::Window_Size: {
         LPARAM lp = msg.lparam;
         const auto resize_type = EngineSubsystem::GetResizeTypeFromWmSize(msg);

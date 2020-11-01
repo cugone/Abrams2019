@@ -573,6 +573,7 @@ private:
     std::map<std::string, std::unique_ptr<KerningFont>> _fonts;
     bool _vsync = false;
     bool _materials_need_updating = true;
+    bool _sizemove_in_progress = false;
     bool _is_minimized = false;
     friend class Shader;
 };
