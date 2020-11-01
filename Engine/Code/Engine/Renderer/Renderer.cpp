@@ -366,6 +366,12 @@ Vector2 Renderer::GetWindowCenter(const Window& window) const noexcept {
     return Vector2::ZERO;
 }
 
+void Renderer::UnbindWorkingVboAndIbo() noexcept {
+    //Setting the current sizes to zero forces them to be recreated next time they are updated.
+    _current_ibo_size = 0;
+    _current_vbo_size = 0;
+}
+
 void Renderer::SetDepthComparison(ComparisonFunction cf) noexcept {
     auto dx = GetDeviceContext();
     auto dx_dc = dx->GetDxContext();

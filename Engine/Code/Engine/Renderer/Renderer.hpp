@@ -526,6 +526,7 @@ private:
     void UnbindAllBuffers() noexcept;
     void UnbindAllShaderResources() noexcept;
     void UnbindAllConstantBuffers() noexcept;
+    void UnbindWorkingVboAndIbo() noexcept;
     void UnbindComputeShaderResources() noexcept;
     void UnbindComputeConstantBuffers() noexcept;
 
