@@ -292,6 +292,10 @@ void RHIDevice::SetupDebuggingInfo([[maybe_unused]] bool breakOnWarningSeverityO
 #endif
 }
 
+void RHIDevice::HandleDeviceLost() const noexcept {
+    /* DO NOTHING */
+}
+
 std::vector<std::unique_ptr<ConstantBuffer>> RHIDevice::CreateConstantBuffersFromByteCode(ID3DBlob* bytecode) const noexcept {
     if(!bytecode) {
         return {};

@@ -69,6 +69,7 @@ public:
     void ResetSwapChainForHWnd() const noexcept;
     [[nodiscard]] Renderer& GetRenderer() const noexcept;
 
+    void HandleDeviceLost() const noexcept;
 private:
     [[nodiscard]] std::pair<std::unique_ptr<RHIOutput>, std::unique_ptr<RHIDeviceContext>> CreateOutputAndContextFromWindow(std::unique_ptr<Window> window) noexcept;
 
