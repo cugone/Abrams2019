@@ -77,10 +77,6 @@ Console::Console(FileLogger& fileLogger, Renderer& renderer) noexcept
 
 Console::~Console() noexcept {
     ::DestroyAcceleratorTable(hAcceleratorTable);
-
-    delete _camera;
-    _camera = nullptr;
-
     _commands.clear();
 }
 
@@ -670,7 +666,7 @@ void Console::PasteText(const std::string& text, std::string::const_iterator loc
 }
 
 void Console::Initialize() {
-    _camera = new Camera2D;
+    _camera = std::make_unique<Camera2D>();
     RegisterDefaultCommands();
 }
 

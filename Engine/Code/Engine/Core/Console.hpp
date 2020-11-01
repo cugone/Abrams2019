@@ -142,7 +142,7 @@ private:
 
     FileLogger& _fileLogger;
     Renderer& _renderer;
-    Camera2D* _camera = nullptr;
+    std::unique_ptr<Camera2D> _camera{};
     std::map<std::string, Console::Command> _commands{};
     std::vector<std::string> _entryline_buffer{};
     std::vector<OutputEntry> _output_buffer{};
