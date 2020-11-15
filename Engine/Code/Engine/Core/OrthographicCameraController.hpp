@@ -21,7 +21,7 @@ public:
 
     void SetPosition(const Vector2& newPosition) noexcept;
     void Translate(const Vector2& offset) noexcept;
-    
+    void TranslateTo(const Vector2& position, TimeUtils::FPSeconds t) noexcept;
     void SetRotationDegrees(float newRotation) noexcept;
     void SetRotationRadians(float newRotation) noexcept;
     void RotateDegrees(float offset) noexcept;

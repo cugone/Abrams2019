@@ -84,6 +84,11 @@ void OrthographicCameraController::Translate(const Vector2& offset) noexcept {
     m_Camera.Translate(offset / m_zoomLevel);
 }
 
+void OrthographicCameraController::TranslateTo(const Vector2& position, TimeUtils::FPSeconds t) noexcept {
+    const auto current_position = m_Camera.GetPosition();
+    m_Camera.SetPosition(MathUtils::Interpolate(current_position, position, t.count()));
+}
+
 void OrthographicCameraController::RotateDegrees(float offset) noexcept {
     m_Camera.ApplyOrientationDegrees(offset);
 }
