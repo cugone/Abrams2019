@@ -4,10 +4,21 @@
 #include "Engine/Core/FileUtils.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Core/Win.hpp"
+
 #include "Engine/Math/MathUtils.hpp"
+
+#include "Engine/Renderer/Renderer.hpp"
+#include "Engine/Renderer/Texture.hpp"
+#include "Engine/Renderer/Texture1D.hpp"
+#include "Engine/Renderer/Texture2D.hpp"
+#include "Engine/Renderer/Texture3D.hpp"
+
+#include "Engine/Renderer/DirectX/DX11.hpp"
+
 #include "ThirdParty/stb/stb_image.h"
 #include "ThirdParty/stb/stb_image_write.h"
 
+#include <algorithm>
 #include <sstream>
 #include <vector>
 
@@ -94,6 +105,25 @@ Image::Image(Image&& img) noexcept
 , m_isGif(std::move(m_isGif)) {
     std::scoped_lock<std::mutex, std::mutex> lock(_cs, img._cs);
     m_texelBytes = std::move(img.m_texelBytes);
+}
+
+Image::Image(const Texture* tex, const Renderer* renderer) noexcept
+{
+    const auto dims = tex->GetDimensions();
+    m_dimensions = IntVector2{dims.x, dims.y};
+    m_bytesPerTexel = 4;
+    const auto size = m_dimensions.x * m_dimensions.y * m_bytesPerTexel;
+    m_texelBytes.resize(size);
+    auto stage = renderer->Create2DTextureFromMemory(m_texelBytes.data(), m_dimensions.x, m_dimensions.y, BufferUsage::Staging);
+    renderer->CopyTexture(tex, stage.get());
+    D3D11_MAPPED_SUBRESOURCE map{};
+    auto* dc = renderer->GetDeviceContext();
+    auto* dc_dx = dc->GetDxContext();
+    auto hr = dc_dx->Map(stage->GetDxResource(), 0u, D3D11_MAP_READ, 0u, &map);
+    GUARANTEE_OR_DIE(SUCCEEDED(hr), StringUtils::FormatWindowsMessage(hr));
+    std::memcpy(m_texelBytes.data(), map.pData, size);
+    dc_dx->Unmap(stage->GetDxResource(), 0u);
+
 }
 
 Image& Image::operator=(Image&& rhs) noexcept {

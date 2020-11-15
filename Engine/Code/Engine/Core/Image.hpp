@@ -8,6 +8,9 @@
 #include <mutex>
 #include <string>
 
+class Renderer;
+class Texture;
+
 class Image {
 public:
     Image() = default;
@@ -18,6 +21,7 @@ public:
     Image& operator=(Image&& rhs) noexcept;
     ~Image() = default;
 
+    explicit Image(const Texture* tex, const Renderer* renderer) noexcept;
     Image(unsigned char* data, unsigned int width, unsigned int height) noexcept;
     Image(Rgba* data, unsigned int width, unsigned int height) noexcept;
     Image(unsigned int width, unsigned int height) noexcept;
