@@ -281,6 +281,9 @@ bool Console::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         _mouseWheelPosition = GET_WHEEL_DELTA_WPARAM(wp);
         return true;
     }
+    case WindowsSystemMessage::Window_Size: {
+
+    }
     default: {
         return false;
     }
