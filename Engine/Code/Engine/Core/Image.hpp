@@ -40,7 +40,7 @@ public:
     [[nodiscard]] int GetBytesPerTexel() const noexcept;
 
     [[nodiscard]] const std::vector<int>& GetDelaysIfGif() const noexcept;
-    [[nodiscard]] bool Export(std::filesystem::path filepath, int bytes_per_pixel = 4, int jpg_quality = 100) noexcept;
+    [[nodiscard]] bool Export(std::filesystem::path filepath, int bytes_per_pixel = 4, int jpg_quality = 100) const noexcept;
     [[nodiscard]] static Image CreateImageFromFileBuffer(const std::vector<unsigned char>& data) noexcept;
     [[nodiscard]] static std::string GetSupportedExtensionsList() noexcept;
 
@@ -54,5 +54,5 @@ private:
     std::vector<int> m_gifDelays{};
     std::filesystem::path m_filepath{};
     bool m_isGif = false;
-    std::mutex _cs{};
+    mutable std::mutex _cs{};
 };

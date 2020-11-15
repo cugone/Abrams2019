@@ -199,7 +199,7 @@ const std::vector<int>& Image::GetDelaysIfGif() const noexcept {
     return m_gifDelays;
 }
 
-bool Image::Export(std::filesystem::path filepath, int bytes_per_pixel /*= 4*/, int jpg_quality /*= 100*/) noexcept {
+bool Image::Export(std::filesystem::path filepath, int bytes_per_pixel /*= 4*/, int jpg_quality /*= 100*/) const noexcept {
     if(m_texelBytes.empty()) {
         DebuggerPrintf("Attempting to write empty Image: %s", filepath.string().c_str());
         return false;
