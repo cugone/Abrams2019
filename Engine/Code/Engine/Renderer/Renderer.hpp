@@ -2,6 +2,8 @@
 
 #include "Engine/Core/DataUtils.hpp"
 #include "Engine/Core/EngineSubsystem.hpp"
+#include "Engine/Core/FileUtils.hpp"
+#include "Engine/Core/Image.hpp"
 #include "Engine/Core/TimeUtils.hpp"
 #include "Engine/Core/Vertex3D.hpp"
 #include "Engine/Math/AABB2.hpp"
@@ -30,6 +32,7 @@ class DepthStencilState;
 struct DepthStencilDesc;
 class Disc2;
 class Frustum;
+class JobSystem;
 class FileLogger;
 class IndexBuffer;
 class IntVector3;
@@ -53,6 +56,45 @@ class Texture1D;
 class Texture2D;
 class Texture3D;
 class VertexBuffer;
+
+struct screenshot_job_t {
+public:
+    screenshot_job_t()
+        : saveLocation{FileUtils::GetKnownFolderPath(FileUtils::KnownPathID::EngineData) / std::filesystem::path{"Screenshots"}}
+    {
+        namespace FS = std::filesystem;
+        (void)FileUtils::CreateFolders(saveLocation);
+        const auto folder = saveLocation;
+        const auto screenshot_count = FileUtils::CountFilesInFolders(folder);
+        const auto filepath = folder / FS::path{"Screenshot_" + std::to_string(screenshot_count + 1) + ".png"};
+        saveLocation = filepath;
+    }
+    screenshot_job_t(std::filesystem::path location)
+        : saveLocation{location}
+    {
+        /* DO NOTHING */
+    }
+    screenshot_job_t(std::string location)
+        : saveLocation{location}
+    {
+        /* DO NOTHING */
+    }
+    operator bool() const noexcept {
+        return !saveLocation.empty() && std::filesystem::exists(saveLocation);
+    }
+    operator std::string() const noexcept {
+        return saveLocation.string();
+    }
+    operator std::filesystem::path() const noexcept {
+        return saveLocation;
+    }
+    void clear() noexcept {
+        saveLocation.clear();
+    }
+private:
+    std::filesystem::path saveLocation{};
+
+};
 
 struct matrix_buffer_t {
     Matrix4 model{};
@@ -146,10 +188,15 @@ public:
         }
     };
 
-    Renderer(FileLogger& fileLogger, Config& theConfig) noexcept;
+    Renderer(JobSystem& jobSystem, FileLogger& fileLogger, Config& theConfig) noexcept;
+    Renderer(const Renderer&) = delete;
+    Renderer& operator=(const Renderer&) = delete;
+    Renderer(Renderer&&) = delete;
+    Renderer& operator=(Renderer&&) = delete;
     ~Renderer() noexcept;
 
     [[nodiscard]] FileLogger& GetFileLogger() noexcept;
+    [[nodiscard]] JobSystem& GetJobSystem() noexcept;
 
     [[nodiscard]] bool ProcessSystemMessage(const EngineMessage& msg) noexcept override;
     void Initialize() override;
@@ -426,6 +473,10 @@ public:
     void ResizeBuffers() noexcept;
     void ClearState() noexcept;
 
+    void RequestScreenShot();
+    void RequestScreenShot(std::filesystem::path saveLocation);
+    [[nodiscard]] Image GetBackbufferAsImage() const noexcept;
+    [[nodiscard]] Image GetFullscreenTextureAsImage() const noexcept;
 protected:
 private:
     void UpdateSystemTime(TimeUtils::FPSeconds deltaSeconds) noexcept;
@@ -540,6 +591,8 @@ private:
     [[nodiscard]] Vector2 GetWindowCenter() const noexcept;
     [[nodiscard]] Vector2 GetWindowCenter(const Window& window) const noexcept;
 
+    void FulfillScreenshotRequest() noexcept;
+
     Camera3D _camera{};
     matrix_buffer_t _matrix_data{};
     time_buffer_t _time_data{};
@@ -558,6 +611,7 @@ private:
     RasterState* _current_raster_state = nullptr;
     Sampler* _current_sampler = nullptr;
     Material* _current_material = nullptr;
+    JobSystem& _jobSystem;
     FileLogger& _fileLogger;
     Config& _theConfig;
     IntVector2 _window_dimensions = IntVector2::ZERO;
@@ -575,9 +629,13 @@ private:
     std::map<std::string, std::unique_ptr<RasterState>> _rasters;
     std::map<std::string, std::unique_ptr<DepthStencilState>> _depthstencils;
     std::map<std::string, std::unique_ptr<KerningFont>> _fonts;
+    mutable std::mutex _cs{};
+    screenshot_job_t _screenshot{};
+    std::filesystem::path _last_screenshot_location{};
     bool _vsync = false;
     bool _materials_need_updating = true;
     bool _sizemove_in_progress = false;
     bool _is_minimized = false;
+
     friend class Shader;
 };

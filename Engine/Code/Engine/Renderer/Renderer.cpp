@@ -1,12 +1,15 @@
 #include "Engine/Renderer/Renderer.hpp"
 
+#include "Engine/Core/ArgumentParser.hpp"
 #include "Engine/Core/BuildConfig.hpp"
 #include "Engine/Core/Config.hpp"
+#include "Engine/Core/Console.hpp"
 #include "Engine/Core/DataUtils.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/FileLogger.hpp"
 #include "Engine/Core/FileUtils.hpp"
 #include "Engine/Core/Image.hpp"
+#include "Engine/Core/JobSystem.hpp"
 #include "Engine/Core/KerningFont.hpp"
 #include "Engine/Core/Obj.hpp"
 #include "Engine/Core/StringUtils.hpp"
@@ -82,8 +85,9 @@ ComputeJob::~ComputeJob() noexcept {
     renderer.SetComputeShader(nullptr);
 }
 
-Renderer::Renderer(FileLogger& fileLogger, Config& theConfig) noexcept
-: _fileLogger(fileLogger)
+Renderer::Renderer(JobSystem& jobSystem, FileLogger& fileLogger, Config& theConfig) noexcept
+: _jobSystem(jobSystem)
+, _fileLogger(fileLogger)
 , _theConfig(theConfig)
 {
     _current_outputMode = [this]()->RHIOutputMode {
@@ -167,6 +171,10 @@ Renderer::~Renderer() noexcept {
 
 FileLogger& Renderer::GetFileLogger() noexcept {
     return _fileLogger;
+}
+
+JobSystem& Renderer::GetJobSystem() noexcept {
+    return _jobSystem;
 }
 
 bool Renderer::ProcessSystemMessage(const EngineMessage& msg) noexcept {
@@ -335,6 +343,7 @@ void Renderer::Initialize() {
     SetSampler(GetSampler("__default"));
     SetRenderTarget(_current_target, _current_depthstencil);
     _current_material = nullptr; //User must explicitly set to avoid defaulting to full lighting material.
+
 }
 
 void Renderer::CreateDefaultConstantBuffers() noexcept {
@@ -500,6 +509,7 @@ void Renderer::Render() const {
 
 void Renderer::EndFrame() {
     Present();
+    FulfillScreenshotRequest();
 }
 
 TimeUtils::FPSeconds Renderer::GetGameFrameTime() const noexcept {
@@ -1628,6 +1638,56 @@ void Renderer::ClearState() noexcept {
     _rhi_context->GetDxContext()->OMSetRenderTargets(0, nullptr, nullptr);
     _rhi_context->ClearState();
     _rhi_context->Flush();
+}
+
+void Renderer::RequestScreenShot(std::filesystem::path saveLocation) {
+    namespace FS = std::filesystem;
+    const auto folderLocation = saveLocation.parent_path();
+    if(!FS::exists(folderLocation)) {
+        const auto err_str = folderLocation.string() + " does not exist.\n";
+        DebuggerPrintf(err_str.c_str());
+    }
+    _screenshot = saveLocation;
+    _last_screenshot_location = saveLocation;
+}
+
+void Renderer::RequestScreenShot() {
+    namespace FS = std::filesystem;
+    if(_last_screenshot_location.empty()) {
+        const auto folder = screenshot_job_t{FileUtils::GetKnownFolderPath(FileUtils::KnownPathID::EngineData) / std::filesystem::path{"Screenshots"}};
+        const auto screenshot_count = FileUtils::CountFilesInFolders(folder);
+        const auto filepath = folder / FS::path{"Screenshot_" + std::to_string(screenshot_count + 1) + ".png"};
+        _last_screenshot_location = filepath;
+        _screenshot = _last_screenshot_location;
+    }
+    RequestScreenShot(_last_screenshot_location);
+}
+
+Image Renderer::GetBackbufferAsImage() const noexcept {
+    std::vector<Rgba> data{};
+    const auto* bb = GetOutput()->GetBackBuffer();
+    return Image{bb, this};
+}
+
+Image Renderer::GetFullscreenTextureAsImage() const noexcept {
+    std::scoped_lock lock(this->_cs);
+    std::vector<Rgba> data{};
+    const auto* fs = GetFullscreenTexture();
+    return Image{fs, this};
+}
+
+void Renderer::FulfillScreenshotRequest() noexcept {
+    if(_screenshot && !_last_screenshot_location.empty()) {
+        const auto cb = [this](void*) {
+            auto img = GetFullscreenTextureAsImage();
+            if(!img.Export(_screenshot)) {
+                const auto err = "Could not export to " + _screenshot.operator std::string() + ".\n";
+                _fileLogger.LogAndFlush(err);
+            }
+            _screenshot.clear();
+        };
+        _jobSystem.Run(JobType::Generic, cb, nullptr);
+    }
 }
 
 Texture* Renderer::GetFullscreenTexture() const noexcept {
