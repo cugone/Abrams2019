@@ -1670,7 +1670,7 @@ Image Renderer::GetBackbufferAsImage() const noexcept {
 }
 
 Image Renderer::GetFullscreenTextureAsImage() const noexcept {
-    std::scoped_lock lock(this->_cs);
+    std::scoped_lock lock(_cs);
     std::vector<Rgba> data{};
     const auto* fs = GetFullscreenTexture();
     return Image{fs, this};
