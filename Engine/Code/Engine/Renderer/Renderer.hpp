@@ -80,7 +80,7 @@ public:
         /* DO NOTHING */
     }
     operator bool() const noexcept {
-        return !saveLocation.empty() && std::filesystem::exists(saveLocation);
+        return !saveLocation.empty() && std::filesystem::exists(saveLocation.parent_path());
     }
     operator std::string() const noexcept {
         return saveLocation.string();
