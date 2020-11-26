@@ -1678,15 +1678,16 @@ Image Renderer::GetFullscreenTextureAsImage() const noexcept {
 
 void Renderer::FulfillScreenshotRequest() noexcept {
     if(_screenshot && !_last_screenshot_location.empty()) {
-        const auto cb = [this](void*) {
+        //TODO: Make this a job so game doesn't lag
+        //const auto cb = [this](void*) {
             auto img = GetFullscreenTextureAsImage();
             if(!img.Export(_screenshot)) {
                 const auto err = "Could not export to " + _screenshot.operator std::string() + ".\n";
                 _fileLogger.LogAndFlush(err);
             }
             _screenshot.clear();
-        };
-        _jobSystem.Run(JobType::Generic, cb, nullptr);
+        //};
+        //_jobSystem.Run(JobType::Generic, cb, nullptr);
     }
 }
 
