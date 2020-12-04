@@ -2,7 +2,7 @@
 
 #include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Core/Rgba.hpp"
-
+#include "Engine/Physics/PhysicsTypes.hpp"
 
 ColliderPolygon::ColliderPolygon(int sides /*= 4*/, const Vector2& position /*= Vector2::ZERO*/, const Vector2& half_extents /*= Vector2(0.5f, 0.5f)*/, float orientationDegrees /*= 0.0f*/)
 : Collider()
@@ -161,8 +161,8 @@ ColliderOBB* ColliderOBB::Clone() const noexcept {
     return new ColliderOBB(GetPosition(), GetHalfExtents());
 }
 
-ColliderCircle::ColliderCircle(const Vector2& position, float radius)
-: ColliderPolygon(16, position, Vector2(radius, radius), 0.0f) {
+ColliderCircle::ColliderCircle(const Position& position, float radius)
+: ColliderPolygon(16, position.Get(), Vector2(radius, radius), 0.0f) {
     /* DO NOTHING */
 }
 

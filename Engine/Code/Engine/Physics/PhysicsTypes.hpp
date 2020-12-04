@@ -11,7 +11,7 @@ struct PhysicsMaterial {
     float friction = 0.0f;    //0.7f; //Range: [0.0,1.0]; How quickly an object comes to rest during a contact. Values closer to 1.0 cause resting contacts to lose velocity faster.
     float restitution = 0.0f; //0.3f; //Range: [-1.0f, 1.0f]; The bouncyness of a material. Negative values cause an object to gain velocity after a collision.
     float density = 1.0f; //Affect mass calculation for "bigger" objects.
-    float massExponent = 1.0f; // 0.75f; //Raise final mass calculation to this exponent.
+    float massExponent = 0.01f; //Raise final mass calculation to this exponent.
 };
 
 struct PhysicsDesc {
@@ -25,6 +25,9 @@ struct PhysicsDesc {
     bool startAwake = true;    //Should the object be awake on creation.
 };
 
+struct Velocity;
+struct Acceleration;
+
 struct Position {
     Position() = default;
     Position(const Position& p) = default;
@@ -33,6 +36,8 @@ struct Position {
     Position& operator=(Position&& p) = default;
     Position(float x, float y) noexcept;
     Position(Vector2 value) noexcept;
+    explicit Position(Velocity) noexcept = delete;
+    explicit Position(Acceleration) noexcept = delete;
     operator Vector2 const ();
     operator Vector2();
     [[nodiscard]] Vector2 Get() const noexcept;
@@ -49,6 +54,8 @@ struct Velocity {
     Velocity& operator=(Velocity&& p) = default;
     Velocity(float x, float y) noexcept;
     Velocity(Vector2 value) noexcept;
+    explicit Velocity(Acceleration) noexcept = delete;
+    explicit Velocity(Position) noexcept = delete;
     operator Vector2 const();
     operator Vector2();
     [[nodiscard]] Vector2 Get() const noexcept;
@@ -65,6 +72,8 @@ struct Acceleration {
     Acceleration& operator=(Acceleration&& p) = default;
     Acceleration(float x, float y) noexcept;
     Acceleration(Vector2 value) noexcept;
+    explicit Acceleration(Position) noexcept = delete;
+    explicit Acceleration(Velocity) noexcept = delete;
     operator Vector2 const();
     operator Vector2();
     [[nodiscard]] Vector2 Get() const noexcept;

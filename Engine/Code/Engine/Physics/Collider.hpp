@@ -7,6 +7,7 @@
 #include <vector>
 
 class Renderer;
+struct Position;
 
 class Collider {
 public:
@@ -82,7 +83,7 @@ private:
 
 class ColliderCircle : public ColliderPolygon {
 public:
-    ColliderCircle(const Vector2& position, float radius);
+    ColliderCircle(const Position& position, float radius);
     [[nodiscard]] virtual float CalcArea() const noexcept override;
     [[nodiscard]] virtual const Vector2& GetHalfExtents() const noexcept override;
     [[nodiscard]] virtual Vector2 Support(const Vector2& d) const noexcept override;

@@ -162,9 +162,8 @@ void RigidBody::Update(TimeUtils::FPSeconds deltaSeconds) {
 
 void RigidBody::DebugRender(Renderer& renderer) const {
     if(const auto collider = GetCollider(); collider != nullptr) {
-        const auto& world_scale = parentPhysicsSystem->GetWorldDescription().world_to_meters;
         const auto he = this->GetBounds().half_extents;
-        const auto S = Matrix4::CreateScaleMatrix(he * world_scale);
+        const auto S = Matrix4::CreateScaleMatrix(he);
         const auto R = Matrix4::Create2DRotationDegreesMatrix(GetOrientationDegrees());
         const auto T = Matrix4::CreateTranslationMatrix(GetPosition());
         const auto M = Matrix4::MakeSRT(S, R, T);

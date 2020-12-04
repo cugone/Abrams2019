@@ -33,7 +33,7 @@ struct PhysicsSystemDesc {
     AABB2 world_bounds{Vector2::ZERO, 500.0f, 500.0f};
     Vector2 gravity{0.0f, 10.0f};
     Vector2 dragK1K2{1.0f, 1.0f};
-    float world_to_meters{100.0f};
+    float world_scale{100.0f};
     float kill_plane_distance{10000.0f};
     int position_solver_iterations{6};
     int velocity_solver_iterations{8};

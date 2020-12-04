@@ -8,7 +8,7 @@ namespace PhysicsUtils {
     [[nodiscard]] GJKResult GJK(const Collider& a, const Collider& b);
     [[nodiscard]] bool GJKIntersect(const Collider& a, const Collider& b);
 
-    [[nodiscard]] EPAResult EPA(const GJKResult& gjk, const Collider& a, const Collider& b);
+    [[nodiscard]] EPAResult EPA(GJKResult gjk, const Collider& a, const Collider& b);
     [[nodiscard]] bool SAT(const Collider& a, const Collider& b);
 }
 

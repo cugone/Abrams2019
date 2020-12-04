@@ -106,7 +106,11 @@ bool IsContentPathId(const KnownPathID& pathid) noexcept {
     if(!IsSystemPathId(pathid)) {
         switch(pathid) {
         case KnownPathID::GameData: return true;
+        case KnownPathID::GameFonts: return true;
+        case KnownPathID::GameMaterials: return true;
         case KnownPathID::EngineData: return true;
+        case KnownPathID::EngineFonts: return true;
+        case KnownPathID::EngineMaterials: return true;
         case KnownPathID::None: return false;
         case KnownPathID::Max: return false;
         default:
@@ -120,7 +124,11 @@ bool IsSystemPathId(const KnownPathID& pathid) noexcept {
     switch(pathid) {
     case KnownPathID::None: return false;
     case KnownPathID::GameData: return false;
+    case KnownPathID::GameFonts: return false;
+    case KnownPathID::GameMaterials: return false;
     case KnownPathID::EngineData: return false;
+    case KnownPathID::EngineFonts: return false;
+    case KnownPathID::EngineMaterials: return false;
     case KnownPathID::Max: return false;
 #if defined(PLATFORM_WINDOWS)
     case KnownPathID::Windows_AppDataRoaming: return true;
@@ -185,8 +193,28 @@ std::filesystem::path GetKnownFolderPath(const KnownPathID& pathid) noexcept {
         if(FS::exists(p)) {
             p = FS::canonical(p);
         }
+    } else if(pathid == KnownPathID::GameMaterials) {
+        p = GetWorkingDirectory() / FS::path{"Data/Materials/"};
+        if(FS::exists(p)) {
+            p = FS::canonical(p);
+        }
+    } else if(pathid == KnownPathID::GameFonts) {
+        p = GetWorkingDirectory() / FS::path{"Data/Fonts/"};
+        if(FS::exists(p)) {
+            p = FS::canonical(p);
+        }
     } else if(pathid == KnownPathID::EngineData) {
         p = GetWorkingDirectory() / FS::path{"Engine/"};
+        if(FS::exists(p)) {
+            p = FS::canonical(p);
+        }
+    } else if(pathid == KnownPathID::EngineMaterials) {
+        p = GetWorkingDirectory() / FS::path{"Engine/Materials/"};
+        if(FS::exists(p)) {
+            p = FS::canonical(p);
+        }
+    } else if(pathid == KnownPathID::EngineFonts) {
+        p = GetWorkingDirectory() / FS::path{"Engine/Fonts/"};
         if(FS::exists(p)) {
             p = FS::canonical(p);
         }

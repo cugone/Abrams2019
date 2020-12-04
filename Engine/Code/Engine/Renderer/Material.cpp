@@ -368,3 +368,11 @@ float Material::GetEmissiveFactor() const noexcept {
 Vector3 Material::GetSpecGlossEmitFactors() const noexcept {
     return Vector3(GetSpecularIntensity(), GetGlossyFactor(), GetEmissiveFactor());
 }
+
+void Material::SetFilepath(const std::filesystem::path& p) noexcept {
+    _filepath = p;
+}
+
+const std::filesystem::path& Material::GetFilepath() const noexcept {
+    return _filepath;
+}

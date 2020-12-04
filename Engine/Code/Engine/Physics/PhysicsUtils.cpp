@@ -103,13 +103,55 @@ GJKResult PhysicsUtils::GJK(const Collider& a, const Collider& b) {
         }
     }(simplex, D); //IIIL
     return GJKResult{result, simplex};
-    //return GJKResult{false, simplex};
 }
 
-EPAResult PhysicsUtils::EPA(const GJKResult& gjk, const Collider& a, const Collider& b) {
+EPAResult PhysicsUtils::EPA(GJKResult gjk, const Collider& a, const Collider& b) {
     if(!gjk.collides) {
         return {};
     }
+
+    const auto calcMinkowskiDiff = [](const Vector3& direction, const Collider& a) { return a.Support(Vector2{direction}); };
+    const auto support = [&](const Vector3& direction) { return calcMinkowskiDiff(direction, a) - calcMinkowskiDiff(-direction, b); };
+
+    std::size_t minIndex = 0u;
+    constexpr auto infinity = std::numeric_limits<float>::infinity();
+    auto minDistance = infinity;
+    auto minNormal = Vector2::ZERO;
+    constexpr float epsilon = 0.0001f;
+
+    while(minDistance == std::numeric_limits<float>::infinity()) {
+        for(std::size_t i = 0u; i < gjk.simplex.size(); ++i) {
+            std::size_t j = (i + 1u) % gjk.simplex.size();
+
+            auto vertexI = Vector2(gjk.simplex[i]);
+            auto vertexJ = Vector2(gjk.simplex[j]);
+
+            auto ij = vertexJ - vertexI;
+            auto normal = Vector2(ij.y, -ij.x).GetNormalize();
+            auto distance = MathUtils::DotProduct(normal, vertexI);
+
+            if(distance < 0.0f) {
+                distance = -distance;
+                normal = -normal;
+            }
+            if(distance < minDistance) {
+                minDistance = distance;
+                minNormal = normal;
+                minIndex = j;
+            }
+        }
+
+        const auto supportValue = support(Vector3{minNormal});
+        const auto sDistance = MathUtils::DotProduct(minNormal, supportValue);
+
+        if(std::abs(sDistance - minDistance) > epsilon) {
+            minDistance = infinity;
+            gjk.simplex.insert(std::begin(gjk.simplex) + minIndex, Vector3{supportValue});
+        }
+    }
+
+    return {minDistance + epsilon, Vector3{minNormal}};
+    /*
     using Simplex = std::vector<Vector3>;
     using Edge = std::tuple<float, Vector3, std::size_t>;
     auto simplex_copy = gjk.simplex;
@@ -152,6 +194,7 @@ EPAResult PhysicsUtils::EPA(const GJKResult& gjk, const Collider& a, const Colli
             simplex_copy.insert(std::begin(simplex_copy) + i, Vector3{p});
         }
     }
+    */
 }
 
 bool PhysicsUtils::SAT(const Collider& a, const Collider& b) {
