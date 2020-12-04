@@ -3557,6 +3557,7 @@ bool Renderer::RegisterMaterial(std::filesystem::path filepath) noexcept {
         const auto p_str = filepath.string();
         if(doc.LoadFile(p_str.c_str()) == tinyxml2::XML_SUCCESS) {
             auto mat = std::make_unique<Material>(*this, *doc.RootElement());
+            mat->SetFilepath(filepath);
             auto name = mat->GetName();
             RegisterMaterial(name, std::move(mat));
             return true;

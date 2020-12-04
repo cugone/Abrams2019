@@ -3,6 +3,8 @@
 #include "Engine/Core/DataUtils.hpp"
 #include "Engine/Renderer/DirectX/DX11.hpp"
 
+#include <filesystem>
+
 class Renderer;
 class Shader;
 class Texture;
@@ -90,6 +92,8 @@ public:
     [[nodiscard]] float GetEmissiveFactor() const noexcept;
     [[nodiscard]] Vector3 GetSpecGlossEmitFactors() const noexcept;
 
+    void SetFilepath(const std::filesystem::path& p) noexcept;
+    [[nodiscard]] const std::filesystem::path& GetFilepath() const noexcept;
 protected:
 private:
     [[nodiscard]] bool LoadFromXml(const XMLElement& element) noexcept;
@@ -102,6 +106,7 @@ private:
     float _specularPower = 8.0f;
     float _emissiveFactor = 0.0f;
     std::string _name = "MATERIAL";
+    std::filesystem::path _filepath{};
     Renderer& _renderer;
     std::vector<Texture*> _textures = {};
     Shader* _shader = nullptr;
