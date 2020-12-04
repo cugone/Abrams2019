@@ -3588,23 +3588,16 @@ void Renderer::ReloadMaterials() noexcept {
     
     CreateAndRegisterDefaultTextures();
 
-    std::vector<std::string> paths{};
-    paths.reserve(_materials.size());
-    for(const auto& [key, _] : _materials) {
-        if(!StringUtils::StartsWith(key, "__")) {
-            paths.push_back(key);
-        }
-    }
     _materials.clear();
     CreateAndRegisterDefaultMaterials();
+    RegisterMaterialsFromFolder(FileUtils::GetKnownFolderPath(FileUtils::KnownPathID::EngineMaterials));
+    RegisterMaterialsFromFolder(FileUtils::GetKnownFolderPath(FileUtils::KnownPathID::GameMaterials));
+
     _fonts.clear();
     CreateAndRegisterDefaultFonts();
+    RegisterMaterialsFromFolder(FileUtils::GetKnownFolderPath(FileUtils::KnownPathID::EngineFonts));
+    RegisterMaterialsFromFolder(FileUtils::GetKnownFolderPath(FileUtils::KnownPathID::GameFonts));
 
-    for(const auto& path : paths) {
-        if(!RegisterMaterial(path)) {
-            DebuggerPrintf("Failed to reload material at %s\n", path.c_str());
-        }
-    }
 }
 
 void Renderer::RegisterShaderProgram(const std::string& name, std::unique_ptr<ShaderProgram> sp) noexcept {
