@@ -94,6 +94,7 @@ public:
 
     void SetFilepath(const std::filesystem::path& p) noexcept;
     [[nodiscard]] const std::filesystem::path& GetFilepath() const noexcept;
+    void SetTextureSlot(const TextureID& slotId, Texture* texture) noexcept;
 protected:
 private:
     [[nodiscard]] bool LoadFromXml(const XMLElement& element) noexcept;

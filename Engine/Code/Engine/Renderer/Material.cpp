@@ -376,3 +376,13 @@ void Material::SetFilepath(const std::filesystem::path& p) noexcept {
 const std::filesystem::path& Material::GetFilepath() const noexcept {
     return _filepath;
 }
+
+void Material::SetTextureSlot(const TextureID& slotId, Texture* texture) noexcept {
+    using underlying = std::underlying_type_t<TextureID>;
+    const auto slotAsIndex = static_cast<underlying>(slotId);
+    const auto count = GetTextureCount();
+    if(count <= slotAsIndex) {
+        AddTextureSlots(1 + slotAsIndex);
+    }
+    _textures[slotAsIndex] = texture;
+}
