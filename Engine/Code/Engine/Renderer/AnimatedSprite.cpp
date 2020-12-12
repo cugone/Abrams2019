@@ -117,6 +117,14 @@ void AnimatedSprite::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
 }
 
 AABB2 AnimatedSprite::GetCurrentTexCoords() const noexcept {
+    const auto [x,y] = GetCurrentSpriteCoords();
+    if(!_sheet.expired()) {
+        return _sheet.lock()->GetTexCoordsFromSpriteCoords(x, y);
+    }
+    return {};
+}
+
+IntVector2 AnimatedSprite::GetCurrentSpriteCoords() const noexcept {
     int length = _end_index - _start_index;
     const auto framesPerSecond = TimeUtils::FPSeconds{1.0f} / _max_seconds_per_frame;
     auto frameIndex = static_cast<int>(_elapsed_seconds.count() * framesPerSecond);
@@ -151,10 +159,16 @@ AABB2 AnimatedSprite::GetCurrentTexCoords() const noexcept {
     default:
         break;
     }
-    if(!_sheet.expired()) {
-        return _sheet.lock()->GetTexCoordsFromSpriteIndex(_start_index + frameIndex);
-    }
-    return {};
+    const auto spriteIndex = _start_index + frameIndex;
+    const auto tileWidth = [this]() {
+        if(!_sheet.expired()) {
+            return _sheet.lock()->GetLayout().x;
+        }
+        return 1;
+    }();
+    const auto x = spriteIndex % tileWidth;
+    const auto y = spriteIndex / tileWidth;
+    return IntVector2{x, y};
 }
 
 const Texture* const AnimatedSprite::GetTexture() const noexcept {
