@@ -36,6 +36,11 @@ public:
     virtual void SetDebugName([[maybe_unused]] const std::string& name) const noexcept = 0;
     [[nodiscard]] virtual ID3D11Resource* GetDxResource() const noexcept = 0;
 
+    template<typename T>
+    [[nodiscard]] T* GetDxResourceAs() const noexcept {
+        return static_cast<T*>(GetDxResource());
+    }
+
 protected:
     const RHIDevice& _device;
     IntVector3 _dimensions = IntVector3::ZERO;

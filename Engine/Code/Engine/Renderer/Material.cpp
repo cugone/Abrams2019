@@ -382,7 +382,7 @@ void Material::SetTextureSlot(const TextureID& slotId, Texture* texture) noexcep
     const auto slotAsIndex = static_cast<underlying>(slotId);
     const auto count = GetTextureCount();
     if(count <= slotAsIndex) {
-        AddTextureSlots(1 + slotAsIndex);
+        AddTextureSlots(1 + count - slotAsIndex);
     }
     _textures[slotAsIndex] = texture;
 }

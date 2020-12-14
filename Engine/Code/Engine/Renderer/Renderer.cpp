@@ -4954,7 +4954,7 @@ std::unique_ptr<Texture> Renderer::Create2DTextureFromMemory(const std::vector<R
     //If IMMUTABLE or not multi-sampled, must use initial data.
     bool isMultiSampled = tex_desc.SampleDesc.Count != 1 || tex_desc.SampleDesc.Quality != 0;
     bool isImmutable = bufferUsage == BufferUsage::Static;
-    bool mustUseInitialData = isImmutable || isMultiSampled;
+    bool mustUseInitialData = isImmutable || !isMultiSampled;
 
     HRESULT hr = _rhi_device->GetDxDevice()->CreateTexture2D(&tex_desc, (mustUseInitialData ? &subresource_data : nullptr), &dx_tex);
     bool succeeded = SUCCEEDED(hr);

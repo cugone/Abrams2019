@@ -30,6 +30,7 @@ public:
 
     void Update(TimeUtils::FPSeconds deltaSeconds) noexcept;
     [[nodiscard]] AABB2 GetCurrentTexCoords() const noexcept;
+    [[nodiscard]] IntVector2 GetCurrentSpriteCoords() const noexcept;
     [[nodiscard]] const Texture* const GetTexture() const noexcept;
     [[nodiscard]] int GetNumSprites() const noexcept;
     [[nodiscard]] IntVector2 GetFrameDimensions() const noexcept;
