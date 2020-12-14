@@ -25,13 +25,14 @@ SpriteSheet::SpriteSheet(Renderer& renderer, const std::filesystem::path& textur
 AABB2 SpriteSheet::GetTexCoordsFromSpriteCoords(int spriteX, int spriteY) const noexcept {
     const auto texCoords = Vector2{1.0f / _spriteLayout.x, 1.0f / _spriteLayout.y};
 
-    const auto epsilon = 0.10f * (1.0f / 2048.0f);
+    const auto dims = Vector2{static_cast<float>(_spriteSheetTexture->GetDimensions().x), static_cast<float>(_spriteSheetTexture->GetDimensions().y)};
+    const auto epsilon = Vector2{1.0f / dims.x, 1.0f / dims.y};
 
     auto mins = Vector2{texCoords.x * spriteX, texCoords.y * spriteY};
     auto maxs = Vector2{texCoords.x * (spriteX + 1), texCoords.y * (spriteY + 1)};
 
-    mins += Vector2{epsilon, epsilon};
-    maxs -= Vector2{epsilon, epsilon};
+    mins += epsilon;
+    maxs -= epsilon;
 
     return AABB2(mins, maxs);
 }
