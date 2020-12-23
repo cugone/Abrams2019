@@ -3785,6 +3785,7 @@ void Renderer::SetMaterial(Material* material) noexcept {
     if(!_materials_need_updating && _current_material == material) {
         return;
     }
+    ResetMaterial();
     _rhi_context->SetMaterial(material);
     _current_material = material;
     _current_raster_state = material->GetShader()->GetRasterState();
