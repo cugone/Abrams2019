@@ -109,19 +109,32 @@ Image::Image(Image&& img) noexcept
 
 Image::Image(const Texture* tex, const Renderer* renderer) noexcept
 {
-    const auto dims = tex->GetDimensions();
-    m_dimensions = IntVector2{dims.x, dims.y};
+    auto* tex2d = tex->GetDxResourceAs<ID3D11Texture2D>();
+    D3D11_TEXTURE2D_DESC desc{};
+    tex2d->GetDesc(&desc);
+
+    m_dimensions = IntVector2(desc.Width, desc.Height);
     m_bytesPerTexel = 4;
-    const auto size = m_dimensions.x * m_dimensions.y * m_bytesPerTexel;
+    const auto size = desc.Width * desc.Height * m_bytesPerTexel;
     m_texelBytes.resize(size);
-    auto stage = renderer->Create2DTextureFromMemory(m_texelBytes.data(), m_dimensions.x, m_dimensions.y, BufferUsage::Staging);
+    auto stage = renderer->Create2DTextureFromMemory(m_texelBytes.data(), desc.Width, desc.Height, BufferUsage::Staging);
     renderer->CopyTexture(tex, stage.get());
-    D3D11_MAPPED_SUBRESOURCE map{};
+
+    D3D11_MAPPED_SUBRESOURCE resource{};
     auto* dc = renderer->GetDeviceContext();
     auto* dc_dx = dc->GetDxContext();
-    auto hr = dc_dx->Map(stage->GetDxResource(), 0u, D3D11_MAP_READ, 0u, &map);
+    auto hr = dc_dx->Map(stage->GetDxResource(), 0u, D3D11_MAP_READ, 0u, &resource);
     GUARANTEE_OR_DIE(SUCCEEDED(hr), StringUtils::FormatWindowsMessage(hr));
-    std::memcpy(m_texelBytes.data(), map.pData, size);
+
+    auto* src = reinterpret_cast<unsigned int*>(resource.pData);
+    auto* dst = reinterpret_cast<unsigned int*>(m_texelBytes.data());
+    const auto row_pitch = resource.RowPitch;
+    const auto stride = static_cast<std::size_t>(desc.Width) * m_bytesPerTexel;
+    for(std::size_t i = 0u; i < desc.Height; ++i) {
+        std::memcpy(dst, src, stride);
+        dst += resource.RowPitch >> 2;
+        src += desc.Width;
+    }
     dc_dx->Unmap(stage->GetDxResource(), 0u);
 
 }
