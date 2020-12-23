@@ -1655,8 +1655,12 @@ void Renderer::RequestScreenShot() {
     namespace FS = std::filesystem;
     if(_last_screenshot_location.empty()) {
         const auto folder = screenshot_job_t{FileUtils::GetKnownFolderPath(FileUtils::KnownPathID::EngineData) / std::filesystem::path{"Screenshots"}};
-        const auto screenshot_count = FileUtils::CountFilesInFolders(folder);
-        const auto filepath = folder / FS::path{"Screenshot_" + std::to_string(screenshot_count + 1) + ".png"};
+        TimeUtils::DateTimeStampOptions options{};
+        options.include_milliseconds = true;
+        options.is_filename = true;
+        options.use_24_hour_clock = true;
+        const auto screenshot_tag = TimeUtils::GetDateTimeStampFromNow(options);
+        const auto filepath = folder / FS::path{"Screenshot_" + screenshot_tag + ".png"};
         _last_screenshot_location = filepath;
         _screenshot = _last_screenshot_location;
     }
