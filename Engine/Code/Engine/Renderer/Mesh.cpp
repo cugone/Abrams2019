@@ -29,6 +29,8 @@ void Mesh::Builder::End(Material* mat /* = nullptr */) noexcept {
         }
         if(last_inst == _current_draw_instruction) {
             last_inst.count += _current_draw_instruction.count;
+        } else {
+            draw_instructions.push_back(_current_draw_instruction);
         }
     } else {
         draw_instructions.push_back(_current_draw_instruction);
