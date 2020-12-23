@@ -101,6 +101,10 @@ void OrthographicCameraController::ResetZoomLevelRange() noexcept {
     SetZoomLevelRange(Vector2{m_defaultMinZoomLevel, m_defaultMaxZoomLevel});
 }
 
+float OrthographicCameraController::GetZoomLevel() const noexcept {
+    return m_zoomLevel;
+}
+
 void OrthographicCameraController::SetZoomLevel(float zoom) noexcept {
     m_zoomLevel = zoom;
 }
