@@ -3797,6 +3797,16 @@ void Renderer::SetMaterial(const std::string& nameOrFile) noexcept {
     SetMaterial(GetMaterial(nameOrFile));
 }
 
+void Renderer::ResetMaterial() noexcept {
+    _rhi_context->UnbindAllShaderResources();
+    _rhi_context->SetShader(nullptr);
+    _current_material = nullptr;
+    _current_raster_state = nullptr;
+    _current_depthstencil_state = nullptr;
+    _current_sampler = nullptr;
+    _materials_need_updating = true;
+}
+
 bool Renderer::IsTextureLoaded(const std::string& nameOrFile) const noexcept {
     namespace FS = std::filesystem;
     FS::path p{nameOrFile};

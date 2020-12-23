@@ -370,6 +370,7 @@ public:
     [[nodiscard]] Material* GetMaterial(const std::string& nameOrFile) noexcept;
     void SetMaterial(Material* material) noexcept;
     void SetMaterial(const std::string& nameOrFile) noexcept;
+    void ResetMaterial() noexcept;
 
     [[nodiscard]] bool IsTextureLoaded(const std::string& nameOrFile) const noexcept;
     [[nodiscard]] bool IsTextureNotLoaded(const std::string& nameOrFile) const noexcept;
