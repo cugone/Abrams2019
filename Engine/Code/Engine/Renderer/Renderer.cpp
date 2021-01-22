@@ -1686,7 +1686,7 @@ void Renderer::FulfillScreenshotRequest() noexcept {
         //const auto cb = [this](void*) {
             auto img = GetFullscreenTextureAsImage();
             if(!img.Export(_screenshot)) {
-                const auto err = "Could not export to " + _screenshot.operator std::string() + ".\n";
+                const auto err = "Could not export to \"" + _screenshot.operator std::string() + "\".\n";
                 _fileLogger.LogAndFlush(err);
             }
             _screenshot.clear();
