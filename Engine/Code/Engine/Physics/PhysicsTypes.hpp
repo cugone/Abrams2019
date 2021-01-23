@@ -99,6 +99,7 @@ struct CollisionData {
     float distance = 0.0f;
     Vector3 normal{};
     CollisionData(RigidBody* const a, RigidBody* const b, float distance, const Vector3& normal);
+    [[nodiscard]] bool operator<(const CollisionData& rhs) const noexcept;
     [[nodiscard]] bool operator==(const CollisionData& rhs) const noexcept;
     [[nodiscard]] bool operator!=(const CollisionData& rhs) const noexcept;
 };

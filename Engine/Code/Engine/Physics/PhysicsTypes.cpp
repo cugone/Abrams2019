@@ -7,9 +7,18 @@ CollisionData::CollisionData(RigidBody* const a, RigidBody* const b, float dista
 , normal(normal)
 {}
 
+bool CollisionData::operator<(const CollisionData& rhs) const noexcept {
+    if(this->a < rhs.a) return true;
+    if(rhs.a < this->a) return false;
+
+    if(this->b < rhs.b) return true;
+    if(rhs.b < this->b) return false;
+
+    return false;
+}
+
 bool CollisionData::operator==(const CollisionData& rhs) const noexcept {
-    //Strict weak ordering required by std::set
-    return (!(this->a < rhs.a) && !(rhs.a < this->a)) && (!(this->b < rhs.b) && !(rhs.b < this->b));
+    return (this->a == rhs.a && this->b == rhs.b) || (this->a == rhs.b && this->b == rhs.a);
 }
 bool CollisionData::operator!=(const CollisionData& rhs) const noexcept {
     return !(*this == rhs);

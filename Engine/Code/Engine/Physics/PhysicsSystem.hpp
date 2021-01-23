@@ -90,7 +90,7 @@ private:
     void ApplyGravityAndDrag(TimeUtils::FPSeconds deltaSeconds) noexcept;
     [[nodiscard]] std::vector<RigidBody*> BroadPhaseCollision(const AABB2& query_area) noexcept;
 
-    using CollisionDataSet = std::set<CollisionData, std::equal_to<CollisionData>>;
+    using CollisionDataSet = std::set<CollisionData>;
     template<typename CollisionDetectionFunction, typename CollisionResolutionFunction>
     [[nodiscard]] CollisionDataSet NarrowPhaseCollision(const std::vector<RigidBody*>& potential_collisions, CollisionDetectionFunction&& cd, CollisionResolutionFunction&& cr) noexcept;
 
@@ -160,6 +160,8 @@ PhysicsSystem::CollisionDataSet PhysicsSystem::NarrowPhaseCollision(const std::v
             }
             const auto cdResult = std::invoke(cd, *cur_body->GetCollider(), *next_body->GetCollider());
             if(cdResult.collides) {
+                static unsigned int i = 0u;
+                DebuggerPrintf("cdResult.collides calls: %i\n", (++i));
                 const auto crResult = std::invoke(cr, cdResult, *cur_body->GetCollider(), *next_body->GetCollider());
                 const auto contact = CollisionData{cur_body, next_body, crResult.distance, crResult.normal};
                 const auto [_, was_inserted] = result.insert(contact);
