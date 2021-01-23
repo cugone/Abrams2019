@@ -15,6 +15,7 @@ bool PhysicsUtils::GJKIntersect(const Collider& a, const Collider& b) {
     return GJK(a, b).collides;
 }
 
+//TODO: Multi-collision causes large simplex.
 GJKResult PhysicsUtils::GJK(const Collider& a, const Collider& b) {
     using Simplex = std::vector<Vector3>;
     const auto calcMinkowskiDiff = [](const Vector2& direction, const Collider& a) { return a.Support(direction); };
