@@ -127,8 +127,8 @@ Renderer::Renderer(JobSystem& jobSystem, FileLogger& fileLogger, Config& theConf
         _theConfig.SetValue("height", height);
         return IntVector2{width, height};
     }(); //IIIL
-    if(std::string path{"Data/Config/options.config"}; _theConfig.SaveToFile(path)) {
-        DebuggerPrintf("Could not save configuration to %s", path.c_str());
+    if(std::string path{"Data/Config/options.config"}; !_theConfig.SaveToFile(path)) {
+        DebuggerPrintf("Could not save configuration to \"%s\"\n", path.c_str());
     }
 }
 
