@@ -192,8 +192,8 @@ void PhysicsSystem::SolveCollision(const PhysicsSystem::CollisionDataSet& actual
         const auto& aMass = a->GetMass();
         const auto& bMass = b->GetMass();
         const auto massSum = aMass + bMass;
-        const auto aNormal = Vector2{collision.normal};
-        const auto bNormal = Vector2{-collision.normal};
+        const auto aNormal = Vector2{-collision.normal};
+        const auto bNormal = Vector2{collision.normal};
         const auto aDeltaContribution = (aMass / massSum);
         const auto bDeltaContribution = (bMass / massSum);
         const auto aForceContribution = aNormal * aDeltaContribution;
