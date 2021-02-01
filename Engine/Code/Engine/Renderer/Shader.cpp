@@ -16,7 +16,10 @@
 #include <filesystem>
 #include <iostream>
 #include <sstream>
+#include <string_view>
 #include <system_error>
+
+ID3DBlob* CreateD3DBlobFromBuffer(std::optional<std::vector<uint8_t>> buffer, std::string_view error_msg) noexcept;
 
 Shader::Shader(Renderer& renderer, ShaderProgram* shaderProgram /*= nullptr*/, DepthStencilState* depthStencil /*= nullptr*/, RasterState* rasterState /*= nullptr*/, BlendState* blendState /*= nullptr*/, Sampler* sampler /*= nullptr*/) noexcept
 : _renderer(renderer)
@@ -79,6 +82,19 @@ std::vector<std::reference_wrapper<ConstantBuffer>> Shader::GetComputeConstantBu
     }
     cbufferRefs.shrink_to_fit();
     return cbufferRefs;
+}
+
+ID3DBlob* CreateD3DBlobFromBuffer(std::optional<std::vector<uint8_t>> buffer, std::string_view error_msg) noexcept {
+    ID3DBlob* blob = nullptr;
+    auto hr = ::D3DCreateBlob(buffer->size(), &blob);
+    if(FAILED(hr)) {
+        DebuggerPrintf(StringUtils::FormatWindowsMessage(hr).c_str());
+        ERROR_AND_DIE(error_msg.data());
+    }
+    std::memcpy(blob->GetBufferPointer(), buffer->data(), blob->GetBufferSize());
+    buffer->clear();
+    buffer->shrink_to_fit();
+    return blob;
 }
 
 bool Shader::LoadFromXml(const XMLElement& element) noexcept {
@@ -154,78 +170,24 @@ bool Shader::LoadFromXml(const XMLElement& element) noexcept {
                 GUARANTEE_OR_DIE(has_valid_staged_filename, "Compiled shader source filename must end in '_VS' '_HS' '_DS' '_GS' '_PS' or '_CS'");
                 auto buffer = FileUtils::ReadBinaryBufferFromFile(p);
                 if(is_vs && buffer.has_value()) {
-                    ID3DBlob* blob = nullptr;
-                    auto hr = ::D3DCreateBlob(buffer->size(), &blob);
-                    if(FAILED(hr)) {
-                        DebuggerPrintf(StringUtils::FormatWindowsMessage(hr).c_str());
-                        ERROR_AND_DIE("VS Blob creation failed.");
-                    }
-                    std::memcpy(blob->GetBufferPointer(), buffer->data(), blob->GetBufferSize());
-                    buffer->clear();
-                    buffer->shrink_to_fit();
-                    desc.vs_bytecode = blob;
-                    desc.device->GetDxDevice()->CreateVertexShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &desc.vs);
+                    desc.vs_bytecode = CreateD3DBlobFromBuffer(buffer, "VS Blob creation failed.");
+                    desc.device->GetDxDevice()->CreateVertexShader(desc.vs_bytecode->GetBufferPointer(), desc.vs_bytecode->GetBufferSize(), nullptr, &desc.vs);
                     desc.input_layout = desc.device->CreateInputLayoutFromByteCode(desc.vs_bytecode);
                 } else if(is_hs && buffer.has_value()) {
-                    ID3DBlob* blob = nullptr;
-                    auto hr = ::D3DCreateBlob(buffer->size(), &blob);
-                    if(FAILED(hr)) {
-                        DebuggerPrintf(StringUtils::FormatWindowsMessage(hr).c_str());
-                        ERROR_AND_DIE("HS Blob creation failed.");
-                    }
-                    std::memcpy(blob->GetBufferPointer(), buffer->data(), blob->GetBufferSize());
-                    buffer->clear();
-                    buffer->shrink_to_fit();
-                    desc.hs_bytecode = blob;
-                    desc.device->GetDxDevice()->CreateHullShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &desc.hs);
+                    desc.hs_bytecode = CreateD3DBlobFromBuffer(buffer, "HS Blob creation failed.");
+                    desc.device->GetDxDevice()->CreateHullShader(desc.hs_bytecode->GetBufferPointer(), desc.hs_bytecode->GetBufferSize(), nullptr, &desc.hs);
                 } else if(is_ds && buffer.has_value()) {
-                    ID3DBlob* blob = nullptr;
-                    auto hr = ::D3DCreateBlob(buffer->size(), &blob);
-                    if(FAILED(hr)) {
-                        DebuggerPrintf(StringUtils::FormatWindowsMessage(hr).c_str());
-                        ERROR_AND_DIE("DS Blob creation failed.");
-                    }
-                    std::memcpy(blob->GetBufferPointer(), buffer->data(), blob->GetBufferSize());
-                    buffer->clear();
-                    buffer->shrink_to_fit();
-                    desc.ds_bytecode = blob;
-                    desc.device->GetDxDevice()->CreateDomainShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &desc.ds);
+                    desc.ds_bytecode = CreateD3DBlobFromBuffer(buffer, "DS Blob creation failed.");
+                    desc.device->GetDxDevice()->CreateDomainShader(desc.ds_bytecode->GetBufferPointer(), desc.ds_bytecode->GetBufferSize(), nullptr, &desc.ds);
                 } else if(is_gs && buffer.has_value()) {
-                    ID3DBlob* blob = nullptr;
-                    auto hr = ::D3DCreateBlob(buffer->size(), &blob);
-                    if(FAILED(hr)) {
-                        DebuggerPrintf(StringUtils::FormatWindowsMessage(hr).c_str());
-                        ERROR_AND_DIE("GS Blob creation failed.");
-                    }
-                    std::memcpy(blob->GetBufferPointer(), buffer->data(), blob->GetBufferSize());
-                    buffer->clear();
-                    buffer->shrink_to_fit();
-                    desc.gs_bytecode = blob;
-                    desc.device->GetDxDevice()->CreateGeometryShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &desc.gs);
+                    desc.gs_bytecode = CreateD3DBlobFromBuffer(buffer, "GS Blob creation failed.");
+                    desc.device->GetDxDevice()->CreateGeometryShader(desc.gs_bytecode->GetBufferPointer(), desc.gs_bytecode->GetBufferSize(), nullptr, &desc.gs);
                 } else if(is_ps && buffer.has_value()) {
-                    ID3DBlob* blob = nullptr;
-                    auto hr = ::D3DCreateBlob(buffer->size(), &blob);
-                    if(FAILED(hr)) {
-                        DebuggerPrintf(StringUtils::FormatWindowsMessage(hr).c_str());
-                        ERROR_AND_DIE("PS Blob creation failed.");
-                    }
-                    std::memcpy(blob->GetBufferPointer(), buffer->data(), blob->GetBufferSize());
-                    buffer->clear();
-                    buffer->shrink_to_fit();
-                    desc.ps_bytecode = blob;
-                    desc.device->GetDxDevice()->CreatePixelShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &desc.ps);
+                    desc.ps_bytecode = CreateD3DBlobFromBuffer(buffer, "PS Blob creation failed.");
+                    desc.device->GetDxDevice()->CreatePixelShader(desc.ps_bytecode->GetBufferPointer(), desc.ps_bytecode->GetBufferSize(), nullptr, &desc.ps);
                 } else if(is_cs && buffer.has_value()) {
-                    ID3DBlob* blob = nullptr;
-                    auto hr = ::D3DCreateBlob(buffer->size(), &blob);
-                    if(FAILED(hr)) {
-                        DebuggerPrintf(StringUtils::FormatWindowsMessage(hr).c_str());
-                        ERROR_AND_DIE("CS Blob creation failed.");
-                    }
-                    std::memcpy(blob->GetBufferPointer(), buffer->data(), blob->GetBufferSize());
-                    buffer->clear();
-                    buffer->shrink_to_fit();
-                    desc.cs_bytecode = blob;
-                    desc.device->GetDxDevice()->CreateComputeShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &desc.cs);
+                    desc.cs_bytecode = CreateD3DBlobFromBuffer(buffer, "CS Blob creation failed.");
+                    desc.device->GetDxDevice()->CreateComputeShader(desc.cs_bytecode->GetBufferPointer(), desc.cs_bytecode->GetBufferSize(), nullptr, &desc.cs);
                 } else {
                     ERROR_AND_DIE("Could not determine shader type. Filename must end in _VS, _PS, _HS, _DS, _GS, or _CS.");
                 }
