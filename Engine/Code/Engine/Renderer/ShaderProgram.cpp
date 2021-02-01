@@ -62,24 +62,48 @@ ID3D11VertexShader* ShaderProgram::GetVS() const noexcept {
     return _desc.vs;
 }
 
+bool ShaderProgram::HasVS() const noexcept {
+    return GetVS() != nullptr;
+}
+
 ID3D11HullShader* ShaderProgram::GetHS() const noexcept {
     return _desc.hs;
+}
+
+bool ShaderProgram::HasHS() const noexcept {
+    return GetHS() != nullptr;
 }
 
 ID3D11DomainShader* ShaderProgram::GetDS() const noexcept {
     return _desc.ds;
 }
 
+bool ShaderProgram::HasDS() const noexcept {
+    return GetDS() != nullptr;
+}
+
 ID3D11GeometryShader* ShaderProgram::GetGS() const noexcept {
     return _desc.gs;
+}
+
+bool ShaderProgram::HasGS() const noexcept {
+    return GetGS() != nullptr;
 }
 
 ID3D11PixelShader* ShaderProgram::GetPS() const noexcept {
     return _desc.ps;
 }
 
+bool ShaderProgram::HasPS() const noexcept {
+    return GetPS() != nullptr;
+}
+
 ID3D11ComputeShader* ShaderProgram::GetCS() const noexcept {
     return _desc.cs;
+}
+
+bool ShaderProgram::HasCS() const noexcept {
+    return GetCS() != nullptr;
 }
 
 ShaderProgramDesc::ShaderProgramDesc(ShaderProgramDesc&& other) noexcept {

@@ -56,11 +56,17 @@ public:
     [[nodiscard]] InputLayout* GetInputLayout() const noexcept;
     [[nodiscard]] InputLayoutInstanced* GetInputLayoutInstanced() const noexcept;
     [[nodiscard]] ID3D11VertexShader* GetVS() const noexcept;
+    [[nodiscard]] bool HasVS() const noexcept;
     [[nodiscard]] ID3D11HullShader* GetHS() const noexcept;
+    [[nodiscard]] bool HasHS() const noexcept;
     [[nodiscard]] ID3D11DomainShader* GetDS() const noexcept;
+    [[nodiscard]] bool HasDS() const noexcept;
     [[nodiscard]] ID3D11GeometryShader* GetGS() const noexcept;
+    [[nodiscard]] bool HasGS() const noexcept;
     [[nodiscard]] ID3D11PixelShader* GetPS() const noexcept;
+    [[nodiscard]] bool HasPS() const noexcept;
     [[nodiscard]] ID3D11ComputeShader* GetCS() const noexcept;
+    [[nodiscard]] bool HasCS() const noexcept;
 
 protected:
 private:
