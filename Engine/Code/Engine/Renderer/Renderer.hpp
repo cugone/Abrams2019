@@ -467,6 +467,7 @@ public:
     constexpr static unsigned int MAX_LIGHT_COUNT = max_light_count;
 
     [[nodiscard]] std::vector<std::unique_ptr<ConstantBuffer>> CreateConstantBuffersFromShaderProgram(const ShaderProgram* _shader_program) const noexcept;
+    [[nodiscard]] std::vector<std::unique_ptr<ConstantBuffer>> CreateComputeConstantBuffersFromShaderProgram(const ShaderProgram* _shader_program) const noexcept;
 
     void SetWinProc(const std::function<bool(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)>& windowProcedure) noexcept;
 

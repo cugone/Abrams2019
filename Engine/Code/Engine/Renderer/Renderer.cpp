@@ -1586,14 +1586,12 @@ std::vector<std::unique_ptr<ConstantBuffer>> Renderer::CreateConstantBuffersFrom
     auto ds_cbuffers = std::move(_rhi_device->CreateConstantBuffersFromByteCode(_shader_program->GetDSByteCode()));
     auto gs_cbuffers = std::move(_rhi_device->CreateConstantBuffersFromByteCode(_shader_program->GetGSByteCode()));
     auto ps_cbuffers = std::move(_rhi_device->CreateConstantBuffersFromByteCode(_shader_program->GetPSByteCode()));
-    auto cs_cbuffers = std::move(_rhi_device->CreateConstantBuffersFromByteCode(_shader_program->GetCSByteCode()));
     const auto sizes = std::vector<std::size_t>{
     vs_cbuffers.size(),
     hs_cbuffers.size(),
     ds_cbuffers.size(),
     gs_cbuffers.size(),
-    ps_cbuffers.size(),
-    cs_cbuffers.size()};
+    ps_cbuffers.size()};
     auto cbuffer_count = std::accumulate(std::begin(sizes), std::end(sizes), static_cast<std::size_t>(0u));
     if(!cbuffer_count) {
         return {};
@@ -1603,9 +1601,20 @@ std::vector<std::unique_ptr<ConstantBuffer>> Renderer::CreateConstantBuffersFrom
     std::move(std::begin(ds_cbuffers), std::end(ds_cbuffers), std::back_inserter(cbuffers));
     std::move(std::begin(gs_cbuffers), std::end(gs_cbuffers), std::back_inserter(cbuffers));
     std::move(std::begin(ps_cbuffers), std::end(ps_cbuffers), std::back_inserter(cbuffers));
-    std::move(std::begin(cs_cbuffers), std::end(cs_cbuffers), std::back_inserter(cbuffers));
     cbuffers.shrink_to_fit();
     return cbuffers;
+}
+
+std::vector<std::unique_ptr<ConstantBuffer>> Renderer::CreateComputeConstantBuffersFromShaderProgram(const ShaderProgram* _shader_program) const noexcept {
+    auto cs_cbuffers = std::move(_rhi_device->CreateConstantBuffersFromByteCode(_shader_program->GetCSByteCode()));
+    const auto sizes = std::vector<std::size_t>{cs_cbuffers.size()};
+    auto cbuffer_count = std::accumulate(std::begin(sizes), std::end(sizes), static_cast<std::size_t>(0u));
+    if(!cbuffer_count) {
+        return {};
+    }
+    auto ccbuffers = std::move(cs_cbuffers);
+    ccbuffers.shrink_to_fit();
+    return ccbuffers;
 }
 
 void Renderer::SetWinProc(const std::function<bool(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)>& windowProcedure) noexcept {

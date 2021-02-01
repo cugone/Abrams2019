@@ -71,6 +71,16 @@ std::vector<std::reference_wrapper<ConstantBuffer>> Shader::GetConstantBuffers()
     return cbufferRefs;
 }
 
+std::vector<std::reference_wrapper<ConstantBuffer>> Shader::GetComputeConstantBuffers() const noexcept {
+    std::vector<std::reference_wrapper<ConstantBuffer>> cbufferRefs{};
+    cbufferRefs.reserve(_ccbuffers.size());
+    for(auto& ptr : _ccbuffers) {
+        cbufferRefs.push_back(std::ref(*ptr));
+    }
+    cbufferRefs.shrink_to_fit();
+    return cbufferRefs;
+}
+
 bool Shader::LoadFromXml(const XMLElement& element) noexcept {
     namespace FS = std::filesystem;
     DataUtils::ValidateXmlElement(element, "shader", "shaderprogram", "name", "depth,stencil,blends,raster,sampler,cbuffers");
@@ -227,6 +237,7 @@ bool Shader::LoadFromXml(const XMLElement& element) noexcept {
         }
     }
     _cbuffers = std::move(_renderer.CreateConstantBuffersFromShaderProgram(_shader_program));
+    _ccbuffers = std::move(_renderer.CreateComputeConstantBuffersFromShaderProgram(_shader_program));
     _depth_stencil_state = std::make_unique<DepthStencilState>(_renderer.GetDevice(), element);
     _blend_state = std::make_unique<BlendState>(_renderer.GetDevice(), element);
 

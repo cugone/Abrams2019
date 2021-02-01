@@ -29,6 +29,7 @@ public:
     [[nodiscard]] BlendState* GetBlendState() const noexcept;
     [[nodiscard]] Sampler* GetSampler() const noexcept;
     [[nodiscard]] std::vector<std::reference_wrapper<ConstantBuffer>> GetConstantBuffers() const noexcept;
+    [[nodiscard]] std::vector<std::reference_wrapper<ConstantBuffer>> GetComputeConstantBuffers() const noexcept;
 
 protected:
 private:
@@ -50,4 +51,5 @@ private:
     std::unique_ptr<BlendState> _blend_state;
     Sampler* _sampler = nullptr;
     std::vector<std::unique_ptr<ConstantBuffer>> _cbuffers;
+    std::vector<std::unique_ptr<ConstantBuffer>> _ccbuffers;
 };

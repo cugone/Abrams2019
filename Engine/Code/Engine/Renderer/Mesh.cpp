@@ -3,6 +3,7 @@
 #include "Engine/Renderer/ConstantBuffer.hpp"
 #include "Engine/Renderer/Material.hpp"
 #include "Engine/Renderer/Shader.hpp"
+#include "Engine/Renderer/ShaderProgram.hpp"
 
 #include <vector>
 #include <type_traits>
@@ -127,6 +128,7 @@ void Mesh::Render(Renderer& renderer, const Mesh::Builder& builder) noexcept {
     for(const auto& draw_inst : builder.draw_instructions) {
         renderer.SetMaterial(draw_inst.material);
         auto cbs = draw_inst.material->GetShader()->GetConstantBuffers();
+        auto ccbs = draw_inst.material->GetShader()->GetComputeConstantBuffers();
         const auto cb_size = cbs.size();
         for(int i = 0; i < cb_size; ++i) {
             renderer.SetConstantBuffer(renderer.CONSTANT_BUFFER_START_INDEX + i, &(cbs.begin() + i)->get());
