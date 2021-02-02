@@ -84,10 +84,11 @@ float ColliderPolygon::CalcArea() const noexcept {
     float A = 0.0f;
     const auto verts = _polygon.GetVerts();
     auto s = verts.size();
-    for(std::size_t i = 0; i < s - 1; ++i) {
-        A = verts[i].x * verts[i + 1].y - verts[i + 1].x * verts[i].y;
+    for(std::size_t i = 0; i < s; ++i) {
+        std::size_t j = (i + 1) % s;
+        A += (verts[i].x * verts[j].y) - (verts[j].x * verts[i].y);
     }
-    return 0.5f * A;
+    return 0.5f * std::abs(A);
 }
 
 OBB2 ColliderPolygon::GetBounds() const noexcept {
