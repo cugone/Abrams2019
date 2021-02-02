@@ -16,7 +16,7 @@ ColliderPolygon::ColliderPolygon()
 }
 
 void ColliderPolygon::DebugRender(Renderer& renderer) const noexcept {
-    renderer.DrawPolygon2D(Vector2::ZERO, _polygon.GetHalfExtents().x, _polygon.GetSides(), Rgba::White);//_polygon, Rgba::White);
+    renderer.DrawPolygon2D(Vector2::ZERO, 0.5f, _polygon.GetSides(), Rgba::Pink);
 }
 
 int ColliderPolygon::GetSides() const {
