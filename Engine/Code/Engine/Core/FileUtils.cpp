@@ -99,7 +99,8 @@ bool CreateFolders(const std::filesystem::path& filepath) noexcept {
     namespace FS = std::filesystem;
     auto p = filepath;
     p.make_preferred();
-    return FS::create_directories(p);
+    std::error_code ec{};
+    return FS::create_directories(p, ec);
 }
 
 bool IsContentPathId(const KnownPathID& pathid) noexcept {

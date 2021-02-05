@@ -136,7 +136,7 @@ void FileLogger::Initialize(const std::string& log_name) noexcept {
     }
     folder_p.make_preferred();
     _current_log_path = log_p;
-    (void)FileUtils::CreateFolders(folder_p); //I don't care if this returns false when the folders already exist.
+    FileUtils::CreateFolders(folder_p); //I don't care if this returns false when the folders already exist.
     //Removes only if it exists.
     FS::remove(log_p);
     FileUtils::RemoveExceptMostRecentFiles(folder_p, MAX_LOGS, ".log");
