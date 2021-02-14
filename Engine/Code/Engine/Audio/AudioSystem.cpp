@@ -283,14 +283,7 @@ void AudioSystem::Play(std::filesystem::path filepath, const SoundDesc& desc /*=
     if(!FS::exists(filepath)) {
         return;
     }
-    filepath = FS::canonical(filepath);
-    filepath.make_preferred();
-    auto found_iter = _sounds.find(filepath);
-    if(found_iter == _sounds.end()) {
-        _sounds.insert_or_assign(filepath, std::move(std::make_unique<Sound>(*this, filepath)));
-        found_iter = _sounds.find(filepath);
-    }
-    Sound* snd = found_iter->second.get();
+    Sound* snd = CreateSound(filepath);
     Play(*snd, desc);
 }
 
