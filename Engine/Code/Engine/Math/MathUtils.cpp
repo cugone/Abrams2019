@@ -445,7 +445,7 @@ float TripleProductScalar(const Vector3& a, const Vector3& b, const Vector3& c) 
 }
 
 Vector2 TripleProductVector(const Vector2& a, const Vector2& b, const Vector2& c) noexcept {
-    //(A x B) x C = B * (A . C) - A * (B . C);
+    //(A x B) x C = B * (A . C) - C * (A . B);
     return (b * DotProduct(a, c)) - (c * DotProduct(a, b));
 }
 
