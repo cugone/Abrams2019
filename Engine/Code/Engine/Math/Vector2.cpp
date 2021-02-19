@@ -277,7 +277,7 @@ void Vector2::SetXY(float newX, float newY) noexcept {
 }
 
 void swap(Vector2& a, Vector2& b) noexcept {
-    std::swap(a.x, b.y);
+    std::swap(a.x, b.x);
     std::swap(a.y, b.y);
 }
 
