@@ -90,6 +90,12 @@ Renderer::Renderer(JobSystem& jobSystem, FileLogger& fileLogger, Config& theConf
 , _fileLogger(fileLogger)
 , _theConfig(theConfig)
 {
+    namespace FS = std::filesystem;
+    if(FS::path path{"Engine/Config/options.config"}; FS::exists(path)) {
+        if(!_theConfig.AppendFromFile(path)) {
+            DebuggerPrintf("Could not load existing configuration from \"%s\"\n", path.c_str());
+        }
+    }
     _current_outputMode = [this]()->RHIOutputMode {
         auto windowed = true;
         if(_theConfig.HasKey("windowed")) {
@@ -127,8 +133,10 @@ Renderer::Renderer(JobSystem& jobSystem, FileLogger& fileLogger, Config& theConf
         _theConfig.SetValue("height", height);
         return IntVector2{width, height};
     }(); //IIIL
-    if(std::string path{"Data/Config/options.config"}; !_theConfig.SaveToFile(path)) {
-        DebuggerPrintf("Could not save configuration to \"%s\"\n", path.c_str());
+    if(FS::path path{"Engine/Config/options.config"}; !FS::exists(path)) {
+        if(!_theConfig.SaveToFile(path)) {
+            DebuggerPrintf("Could not save configuration to \"%s\"\n", path.c_str());
+        }
     }
 }
 
