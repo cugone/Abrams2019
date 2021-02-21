@@ -88,8 +88,7 @@ void AudioSystem::Initialize() {
 }
 
 AudioSystem::ChannelGroup* AudioSystem::GetChannelGroup(const std::string& name) const noexcept {
-    const auto found = _channel_groups.find(name);
-    if(found != std::end(_channel_groups)) {
+    if(const auto found = _channel_groups.find(name); found != std::end(_channel_groups)) {
         return found->second.get();
     }
     return nullptr;
@@ -107,14 +106,13 @@ AudioSystem::ChannelGroup* AudioSystem::GetChannelGroup(Sound* snd) const noexce
 }
 
 void AudioSystem::AddChannelGroup(const std::string& name) noexcept {
-    auto group = std::make_unique<ChannelGroup>();
-    auto found = _channel_groups.find(name);
-    if(found != std::end(_channel_groups)) {
+    if(auto found = _channel_groups.find(name); found != std::end(_channel_groups)) {
         if(found->second->channel) {
             DeactivateChannel(*found->second->channel);
         }
         found->second.reset(nullptr);
     }
+    auto group = std::make_unique<ChannelGroup>();
     auto channel = std::make_unique<Channel>(*this, AudioSystem::Channel::ChannelDesc{});
     auto* channel_ptr = channel.get();
     _idle_channels.push_back(std::move(channel));
@@ -123,8 +121,7 @@ void AudioSystem::AddChannelGroup(const std::string& name) noexcept {
 }
 
 void AudioSystem::RemoveChannelGroup(const std::string& name) noexcept {
-    auto found = _channel_groups.find(name);
-    if(found != std::end(_channel_groups)) {
+    if(auto found = _channel_groups.find(name); found != std::end(_channel_groups)) {
         if(found->second->channel) {
             DeactivateChannel(*found->second->channel);
         }
@@ -137,20 +134,16 @@ void AudioSystem::AddSoundToChannelGroup(const std::string& channelGroupName, So
     if(!snd) {
         return;
     }
-    if(auto group = GetChannelGroup(channelGroupName)) {
-        if(group->channel) {
-            group->sounds.push_back(snd);
-            snd->AddChannel(group->channel);
-        }
+    if(auto group = GetChannelGroup(channelGroupName); group && group->channel) {
+        group->sounds.push_back(snd);
+        snd->AddChannel(group->channel);
     }
 }
 
 void AudioSystem::AddSoundToChannelGroup(const std::string& channelGroupName, const std::filesystem::path& filepath) noexcept {
-    if(auto group = GetChannelGroup(channelGroupName)) {
-        if(group->channel) {
-            auto* snd = CreateSound(filepath);
-            AddSoundToChannelGroup(channelGroupName, snd);
-        }
+    if(auto group = GetChannelGroup(channelGroupName); group && group->channel) {
+        auto* snd = CreateSound(filepath);
+        AddSoundToChannelGroup(channelGroupName, snd);
     }
 }
 
@@ -312,8 +305,7 @@ void AudioSystem::RegisterWavFile(std::filesystem::path filepath) noexcept {
         return;
     }
     filepath = FS::canonical(filepath);
-    auto found_iter = _wave_files.find(filepath);
-    if(found_iter != _wave_files.end()) {
+    if(auto found_iter = _wave_files.find(filepath); found_iter != _wave_files.end()) {
         return;
     }
 
