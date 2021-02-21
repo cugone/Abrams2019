@@ -151,10 +151,11 @@ void AudioSystem::RemoveSoundFromChannelGroup(const std::string& channelGroupNam
     if(!snd) {
         return;
     }
-    if(auto group = GetChannelGroup(channelGroupName)) {
-        if(group->channel) {
-            group->sounds.push_back(snd);
-            snd->AddChannel(group->channel);
+    if(auto group = GetChannelGroup(channelGroupName); group && group->channel) {
+        if(auto iter = std::find(std::begin(group->sounds), std::end(group->sounds), snd); iter != std::end(group->sounds)) {
+            std::iter_swap(iter, group->sounds.end() - 1);
+            group->sounds.pop_back();
+            snd->RemoveChannel(group->channel);
         }
     }
 }
