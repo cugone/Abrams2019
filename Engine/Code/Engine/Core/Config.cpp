@@ -46,6 +46,18 @@ bool Config::AppendFromFile(const std::filesystem::path& filepath) noexcept {
     return false;
 }
 
+bool Config::AppendToFile(const std::filesystem::path& filepath) noexcept {
+    if(std::filesystem::exists(filepath)) {
+        std::ofstream ofs;
+        ofs.open(filepath, std::ios_base::app);
+        PrintConfigs(ofs);
+        ofs.flush();
+        ofs.close();
+        return true;
+    }
+    return SaveToFile(filepath);
+}
+
 bool Config::SaveToFile(const std::filesystem::path& filepath) noexcept {
     std::ofstream ofs;
     ofs.open(filepath);

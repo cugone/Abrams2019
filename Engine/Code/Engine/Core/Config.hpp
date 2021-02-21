@@ -20,6 +20,7 @@ public:
 
     [[nodiscard]] bool LoadFromFile(const std::filesystem::path& filepath) noexcept;
     [[nodiscard]] bool AppendFromFile(const std::filesystem::path& filepath) noexcept;
+    [[nodiscard]] bool AppendToFile(const std::filesystem::path& filepath) noexcept;
     [[nodiscard]] bool SaveToFile(const std::filesystem::path& filepath) noexcept;
 
     [[nodiscard]] bool HasKey(const std::string& key) const noexcept;
