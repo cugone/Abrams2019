@@ -241,25 +241,35 @@ void Config::SetValue(const std::string& key, const char* value) noexcept {
     SetValue(key, value ? std::string(value) : std::string{});
 }
 
-void Config::PrintConfigs(std::ostream& output /*= std::cout*/) const noexcept {
-    for(const auto& [key,value] : _config) {
-        bool value_has_space = false;
-        for(const auto& c : value) {
-            value_has_space |= std::isspace(c, std::locale(""));
-            if(value_has_space) {
-                break;
-            }
-        }
-        output << key << '=';
-        if(value_has_space) {
-            output << '"';
-        }
-        output << value;
-        if(value_has_space) {
-            output << '"';
-        }
-        output << '\n';
+void Config::PrintConfig(std::string key, std::ostream& output) const noexcept {
+    if(const auto iter = _config.find(key); iter != std::end(_config)) {
+        PrintKeyValue(output, iter->first, iter->second);
     }
+}
+
+void Config::PrintConfigs(std::ostream& output) const noexcept {
+    for(const auto& [key,value] : _config) {
+        PrintKeyValue(output, key, value);
+    }
+}
+
+void Config::PrintKeyValue(std::ostream& output, std::string key, std::string value) const noexcept {
+    bool value_has_space = false;
+    for(const auto& c : value) {
+        value_has_space |= std::isspace(c, std::locale(""));
+        if(value_has_space) {
+            break;
+        }
+    }
+    output << key << '=';
+    if(value_has_space) {
+        output << '"';
+    }
+    output << value;
+    if(value_has_space) {
+        output << '"';
+    }
+    output << '\n';
 }
 
 std::ostream& operator<<(std::ostream& output, const Config& config) noexcept {

@@ -56,7 +56,10 @@ public:
     void SetValue(const std::string& key, const std::string& value) noexcept;
     void SetValue(const std::string& key, const char* value) noexcept;
 
-    void PrintConfigs(std::ostream& output /*= std::cout*/) const noexcept;
+    void PrintConfig(std::string key, std::ostream& output) const noexcept;
+    void PrintConfigs(std::ostream& output) const noexcept;
+    void PrintKeyValue(std::ostream& output, std::string key, std::string value) const noexcept;
+
     friend std::ostream& operator<<(std::ostream& output, const Config& config) noexcept;
     friend std::istream& operator>>(std::istream& input, Config& config) noexcept;
 
