@@ -53,7 +53,7 @@ public:
         [[nodiscard]] const FileUtils::Wav* const GetWav() const noexcept;
 
     private:
-        static std::size_t _id;
+        inline static std::size_t _id{0u};
         AudioSystem* _audio_system{};
         std::size_t _my_id = 0;
         FileUtils::Wav* _wave_file{};

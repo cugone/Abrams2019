@@ -470,8 +470,6 @@ float AudioSystem::Channel::GetFrequency() const noexcept {
     return _desc.frequency;
 }
 
-std::size_t AudioSystem::Sound::_id = 0;
-
 AudioSystem::Sound::Sound(AudioSystem& audiosystem, std::filesystem::path filepath)
 : _audio_system(&audiosystem) {
     namespace FS = std::filesystem;
