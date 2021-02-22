@@ -508,7 +508,7 @@ const std::size_t AudioSystem::Sound::GetId() const noexcept {
     return _my_id;
 }
 
-const std::size_t AudioSystem::Sound::GetCount() const noexcept {
+const std::size_t AudioSystem::Sound::GetCount() noexcept {
     return _id;
 }
 

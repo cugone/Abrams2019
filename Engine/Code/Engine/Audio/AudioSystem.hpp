@@ -49,7 +49,7 @@ public:
         void AddChannel(Channel* channel) noexcept;
         void RemoveChannel(Channel* channel) noexcept;
         [[nodiscard]] const std::size_t GetId() const noexcept;
-        [[nodiscard]] const std::size_t GetCount() const noexcept;
+        [[nodiscard]] static const std::size_t GetCount() noexcept;
         [[nodiscard]] const FileUtils::Wav* const GetWav() const noexcept;
 
     private:
