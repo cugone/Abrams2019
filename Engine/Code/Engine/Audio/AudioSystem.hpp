@@ -55,7 +55,7 @@ public:
     private:
         inline static std::size_t _id{0u};
         AudioSystem* _audio_system{};
-        std::size_t _my_id = 0;
+        std::size_t _my_id{0u};
         FileUtils::Wav* _wave_file{};
         std::vector<Channel*> _channels{};
         std::mutex _cs{};
@@ -90,7 +90,7 @@ private:
             explicit ChannelDesc(AudioSystem* audioSystem);
 
             AudioSystem* audio_system{nullptr};
-            unsigned long long repeat_count{0};
+            unsigned long long repeat_count{0ull};
             float volume{1.0f};
             float frequency{1.0f};
             float frequency_max{2.0f};
