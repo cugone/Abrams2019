@@ -25,8 +25,7 @@ bool WriteBufferToFile(const std::any& buffer, std::size_t size, std::filesystem
         return false;
     }
 
-    std::ofstream ofs{filepath, std::ios_base::binary};
-    if(ofs.write(reinterpret_cast<const char*>(&buffer), size)) {
+    if(std::ofstream ofs{filepath, std::ios_base::binary}; ofs.write(reinterpret_cast<const char*>(&buffer), size)) {
         return true;
     }
     return false;
@@ -42,8 +41,7 @@ bool WriteBufferToFile(const std::string& buffer, std::filesystem::path filepath
         return false;
     }
 
-    std::ofstream ofs{filepath};
-    if(ofs.write(reinterpret_cast<const char*>(buffer.data()), buffer.size())) {
+    if(std::ofstream ofs{filepath}; ofs.write(reinterpret_cast<const char*>(buffer.data()), buffer.size())) {
         return true;
     }
     return false;
@@ -66,8 +64,7 @@ std::optional<std::vector<uint8_t>> ReadBinaryBufferFromFile(std::filesystem::pa
     const auto byte_size = FS::file_size(filepath);
     std::vector<uint8_t> out_buffer{};
     out_buffer.resize(byte_size);
-    std::ifstream ifs{filepath, std::ios_base::binary};
-    if(ifs.read(reinterpret_cast<char*>(out_buffer.data()), out_buffer.size())) {
+    if(std::ifstream ifs{filepath, std::ios_base::binary}; ifs.read(reinterpret_cast<char*>(out_buffer.data()), out_buffer.size())) {
         return out_buffer;
     }
     return {};
@@ -88,8 +85,7 @@ std::optional<std::string> ReadStringBufferFromFile(std::filesystem::path filepa
         return {};
     }
 
-    std::ifstream ifs{filepath};
-    if(ifs) {
+    if(std::ifstream ifs{filepath}; ifs) {
         return std::string(static_cast<const std::stringstream&>(std::stringstream() << ifs.rdbuf()).str());
     }
     return {};
