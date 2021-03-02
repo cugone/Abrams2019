@@ -17,6 +17,7 @@ public:
 
     template<class... Args>
     decltype(auto) emplace(Args&&... args) {
+        std::scoped_lock<std::mutex> lock(_cs);
         return _queue.emplace(std::forward<Args>(args)...);
     }
 
