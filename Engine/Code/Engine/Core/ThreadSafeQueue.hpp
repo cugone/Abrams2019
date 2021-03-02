@@ -8,6 +8,13 @@ class ThreadSafeQueue {
 public:
     void push(const T& t) noexcept;
     void pop() noexcept;
+
+    template<class... Args>
+    decltype(auto) emplace(Args&&... args) {
+        return _queue.emplace(std::forward<Args>(args)...);
+    }
+
+
     [[nodiscard]] decltype(auto) size() const noexcept;
     [[nodiscard]] bool empty() const noexcept;
 
