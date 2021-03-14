@@ -8,6 +8,7 @@
 #include <chrono>
 #include <cstdio>
 #include <fstream>
+#include <iosfwd>
 #include <iostream>
 #include <sstream>
 
@@ -87,6 +88,82 @@ std::optional<std::string> ReadStringBufferFromFile(std::filesystem::path filepa
 
     if(std::ifstream ifs{filepath}; ifs) {
         return std::string(static_cast<const std::stringstream&>(std::stringstream() << ifs.rdbuf()).str());
+    }
+    return {};
+}
+
+//This version of ReadSome is intended for one-time-only reads of a portion of a TEXT file.
+//If you want multiple reads use the ifstream version.
+[[nodiscard]] std::optional<std::string> ReadSomeStringBufferFromFile(std::filesystem::path filepath, std::size_t pos, std::size_t count /*= 0u*/) noexcept {
+    namespace FS = std::filesystem;
+    const auto initial_path_not_exist = !FS::exists(filepath);
+    if(initial_path_not_exist) {
+        return {};
+    }
+    filepath = FS::canonical(filepath);
+    filepath.make_preferred();
+    const auto canonical_path_not_exist = !FS::exists(filepath);
+    const auto path_is_directory = FS::is_directory(filepath);
+    const auto not_valid_path = path_is_directory || canonical_path_not_exist;
+    if(not_valid_path) {
+        return {};
+    }
+    std::ifstream ifs{filepath};
+    return ReadSomeStringBufferFromFile(ifs, pos, count);
+}
+
+//This version of ReadSome is intended for continuous or multiple reads of a portion of a TEXT file.
+//If you want a one-time-only single read of a portion of a TEXT file use the filepath version.
+[[nodiscard]] std::optional<std::string> ReadSomeStringBufferFromFile(std::ifstream& ifs, std::streampos pos, std::streamsize count /*= 0u*/) noexcept {
+    if(!(ifs && ifs.is_open())) {
+        return {};
+    }
+    ifs.seekg(pos, std::ios::beg); // MSVC ifstream::seekg doesn't set the fail bit, so can't early-out until the get call.
+    char ch{};
+    std::string result{};
+    result.reserve(count);
+    bool readsome{false}; //If nothing read, make std::optional::has_value false.
+    while(ifs && ifs.get(ch) && count > 0) {
+        result.append(1, ch);
+        --count;
+        readsome |= true;
+    }
+    return readsome ? std::make_optional(result) : std::nullopt;
+}
+
+//This version of ReadSome is intended for one-time-only reads of a portion of a BINARY file.
+//If you want multiple reads use the ifstream version.
+//If you do, make sure it is set to binary mode.
+[[nodiscard]] std::optional<std::string> ReadSomeBinaryBufferFromFile(std::filesystem::path filepath, std::size_t pos, std::size_t count /*= 0u*/) noexcept {
+    namespace FS = std::filesystem;
+    const auto initial_path_not_exist = !FS::exists(filepath);
+    if(initial_path_not_exist) {
+        return {};
+    }
+    filepath = FS::canonical(filepath);
+    filepath.make_preferred();
+    const auto canonical_path_not_exist = !FS::exists(filepath);
+    const auto path_is_directory = FS::is_directory(filepath);
+    const auto not_valid_path = path_is_directory || canonical_path_not_exist;
+    if(not_valid_path) {
+        return {};
+    }
+    std::ifstream ifs(filepath, std::ios_base::binary);
+    return ReadSomeBinaryBufferFromFile(ifs, pos, count);
+}
+
+//This version of ReadSome is intended for continuous or multiple reads of a portion of a BINARY file.
+//Make sure the file stream is set to binary mode.
+//If you want a one-time-only single read of a portion of a BINARY file use the filepath version.
+[[nodiscard]] std::optional<std::string> ReadSomeBinaryBufferFromFile(std::ifstream& ifs, std::streampos pos, std::streamsize count /*= 0u*/) noexcept {
+    if(!(ifs && ifs.is_open())) {
+        return {};
+    }
+    ifs.seekg(pos);
+    auto result = std::string(count, '\0');
+    ifs.read(result.data(), count);
+    if(ifs.gcount()) {
+        return result;
     }
     return {};
 }
