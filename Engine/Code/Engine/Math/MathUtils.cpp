@@ -29,6 +29,14 @@ static thread_local unsigned int MT_RANDOM_SEED = 0u;
 
 void SetRandomEngineSeed(unsigned int seed) noexcept {
     MT_RANDOM_SEED = seed;
+    if(MT_RANDOM_SEED) {
+        GetMTRandomEngine(MT_RANDOM_SEED).seed(MT_RANDOM_SEED);
+        GetMT64RandomEngine(MT_RANDOM_SEED).seed(MT_RANDOM_SEED);
+    } else {
+        MT_RANDOM_SEED = GetRandomDevice()();
+        GetMTRandomEngine().seed(MT_RANDOM_SEED);
+        GetMT64RandomEngine().seed(MT_RANDOM_SEED);
+    }
 }
 
 std::pair<float, float> SplitFloatingPointValue(float value) noexcept {
