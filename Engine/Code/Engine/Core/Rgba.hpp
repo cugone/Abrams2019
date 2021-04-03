@@ -7,6 +7,8 @@
 #include <string>
 #include <vector>
 
+class Argb;
+
 class Rgba {
 public:
     static const Rgba White;
@@ -55,6 +57,8 @@ public:
     Rgba& operator=(Rgba&& rhs) = default;
     ~Rgba() = default;
 
+    explicit Rgba(const Argb& argb) noexcept;
+    explicit Rgba(Argb&& argb) noexcept;
     explicit Rgba(const Vector4& fromFloats) noexcept;
     explicit Rgba(std::string name) noexcept;
     explicit Rgba(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha = 0xFF) noexcept;

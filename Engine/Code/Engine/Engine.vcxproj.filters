@@ -460,6 +460,9 @@
     <ClCompile Include="Physics\CableJoint.cpp">
       <Filter>Physics</Filter>
     </ClCompile>
+    <ClCompile Include="Core\Argb.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vector2.hpp">
@@ -890,6 +893,9 @@
     </ClInclude>
     <ClInclude Include="Physics\CableJoint.hpp">
       <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Argb.hpp">
+      <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

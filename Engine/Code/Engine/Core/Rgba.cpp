@@ -1,5 +1,7 @@
 #include "Engine/Core/Rgba.hpp"
 
+#include "Engine/Core/Argb.hpp"
+
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Math/MathUtils.hpp"
 
@@ -85,6 +87,23 @@ std::ostream& operator<<(std::ostream& os, const Rgba& rhs) noexcept {
     }
     os << static_cast<int>(rhs.r) << ',' << static_cast<int>(rhs.g) << ',' << static_cast<int>(rhs.b) << ',' << static_cast<int>(rhs.a);
     return os;
+}
+
+Rgba::Rgba(const Argb& argb) noexcept
+    : r{argb.r}
+    , g{argb.g}
+    , b{argb.b}
+    , a{argb.a}
+{
+    /* DO NOTHING */
+}
+Rgba::Rgba(Argb&& argb) noexcept
+: r{argb.r}
+, g{argb.g}
+, b{argb.b}
+, a{argb.a}
+{
+    argb.SetFromRawValue(std::uint32_t{0u});
 }
 
 Rgba::Rgba(const Vector4& fromFloats) noexcept {
