@@ -58,7 +58,7 @@ private:
     float m_defaultMaxZoomLevel = (std::numeric_limits<float>::max)();
     float m_minZoomLevel = 8.0f;
     float m_maxZoomLevel = (std::numeric_limits<float>::max)();
-    Camera2D m_Camera{};
+    mutable Camera2D m_Camera{};
     Camera2D m_ShakyCamera{};
     float m_maxShakeOffsetHorizontal{10.0f};
     float m_maxShakeOffsetVertical{10.0f};
