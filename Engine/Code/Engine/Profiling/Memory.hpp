@@ -18,8 +18,8 @@
 class Memory {
 public:
     struct status_t {
-        std::size_t leaked_objs = 0;
-        std::size_t leaked_bytes = 0;
+        std::size_t leaked_objs = 0u;
+        std::size_t leaked_bytes = 0u;
         operator bool() const noexcept {
             return leaked_objs || leaked_bytes;
         }
@@ -45,9 +45,9 @@ public:
         }
     };
     struct status_frame_t {
-        std::size_t frame_id = 0;
-        std::size_t leaked_objs = 0;
-        std::size_t leaked_bytes = 0;
+        std::size_t frame_id = 0u;
+        std::size_t leaked_objs = 0u;
+        std::size_t leaked_bytes = 0u;
         operator bool() const noexcept {
             return leaked_objs || leaked_bytes;
         }
@@ -143,21 +143,21 @@ public:
 
     static void resetframecounters() noexcept {
 #ifdef TRACK_MEMORY
-        frameSize = 0;
-        frameCount = 0;
-        framefreeCount = 0;
-        framefreeSize = 0;
+        frameSize = 0u;
+        frameCount = 0u;
+        framefreeCount = 0u;
+        framefreeSize = 0u;
 #endif
     }
 
     static void resetstatuscounters() noexcept {
 #ifdef TRACK_MEMORY
-        maxSize = 0;
-        maxCount = 0;
-        allocSize = 0;
-        allocCount = 0;
-        freeCount = 0;
-        freeSize = 0;
+        maxSize = 0u;
+        maxCount = 0u;
+        allocSize = 0u;
+        allocCount = 0u;
+        freeCount = 0u;
+        freeSize = 0u;
 #endif
     }
 
@@ -176,17 +176,17 @@ public:
         return {frameCounter, frameCount - framefreeCount, frameSize - framefreeSize};
     }
 
-    inline static std::size_t maxSize = 0;
-    inline static std::size_t maxCount = 0;
-    inline static std::size_t allocSize = 0;
-    inline static std::size_t allocCount = 0;
-    inline static std::size_t frameSize = 0;
-    inline static std::size_t frameCount = 0;
-    inline static std::size_t frameCounter = 0;
-    inline static std::size_t freeCount = 0;
-    inline static std::size_t freeSize = 0;
-    inline static std::size_t framefreeCount = 0;
-    inline static std::size_t framefreeSize = 0;
+    inline static std::size_t maxSize = 0u;
+    inline static std::size_t maxCount = 0u;
+    inline static std::size_t allocSize = 0u;
+    inline static std::size_t allocCount = 0u;
+    inline static std::size_t frameSize = 0u;
+    inline static std::size_t frameCount = 0u;
+    inline static std::size_t frameCounter = 0u;
+    inline static std::size_t freeCount = 0u;
+    inline static std::size_t freeSize = 0u;
+    inline static std::size_t framefreeCount = 0u;
+    inline static std::size_t framefreeSize = 0u;
 
 protected:
 private:
