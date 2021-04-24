@@ -22,14 +22,15 @@ void Mesh::Builder::Begin(const PrimitiveType& type) noexcept {
 
 void Mesh::Builder::End(Material* mat /* = nullptr */) noexcept {
     _current_draw_instruction.material = mat;
-    _current_draw_instruction.count = indicies.size() - _current_draw_instruction.indexStart;
+    _current_draw_instruction.indexCount = indicies.size() - _current_draw_instruction.indexStart;
     if(!draw_instructions.empty()) {
         auto& last_inst = draw_instructions.back();
         if(!mat) {
             _current_draw_instruction.material = last_inst.material;
         }
         if(last_inst == _current_draw_instruction) {
-            last_inst.count += _current_draw_instruction.count;
+            ++last_inst.count;
+            last_inst.indexCount += _current_draw_instruction.indexCount;
         } else {
             draw_instructions.push_back(_current_draw_instruction);
         }
@@ -133,7 +134,7 @@ void Mesh::Render(Renderer& renderer, const Mesh::Builder& builder) noexcept {
         for(int i = 0; i < cb_size; ++i) {
             renderer.SetConstantBuffer(renderer.CONSTANT_BUFFER_START_INDEX + i, &(cbs.begin() + i)->get());
         }
-        renderer.DrawIndexed(draw_inst.type, builder.verticies, builder.indicies, draw_inst.count, draw_inst.vertexStart, draw_inst.baseVertexLocation);
+        renderer.DrawIndexed(draw_inst.type, builder.verticies, builder.indicies, draw_inst.indexCount, draw_inst.vertexStart, draw_inst.baseVertexLocation);
         for(int i = 0; i < cb_size; ++i) {
             renderer.SetConstantBuffer(renderer.CONSTANT_BUFFER_START_INDEX + i, nullptr);
         }

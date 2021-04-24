@@ -174,12 +174,13 @@ struct ComputeJob {
 class Renderer : public EngineSubsystem {
 public:
     struct DrawInstruction {
-        PrimitiveType type;
-        std::size_t vertexStart;
-        std::size_t indexStart;
-        std::size_t count;
-        std::size_t baseVertexLocation;
-        Material* material;
+        PrimitiveType type{PrimitiveType::None};
+        std::size_t vertexStart{0u};
+        std::size_t indexStart{0u};
+        std::size_t indexCount{0u};
+        std::size_t baseVertexLocation{0u};
+        std::size_t count{1u};
+        Material* material{};
         [[nodiscard]] bool operator==(const DrawInstruction& rhs) {
             return material == rhs.material && type == rhs.type;
         }
