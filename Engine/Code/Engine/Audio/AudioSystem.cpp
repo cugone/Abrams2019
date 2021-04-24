@@ -246,7 +246,7 @@ void AudioSystem::DeactivateChannel(Channel& channel) noexcept {
     _active_channels.erase(found_iter);
 }
 
-void AudioSystem::Play(Sound& snd, const SoundDesc& desc /* = SoundDesc{}*/) noexcept {
+void AudioSystem::Play(Sound& snd, SoundDesc desc /* = SoundDesc{}*/) noexcept {
     std::scoped_lock<std::mutex> lock(_cs);
     if(_max_channels <= _idle_channels.size()) {
         return;
@@ -254,25 +254,24 @@ void AudioSystem::Play(Sound& snd, const SoundDesc& desc /* = SoundDesc{}*/) noe
     if(_max_channels <= _active_channels.size()) {
         return;
     }
-    auto desc_copy = desc;
     if(auto* group = GetChannelGroup(&snd)) {
         const auto [groupvolume, groupfrequency] = group->GetVolumeAndFrequency();
-        if(desc_copy.volume == 1.0f) {
-            desc_copy.volume = groupvolume;
+        if(desc.volume == 1.0f) {
+            desc.volume = groupvolume;
         }
-        if(desc_copy.frequency == 1.0f) {
-            desc_copy.frequency = groupfrequency;
+        if(desc.frequency == 1.0f) {
+            desc.frequency = groupfrequency;
         }
     }
     auto channelDesc = AudioSystem::Channel::ChannelDesc{this};
-    channelDesc = desc_copy;
+    channelDesc = desc;
     _idle_channels.push_back(std::make_unique<Channel>(*this, channelDesc));
     _active_channels.push_back(std::move(_idle_channels.back()));
     auto& inserted_channel = _active_channels.back();
     inserted_channel->Play(snd);
 }
 
-void AudioSystem::Play(std::filesystem::path filepath, const SoundDesc& desc /*= SoundDesc{}*/) noexcept {
+void AudioSystem::Play(std::filesystem::path filepath, SoundDesc desc /*= SoundDesc{}*/) noexcept {
     namespace FS = std::filesystem;
     if(!FS::exists(filepath)) {
         return;
