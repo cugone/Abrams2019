@@ -110,7 +110,47 @@ bool Console::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         }
         return true;
     }
-    case WindowsSystemMessage::Keyboard_SysKeyDown:
+    case WindowsSystemMessage::Keyboard_SysKeyDown: {
+        _non_rendering_char = false;
+        auto key = static_cast<unsigned char>(wp);
+        auto lpBits = static_cast<uint32_t>(lp & 0xFFFFFFFFu);
+        //0bTPXRRRRESSSSSSSSCCCCCCCCCCCCCCCC
+        //C: repeat count
+        //S: scan code
+        //E: extended key flag
+        //R: reserved
+        //X: context code: 1 if the ALT key is down;
+        //   0 if the WM_SYSKEYDOWN message is posted to the active window because no window has the keyboard focus.
+        //P: previous state: 1 for already down
+        //T: transition state: 0 for KEYDOWN
+        constexpr uint32_t repeat_count_mask = 0b0000'0000'0000'0000'1111'1111'1111'1111;     //0x0000FFFF;
+        constexpr uint32_t scan_code_mask = 0b0000'0000'1111'1111'0000'0000'0000'0000;        //0x00FF0000;
+        constexpr uint32_t extended_key_mask = 0b0000'0001'0000'0000'0000'0000'0000'0000;     //0x01000000;
+        constexpr uint32_t reserved_mask = 0b0001'1110'0000'0000'0000'0000'0000'0000;         //0x1E000000;
+        constexpr uint32_t context_code_mask = 0b0010'0000'0000'0000'0000'0000'0000'0000;     //0x20000000;
+        constexpr uint32_t previous_state_mask = 0b0100'0000'0000'0000'0000'0000'0000'0000;   //0x40000000;
+        constexpr uint32_t transition_state_mask = 0b1000'0000'0000'0000'0000'0000'0000'0000; //0x80000000;
+        bool is_extended_key = (lpBits & extended_key_mask) != 0;
+        if(key < 32 || key == 127) { //Control and Del chars
+            _non_rendering_char = true;
+        }
+        auto my_key = InputSystem::ConvertWinVKToKeyCode(key);
+        if(is_extended_key) {
+            if(IsClosed()) {
+                return false;
+            }
+            switch(my_key) {
+            case KeyCode::Alt: DebuggerPrintf("Pressing Alt.\n"); return true;
+            case KeyCode::LAlt: DebuggerPrintf("Pressing LAlt.\n"); return true;
+            case KeyCode::RAlt: DebuggerPrintf("Pressing RAlt.\n"); return true;
+            default: return false;
+            }
+        }
+        if(!_non_rendering_char) {
+            return true;
+        }
+        return false;
+    }
     case WindowsSystemMessage::Keyboard_KeyDown: {
         _non_rendering_char = false;
         auto key = static_cast<unsigned char>(wp);
