@@ -540,6 +540,10 @@ void InputSystem::AdjustMouseCoords(Vector2 offset) noexcept {
     _mouseDelta = _mouseCoords - _mousePrevCoords;
 }
 
+bool InputSystem::WasMouseWheelJustUsed() const noexcept {
+    return GetMouseWheelPositionNormalized() != 0 && GetMouseWheelHorizontalPositionNormalized() != 0;
+}
+
 Vector2 InputSystem::GetScreenCenter() const noexcept {
     RECT desktopRect;
     HWND desktopWindowHandle = ::GetDesktopWindow();
@@ -1496,7 +1500,7 @@ bool InputSystem::WasMouseMoved() const noexcept {
 }
 
 bool InputSystem::WasMouseJustUsed() const noexcept {
-    return WasMouseMoved() || WasAnyMouseButtonPressed();
+    return WasMouseMoved() || WasAnyMouseButtonPressed() || WasMouseWheelJustUsed();
 }
 
 bool InputSystem::IsKeyUp(const KeyCode& key) const noexcept {

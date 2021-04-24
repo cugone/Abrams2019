@@ -316,6 +316,7 @@ public:
     [[nodiscard]] bool WasMouseWheelJustScrolledDown() const noexcept;
     [[nodiscard]] bool WasMouseWheelJustScrolledLeft() const noexcept;
     [[nodiscard]] bool WasMouseWheelJustScrolledRight() const noexcept;
+    [[nodiscard]] bool WasMouseWheelJustUsed() const noexcept;
 
     [[nodiscard]] const bool IsMouseRawInputEnabled() const noexcept;
     void SetMouseRawInput(bool value) noexcept;
