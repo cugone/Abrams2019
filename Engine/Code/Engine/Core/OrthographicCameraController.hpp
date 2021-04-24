@@ -32,6 +32,7 @@ public:
 
     void ResetZoomLevelRange() noexcept;
     float GetZoomLevel() const noexcept;
+    float GetZoomRatio() const noexcept;
     void SetZoomLevel(float zoom) noexcept;
     void SetZoomLevelRange(const Vector2& minmaxZoomLevel) noexcept;
     void SetMinZoomLevel(float minimumLevel) noexcept;

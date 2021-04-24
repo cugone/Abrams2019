@@ -105,6 +105,10 @@ float OrthographicCameraController::GetZoomLevel() const noexcept {
     return m_zoomLevel;
 }
 
+float OrthographicCameraController::GetZoomRatio() const noexcept {
+    return MathUtils::RangeMap(m_zoomLevel, m_minZoomLevel, m_maxZoomLevel, 0.0f, 1.0f);
+}
+
 void OrthographicCameraController::SetZoomLevel(float zoom) noexcept {
     m_zoomLevel = zoom;
 }
