@@ -378,6 +378,8 @@ bool Console::HandleTildeKey() noexcept {
         _outputStartPosition = Vector2::ZERO;
         _non_rendering_char = true;
         _entryline.clear();
+        _cursor_position = _entryline.begin();
+        _selection_position = _cursor_position;
     }
     return true;
 }
