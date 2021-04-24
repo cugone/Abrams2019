@@ -154,13 +154,21 @@ Renderer::~Renderer() noexcept {
     _target_stack.reset();
 
     _textures.clear();
+    _textures.shrink_to_fit();
     _shader_programs.clear();
+    _shader_programs.shrink_to_fit();
     _materials.clear();
+    _materials.shrink_to_fit();
     _shaders.clear();
+    _shaders.shrink_to_fit();
     _samplers.clear();
+    _samplers.shrink_to_fit();
     _rasters.clear();
+    _rasters.shrink_to_fit();
     _fonts.clear();
+    _fonts.shrink_to_fit();
     _depthstencils.clear();
+    _depthstencils.shrink_to_fit();
 
     _default_depthstencil = nullptr;
     _current_target = nullptr;
@@ -564,9 +572,9 @@ bool Renderer::RegisterTexture(const std::string& name, std::unique_ptr<Texture>
         }
     }
     p.make_preferred();
-    auto found_texture = _textures.find(p.string());
+    auto found_texture = std::find_if(std::cbegin(_textures), std::cend(_textures), [&p](const auto& t) { return t.first == p.string(); });
     if(found_texture == _textures.end()) {
-        _textures.try_emplace(name, std::move(texture));
+        _textures.emplace_back(std::make_pair(name, std::move(texture)));
         return true;
     } else {
         return false;
@@ -583,11 +591,11 @@ Texture* Renderer::GetTexture(const std::string& nameOrFile) noexcept {
     if(p.string() == "__fullscreen") {
         return GetFullscreenTexture();
     }
-    auto found_iter = _textures.find(p.string());
-    if(found_iter == _textures.end()) {
+    auto found_texture = std::find_if(std::cbegin(_textures), std::cend(_textures), [&p](const auto& t) { return t.first == p.string(); });
+    if(found_texture == _textures.end()) {
         return nullptr;
     }
-    return (*found_iter).second.get();
+    return (*found_texture).second.get();
 }
 
 void Renderer::DrawPoint(const Vertex3D& point) noexcept {
@@ -3017,16 +3025,16 @@ void Renderer::RegisterDepthStencilState(const std::string& name, std::unique_pt
     if(depthstencil == nullptr) {
         return;
     }
-    auto found_iter = _depthstencils.find(name);
+    auto found_iter = std::find_if(std::begin(_depthstencils), std::end(_depthstencils), [&name](const auto& s) { return s.first == name; });
     if(found_iter != _depthstencils.end()) {
         found_iter->second.reset();
         _depthstencils.erase(found_iter);
     }
-    _depthstencils.try_emplace(name, std::move(depthstencil));
+    _depthstencils.emplace_back(name, std::move(depthstencil));
 }
 
 RasterState* Renderer::GetRasterState(const std::string& name) noexcept {
-    auto found_iter = _rasters.find(name);
+    auto found_iter = std::find_if(std::cbegin(_rasters), std::cend(_rasters), [&name](const auto& s) { return s.first == name; });
     if(found_iter == _rasters.end()) {
         return nullptr;
     }
@@ -3038,7 +3046,7 @@ void Renderer::CreateAndRegisterSamplerFromSamplerDescription(const std::string&
 }
 
 Sampler* Renderer::GetSampler(const std::string& name) noexcept {
-    auto found_iter = _samplers.find(name);
+    auto found_iter = std::find_if(std::cbegin(_samplers), std::cend(_samplers), [&name](const auto& s) { return s.first == name; });
     if(found_iter == _samplers.end()) {
         return nullptr;
     }
@@ -3057,36 +3065,36 @@ void Renderer::RegisterRasterState(const std::string& name, std::unique_ptr<Rast
     if(raster == nullptr) {
         return;
     }
-    auto found_iter = _rasters.find(name);
+    auto found_iter = std::find_if(std::begin(_rasters), std::end(_rasters), [&name](const auto& s) { return s.first == name; });
     if(found_iter != _rasters.end()) {
         found_iter->second.reset();
         _rasters.erase(found_iter);
     }
-    _rasters.try_emplace(name, std::move(raster));
+    _rasters.emplace_back(name, std::move(raster));
 }
 
 void Renderer::RegisterSampler(const std::string& name, std::unique_ptr<Sampler> sampler) noexcept {
     if(sampler == nullptr) {
         return;
     }
-    auto found_iter = _samplers.find(name);
+    auto found_iter = std::find_if(std::begin(_samplers), std::end(_samplers), [&name](const auto& s) { return s.first == name; });
     if(found_iter != _samplers.end()) {
         found_iter->second.reset();
         _samplers.erase(found_iter);
     }
-    _samplers.try_emplace(name, std::move(sampler));
+    _samplers.emplace_back(name, std::move(sampler));
 }
 
 void Renderer::RegisterShader(const std::string& name, std::unique_ptr<Shader> shader) noexcept {
     if(!shader) {
         return;
     }
-    auto found_iter = _shaders.find(name);
+    auto found_iter = std::find_if(std::begin(_shaders), std::end(_shaders), [&name](const auto& s) { return s.first == name; });
     if(found_iter != _shaders.end()) {
         found_iter->second.reset();
         _shaders.erase(found_iter);
     }
-    _shaders.try_emplace(name, std::move(shader));
+    _shaders.emplace_back(name, std::move(shader));
 }
 
 bool Renderer::RegisterShader(std::filesystem::path filepath) noexcept {
@@ -3122,25 +3130,25 @@ void Renderer::RegisterShader(std::unique_ptr<Shader> shader) noexcept {
         return;
     }
     std::string name = shader->GetName();
-    auto found_iter = _shaders.find(name);
+    auto found_iter = std::find_if(std::begin(_shaders), std::end(_shaders), [&name](const auto& s) { return s.first == name; });
     if(found_iter != _shaders.end()) {
         DebuggerPrintf("Shader \"%s\" already exists. Overwriting.\n", name.c_str());
         found_iter->second.reset();
         _shaders.erase(found_iter);
     }
-    _shaders.try_emplace(name, std::move(shader));
+    _shaders.emplace_back(name, std::move(shader));
 }
 
 void Renderer::RegisterFont(const std::string& name, std::unique_ptr<KerningFont> font) noexcept {
     if(font == nullptr) {
         return;
     }
-    auto found_iter = _fonts.find(name);
+    auto found_iter = std::find_if(std::begin(_fonts), std::end(_fonts), [&name](const auto& s) { return s.first == name; });
     if(found_iter != _fonts.end()) {
         found_iter->second.reset();
         _fonts.erase(found_iter);
     }
-    _fonts.try_emplace(name, std::move(font));
+    _fonts.emplace_back(name, std::move(font));
 }
 
 void Renderer::RegisterFont(std::unique_ptr<KerningFont> font) noexcept {
@@ -3148,12 +3156,12 @@ void Renderer::RegisterFont(std::unique_ptr<KerningFont> font) noexcept {
         return;
     }
     std::string name = font->GetName();
-    auto found_iter = _fonts.find(name);
+    auto found_iter = std::find_if(std::begin(_fonts), std::end(_fonts), [&name](const auto& s) { return s.first == name; });
     if(found_iter != _fonts.end()) {
         found_iter->second.reset();
         _fonts.erase(found_iter);
     }
-    _fonts.try_emplace(name, std::move(font));
+    _fonts.emplace_back(name, std::move(font));
 }
 
 bool Renderer::RegisterFont(std::filesystem::path filepath) noexcept {
@@ -3546,13 +3554,13 @@ void Renderer::RegisterMaterial(const std::string& name, std::unique_ptr<Materia
     if(mat == nullptr) {
         return;
     }
-    auto found_iter = _materials.find(name);
+    auto found_iter = std::find_if(std::begin(_materials), std::end(_materials), [&name](const auto& m) { return m.first == name; });
     if(found_iter != _materials.end()) {
         DebuggerPrintf("Material \"%s\" already exists. Overwriting.\n", name.c_str());
         found_iter->second.reset();
         _materials.erase(found_iter);
     }
-    _materials.try_emplace(name, std::move(mat));
+    _materials.emplace_back(name, std::move(mat));
 }
 
 void Renderer::RegisterMaterial(std::unique_ptr<Material> mat) noexcept {
@@ -3560,13 +3568,13 @@ void Renderer::RegisterMaterial(std::unique_ptr<Material> mat) noexcept {
         return;
     }
     std::string name = mat->GetName();
-    auto found_iter = _materials.find(name);
+    auto found_iter = std::find_if(std::begin(_materials), std::end(_materials), [&name](const auto& m) { return m.first == name; });
     if(found_iter != _materials.end()) {
         DebuggerPrintf("Material \"%s\" already exists. Overwriting.\n", name.c_str());
         found_iter->second.reset();
         _materials.erase(found_iter);
     }
-    _materials.try_emplace(name, std::move(mat));
+    _materials.emplace_back(name, std::move(mat));
 }
 
 bool Renderer::RegisterMaterial(std::filesystem::path filepath) noexcept {
@@ -3626,13 +3634,13 @@ void Renderer::RegisterShaderProgram(const std::string& name, std::unique_ptr<Sh
     if(!sp) {
         return;
     }
-    auto found_iter = _shader_programs.find(name);
+    auto found_iter = std::find_if(std::begin(_shader_programs), std::end(_shader_programs), [&name](const auto& sp) { return sp.first == name; });
     if(found_iter != _shader_programs.end()) {
         sp->SetDescription(std::move(found_iter->second->GetDescription()));
         found_iter->second.reset(nullptr);
         _shader_programs.erase(found_iter);
     }
-    _shader_programs.try_emplace(name, std::move(sp));
+    _shader_programs.emplace_back(name, std::move(sp));
 }
 
 void Renderer::UpdateVbo(const VertexBuffer::buffer_t& vbo) noexcept {
@@ -3674,7 +3682,7 @@ ShaderProgram* Renderer::GetShaderProgram(const std::string& nameOrFile) noexcep
         p = FS::canonical(p);
     }
     p.make_preferred();
-    auto found_iter = _shader_programs.find(p.string());
+    auto found_iter = std::find_if(std::cbegin(_shader_programs), std::cend(_shader_programs), [&p](const auto& sp) { return sp.first == p.string(); });
     if(found_iter == _shader_programs.end()) {
         return nullptr;
     }
@@ -3792,7 +3800,7 @@ void Renderer::SetVSync(bool value) noexcept {
 }
 
 Material* Renderer::GetMaterial(const std::string& nameOrFile) noexcept {
-    auto found_iter = _materials.find(nameOrFile);
+    auto found_iter = std::find_if(std::cbegin(_materials), std::cend(_materials), [&nameOrFile](const auto& m) { return m.first == nameOrFile; });
     if(found_iter == _materials.end()) {
         return GetMaterial("__invalid");
     }
@@ -3843,8 +3851,8 @@ bool Renderer::IsTextureLoaded(const std::string& nameOrFile) const noexcept {
     if(is_fullscreen) {
         return GetFullscreenTexture() != nullptr;
     }
-    const auto is_found = _textures.find(p.string()) != _textures.end();
-    return is_found;
+    const auto found_iter = std::find_if(std::cbegin(_textures), std::cend(_textures), [&p](const auto& t) { return t.first == p.string(); });
+    return found_iter != std::cend(_textures);
 }
 
 bool Renderer::IsTextureNotLoaded(const std::string& nameOrFile) const noexcept {
@@ -3852,7 +3860,7 @@ bool Renderer::IsTextureNotLoaded(const std::string& nameOrFile) const noexcept 
 }
 
 Shader* Renderer::GetShader(const std::string& nameOrFile) noexcept {
-    auto found_iter = _shaders.find(nameOrFile);
+    const auto found_iter = std::find_if(std::cbegin(_shaders), std::cend(_shaders), [&nameOrFile](const auto& s) { return s.first == nameOrFile; });
     if(found_iter == _shaders.end()) {
         return nullptr;
     }
@@ -3901,7 +3909,7 @@ std::size_t Renderer::GetFontCount() const noexcept {
 }
 
 KerningFont* Renderer::GetFont(const std::string& nameOrFile) noexcept {
-    auto found_iter = _fonts.find(nameOrFile);
+    auto found_iter = std::find_if(std::cbegin(_fonts), std::cend(_fonts), [&nameOrFile](const auto& f) { return f.first == nameOrFile; });
     if(found_iter == _fonts.end()) {
         return nullptr;
     }
@@ -4414,7 +4422,7 @@ Texture* Renderer::CreateOrGetTexture(const std::filesystem::path& filepath, con
     FS::path p(filepath);
     p = FS::canonical(p);
     p.make_preferred();
-    auto texture_iter = _textures.find(p.string());
+    auto texture_iter = std::find_if(std::cbegin(_textures), std::cend(_textures), [&p](const auto& t) { return t.first == p.string(); });
     if(texture_iter == _textures.end()) {
         return CreateTexture(p.string(), dimensions);
     } else {
@@ -4527,7 +4535,7 @@ void Renderer::SetDepthStencilState(DepthStencilState* depthstencil) noexcept {
 }
 
 DepthStencilState* Renderer::GetDepthStencilState(const std::string& name) noexcept {
-    auto found_iter = _depthstencils.find(name);
+    auto found_iter = std::find_if(std::cbegin(_depthstencils), std::cend(_depthstencils), [&name](const auto& ds) { return ds.first == name; });
     if(found_iter == _depthstencils.end()) {
         return nullptr;
     }
