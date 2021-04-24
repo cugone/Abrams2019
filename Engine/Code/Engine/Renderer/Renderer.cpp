@@ -4292,7 +4292,7 @@ void Renderer::SetViewports(const std::vector<AABB3>& viewports) noexcept {
 }
 
 void Renderer::SetScissor(unsigned int x, unsigned int y, unsigned int width, unsigned int height) noexcept {
-    D3D11_RECT scissor;
+    D3D11_RECT scissor{};
     scissor.left = x;
     scissor.right = x + width;
     scissor.top = y;
@@ -4484,7 +4484,7 @@ void Renderer::SetTexture(Texture* texture, unsigned int registerIndex /*= 0*/) 
 std::unique_ptr<Texture> Renderer::CreateDepthStencil(const RHIDevice& owner, const IntVector2& dimensions) noexcept {
     Microsoft::WRL::ComPtr<ID3D11Texture2D> dx_resource{};
 
-    D3D11_TEXTURE2D_DESC descDepth;
+    D3D11_TEXTURE2D_DESC descDepth{};
     descDepth.Width = dimensions.x;
     descDepth.Height = dimensions.y;
     descDepth.MipLevels = 1;
@@ -4506,7 +4506,7 @@ std::unique_ptr<Texture> Renderer::CreateDepthStencil(const RHIDevice& owner, co
 std::unique_ptr<Texture> Renderer::CreateRenderableDepthStencil(const RHIDevice& owner, const IntVector2& dimensions) noexcept {
     ID3D11Texture2D* dx_resource = nullptr;
 
-    D3D11_TEXTURE2D_DESC descDepth;
+    D3D11_TEXTURE2D_DESC descDepth{};
     descDepth.Width = dimensions.x;
     descDepth.Height = dimensions.y;
     descDepth.MipLevels = 1;
