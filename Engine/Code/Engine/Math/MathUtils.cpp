@@ -172,18 +172,25 @@ long double GetRandomLongDoubleNegOneToOne() noexcept {
 }
 
 bool IsPercentChance(float probability) noexcept {
-    const auto roll = GetRandomFloatZeroToOne();
-    return roll < probability;
+    auto d = std::bernoulli_distribution(probability);
+    return d(GetMTRandomEngine(MT_RANDOM_SEED));
 }
 
 bool IsPercentChance(double probability) noexcept {
-    const auto roll = GetRandomDoubleZeroToOne();
-    return roll < probability;
+    auto d = std::bernoulli_distribution(probability);
+    return d(GetMTRandomEngine(MT_RANDOM_SEED));
 }
 
-bool IsPercentChance(long double probability) noexcept {
-    const auto roll = GetRandomLongDoubleZeroToOne();
-    return roll < probability;
+double nCr(int n, int k) noexcept {
+    return 1 / ((n + 1) * std::beta(n - k + 1, k + 1));
+}
+
+double Combination(int n, int k) noexcept {
+    return nCr(n, k);
+}
+
+double Combination_multiset(int n, int k) noexcept {
+    return Combination(n + k - 1, k);
 }
 
 float CosDegrees(float degrees) noexcept {

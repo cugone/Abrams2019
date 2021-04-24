@@ -110,7 +110,25 @@ void SetRandomEngineSeed(unsigned int seed) noexcept;
 [[nodiscard]] long double GetRandomLongDoubleZeroToOne() noexcept;
 [[nodiscard]] long double GetRandomLongDoubleZeroUpToOne() noexcept;
 [[nodiscard]] long double GetRandomLongDoubleNegOneToOne() noexcept;
-[[nodiscard]] bool IsPercentChance(long double probability) noexcept;
+
+[[nodiscard]] double nCr(int n, int k) noexcept;
+[[nodiscard]] double Combination(int n, int k) noexcept;
+[[nodiscard]] double Combination_multiset(int n, int k) noexcept;
+
+template<size_t N>
+[[nodiscard]] constexpr unsigned long long Permutation() noexcept {
+    static_assert(N <= 20, "Permutation value out of range.");
+    static constexpr unsigned long long factorials[] = {1ull, 1ull, 2ull, 6ull, 24ull, 120ull, 720ull, 5'040ull, 40'320ull, 362'880ull, 3'628'800ull, 39'916'800ull, 479'001'600ull, 6'227'020'800ull, 87'178'291'200ull, 1'307'674'368'000ull, 20'922'789'888'000ull, 355'687'428'096'000ull, 6'402'373'705'728'000ull, 121'645'100'408'832'000ull, 2'432'902'008'176'640'000ull};
+    return factorials[N];
+}
+
+template<size_t N, size_t K>
+[[nodiscard]] constexpr unsigned long long nPr() noexcept {
+    static_assert(N <= 20, "nPr N value out of range.");
+    static_assert(K <= 20, "nPr K value out of range.");
+    static_assert(N - K <= 20, "nPr N - K value out of range.");
+    return Permutation<N>() / Permutation<(N - K)>();
+}
 
 [[nodiscard]] float CosDegrees(float degrees) noexcept;
 [[nodiscard]] float SinDegrees(float degrees) noexcept;
