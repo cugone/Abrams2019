@@ -147,8 +147,8 @@ private:
     std::vector<std::string> _entryline_buffer{};
     std::vector<OutputEntry> _output_buffer{};
     std::string _entryline{};
-    std::string::const_iterator _cursor_position{};
-    std::string::const_iterator _selection_position{};
+    std::string::const_iterator _cursor_position{_entryline.begin()};
+    std::string::const_iterator _selection_position{_entryline.begin()};
     decltype(_entryline_buffer)::const_iterator _current_history_position{};
     unsigned int _default_blink_rate = 4u;
     unsigned int _blink_rate = _default_blink_rate;
