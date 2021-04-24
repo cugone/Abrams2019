@@ -1086,10 +1086,10 @@ std::unique_ptr<AnimatedSprite> Renderer::CreateAnimatedSpriteFromGif(std::files
         return nullptr;
     }
     Image img(filepath);
-    auto delays = img.GetDelaysIfGif();
+    const auto& delays = img.GetDelaysIfGif();
     auto tex = GetTexture(filepath.string());
     std::weak_ptr<SpriteSheet> spr = CreateSpriteSheet(tex, 1, static_cast<int>(delays.size()));
-    int duration_sum = std::accumulate(std::begin(delays), std::end(delays), 0);
+    int duration_sum = std::accumulate(std::cbegin(delays), std::cend(delays), 0);
     std::unique_ptr<AnimatedSprite> anim{};
     anim.reset(new AnimatedSprite(*this, spr, TimeUtils::FPMilliseconds{duration_sum}, 0, static_cast<int>(delays.size())));
     tinyxml2::XMLDocument doc;
@@ -1503,7 +1503,7 @@ void Renderer::DrawTextLine(const KerningFont* font, const std::string& text, co
         ibo.push_back(s - 2);
         ibo.push_back(s - 1);
 
-        auto previous_char = text_iter;
+        std::string::const_iterator previous_char = text_iter;
         ++text_iter;
         if(text_iter != text.end()) {
             int kern_value = font->GetKerningValue(*previous_char, *text_iter);
@@ -1587,7 +1587,7 @@ void Renderer::AppendMultiLineTextBuffer(KerningFont* font, const std::string& t
         ibo.push_back(s - 2);
         ibo.push_back(s - 1);
 
-        auto previous_char = text_iter;
+        std::string::const_iterator previous_char = text_iter;
         ++text_iter;
         if(text_iter != text.end()) {
             int kern_value = font->GetKerningValue(*previous_char, *text_iter);
@@ -1597,11 +1597,11 @@ void Renderer::AppendMultiLineTextBuffer(KerningFont* font, const std::string& t
 }
 
 std::vector<std::unique_ptr<ConstantBuffer>> Renderer::CreateConstantBuffersFromShaderProgram(const ShaderProgram* _shader_program) const noexcept {
-    auto vs_cbuffers = std::move(_rhi_device->CreateConstantBuffersFromByteCode(_shader_program->GetVSByteCode()));
-    auto hs_cbuffers = std::move(_rhi_device->CreateConstantBuffersFromByteCode(_shader_program->GetHSByteCode()));
-    auto ds_cbuffers = std::move(_rhi_device->CreateConstantBuffersFromByteCode(_shader_program->GetDSByteCode()));
-    auto gs_cbuffers = std::move(_rhi_device->CreateConstantBuffersFromByteCode(_shader_program->GetGSByteCode()));
-    auto ps_cbuffers = std::move(_rhi_device->CreateConstantBuffersFromByteCode(_shader_program->GetPSByteCode()));
+    auto vs_cbuffers = _rhi_device->CreateConstantBuffersFromByteCode(_shader_program->GetVSByteCode());
+    auto hs_cbuffers = _rhi_device->CreateConstantBuffersFromByteCode(_shader_program->GetHSByteCode());
+    auto ds_cbuffers = _rhi_device->CreateConstantBuffersFromByteCode(_shader_program->GetDSByteCode());
+    auto gs_cbuffers = _rhi_device->CreateConstantBuffersFromByteCode(_shader_program->GetGSByteCode());
+    auto ps_cbuffers = _rhi_device->CreateConstantBuffersFromByteCode(_shader_program->GetPSByteCode());
     const auto sizes = std::vector<std::size_t>{
     vs_cbuffers.size(),
     hs_cbuffers.size(),
@@ -1612,7 +1612,7 @@ std::vector<std::unique_ptr<ConstantBuffer>> Renderer::CreateConstantBuffersFrom
     if(!cbuffer_count) {
         return {};
     }
-    auto cbuffers = std::move(vs_cbuffers);
+    auto&& cbuffers = std::move(vs_cbuffers);
     std::move(std::begin(hs_cbuffers), std::end(hs_cbuffers), std::back_inserter(cbuffers));
     std::move(std::begin(ds_cbuffers), std::end(ds_cbuffers), std::back_inserter(cbuffers));
     std::move(std::begin(gs_cbuffers), std::end(gs_cbuffers), std::back_inserter(cbuffers));
@@ -1622,13 +1622,13 @@ std::vector<std::unique_ptr<ConstantBuffer>> Renderer::CreateConstantBuffersFrom
 }
 
 std::vector<std::unique_ptr<ConstantBuffer>> Renderer::CreateComputeConstantBuffersFromShaderProgram(const ShaderProgram* _shader_program) const noexcept {
-    auto cs_cbuffers = std::move(_rhi_device->CreateConstantBuffersFromByteCode(_shader_program->GetCSByteCode()));
+    auto&& cs_cbuffers = std::move(_rhi_device->CreateConstantBuffersFromByteCode(_shader_program->GetCSByteCode()));
     const auto sizes = std::vector<std::size_t>{cs_cbuffers.size()};
     auto cbuffer_count = std::accumulate(std::begin(sizes), std::end(sizes), static_cast<std::size_t>(0u));
     if(!cbuffer_count) {
         return {};
     }
-    auto ccbuffers = std::move(cs_cbuffers);
+    auto&& ccbuffers = std::move(cs_cbuffers);
     ccbuffers.shrink_to_fit();
     return ccbuffers;
 }
@@ -1770,7 +1770,7 @@ void Renderer::CreateAndRegisterDefaultEngineFonts() noexcept {
 
 void Renderer::CreateAndRegisterDefaultShaderPrograms() noexcept {
     auto default_sp = CreateDefaultShaderProgram();
-    auto name = default_sp->GetName();
+    std::string name = default_sp->GetName();
     RegisterShaderProgram(name, std::move(default_sp));
 
     auto unlit_sp = CreateDefaultUnlitShaderProgram();
@@ -2910,7 +2910,7 @@ std::unique_ptr<DepthStencilState> Renderer::CreateEnabledStencil() noexcept {
 
 void Renderer::CreateAndRegisterDefaultFonts() noexcept {
     auto font_system32 = CreateDefaultSystem32Font();
-    const auto name = font_system32->GetName();
+    const std::string name = font_system32->GetName();
     RegisterFont(name, std::move(font_system32));
 
     CreateAndRegisterDefaultEngineFonts();
@@ -3118,7 +3118,7 @@ bool Renderer::RegisterShader(std::filesystem::path filepath) noexcept {
     filepath.make_preferred();
     if(doc.LoadFile(filepath.string().c_str()) == tinyxml2::XML_SUCCESS) {
         auto s = std::make_unique<Shader>(*this, *doc.RootElement());
-        const auto name = s->GetName();
+        const std::string name = s->GetName();
         RegisterShader(name, std::move(s));
         return true;
     }
@@ -3184,7 +3184,7 @@ bool Renderer::RegisterFont(std::filesystem::path filepath) noexcept {
         if(auto mat = CreateMaterialFromFont(font.get())) {
             font->SetMaterial(mat.get());
             auto mat_name = mat->GetName();
-            auto font_name = font->GetName();
+            const std::string font_name = font->GetName();
             RegisterMaterial(mat_name, std::move(mat));
             RegisterFont(font_name, std::move(font));
             return true;
@@ -3308,7 +3308,7 @@ std::unique_ptr<Texture> Renderer::CreateDefaultEmissiveTexture() noexcept {
 }
 
 std::unique_ptr<Texture> Renderer::CreateDefaultFullscreenTexture() noexcept {
-    auto dims = GetOutput()->GetBackBuffer()->GetDimensions();
+    const IntVector3 dims = GetOutput()->GetBackBuffer()->GetDimensions();
     auto data = std::vector<Rgba>(static_cast<std::size_t>(dims.x) * static_cast<std::size_t>(dims.y), Rgba::Magenta);
     return Create2DTextureFromMemory(data, dims.x, dims.y, BufferUsage::Gpu, BufferBindUsage::Render_Target | BufferBindUsage::Shader_Resource);
 }
@@ -3336,7 +3336,7 @@ std::unique_ptr<Texture> Renderer::CreateDefaultColorTexture(const Rgba& color) 
 
 void Renderer::CreateAndRegisterDefaultShaders() noexcept {
     auto default_shader = CreateDefaultShader();
-    auto name = default_shader->GetName();
+    std::string name = default_shader->GetName();
     RegisterShader(name, std::move(default_shader));
 
     auto default_unlit = CreateDefaultUnlitShader();
@@ -4024,7 +4024,7 @@ Vector2 Renderer::ConvertWorldToScreenCoords(const Camera2D& camera, const Vecto
 }
 
 Vector2 Renderer::ConvertWorldToScreenCoords(const Camera3D& camera, const Vector3& worldCoords) const noexcept {
-    auto WtoS = camera.GetViewProjectionMatrix();
+    const auto& WtoS = camera.GetViewProjectionMatrix();
     auto screenCoords4 = WtoS * (worldCoords - camera.GetPosition());
     auto ndc = Vector2{screenCoords4.x, -screenCoords4.y};
     auto screenDims = Vector2{GetOutput()->GetDimensions()};
@@ -4039,7 +4039,7 @@ Vector3 Renderer::ConvertScreenToWorldCoords(const Vector2& mouseCoords) const n
 Vector3 Renderer::ConvertScreenToWorldCoords(const Camera3D& camera, const Vector2& mouseCoords) const noexcept {
     auto ndc = 2.0f * mouseCoords / Vector2(GetOutput()->GetDimensions()) - Vector2::ONE;
     auto screenCoords4 = Vector4(ndc.x, -ndc.y, 1.0f, 1.0f);
-    auto sToW = camera.GetInverseViewProjectionMatrix();
+    const auto& sToW = camera.GetInverseViewProjectionMatrix();
     auto worldPos4 = sToW * screenCoords4;
     auto worldPos3 = Vector3(worldPos4);
     return worldPos3;
@@ -4661,8 +4661,8 @@ Texture* Renderer::Create1DTexture(std::filesystem::path filepath, const BufferU
     tex_desc.MiscFlags = 0;
 
     D3D11_SUBRESOURCE_DATA subresource_data{};
-    auto width = img.GetDimensions().x;
-    auto height = img.GetDimensions().y;
+    const auto width = img.GetDimensions().x;
+    const auto height = img.GetDimensions().y;
     subresource_data.pSysMem = img.GetData();
     subresource_data.SysMemPitch = width * sizeof(unsigned int); // pitch is byte size of a single row)
     subresource_data.SysMemSlicePitch = width * height * sizeof(unsigned int);
@@ -4820,8 +4820,8 @@ Texture* Renderer::Create2DTexture(std::filesystem::path filepath, const BufferU
     D3D11_SUBRESOURCE_DATA subresource_data;
     memset(&subresource_data, 0, sizeof(subresource_data));
 
-    auto width = img.GetDimensions().x;
-    auto height = img.GetDimensions().y;
+    const auto width = img.GetDimensions().x;
+    const auto height = img.GetDimensions().y;
     subresource_data.pSysMem = img.GetData();
     subresource_data.SysMemPitch = width * sizeof(unsigned int); // pitch is byte size of a single row)
     subresource_data.SysMemSlicePitch = width * height * sizeof(unsigned int);
