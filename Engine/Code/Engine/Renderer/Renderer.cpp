@@ -4665,7 +4665,7 @@ Texture* Renderer::Create1DTexture(std::filesystem::path filepath, const BufferU
     const auto height = img.GetDimensions().y;
     subresource_data.pSysMem = img.GetData();
     subresource_data.SysMemPitch = width * sizeof(unsigned int); // pitch is byte size of a single row)
-    subresource_data.SysMemSlicePitch = width * height * sizeof(unsigned int);
+    subresource_data.SysMemSlicePitch = static_cast<unsigned long long>(width) * static_cast<unsigned long long>(height) * sizeof(unsigned int);
     //Force specific usages for unordered access
     if((bindUsage & BufferBindUsage::Unordered_Access) == BufferBindUsage::Unordered_Access) {
         tex_desc.Usage = BufferUsageToD3DUsage(BufferUsage::Gpu);
@@ -4824,7 +4824,7 @@ Texture* Renderer::Create2DTexture(std::filesystem::path filepath, const BufferU
     const auto height = img.GetDimensions().y;
     subresource_data.pSysMem = img.GetData();
     subresource_data.SysMemPitch = width * sizeof(unsigned int); // pitch is byte size of a single row)
-    subresource_data.SysMemSlicePitch = width * height * sizeof(unsigned int);
+    subresource_data.SysMemSlicePitch = static_cast<unsigned long long>(width) * static_cast<unsigned long long>(height) * sizeof(unsigned int);
     //Force specific usages for unordered access
     if((bindUsage & BufferBindUsage::Unordered_Access) == BufferBindUsage::Unordered_Access) {
         tex_desc.Usage = BufferUsageToD3DUsage(BufferUsage::Gpu);
@@ -4889,7 +4889,7 @@ std::unique_ptr<Texture> Renderer::Create2DTextureFromMemory(const unsigned char
 
     subresource_data.pSysMem = data;
     subresource_data.SysMemPitch = width * sizeof(unsigned int);
-    subresource_data.SysMemSlicePitch = width * height * sizeof(unsigned int);
+    subresource_data.SysMemSlicePitch = static_cast<unsigned long long>(width) * static_cast<unsigned long long>(height) * sizeof(unsigned int);
 
     Microsoft::WRL::ComPtr<ID3D11Texture2D> dx_tex{};
 
@@ -4987,7 +4987,7 @@ std::unique_ptr<Texture> Renderer::Create2DTextureFromMemory(const std::vector<R
 
     subresource_data.pSysMem = data.data();
     subresource_data.SysMemPitch = width * sizeof(Rgba);
-    subresource_data.SysMemSlicePitch = width * height * sizeof(Rgba);
+    subresource_data.SysMemSlicePitch = static_cast<unsigned long long>(width) * static_cast<unsigned long long>(height) * sizeof(Rgba);
 
     Microsoft::WRL::ComPtr<ID3D11Texture2D> dx_tex{};
 
@@ -5036,7 +5036,7 @@ std::unique_ptr<Texture> Renderer::Create2DTextureArrayFromMemory(const unsigned
     for(unsigned int i = 0; i < depth; ++i) {
         subresource_data[i].pSysMem = data;
         subresource_data[i].SysMemPitch = width * sizeof(unsigned int);
-        subresource_data[i].SysMemSlicePitch = width * height * sizeof(unsigned int);
+        subresource_data[i].SysMemSlicePitch = static_cast<unsigned long long>(width) * static_cast<unsigned long long>(height) * sizeof(unsigned int);
     }
     Microsoft::WRL::ComPtr<ID3D11Texture2D> dx_tex{};
 
@@ -5087,7 +5087,7 @@ std::unique_ptr<Texture> Renderer::Create2DTextureFromGifBuffer(const unsigned c
     for(unsigned int i = 0; i < depth; ++i) {
         subresource_data[i].pSysMem = data;
         subresource_data[i].SysMemPitch = width * sizeof(unsigned int);
-        subresource_data[i].SysMemSlicePitch = width * height * sizeof(unsigned int);
+        subresource_data[i].SysMemSlicePitch = static_cast<unsigned long long>(width) * static_cast<unsigned long long>(height) * sizeof(unsigned int);
     }
     Microsoft::WRL::ComPtr<ID3D11Texture2D> dx_tex{};
 
@@ -5138,7 +5138,7 @@ std::unique_ptr<Texture> Renderer::Create2DTextureArrayFromGifBuffer(const unsig
     for(unsigned int i = 0; i < depth; ++i) {
         subresource_data[i].pSysMem = data;
         subresource_data[i].SysMemPitch = width * sizeof(unsigned int);
-        subresource_data[i].SysMemSlicePitch = width * height * sizeof(unsigned int);
+        subresource_data[i].SysMemSlicePitch = static_cast<unsigned long long>(width) * static_cast<unsigned long long>(height) * sizeof(unsigned int);
     }
     Microsoft::WRL::ComPtr<ID3D11Texture2D> dx_tex{};
 
@@ -5191,7 +5191,7 @@ Texture* Renderer::Create3DTexture(std::filesystem::path filepath, const IntVect
         auto height = dimensions.y;
         subresource_data.pSysMem = data->data();
         subresource_data.SysMemPitch = width * sizeof(unsigned int);
-        subresource_data.SysMemSlicePitch = width * height * sizeof(unsigned int);
+        subresource_data.SysMemSlicePitch = static_cast<unsigned long long>(width) * static_cast<unsigned long long>(height) * sizeof(unsigned int);
         //Force specific usages for unordered access
         if((bindUsage & BufferBindUsage::Unordered_Access) == BufferBindUsage::Unordered_Access) {
             tex_desc.Usage = BufferUsageToD3DUsage(BufferUsage::Gpu);
@@ -5251,7 +5251,7 @@ std::unique_ptr<Texture> Renderer::Create3DTextureFromMemory(const unsigned char
 
     subresource_data.pSysMem = data;
     subresource_data.SysMemPitch = width * sizeof(unsigned int);
-    subresource_data.SysMemSlicePitch = width * height * sizeof(unsigned int);
+    subresource_data.SysMemSlicePitch = static_cast<unsigned long long>(width) * static_cast<unsigned long long>(height) * sizeof(unsigned int);
 
     Microsoft::WRL::ComPtr<ID3D11Texture3D> dx_tex{};
 
@@ -5298,7 +5298,7 @@ std::unique_ptr<Texture> Renderer::Create3DTextureFromMemory(const std::vector<R
 
     subresource_data.pSysMem = data.data();
     subresource_data.SysMemPitch = width * sizeof(Rgba);
-    subresource_data.SysMemSlicePitch = width * height * sizeof(Rgba);
+    subresource_data.SysMemSlicePitch = static_cast<unsigned long long>(width) * static_cast<unsigned long long>(height) * sizeof(Rgba);
 
     Microsoft::WRL::ComPtr<ID3D11Texture3D> dx_tex{};
 
