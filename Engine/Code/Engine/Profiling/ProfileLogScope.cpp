@@ -15,6 +15,6 @@ ProfileLogScope::ProfileLogScope(const char* scopeName) noexcept
 
 ProfileLogScope::~ProfileLogScope() noexcept {
     const auto now = TimeUtils::Now();
-    TimeUtils::FPMicroseconds elapsedTime = (now - _time_at_creation);
-    DebuggerPrintf("ProfileLogScope %s took %.02f us.\n", _scope_name, elapsedTime.count());
+    TimeUtils::FPMilliseconds elapsedTime = (now - _time_at_creation);
+    DebuggerPrintf("ProfileLogScope %s took %.02f ms.\n", _scope_name, elapsedTime.count());
 }
