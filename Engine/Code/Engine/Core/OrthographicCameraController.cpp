@@ -85,7 +85,7 @@ void OrthographicCameraController::Translate(const Vector2& offset) noexcept {
 }
 
 void OrthographicCameraController::TranslateTo(const Vector2& position, TimeUtils::FPSeconds t) noexcept {
-    const auto current_position = m_Camera.GetPosition();
+    const auto& current_position = m_Camera.GetPosition();
     m_Camera.SetPosition(MathUtils::Interpolate(current_position, position, t.count()));
 }
 
