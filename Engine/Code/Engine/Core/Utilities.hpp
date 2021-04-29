@@ -5,7 +5,7 @@
 namespace Utils {
 
     template<typename Callable>
-    void DoOnce(Callable&& f, bool reset = false, bool start_closed = false) {
+    void DoOnce(Callable&& f, bool reset = false, bool start_closed = false) noexcept {
         static bool once = start_closed;
         if(!once) {
             once = true;
