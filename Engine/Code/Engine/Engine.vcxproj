@@ -25,6 +25,7 @@
     <ClCompile Include="..\Thirdparty\Imgui\imgui_impl_dx11.cpp" />
     <ClCompile Include="..\Thirdparty\Imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="..\Thirdparty\Imgui\imgui_stdlib.cpp" />
+    <ClCompile Include="..\Thirdparty\Imgui\imgui_tables.cpp" />
     <ClCompile Include="..\Thirdparty\ImGui\imgui_widgets.cpp" />
     <ClCompile Include="..\Thirdparty\stb\stb.cpp" />
     <ClCompile Include="..\Thirdparty\TinyXML2\tinyxml2.cpp" />

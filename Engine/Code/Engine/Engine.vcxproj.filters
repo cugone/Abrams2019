@@ -463,6 +463,9 @@
     <ClCompile Include="Core\Argb.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="..\Thirdparty\Imgui\imgui_tables.cpp">
+      <Filter>Thirdparty\ImGui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vector2.hpp">
