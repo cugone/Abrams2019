@@ -7,6 +7,8 @@
 
 #ifndef UI_DEBUG
     #define IMGUI_DISABLE_DEMO_WINDOWS
+#else
+    #undef IMGUI_DISABLE_DEMO_WINDOWS
 #endif
 
 #include "Thirdparty/Imgui/imgui.h"
@@ -23,11 +25,12 @@ namespace UI {
 }
 class Renderer;
 class FileLogger;
+class InputSystem;
 
 class UISystem : public EngineSubsystem {
 public:
     UISystem() = delete;
-    explicit UISystem(FileLogger& fileLogger, Renderer& renderer) noexcept;
+    explicit UISystem(FileLogger& fileLogger, Renderer& renderer, InputSystem& inputSystem) noexcept;
     UISystem(const UISystem& other) = default;
     UISystem(UISystem&& other) = default;
     UISystem& operator=(const UISystem& other) = default;
@@ -65,6 +68,7 @@ private:
 
     FileLogger& _fileLogger;
     Renderer& _renderer;
+    InputSystem& _inputSystem;
     ImGuiContext* _context{};
     mutable Camera2D _ui_camera{};
     std::map<std::string, std::unique_ptr<UI::Widget>> _widgets{};

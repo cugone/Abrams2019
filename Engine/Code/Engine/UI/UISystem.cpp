@@ -4,6 +4,8 @@
 #include "Engine/Core/FileUtils.hpp"
 #include "Engine/Core/KerningFont.hpp"
 
+#include "Engine/Input/InputSystem.hpp"
+
 #include "Engine/Profiling/ProfileLogScope.hpp"
 
 #include "Engine/Renderer/Renderer.hpp"
@@ -79,10 +81,11 @@ void TextColored(const Rgba& color, const char* fmt, ...) noexcept {
 
 } // namespace ImGui
 
-UISystem::UISystem(FileLogger& fileLogger, Renderer& renderer) noexcept
+UISystem::UISystem(FileLogger& fileLogger, Renderer& renderer, InputSystem& inputSystem) noexcept
 : EngineSubsystem()
 , _fileLogger(fileLogger)
 , _renderer(renderer)
+, _inputSystem(inputSystem)
 , _context(ImGui::CreateContext())
 {
 #ifdef UI_DEBUG
