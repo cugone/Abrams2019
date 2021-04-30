@@ -9,7 +9,7 @@ namespace Utils {
         static bool once = start_closed;
         if(!once) {
             once = true;
-            std::invoke(f);
+            std::invoke(std::forward<Callable>(f));
         }
         if(reset) {
             once = false;
