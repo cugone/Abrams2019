@@ -26,7 +26,10 @@ namespace Utils {
     }
 
     bool FlipFlop() noexcept {
-        return FlipFlop([]() {}, []() {});
+        static bool value = true;
+        bool is_true = value;
+        value = !value;
+        return is_true;
     }
 
 }
