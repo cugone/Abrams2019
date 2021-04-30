@@ -50,6 +50,7 @@ public:
     [[nodiscard]] bool WantsInputKeyboardCapture() const noexcept;
     [[nodiscard]] bool WantsInputMouseCapture() const noexcept;
 
+    [[nodiscard]] bool IsImguiDemoWindowVisible() const noexcept;
     void ToggleImguiDemoWindow() noexcept;
 
     void LoadUiWidgetsFromFolder(std::filesystem::path path, bool recursive = false);

@@ -192,6 +192,14 @@ bool UISystem::WantsInputMouseCapture() const noexcept {
     return ImGui::GetIO().WantCaptureMouse;
 }
 
+[[nodiscard]] bool UISystem::IsImguiDemoWindowVisible() const noexcept {
+#if !defined(IMGUI_DISABLE_DEMO_WINDOWS)
+    return show_imgui_demo_window;
+#else
+    return false;
+#endif
+}
+
 void UISystem::ToggleImguiDemoWindow() noexcept {
 #if !defined(IMGUI_DISABLE_DEMO_WINDOWS)
     show_imgui_demo_window = !show_imgui_demo_window;
