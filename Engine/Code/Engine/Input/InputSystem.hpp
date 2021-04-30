@@ -399,6 +399,6 @@ private:
     int _mouseWheelHPosition = 0;
     int _connected_controller_count = 0;
     bool _cursor_visible = true;
-    bool _enableRawInput = true;
+    bool _enableRawInput = false;
     mutable bool _should_clip_cursor = false;
 };
