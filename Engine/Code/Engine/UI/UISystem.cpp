@@ -135,6 +135,9 @@ void UISystem::Update(TimeUtils::FPSeconds /*deltaSeconds*/) {
     if(show_imgui_demo_window) {
         ImGui::ShowDemoWindow(&show_imgui_demo_window);
     }
+    if(show_imgui_metrics_window) {
+        ImGui::ShowMetricsWindow(&show_imgui_metrics_window);
+    }
 #endif
 }
 
@@ -192,7 +195,7 @@ bool UISystem::WantsInputMouseCapture() const noexcept {
     return ImGui::GetIO().WantCaptureMouse;
 }
 
-[[nodiscard]] bool UISystem::IsImguiDemoWindowVisible() const noexcept {
+bool UISystem::IsImguiDemoWindowVisible() const noexcept {
 #if !defined(IMGUI_DISABLE_DEMO_WINDOWS)
     return show_imgui_demo_window;
 #else
@@ -206,6 +209,31 @@ void UISystem::ToggleImguiDemoWindow() noexcept {
     if(!_inputSystem.IsMouseCursorVisible()) {
         _inputSystem.ShowMouseCursor();
     }
+#endif
+}
+
+bool UISystem::IsImguiMetricsWindowVisible() const noexcept {
+#if !defined(IMGUI_DISABLE_METRICS_WINDOW)
+    return show_imgui_metrics_window;
+#else
+    return false;
+#endif
+}
+
+void UISystem::ToggleImguiMetricsWindow() noexcept {
+#if !defined(IMGUI_DISABLE_METRICS_WINDOW)
+    show_imgui_metrics_window = !show_imgui_metrics_window;
+    if(!_inputSystem.IsMouseCursorVisible()) {
+        _inputSystem.ShowMouseCursor();
+    }
+#endif
+}
+
+bool UISystem::IsAnyImguiDebugWindowVisible() const noexcept {
+#ifdef UI_DEBUG
+    return IsImguiDemoWindowVisible() || IsImguiMetricsWindowVisible();
+#else
+    return false;
 #endif
 }
 

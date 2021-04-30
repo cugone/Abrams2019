@@ -7,8 +7,10 @@
 
 #ifndef UI_DEBUG
     #define IMGUI_DISABLE_DEMO_WINDOWS
+    #define IMGUI_DISABLE_METRICS_WINDOW
 #else
     #undef IMGUI_DISABLE_DEMO_WINDOWS
+    #undef IMGUI_DISABLE_METRICS_WINDOW
 #endif
 
 #include "Thirdparty/Imgui/imgui.h"
@@ -52,6 +54,9 @@ public:
 
     [[nodiscard]] bool IsImguiDemoWindowVisible() const noexcept;
     void ToggleImguiDemoWindow() noexcept;
+    [[nodiscard]] bool IsImguiMetricsWindowVisible() const noexcept;
+    void ToggleImguiMetricsWindow() noexcept;
+    [[nodiscard]] bool IsAnyImguiDebugWindowVisible() const noexcept;
 
     void LoadUiWidgetsFromFolder(std::filesystem::path path, bool recursive = false);
     void LoadUiWidget(const std::string& name);
@@ -77,6 +82,7 @@ private:
     std::filesystem::path _ini_filepath{"Engine/Config/ui.ini"};
     std::filesystem::path _log_filepath{"Engine/Config/ui.log"};
     bool show_imgui_demo_window = false;
+    bool show_imgui_metrics_window = false;
 };
 
 class Texture;
