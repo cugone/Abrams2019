@@ -195,6 +195,9 @@ bool UISystem::WantsInputMouseCapture() const noexcept {
 void UISystem::ToggleImguiDemoWindow() noexcept {
 #if !defined(IMGUI_DISABLE_DEMO_WINDOWS)
     show_imgui_demo_window = !show_imgui_demo_window;
+    if(!_inputSystem.IsMouseCursorVisible()) {
+        _inputSystem.ShowMouseCursor();
+    }
 #endif
 }
 
