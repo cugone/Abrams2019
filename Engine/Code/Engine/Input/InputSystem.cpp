@@ -584,20 +584,27 @@ bool InputSystem::WasAnyControllerJustUsed() const noexcept {
     return result;
 }
 
+bool InputSystem::IsMouseCursorVisible() const noexcept {
+    CURSORINFO info{};
+    info.cbSize = sizeof(CURSORINFO);
+    ::GetCursorInfo(&info);
+    return info.flags != 0;
+}
+
 void InputSystem::HideMouseCursor() noexcept {
     while(::ShowCursor(FALSE) >= 0)
         ;
-    _cursor_visible = false;
+    _cursor_visible = IsMouseCursorVisible();
 }
 
 void InputSystem::ShowMouseCursor() noexcept {
     while(::ShowCursor(TRUE) < 0)
         ;
-    _cursor_visible = true;
+    _cursor_visible = IsMouseCursorVisible();
 }
 
 void InputSystem::ToggleMouseCursorVisibility() noexcept {
-    _cursor_visible ? HideMouseCursor() : ShowMouseCursor();
+    IsMouseCursorVisible() ? HideMouseCursor() : ShowMouseCursor();
 }
 
 void InputSystem::SetCursorWindowPosition(const Window& window, const Vector2& window_pos) noexcept {

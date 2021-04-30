@@ -332,6 +332,7 @@ public:
     [[nodiscard]] static unsigned char ConvertKeyCodeToWinVK(const KeyCode& code) noexcept;
     [[nodiscard]] static KeyCode ConvertWinVKToKeyCode(unsigned char winVK) noexcept;
 
+    [[nodiscard]] bool IsMouseCursorVisible() const noexcept;
     void ToggleMouseCursorVisibility() noexcept;
     void HideMouseCursor() noexcept;
     void ShowMouseCursor() noexcept;
