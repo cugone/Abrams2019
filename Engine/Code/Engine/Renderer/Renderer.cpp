@@ -3811,16 +3811,13 @@ void Renderer::SetMaterial(Material* material) noexcept {
     if(material == nullptr) {
         material = GetMaterial("__invalid");
     }
-    if(!_materials_need_updating && _current_material == material) {
-        return;
-    }
     ResetMaterial();
     _rhi_context->SetMaterial(material);
     _current_material = material;
     _current_raster_state = material->GetShader()->GetRasterState();
     _current_depthstencil_state = material->GetShader()->GetDepthStencilState();
     _current_sampler = material->GetShader()->GetSampler();
-    _materials_need_updating = false;
+    //_materials_need_updating = false;
 }
 
 void Renderer::SetMaterial(const std::string& nameOrFile) noexcept {
