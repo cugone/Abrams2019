@@ -172,12 +172,12 @@ long double GetRandomLongDoubleNegOneToOne() noexcept {
 }
 
 bool IsPercentChance(float probability) noexcept {
-    auto d = std::bernoulli_distribution(probability);
+    auto d = std::bernoulli_distribution(std::clamp(probability, 0.0f, 1.0f));
     return d(GetMTRandomEngine(MT_RANDOM_SEED));
 }
 
 bool IsPercentChance(double probability) noexcept {
-    auto d = std::bernoulli_distribution(probability);
+    auto d = std::bernoulli_distribution(std::clamp(probability, 0.0, 1.0));
     return d(GetMTRandomEngine(MT_RANDOM_SEED));
 }
 
