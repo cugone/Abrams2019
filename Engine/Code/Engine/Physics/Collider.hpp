@@ -63,6 +63,7 @@ private:
 class ColliderOBB : public ColliderPolygon {
 public:
     ColliderOBB(const Vector2& position, const Vector2& half_extents);
+    virtual ~ColliderOBB() = default;
     [[nodiscard]] virtual float CalcArea() const noexcept override;
 
     virtual void DebugRender(Renderer& renderer) const noexcept override;
@@ -83,6 +84,7 @@ private:
 class ColliderCircle : public ColliderPolygon {
 public:
     ColliderCircle(const Position& position, float radius);
+    virtual ~ColliderCircle() = default;
     [[nodiscard]] virtual float CalcArea() const noexcept override;
     [[nodiscard]] virtual Vector2 GetHalfExtents() const noexcept override;
     [[nodiscard]] virtual Vector2 Support(const Vector2& d) const noexcept override;
