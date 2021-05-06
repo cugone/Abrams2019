@@ -6,94 +6,90 @@
 
 #include <sstream>
 
-namespace a2de {
+SpriteSheet::SpriteSheet(Renderer& renderer, const XMLElement& elem) noexcept {
+    LoadFromXml(renderer, elem);
+}
 
-    SpriteSheet::SpriteSheet(Renderer& renderer, const XMLElement& elem) noexcept {
-        LoadFromXml(renderer, elem);
-    }
+SpriteSheet::SpriteSheet(Texture* texture, int tilesWide, int tilesHigh) noexcept
+: _spriteSheetTexture(texture)
+, _spriteLayout(tilesWide, tilesHigh) {
+    /* DO NOTHING */
+}
 
-    SpriteSheet::SpriteSheet(Texture* texture, int tilesWide, int tilesHigh) noexcept
-        : _spriteSheetTexture(texture)
-        , _spriteLayout(tilesWide, tilesHigh) {
-        /* DO NOTHING */
-    }
+SpriteSheet::SpriteSheet(Renderer& renderer, const std::filesystem::path& texturePath, int tilesWide, int tilesHigh) noexcept
+: _spriteSheetTexture(renderer.CreateOrGetTexture(texturePath, IntVector3::XY_AXIS))
+, _spriteLayout(tilesWide, tilesHigh) {
+    /* DO NOTHING */
+}
 
-    SpriteSheet::SpriteSheet(Renderer& renderer, const std::filesystem::path& texturePath, int tilesWide, int tilesHigh) noexcept
-        : _spriteSheetTexture(renderer.CreateOrGetTexture(texturePath, IntVector3::XY_AXIS))
-        , _spriteLayout(tilesWide, tilesHigh) {
-        /* DO NOTHING */
-    }
+AABB2 SpriteSheet::GetTexCoordsFromSpriteCoords(int spriteX, int spriteY) const noexcept {
+    const auto texCoords = Vector2{1.0f / _spriteLayout.x, 1.0f / _spriteLayout.y};
 
-    AABB2 SpriteSheet::GetTexCoordsFromSpriteCoords(int spriteX, int spriteY) const noexcept {
-        const auto texCoords = Vector2{1.0f / _spriteLayout.x, 1.0f / _spriteLayout.y};
+    const auto dims = Vector2{static_cast<float>(_spriteSheetTexture->GetDimensions().x), static_cast<float>(_spriteSheetTexture->GetDimensions().y)};
+    const auto epsilon = Vector2{1.0f / dims.x, 1.0f / dims.y};
 
-        const auto dims = Vector2{static_cast<float>(_spriteSheetTexture->GetDimensions().x), static_cast<float>(_spriteSheetTexture->GetDimensions().y)};
-        const auto epsilon = Vector2{1.0f / dims.x, 1.0f / dims.y};
+    auto mins = Vector2{texCoords.x * spriteX, texCoords.y * spriteY};
+    auto maxs = Vector2{texCoords.x * (spriteX + 1), texCoords.y * (spriteY + 1)};
 
-        auto mins = Vector2{texCoords.x * spriteX, texCoords.y * spriteY};
-        auto maxs = Vector2{texCoords.x * (spriteX + 1), texCoords.y * (spriteY + 1)};
+    mins += epsilon;
+    maxs -= epsilon;
 
-        mins += epsilon;
-        maxs -= epsilon;
+    return AABB2(mins, maxs);
+}
 
-        return AABB2(mins, maxs);
-    }
+AABB2 SpriteSheet::GetTexCoordsFromSpriteCoords(const IntVector2& spriteCoords) const noexcept {
+    return GetTexCoordsFromSpriteCoords(spriteCoords.x, spriteCoords.y);
+}
 
-    AABB2 SpriteSheet::GetTexCoordsFromSpriteCoords(const IntVector2& spriteCoords) const noexcept {
-        return GetTexCoordsFromSpriteCoords(spriteCoords.x, spriteCoords.y);
-    }
+AABB2 SpriteSheet::GetTexCoordsFromSpriteIndex(int spriteIndex) const noexcept {
+    const auto x = spriteIndex % _spriteLayout.x;
+    const auto y = spriteIndex / _spriteLayout.x;
+    return GetTexCoordsFromSpriteCoords(x, y);
+}
 
-    AABB2 SpriteSheet::GetTexCoordsFromSpriteIndex(int spriteIndex) const noexcept {
-        const auto x = spriteIndex % _spriteLayout.x;
-        const auto y = spriteIndex / _spriteLayout.x;
-        return GetTexCoordsFromSpriteCoords(x, y);
-    }
+int SpriteSheet::GetNumSprites() const noexcept {
+    return _spriteLayout.x * _spriteLayout.y;
+}
 
-    int SpriteSheet::GetNumSprites() const noexcept {
-        return _spriteLayout.x * _spriteLayout.y;
-    }
+int SpriteSheet::GetFrameWidth() const noexcept {
+    return ((*_spriteSheetTexture).GetDimensions().x / _spriteLayout.x);
+}
 
-    int SpriteSheet::GetFrameWidth() const noexcept {
-        return ((*_spriteSheetTexture).GetDimensions().x / _spriteLayout.x);
-    }
+int SpriteSheet::GetFrameHeight() const noexcept {
+    return ((*_spriteSheetTexture).GetDimensions().y / _spriteLayout.y);
+}
 
-    int SpriteSheet::GetFrameHeight() const noexcept {
-        return ((*_spriteSheetTexture).GetDimensions().y / _spriteLayout.y);
-    }
+IntVector2 SpriteSheet::GetFrameDimensions() const noexcept {
+    return IntVector2(GetFrameWidth(), GetFrameHeight());
+}
 
-    IntVector2 SpriteSheet::GetFrameDimensions() const noexcept {
-        return IntVector2(GetFrameWidth(), GetFrameHeight());
-    }
+const IntVector2& SpriteSheet::GetLayout() const noexcept {
+    return _spriteLayout;
+}
 
-    const IntVector2& SpriteSheet::GetLayout() const noexcept {
-        return _spriteLayout;
-    }
+const Texture* SpriteSheet::GetTexture() const noexcept {
+    return _spriteSheetTexture;
+}
 
-    const Texture* SpriteSheet::GetTexture() const noexcept {
-        return _spriteSheetTexture;
-    }
+Texture* SpriteSheet::GetTexture() noexcept {
+    return _spriteSheetTexture;
+}
 
-    Texture* SpriteSheet::GetTexture() noexcept {
-        return _spriteSheetTexture;
-    }
-
-    void SpriteSheet::LoadFromXml(Renderer& renderer, const XMLElement& elem) noexcept {
-        namespace FS = std::filesystem;
-        DataUtils::ValidateXmlElement(elem, "spritesheet", "", "src,dimensions");
-        _spriteLayout = DataUtils::ParseXmlAttribute(elem, "dimensions", _spriteLayout);
-        std::string texturePathAsString{};
-        texturePathAsString = DataUtils::ParseXmlAttribute(elem, "src", texturePathAsString);
-        FS::path p{texturePathAsString};
-        {
-            std::error_code ec{};
-            p = FS::canonical(p, ec);
-            if(ec) {
-                const auto ss = std::string{"Error loading spritesheet at "} + texturePathAsString + ":\n" + ec.message();
-                ERROR_AND_DIE(ss.c_str());
-            }
+void SpriteSheet::LoadFromXml(Renderer& renderer, const XMLElement& elem) noexcept {
+    namespace FS = std::filesystem;
+    DataUtils::ValidateXmlElement(elem, "spritesheet", "", "src,dimensions");
+    _spriteLayout = DataUtils::ParseXmlAttribute(elem, "dimensions", _spriteLayout);
+    std::string texturePathAsString{};
+    texturePathAsString = DataUtils::ParseXmlAttribute(elem, "src", texturePathAsString);
+    FS::path p{texturePathAsString};
+    {
+        std::error_code ec{};
+        p = FS::canonical(p, ec);
+        if(ec) {
+            const auto ss = std::string{"Error loading spritesheet at "} + texturePathAsString + ":\n" + ec.message();
+            ERROR_AND_DIE(ss.c_str());
         }
-        p.make_preferred();
-        _spriteSheetTexture = renderer.CreateOrGetTexture(p.string(), IntVector3::XY_AXIS);
     }
-
-} // namespace a2de
+    p.make_preferred();
+    _spriteSheetTexture = renderer.CreateOrGetTexture(p.string(), IntVector3::XY_AXIS);
+}

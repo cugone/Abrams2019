@@ -11,45 +11,41 @@
 
 #include <vector>
 
-namespace a2de {
+class Polygon2 {
+public:
+    Polygon2(int sides = 3, const Vector2& position = Vector2::ZERO, const Vector2& half_extents = Vector2(0.5f, 0.5f), float orientationDegrees = 0.0f) noexcept;
+    explicit Polygon2(const OBB2& obb) noexcept;
+    //~Polygon2() = default;
 
-    class Polygon2 {
-    public:
-        Polygon2(int sides = 3, const Vector2& position = Vector2::ZERO, const Vector2& half_extents = Vector2(0.5f, 0.5f), float orientationDegrees = 0.0f) noexcept;
-        explicit Polygon2(const OBB2& obb) noexcept;
-        //~Polygon2() = default;
+    [[nodiscard]] std::vector<LineSegment2> GetEdges() const noexcept;
 
-        [[nodiscard]] std::vector<LineSegment2> GetEdges() const noexcept;
+    [[nodiscard]] AABB2 GetBounds() const noexcept;
 
-        [[nodiscard]] AABB2 GetBounds() const noexcept;
+    [[nodiscard]] int GetSides() const;
+    void SetSides(int sides);
+    [[nodiscard]] const Vector2& GetPosition() const;
+    void SetPosition(const Vector2& position);
+    void Translate(const Vector2& translation);
+    void RotateDegrees(float displacementDegrees);
+    void Rotate(float displacementRadians);
+    [[nodiscard]] float GetOrientationDegrees() const;
+    void SetOrientationDegrees(float degrees);
+    [[nodiscard]] const std::vector<Vector2>& GetVerts() const;
+    [[nodiscard]] const std::vector<Vector2>& GetNormals() const;
+    [[nodiscard]] const Vector2& GetHalfExtents() const;
+    void SetHalfExtents(const Vector2& newHalfExtents);
+    void AddPaddingToSides(const Vector2& padding);
+    void AddPaddingToSides(float paddingX, float paddingY);
 
-        [[nodiscard]] int GetSides() const;
-        void SetSides(int sides);
-        [[nodiscard]] const Vector2& GetPosition() const;
-        void SetPosition(const Vector2& position);
-        void Translate(const Vector2& translation);
-        void RotateDegrees(float displacementDegrees);
-        void Rotate(float displacementRadians);
-        [[nodiscard]] float GetOrientationDegrees() const;
-        void SetOrientationDegrees(float degrees);
-        [[nodiscard]] const std::vector<Vector2>& GetVerts() const;
-        [[nodiscard]] const std::vector<Vector2>& GetNormals() const;
-        [[nodiscard]] const Vector2& GetHalfExtents() const;
-        void SetHalfExtents(const Vector2& newHalfExtents);
-        void AddPaddingToSides(const Vector2& padding);
-        void AddPaddingToSides(float paddingX, float paddingY);
+protected:
+    void CalcNormals();
+    void CalcVerts();
 
-    protected:
-        void CalcNormals();
-        void CalcVerts();
-
-    private:
-        int _sides = 3;
-        float _orientationDegrees = 0.0f;
-        Vector2 _half_extents = Vector2(0.5f, 0.5f);
-        Vector2 _position = Vector2::ZERO;
-        std::vector<Vector2> _verts;
-        std::vector<Vector2> _normals;
-    };
-
-} // namespace a2de
+private:
+    int _sides = 3;
+    float _orientationDegrees = 0.0f;
+    Vector2 _half_extents = Vector2(0.5f, 0.5f);
+    Vector2 _position = Vector2::ZERO;
+    std::vector<Vector2> _verts;
+    std::vector<Vector2> _normals;
+};

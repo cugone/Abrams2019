@@ -7,22 +7,20 @@
 #include <ostream>
 #include <string>
 
-namespace a2de {
-    namespace System {
+namespace System {
 
-        struct SystemDesc {
-            System::Ram::RamDesc ram{};
-            System::Cpu::CpuDesc cpu{};
-            System::OS::OsDesc os{};
-        };
+struct SystemDesc {
+    System::Ram::RamDesc ram{};
+    System::Cpu::CpuDesc cpu{};
+    System::OS::OsDesc os{};
+};
 
-        std::ostream& operator<<(std::ostream& out, const SystemDesc& desc) noexcept;
+std::ostream& operator<<(std::ostream& out, const SystemDesc& desc) noexcept;
 
-        [[nodiscard]] SystemDesc GetSystemDesc() noexcept;
+[[nodiscard]] SystemDesc GetSystemDesc() noexcept;
 
-    } // namespace System
+} // namespace System
 
-    namespace StringUtils {
-        [[nodiscard]] std::string to_string(const System::SystemDesc& system) noexcept;
-    }
-} // namespace a2de
+namespace StringUtils {
+[[nodiscard]] std::string to_string(const System::SystemDesc& system) noexcept;
+}

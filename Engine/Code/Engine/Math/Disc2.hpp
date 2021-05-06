@@ -2,34 +2,30 @@
 
 #include "Engine/Math/Vector2.hpp"
 
-namespace a2de {
+class Disc2 {
+public:
+    static const Disc2 UNIT_CIRCLE;
 
-    class Disc2 {
-    public:
-        static const Disc2 UNIT_CIRCLE;
+    Disc2() = default;
+    Disc2(const Disc2& rhs) = default;
+    Disc2& operator=(const Disc2& rhs) = default;
+    Disc2& operator=(Disc2&& rhs) = default;
+    ~Disc2() = default;
+    explicit Disc2(float initialX, float initialY, float initialRadius) noexcept;
+    explicit Disc2(const Vector2& initialCenter, float initialRadius) noexcept;
 
-        Disc2() = default;
-        Disc2(const Disc2& rhs) = default;
-        Disc2& operator=(const Disc2& rhs) = default;
-        Disc2& operator=(Disc2&& rhs) = default;
-        ~Disc2() = default;
-        explicit Disc2(float initialX, float initialY, float initialRadius) noexcept;
-        explicit Disc2(const Vector2& initialCenter, float initialRadius) noexcept;
+    void StretchToIncludePoint(const Vector2& point) noexcept;
+    void AddPadding(float paddingRadius) noexcept;
+    void Translate(const Vector2& translation) noexcept;
 
-        void StretchToIncludePoint(const Vector2& point) noexcept;
-        void AddPadding(float paddingRadius) noexcept;
-        void Translate(const Vector2& translation) noexcept;
+    [[nodiscard]] Disc2 operator-(const Vector2& antiTranslation) noexcept;
+    [[nodiscard]] Disc2 operator+(const Vector2& translation) noexcept;
+    Disc2& operator+=(const Vector2& translation) noexcept;
+    Disc2& operator-=(const Vector2& antiTranslation) noexcept;
 
-        [[nodiscard]] Disc2 operator-(const Vector2& antiTranslation) noexcept;
-        [[nodiscard]] Disc2 operator+(const Vector2& translation) noexcept;
-        Disc2& operator+=(const Vector2& translation) noexcept;
-        Disc2& operator-=(const Vector2& antiTranslation) noexcept;
+    Vector2 center = Vector2::ZERO;
+    float radius = 0.0f;
 
-        Vector2 center = Vector2::ZERO;
-        float radius = 0.0f;
-
-    protected:
-    private:
-    };
-
-} // namespace a2de
+protected:
+private:
+};

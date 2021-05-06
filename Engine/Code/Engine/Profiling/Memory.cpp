@@ -9,19 +9,19 @@
 #endif
 
 void* operator new(std::size_t size) {
-    return a2de::Memory::allocate(size);
+    return Memory::allocate(size);
 }
 
 void* operator new[](std::size_t size) {
-    return a2de::Memory::allocate(size);
+    return Memory::allocate(size);
 }
 
 void operator delete(void* ptr, std::size_t size) noexcept {
-    a2de::Memory::deallocate(ptr, size);
+    Memory::deallocate(ptr, size);
 }
 
 void operator delete[](void* ptr, std::size_t size) noexcept {
-    a2de::Memory::deallocate(ptr, size);
+    Memory::deallocate(ptr, size);
 }
 
 

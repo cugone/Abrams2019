@@ -2,27 +2,24 @@
 
 #include "Engine/Math/AABB2.hpp"
 
-namespace a2de {
+namespace UI {
 
-    namespace UI {
+class Panel;
+class Element;
 
-        class Panel;
-        class Element;
+struct PanelSlot {
+    Element* content{nullptr};
+    Panel* parent{nullptr};
+    explicit PanelSlot(Element* content = nullptr, Panel* parent = nullptr) : content(content), parent(parent) {}
+    virtual ~PanelSlot() = default;
+    virtual void CalcPivot() = 0;
+    [[nodiscard]] virtual Vector2 CalcPosition() const = 0;
+};
 
-        struct PanelSlot {
-            Element* content{nullptr};
-            Panel* parent{nullptr};
-            explicit PanelSlot(Element* content = nullptr, Panel* parent = nullptr) : content(content), parent(parent) {}
-            virtual ~PanelSlot() = default;
-            virtual void CalcPivot() = 0;
-            [[nodiscard]] virtual Vector2 CalcPosition() const = 0;
-        };
+struct NullPanelSlot : public PanelSlot {
+    virtual ~NullPanelSlot() = default;
+    void CalcPivot() override {};
+    [[nodiscard]] Vector2 CalcPosition() const override { return {}; };
+};
 
-        struct NullPanelSlot : public PanelSlot {
-            virtual ~NullPanelSlot() = default;
-            void CalcPivot() override {};
-            [[nodiscard]] Vector2 CalcPosition() const override { return {}; };
-        };
-
-    } // namespace UI
-} // namespace a2de
+} // namespace UI

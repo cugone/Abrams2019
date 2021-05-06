@@ -3,44 +3,39 @@
 #include "Engine/Core/DataUtils.hpp"
 #include "Engine/RHI/RHITypes.hpp"
 
+class RHIDevice;
 struct ID3D11RasterizerState;
 
-namespace a2de {
+struct RasterDesc {
+    FillMode fillmode = FillMode::Solid;
+    CullMode cullmode = CullMode::Back;
+    float depthBiasClamp = 0.0f;
+    float slopeScaledDepthBias = 0.0f;
+    int depthBias = 0;
+    bool depthClipEnable = true;
+    bool scissorEnable = true;
+    bool multisampleEnable = false;
+    bool antialiasedLineEnable = false;
+    bool frontCounterClockwise = false;
+    RasterDesc() = default;
+    explicit RasterDesc(const XMLElement& element) noexcept;
+};
 
-    class RHIDevice;
+class RasterState {
+public:
+    RasterState(const RHIDevice* device, const RasterDesc& desc) noexcept;
+    RasterState(const RHIDevice* device, const XMLElement& element) noexcept;
+    ~RasterState() noexcept;
 
-    struct RasterDesc {
-        FillMode fillmode = FillMode::Solid;
-        CullMode cullmode = CullMode::Back;
-        float depthBiasClamp = 0.0f;
-        float slopeScaledDepthBias = 0.0f;
-        int depthBias = 0;
-        bool depthClipEnable = true;
-        bool scissorEnable = true;
-        bool multisampleEnable = false;
-        bool antialiasedLineEnable = false;
-        bool frontCounterClockwise = false;
-        RasterDesc() = default;
-        explicit RasterDesc(const XMLElement& element) noexcept;
-    };
+    [[nodiscard]] const RasterDesc& GetDesc() const noexcept;
+    [[nodiscard]] ID3D11RasterizerState* GetDxRasterState() noexcept;
 
-    class RasterState {
-    public:
-        RasterState(const RHIDevice* device, const RasterDesc& desc) noexcept;
-        RasterState(const RHIDevice* device, const XMLElement& element) noexcept;
-        ~RasterState() noexcept;
+    void SetDebugName([[maybe_unused]] const std::string& name) const noexcept;
 
-        [[nodiscard]] const RasterDesc& GetDesc() const noexcept;
-        [[nodiscard]] ID3D11RasterizerState* GetDxRasterState() noexcept;
+protected:
+    [[nodiscard]] bool CreateRasterState(const RHIDevice* device, const RasterDesc& raster_desc = RasterDesc{}) noexcept;
 
-        void SetDebugName([[maybe_unused]] const std::string& name) const noexcept;
-
-    protected:
-        [[nodiscard]] bool CreateRasterState(const RHIDevice* device, const RasterDesc& raster_desc = RasterDesc{}) noexcept;
-
-    private:
-        RasterDesc _desc{};
-        ID3D11RasterizerState* _dx_state{};
-    };
-
-} // namespace a2de
+private:
+    RasterDesc _desc{};
+    ID3D11RasterizerState* _dx_state{};
+};

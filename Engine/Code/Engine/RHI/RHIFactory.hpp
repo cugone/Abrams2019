@@ -4,29 +4,25 @@
 
 #include <vector>
 
-namespace a2de {
+class Window;
+class RHIDevice;
 
-    class Window;
-    class RHIDevice;
+class RHIFactory {
+public:
+    RHIFactory() noexcept;
+    ~RHIFactory() = default;
 
-    class RHIFactory {
-    public:
-        RHIFactory() noexcept;
-        ~RHIFactory() = default;
+    void RestrictAltEnterToggle(const RHIDevice& device) noexcept;
+    [[nodiscard]] Microsoft::WRL::ComPtr<IDXGISwapChain4> CreateSwapChainForHwnd(const RHIDevice& device, const Window& window, const DXGI_SWAP_CHAIN_DESC1& swapchain_desc) noexcept;
 
-        void RestrictAltEnterToggle(const RHIDevice& device) noexcept;
-        [[nodiscard]] Microsoft::WRL::ComPtr<IDXGISwapChain4> CreateSwapChainForHwnd(const RHIDevice& device, const Window& window, const DXGI_SWAP_CHAIN_DESC1& swapchain_desc) noexcept;
+    [[nodiscard]] bool QueryForAllowTearingSupport(const RHIDevice& device) const noexcept;
 
-        [[nodiscard]] bool QueryForAllowTearingSupport(const RHIDevice& device) const noexcept;
+    [[nodiscard]] std::vector<AdapterInfo> GetAdaptersByPreference(const AdapterPreference& preference) const noexcept;
+    [[nodiscard]] std::vector<AdapterInfo> GetAdaptersByHighPerformancePreference() const noexcept;
+    [[nodiscard]] std::vector<AdapterInfo> GetAdaptersByMinimumPowerPreference() const noexcept;
+    [[nodiscard]] std::vector<AdapterInfo> GetAdaptersByUnspecifiedPreference() const noexcept;
 
-        [[nodiscard]] std::vector<AdapterInfo> GetAdaptersByPreference(const AdapterPreference& preference) const noexcept;
-        [[nodiscard]] std::vector<AdapterInfo> GetAdaptersByHighPerformancePreference() const noexcept;
-        [[nodiscard]] std::vector<AdapterInfo> GetAdaptersByMinimumPowerPreference() const noexcept;
-        [[nodiscard]] std::vector<AdapterInfo> GetAdaptersByUnspecifiedPreference() const noexcept;
-
-    protected:
-    private:
-        Microsoft::WRL::ComPtr<IDXGIFactory6> _dxgi_factory{};
-    };
-
-} // namespace a2de
+protected:
+private:
+    Microsoft::WRL::ComPtr<IDXGIFactory6> _dxgi_factory{};
+};

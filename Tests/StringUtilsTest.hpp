@@ -9,7 +9,7 @@
 
 
 TEST(StringUtils, ToUpperCase) {
-    using namespace a2de::StringUtils;
+    using namespace StringUtils;
     auto a = std::string{"abc"};
     auto b = ToUpperCase(a);
     auto result = std::string{"ABC"};
@@ -29,7 +29,7 @@ TEST(StringUtils, ToUpperCase) {
 }
 
 TEST(StringUtils, ToLowerCase) {
-    using namespace a2de::StringUtils;
+    using namespace StringUtils;
     auto a = std::string{ "abc" };
     auto b = ToLowerCase(a);
     auto result = std::string{ "abc" };
@@ -49,7 +49,7 @@ TEST(StringUtils, ToLowerCase) {
 }
 
 TEST(StringUtils, SplitSkipEmpty) {
-    using namespace a2de::StringUtils;
+    using namespace StringUtils;
     using StringList = std::vector<std::string>;
     auto a = StringList{ "abc" };
     auto b = Split("abc", ',', true);
@@ -96,7 +96,7 @@ TEST(StringUtils, SplitSkipEmpty) {
 }
 
 TEST(StringUtils, SplitNoSkipEmpty) {
-    using namespace a2de::StringUtils;
+    using namespace StringUtils;
     using StringList = std::vector<std::string>;
     auto a = StringList{ "abc" };
     auto b = Split("abc", ',', false);
@@ -143,7 +143,7 @@ TEST(StringUtils, SplitNoSkipEmpty) {
 }
 
 TEST(StringUtils, SplitOnFirst) {
-    using namespace a2de::StringUtils;
+    using namespace StringUtils;
     auto [command,args] = SplitOnFirst("command arg1 arg2 arg3", ' ');
     EXPECT_EQ(command, std::string{ "command" });
     EXPECT_EQ(args, std::string{ "arg1 arg2 arg3" });
@@ -151,14 +151,14 @@ TEST(StringUtils, SplitOnFirst) {
 
 
 TEST(StringUtils, SplitOnLast) {
-    using namespace a2de::StringUtils;
+    using namespace StringUtils;
     auto [args,command] = SplitOnLast("arg1 arg2 arg3 command", ' ');
     EXPECT_EQ(command, std::string{ "command" });
     EXPECT_EQ(args, std::string{ "arg1 arg2 arg3" });
 }
 
 TEST(StringUtils, JoinNoDelimSkipEmpty) {
-    using namespace a2de::StringUtils;
+    using namespace StringUtils;
     using StringList = std::vector<std::string>;
     auto a = std::string{ "abc" };
     auto b = Join(StringList{"a","b","c"}, true);
@@ -169,7 +169,7 @@ TEST(StringUtils, JoinNoDelimSkipEmpty) {
 }
 
 TEST(StringUtils, JoinDelimSkipEmpty) {
-    using namespace a2de::StringUtils;
+    using namespace StringUtils;
     using StringList = std::vector<std::string>;
     auto a = std::string{ "a,b,c" };
     auto b = Join(StringList{"a","b","c"}, ',', true);
@@ -180,7 +180,7 @@ TEST(StringUtils, JoinDelimSkipEmpty) {
 }
 
 TEST(StringUtils, JoinNoDelimNoSkipEmpty) {
-    using namespace a2de::StringUtils;
+    using namespace StringUtils;
     using StringList = std::vector<std::string>;
     auto a = std::string{ "abc" };
     auto b = Join(StringList{"a","b","c"}, false);
@@ -191,7 +191,7 @@ TEST(StringUtils, JoinNoDelimNoSkipEmpty) {
 }
 
 TEST(StringUtils, JoinDelimNoSkipEmpty) {
-    using namespace a2de::StringUtils;
+    using namespace StringUtils;
     using StringList = std::vector<std::string>;
     auto a = std::string{ "a,b,c" };
     auto b = Join(StringList{"a","b","c"}, ',', false);
@@ -202,7 +202,7 @@ TEST(StringUtils, JoinDelimNoSkipEmpty) {
 }
 
 TEST(StringUtils, SplitOnUnquotedSkipEmpty) {
-    using namespace a2de::StringUtils;
+    using namespace StringUtils;
     using StringList = std::vector<std::string>;
     std::string input =
         R"(
@@ -218,7 +218,7 @@ World"
 }
 
 TEST(StringUtils, SplitOnUnquotedNoSkipEmpty) {
-    using namespace a2de::StringUtils;
+    using namespace StringUtils;
     using StringList = std::vector<std::string>;
     std::string input =
         R"(
@@ -234,7 +234,7 @@ World"
 }
 
 TEST(StringUtils, ROT13) {
-    using namespace a2de::StringUtils::Encryption;
+    using namespace StringUtils::Encryption;
     const auto plaintext = "The quick brown fox jumps over the lazy dog.";
     const auto ciphertext = ROT13(plaintext);
     const auto deciphertext = ROT13(ciphertext);
@@ -244,7 +244,7 @@ TEST(StringUtils, ROT13) {
 TEST(StringUtils, CaesarShift) {
     //Plain:  ABCDEFGHIJKLMNOPQRSTUVWXYZ
     //Cipher: DEFGHIJKLMNOPQRSTUVWXYZABC
-    using namespace a2de::StringUtils::Encryption;
+    using namespace StringUtils::Encryption;
     const auto plaintext = std::string{ "The Quick Brown Fox Jumps Over The Lazy Dog." };
     const auto ciphertext = std::string{ "Wkh Txlfn Eurzq Ira Mxpsv Ryhu Wkh Odcb Grj." };
     const auto a = CaesarShift(plaintext, true);
@@ -258,7 +258,7 @@ TEST(StringUtils, CaesarShift) {
 TEST(StringUtils, ShiftCipher) {
     //Plaintext:  THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG
     //Ciphertext: QEB NRFZH YOLTK CLU GRJMP LSBO QEB IXWV ALD
-    using namespace a2de::StringUtils::Encryption;
+    using namespace StringUtils::Encryption;
     const auto plaintext = std::string{ "THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG." };
     const auto ciphertext = std::string{ "QEB NRFZH YOLTK CLU GRJMP LSBO QEB IXWV ALD." };
     const auto a = ShiftCipher(-3, plaintext);

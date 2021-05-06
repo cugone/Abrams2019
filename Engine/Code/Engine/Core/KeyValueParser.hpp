@@ -6,8 +6,6 @@
 #include <map>
 #include <string>
 
-namespace a2de {
-
 class KeyValueParser {
 public:
     KeyValueParser() = default;
@@ -42,5 +40,3 @@ private:
 
     std::map<std::string, std::string> _kv_pairs{};
 };
-
-} // namespace a2de

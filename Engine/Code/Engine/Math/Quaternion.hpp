@@ -4,8 +4,6 @@
 
 #include <string>
 
-namespace a2de {
-
 class Matrix4;
 
 class Quaternion {
@@ -84,5 +82,3 @@ Quaternion& operator*=(const Vector3& lhs, Quaternion& rhs) noexcept;
 
 [[nodiscard]] Quaternion Conjugate(const Quaternion& q) noexcept;
 [[nodiscard]] Quaternion Inverse(const Quaternion& q) noexcept;
-
-} // namespace a2de

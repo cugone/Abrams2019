@@ -21,13 +21,13 @@
 IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 namespace ImGui {
-void Image(const a2de::Texture* texture, const a2de::Vector2& size, const a2de::Vector2& uv0, const a2de::Vector2& uv1, const a2de::Rgba& tint_col, const a2de::Rgba& border_col) noexcept {
+void Image(const Texture* texture, const Vector2& size, const Vector2& uv0, const Vector2& uv1, const Rgba& tint_col, const Rgba& border_col) noexcept {
     ImGui::Image(static_cast<void*>(texture->GetShaderResourceView()), size, uv0, uv1, tint_col.GetRgbaAsFloats(), border_col.GetRgbaAsFloats());
 }
-void Image(a2de::Texture* texture, const a2de::Vector2& size, const a2de::Vector2& uv0, const a2de::Vector2& uv1, const a2de::Rgba& tint_col, const a2de::Rgba& border_col) noexcept {
+void Image(Texture* texture, const Vector2& size, const Vector2& uv0, const Vector2& uv1, const Rgba& tint_col, const Rgba& border_col) noexcept {
     ImGui::Image(static_cast<void*>(texture->GetShaderResourceView()), size, uv0, uv1, tint_col.GetRgbaAsFloats(), border_col.GetRgbaAsFloats());
 }
-bool ColorEdit3(const char* label, a2de::Rgba& color, ImGuiColorEditFlags flags /*= 0*/) noexcept {
+bool ColorEdit3(const char* label, Rgba& color, ImGuiColorEditFlags flags /*= 0*/) noexcept {
     auto colorAsFloats = color.GetRgbAsFloats();
     if(ImGui::ColorEdit3(label, colorAsFloats.GetAsFloatArray(), flags)) {
         color.SetRgbFromFloats(colorAsFloats);
@@ -35,7 +35,7 @@ bool ColorEdit3(const char* label, a2de::Rgba& color, ImGuiColorEditFlags flags 
     }
     return false;
 }
-bool ColorEdit4(const char* label, a2de::Rgba& color, ImGuiColorEditFlags flags /*= 0*/) noexcept {
+bool ColorEdit4(const char* label, Rgba& color, ImGuiColorEditFlags flags /*= 0*/) noexcept {
     auto colorAsFloats = color.GetRgbaAsFloats();
     if(ImGui::ColorEdit4(label, colorAsFloats.GetAsFloatArray(), flags)) {
         color.SetRgbaFromFloats(colorAsFloats);
@@ -43,7 +43,7 @@ bool ColorEdit4(const char* label, a2de::Rgba& color, ImGuiColorEditFlags flags 
     }
     return false;
 }
-bool ColorPicker3(const char* label, a2de::Rgba& color, ImGuiColorEditFlags flags /*= 0*/) noexcept {
+bool ColorPicker3(const char* label, Rgba& color, ImGuiColorEditFlags flags /*= 0*/) noexcept {
     auto colorAsFloats = color.GetRgbAsFloats();
     if(ImGui::ColorPicker3(label, colorAsFloats.GetAsFloatArray(), flags)) {
         color.SetRgbFromFloats(colorAsFloats);
@@ -51,9 +51,9 @@ bool ColorPicker3(const char* label, a2de::Rgba& color, ImGuiColorEditFlags flag
     }
     return false;
 }
-bool ColorPicker4(const char* label, a2de::Rgba& color, ImGuiColorEditFlags flags /*= 0*/, a2de::Rgba* refColor /*= nullptr*/) noexcept {
+bool ColorPicker4(const char* label, Rgba& color, ImGuiColorEditFlags flags /*= 0*/, Rgba* refColor /*= nullptr*/) noexcept {
     auto colorAsFloats = color.GetRgbaAsFloats();
-    a2de::Vector4 refColorAsFloats{};
+    Vector4 refColorAsFloats{};
     if(refColor) {
         refColorAsFloats = refColor->GetRgbaAsFloats();
     }
@@ -66,12 +66,12 @@ bool ColorPicker4(const char* label, a2de::Rgba& color, ImGuiColorEditFlags flag
     }
     return false;
 }
-bool ColorButton(const char* desc_id, const a2de::Rgba& color, ImGuiColorEditFlags flags /*= 0*/, a2de::Vector2 size /*= a2de::Vector2::ZERO*/) noexcept {
+bool ColorButton(const char* desc_id, const Rgba& color, ImGuiColorEditFlags flags /*= 0*/, Vector2 size /*= Vector2::ZERO*/) noexcept {
     auto colorAsFloats = color.GetRgbaAsFloats();
     return ImGui::ColorButton(desc_id, colorAsFloats, flags, size);
 }
 
-void TextColored(const a2de::Rgba& color, const char* fmt, ...) noexcept {
+void TextColored(const Rgba& color, const char* fmt, ...) noexcept {
     auto colorAsFloats = color.GetRgbaAsFloats();
     va_list args;
     va_start(args, fmt);
@@ -81,69 +81,67 @@ void TextColored(const a2de::Rgba& color, const char* fmt, ...) noexcept {
 
 } // namespace ImGui
 
-namespace a2de {
-
-    UISystem::UISystem(FileLogger& fileLogger, Renderer& renderer, InputSystem& inputSystem) noexcept
-        : EngineSubsystem()
-        , _fileLogger(fileLogger)
-        , _renderer(renderer)
-        , _inputSystem(inputSystem)
-        , _context(ImGui::CreateContext())
-    {
+UISystem::UISystem(FileLogger& fileLogger, Renderer& renderer, InputSystem& inputSystem) noexcept
+: EngineSubsystem()
+, _fileLogger(fileLogger)
+, _renderer(renderer)
+, _inputSystem(inputSystem)
+, _context(ImGui::CreateContext())
+{
 #ifdef UI_DEBUG
-        IMGUI_CHECKVERSION();
+    IMGUI_CHECKVERSION();
 #endif
-    }
+}
 
-    UISystem::~UISystem() noexcept {
-        ImGui_ImplDX11_Shutdown();
-        ImGui_ImplWin32_Shutdown();
+UISystem::~UISystem() noexcept {
+    ImGui_ImplDX11_Shutdown();
+    ImGui_ImplWin32_Shutdown();
 
-        ImGui::DestroyContext(_context);
-        _context = nullptr;
-        _widgets.clear();
+    ImGui::DestroyContext(_context);
+    _context = nullptr;
+    _widgets.clear();
 
-    }
+}
 
-    void UISystem::Initialize() {
-        namespace FS = std::filesystem;
+void UISystem::Initialize() {
+    namespace FS = std::filesystem;
 
-        auto* hwnd = _renderer.GetOutput()->GetWindow()->GetWindowHandle();
-        auto* dx_device = _renderer.GetDevice()->GetDxDevice();
-        auto* dx_context = _renderer.GetDeviceContext()->GetDxContext();
-        ImGui_ImplWin32_Init(hwnd);
-        ImGui_ImplDX11_Init(dx_device, dx_context);
-        const auto dims = Vector2{_renderer.GetOutput()->GetDimensions()};
-        auto& io = ImGui::GetIO();
-        io.DisplaySize.x = dims.x;
-        io.DisplaySize.y = dims.y;
-        ImGui::StyleColorsDark();
+    auto* hwnd = _renderer.GetOutput()->GetWindow()->GetWindowHandle();
+    auto* dx_device = _renderer.GetDevice()->GetDxDevice();
+    auto* dx_context = _renderer.GetDeviceContext()->GetDxContext();
+    ImGui_ImplWin32_Init(hwnd);
+    ImGui_ImplDX11_Init(dx_device, dx_context);
+    const auto dims = Vector2{_renderer.GetOutput()->GetDimensions()};
+    auto& io = ImGui::GetIO();
+    io.DisplaySize.x = dims.x;
+    io.DisplaySize.y = dims.y;
+    ImGui::StyleColorsDark();
 
-        io.IniFilename = "Engine/Config/ui.ini";
+    io.IniFilename = "Engine/Config/ui.ini";
 
-        io.ConfigWindowsResizeFromEdges = true;
-        io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
-        io.ConfigFlags |= ImGuiConfigFlags_NavEnableSetMousePos;
-    }
+    io.ConfigWindowsResizeFromEdges = true;
+    io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableSetMousePos;
+}
 
-    void UISystem::BeginFrame() {
-        ImGui_ImplDX11_NewFrame();
-        ImGui_ImplWin32_NewFrame();
-        ImGui::NewFrame();
-    }
+void UISystem::BeginFrame() {
+    ImGui_ImplDX11_NewFrame();
+    ImGui_ImplWin32_NewFrame();
+    ImGui::NewFrame();
+}
 
-    void UISystem::Update(TimeUtils::FPSeconds /*deltaSeconds*/) {
+void UISystem::Update(TimeUtils::FPSeconds /*deltaSeconds*/) {
 #if !defined(IMGUI_DISABLE_DEMO_WINDOWS)
-        if(show_imgui_demo_window) {
-            ImGui::ShowDemoWindow(&show_imgui_demo_window);
-        }
-        if(show_imgui_metrics_window) {
-            ImGui::ShowMetricsWindow(&show_imgui_metrics_window);
-        }
-#endif
+    if(show_imgui_demo_window) {
+        ImGui::ShowDemoWindow(&show_imgui_demo_window);
     }
+    if(show_imgui_metrics_window) {
+        ImGui::ShowMetricsWindow(&show_imgui_metrics_window);
+    }
+#endif
+}
 
-    void UISystem::Render() const {
+void UISystem::Render() const {
         ImGui::Render();
         ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
@@ -170,127 +168,126 @@ namespace a2de {
         }
 #endif
 
-    }
+}
 
-    void UISystem::EndFrame() {
-        ImGui::EndFrame();
-    }
+void UISystem::EndFrame() {
+    ImGui::EndFrame();
+}
 
-    bool UISystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
-        return ImGui_ImplWin32_WndProcHandler(static_cast<HWND>(msg.hWnd), msg.nativeMessage, msg.wparam, msg.lparam);
-    }
+bool UISystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
+    return ImGui_ImplWin32_WndProcHandler(static_cast<HWND>(msg.hWnd), msg.nativeMessage, msg.wparam, msg.lparam);
+}
 
-    bool UISystem::HasFocus() const noexcept {
-        auto& io = ImGui::GetIO();
-        return io.WantCaptureKeyboard || io.WantCaptureMouse;
-    }
+bool UISystem::HasFocus() const noexcept {
+    auto& io = ImGui::GetIO();
+    return io.WantCaptureKeyboard || io.WantCaptureMouse;
+}
 
-    bool UISystem::WantsInputCapture() const noexcept {
-        return WantsInputKeyboardCapture() || WantsInputMouseCapture();
-    }
+bool UISystem::WantsInputCapture() const noexcept {
+    return WantsInputKeyboardCapture() || WantsInputMouseCapture();
+}
 
-    bool UISystem::WantsInputKeyboardCapture() const noexcept {
-        return ImGui::GetIO().WantCaptureKeyboard;
-    }
+bool UISystem::WantsInputKeyboardCapture() const noexcept {
+    return ImGui::GetIO().WantCaptureKeyboard;
+}
 
-    bool UISystem::WantsInputMouseCapture() const noexcept {
-        return ImGui::GetIO().WantCaptureMouse;
-    }
+bool UISystem::WantsInputMouseCapture() const noexcept {
+    return ImGui::GetIO().WantCaptureMouse;
+}
 
-    bool UISystem::IsImguiDemoWindowVisible() const noexcept {
+bool UISystem::IsImguiDemoWindowVisible() const noexcept {
 #if !defined(IMGUI_DISABLE_DEMO_WINDOWS)
-        return show_imgui_demo_window;
+    return show_imgui_demo_window;
 #else
-        return false;
+    return false;
 #endif
-    }
+}
 
-    void UISystem::ToggleImguiDemoWindow() noexcept {
+void UISystem::ToggleImguiDemoWindow() noexcept {
 #if !defined(IMGUI_DISABLE_DEMO_WINDOWS)
-        show_imgui_demo_window = !show_imgui_demo_window;
-        if(!_inputSystem.IsMouseCursorVisible()) {
-            _inputSystem.ShowMouseCursor();
-        }
-#endif
+    show_imgui_demo_window = !show_imgui_demo_window;
+    if(!_inputSystem.IsMouseCursorVisible()) {
+        _inputSystem.ShowMouseCursor();
     }
+#endif
+}
 
-    bool UISystem::IsImguiMetricsWindowVisible() const noexcept {
+bool UISystem::IsImguiMetricsWindowVisible() const noexcept {
 #if !defined(IMGUI_DISABLE_METRICS_WINDOW)
-        return show_imgui_metrics_window;
+    return show_imgui_metrics_window;
 #else
-        return false;
+    return false;
 #endif
-    }
+}
 
-    void UISystem::ToggleImguiMetricsWindow() noexcept {
+void UISystem::ToggleImguiMetricsWindow() noexcept {
 #if !defined(IMGUI_DISABLE_METRICS_WINDOW)
-        show_imgui_metrics_window = !show_imgui_metrics_window;
-        if(!_inputSystem.IsMouseCursorVisible()) {
-            _inputSystem.ShowMouseCursor();
-        }
-#endif
+    show_imgui_metrics_window = !show_imgui_metrics_window;
+    if(!_inputSystem.IsMouseCursorVisible()) {
+        _inputSystem.ShowMouseCursor();
     }
+#endif
+}
 
-    bool UISystem::IsAnyImguiDebugWindowVisible() const noexcept {
+bool UISystem::IsAnyImguiDebugWindowVisible() const noexcept {
 #ifdef UI_DEBUG
-        return IsImguiDemoWindowVisible() || IsImguiMetricsWindowVisible();
+    return IsImguiDemoWindowVisible() || IsImguiMetricsWindowVisible();
 #else
-        return false;
+    return false;
 #endif
-    }
+}
 
-    void UISystem::RegisterUiWidgetsFromFolder(std::filesystem::path folderpath, bool recursive /*= false*/) {
-        const auto widgets_lambda = [this](const std::filesystem::path& path) {
-            auto newWidget = std::make_unique<UI::Widget>(_renderer, path);
-            const auto name = newWidget->name;
-            _widgets.try_emplace(name, std::move(newWidget));
-        };
-        FileUtils::ForEachFileInFolder(folderpath, ".ui", widgets_lambda, recursive);
-    }
+void UISystem::RegisterUiWidgetsFromFolder(std::filesystem::path folderpath, bool recursive /*= false*/) {
+    const auto widgets_lambda = [this](const std::filesystem::path& path) {
+        auto newWidget = std::make_unique<UI::Widget>(_renderer, path);
+        const auto name = newWidget->name;
+        _widgets.try_emplace(name, std::move(newWidget));
+    };
+    FileUtils::ForEachFileInFolder(folderpath, ".ui", widgets_lambda, recursive);
+}
 
-    bool UISystem::IsWidgetLoaded(const UI::Widget& widget) const noexcept {
-        return std::find(std::begin(_active_widgets), std::end(_active_widgets), &widget) != std::end(_active_widgets);
-    }
+bool UISystem::IsWidgetLoaded(const UI::Widget& widget) const noexcept {
+    return std::find(std::begin(_active_widgets), std::end(_active_widgets), &widget) != std::end(_active_widgets);
+}
 
-    void UISystem::LoadUiWidgetsFromFolder(std::filesystem::path path, bool recursive /*= false*/) {
-        const auto widgets_lambda = [this](const std::filesystem::path& path) {
-            if(tinyxml2::XMLDocument doc; tinyxml2::XML_SUCCESS == doc.LoadFile(path.string().c_str())) {
-                if(const auto* root = doc.RootElement(); DataUtils::HasAttribute(*root, "name")) {
-                    if(const auto name = DataUtils::ParseXmlAttribute(*root, "name", ""); !name.empty()) {
-                        LoadUiWidget(name);
-                    }
+void UISystem::LoadUiWidgetsFromFolder(std::filesystem::path path, bool recursive /*= false*/) {
+    const auto widgets_lambda = [this](const std::filesystem::path& path) {
+        if(tinyxml2::XMLDocument doc; tinyxml2::XML_SUCCESS == doc.LoadFile(path.string().c_str())) {
+            if(const auto* root = doc.RootElement(); DataUtils::HasAttribute(*root, "name")) {
+                if(const auto name = DataUtils::ParseXmlAttribute(*root, "name", ""); !name.empty()) {
+                    LoadUiWidget(name);
                 }
             }
-        };
-        FileUtils::ForEachFileInFolder(path, ".ui", widgets_lambda, recursive);
-    }
-
-    void UISystem::LoadUiWidget(const std::string& name) {
-        if(auto* widget = GetWidgetByName(name)) {
-            _active_widgets.push_back(widget);
         }
-    }
+    };
+    FileUtils::ForEachFileInFolder(path, ".ui", widgets_lambda, recursive);
+}
 
-    void UISystem::UnloadUiWidget(const std::string& name) {
-        _active_widgets.erase(std::remove_if(std::begin(_active_widgets), std::end(_active_widgets), [&name](UI::Widget* widget) { return widget->name == name; }), std::end(_active_widgets));
+void UISystem::LoadUiWidget(const std::string& name) {
+    if(auto* widget = GetWidgetByName(name)) {
+        _active_widgets.push_back(widget);
     }
+}
 
-    void UISystem::AddUiWidgetToViewport(UI::Widget& widget) {
-        const auto viewport = _renderer.GetCurrentViewport();
-        const auto viewportDims = Vector2{viewport.width, viewport.height};
-        if(!IsWidgetLoaded(widget)) {
-            LoadUiWidget(widget.name);
-        }
-    }
+void UISystem::UnloadUiWidget(const std::string& name) {
+    _active_widgets.erase(std::remove_if(std::begin(_active_widgets), std::end(_active_widgets), [&name](UI::Widget* widget) { return widget->name == name; }), std::end(_active_widgets));
+}
 
-    void UISystem::RemoveUiWidgetFromViewport(UI::Widget& widget) {
-        UnloadUiWidget(widget.name);
+void UISystem::AddUiWidgetToViewport(UI::Widget& widget) {
+    const auto viewport = _renderer.GetCurrentViewport();
+    const auto viewportDims = Vector2{viewport.width, viewport.height};
+    if(!IsWidgetLoaded(widget)) {
+        LoadUiWidget(widget.name);
     }
+}
 
-    UI::Widget* UISystem::GetWidgetByName(const std::string& name) const {
-        if(const auto& found = _widgets.find(name); found != std::end(_widgets)) {
-            return found->second.get();
-        }
-        return nullptr;
+void UISystem::RemoveUiWidgetFromViewport(UI::Widget& widget) {
+    UnloadUiWidget(widget.name);
+}
+
+UI::Widget* UISystem::GetWidgetByName(const std::string& name) const {
+    if(const auto& found = _widgets.find(name); found != std::end(_widgets)) {
+        return found->second.get();
     }
-} // namespace a2de
+    return nullptr;
+}

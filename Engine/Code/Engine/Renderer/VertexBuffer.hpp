@@ -5,20 +5,16 @@
 
 #include <vector>
 
-namespace a2de {
+class RHIDevice;
+class RHIDeviceContext;
 
-    class RHIDevice;
-    class RHIDeviceContext;
+class VertexBuffer : public ArrayBuffer<Vertex3D> {
+public:
+    VertexBuffer(const RHIDevice& owner, const buffer_t& buffer, const BufferUsage& usage, const BufferBindUsage& bindUsage) noexcept;
+    virtual ~VertexBuffer() noexcept;
 
-    class VertexBuffer : public ArrayBuffer<Vertex3D> {
-    public:
-        VertexBuffer(const RHIDevice& owner, const buffer_t& buffer, const BufferUsage& usage, const BufferBindUsage& bindUsage) noexcept;
-        virtual ~VertexBuffer() noexcept;
+    void Update(RHIDeviceContext& context, const buffer_t& buffer) noexcept;
 
-        void Update(RHIDeviceContext& context, const buffer_t& buffer) noexcept;
-
-    protected:
-    private:
-    };
-
-} // namespace a2de
+protected:
+private:
+};

@@ -9,73 +9,70 @@
 #include "Engine/UI/Panel.hpp"
 #include "Engine/UI/Widget.hpp"
 
-namespace a2de {
+namespace UI {
 
-    namespace UI {
+PictureBox::PictureBox(Panel* parent /*= nullptr*/)
+: Element(parent)
+{
+    /* DO NOTHING */
+}
+PictureBox::PictureBox(const XMLElement& elem, Panel* parent /*= nullptr*/)
+: Element(parent)
+{
+    GUARANTEE_OR_DIE(!LoadFromXml(elem), "PictureBox constructor failed to load.");
+}
 
-        PictureBox::PictureBox(Panel* parent /*= nullptr*/)
-            : Element(parent)
-        {
-            /* DO NOTHING */
+void PictureBox::SetImage(std::unique_ptr<AnimatedSprite> sprite) noexcept {
+    _sprite.reset(sprite.release());
+    const auto dims = _sprite->GetFrameDimensions();
+    GetSlot()->CalcPivot();
+}
+
+const AnimatedSprite* const PictureBox::GetImage() const noexcept {
+    return _sprite.get();
+}
+
+void PictureBox::Update(TimeUtils::FPSeconds deltaSeconds) {
+    if(IsDisabled()) {
+        return;
+    }
+    _sprite->Update(deltaSeconds);
+}
+
+void PictureBox::Render(Renderer& renderer) const {
+    if(IsHidden()) {
+        return;
+    }
+    renderer.SetModelMatrix(GetWorldTransform());
+    renderer.SetMaterial(_sprite->GetMaterial());
+    const auto cur_tc = _sprite->GetCurrentTexCoords();
+    Vector4 tex_coords(cur_tc.mins, cur_tc.maxs);
+    renderer.DrawQuad2D(tex_coords);
+}
+
+void PictureBox::DebugRender(Renderer& renderer) const {
+    Element::DebugRender(renderer);
+}
+
+
+Vector4 PictureBox::CalcDesiredSize() const noexcept {
+    const auto dims = _sprite->GetFrameDimensions();
+    const auto w = static_cast<float>(dims.x);
+    const auto h = static_cast<float>(dims.y);
+    return Vector4{Vector2::ZERO, Vector2{w, h}};
+}
+
+bool PictureBox::LoadFromXml(const XMLElement& elem) noexcept {
+    DataUtils::ValidateXmlElement(elem, "picturebox", "", "name,src", "");
+    _name = DataUtils::ParseXmlAttribute(elem, "name", _name);
+    if(const auto src = DataUtils::ParseXmlAttribute(elem, "src", ""); FileUtils::IsSafeReadPath(src)) {
+        if(const auto* parent = GetParent()) {
+            _sprite = parent->GetOwningWidget()->GetRenderer().CreateAnimatedSprite(src);
+            return true;
         }
-        PictureBox::PictureBox(const XMLElement& elem, Panel* parent /*= nullptr*/)
-            : Element(parent)
-        {
-            GUARANTEE_OR_DIE(!LoadFromXml(elem), "PictureBox constructor failed to load.");
-        }
-
-        void PictureBox::SetImage(std::unique_ptr<AnimatedSprite> sprite) noexcept {
-            _sprite.reset(sprite.release());
-            const auto dims = _sprite->GetFrameDimensions();
-            GetSlot()->CalcPivot();
-        }
-
-        const AnimatedSprite* const PictureBox::GetImage() const noexcept {
-            return _sprite.get();
-        }
-
-        void PictureBox::Update(TimeUtils::FPSeconds deltaSeconds) {
-            if(IsDisabled()) {
-                return;
-            }
-            _sprite->Update(deltaSeconds);
-        }
-
-        void PictureBox::Render(Renderer& renderer) const {
-            if(IsHidden()) {
-                return;
-            }
-            renderer.SetModelMatrix(GetWorldTransform());
-            renderer.SetMaterial(_sprite->GetMaterial());
-            const auto cur_tc = _sprite->GetCurrentTexCoords();
-            Vector4 tex_coords(cur_tc.mins, cur_tc.maxs);
-            renderer.DrawQuad2D(tex_coords);
-        }
-
-        void PictureBox::DebugRender(Renderer& renderer) const {
-            Element::DebugRender(renderer);
-        }
+    }
+    return false;
+}
 
 
-        Vector4 PictureBox::CalcDesiredSize() const noexcept {
-            const auto dims = _sprite->GetFrameDimensions();
-            const auto w = static_cast<float>(dims.x);
-            const auto h = static_cast<float>(dims.y);
-            return Vector4{Vector2::ZERO, Vector2{w, h}};
-        }
-
-        bool PictureBox::LoadFromXml(const XMLElement& elem) noexcept {
-            DataUtils::ValidateXmlElement(elem, "picturebox", "", "name,src", "");
-            _name = DataUtils::ParseXmlAttribute(elem, "name", _name);
-            if(const auto src = DataUtils::ParseXmlAttribute(elem, "src", ""); FileUtils::IsSafeReadPath(src)) {
-                if(const auto* parent = GetParent()) {
-                    _sprite = parent->GetOwningWidget()->GetRenderer().CreateAnimatedSprite(src);
-                    return true;
-                }
-            }
-            return false;
-        }
-
-
-    } // namespace UI
-} // namespace a2de
+} // namespace UI

@@ -13,8 +13,6 @@
 
 #include <hidusage.h>
 
-namespace a2de {
-
 unsigned char InputSystem::ConvertKeyCodeToWinVK(const KeyCode& code) noexcept {
     switch(code) {
     case KeyCode::LButton: return VK_LBUTTON;
@@ -1261,7 +1259,61 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         SetMouseCoords(x, y);
         return true;
     }
+    case WindowsSystemMessage::Mouse_RawInput: {
+        if(!IsMouseRawInputEnabled()) {
+            return false;
+        }
+        static bool firstCall = true;
+        WPARAM wp = msg.wparam;
+        const auto code = GET_RAWINPUT_CODE_WPARAM(wp);
+        if(code == RIM_INPUT) {
+            LPARAM lp = msg.lparam;
+            HRAWINPUT rawinput = reinterpret_cast<HRAWINPUT>(lp);
+            UINT hsize = 0;
+            ::GetRawInputData(rawinput, RID_HEADER, nullptr, &hsize, sizeof(RAWINPUTHEADER));
+            if(hsize > 0) {
+                const auto header_bytes = std::make_unique<unsigned char[]>(hsize);
+                if(::GetRawInputData(rawinput, RID_HEADER, header_bytes.get(), &hsize, sizeof(RAWINPUTHEADER)) == hsize) {
+                    RAWINPUTHEADER* header = reinterpret_cast<RAWINPUTHEADER*>(header_bytes.get());
+                    if(header->dwType == RIM_TYPEMOUSE) {
+                        UINT dsize = 0;
+                        ::GetRawInputData(rawinput, RID_INPUT, nullptr, &dsize, sizeof(RAWINPUTHEADER));
+                        if(dsize > 0) {
+                            const auto data_bytes = std::make_unique<unsigned char[]>(dsize);
+                            if(::GetRawInputData(rawinput, RID_INPUT, data_bytes.get(), &dsize, sizeof(RAWINPUTHEADER)) == dsize) {
+                                RAWINPUT* raw = reinterpret_cast<RAWINPUT*>(data_bytes.get());
+                                const auto& rawMouse = raw->data.mouse;
+                                if(const auto moveAbsoluteFlag = (rawMouse.usFlags & MOUSE_MOVE_ABSOLUTE); moveAbsoluteFlag == MOUSE_MOVE_ABSOLUTE) {
+                                    bool isVirtualDesktop = (rawMouse.usFlags & MOUSE_VIRTUAL_DESKTOP) == MOUSE_VIRTUAL_DESKTOP;
+
+                                    const auto width = ::GetSystemMetrics(isVirtualDesktop ? SM_CXVIRTUALSCREEN : SM_CXSCREEN);
+                                    const auto height = ::GetSystemMetrics(isVirtualDesktop ? SM_CYVIRTUALSCREEN : SM_CYSCREEN);
+
+                                    const auto absoluteX = (rawMouse.lLastX / 65535.0f) * width;
+                                    const auto absoluteY = (rawMouse.lLastY / 65535.0f) * height;
+                                    UpdateMouseCoords(absoluteX, absoluteY);
+                                    _mouseDelta = Vector2::ZERO;
+                                } else {
+                                    const auto relative = IntVector2{rawMouse.lLastX, rawMouse.lLastY};
+                                    if(firstCall) {
+                                        firstCall = false;
+                                        _mouseCoords = GetCursorWindowPosition();
+                                    }
+                                    AdjustMouseCoords(Vector2{relative});
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+        return false;
+    }
     case WindowsSystemMessage::Mouse_MouseMove: {
+        if(_enableRawInput) {
+            return false;
+        }
         constexpr uint16_t lbutton_mask = 0b0000'0000'0000'0001;       //0x0001
         constexpr uint16_t rbutton_mask = 0b0000'0000'0000'0010;       //0x0002
         constexpr uint16_t shift_mask = 0b0000'0000'0000'0100;         //0x0004
@@ -1272,7 +1324,7 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         LPARAM lp = msg.lparam;
         const auto x = static_cast<float>(GET_X_LPARAM(lp));
         const auto y = static_cast<float>(GET_Y_LPARAM(lp));
-        UpdateMouseCoords(x, y);
+        SetMouseCoords(x, y);
         return true;
     }
     case WindowsSystemMessage::Mouse_MouseWheel: {
@@ -1389,7 +1441,19 @@ InputSystem::~InputSystem() noexcept {
     ::ClipCursor(&_initialClippingArea);
 }
 
+void InputSystem::InitializeMouseRawInput() noexcept {
+    RAWINPUTDEVICE rid{};
+    rid.hwndTarget = static_cast<HWND>(_renderer->GetOutput()->GetWindow()->GetWindowHandle());
+    rid.usUsagePage = HID_USAGE_PAGE_GENERIC;
+    rid.usUsage = HID_USAGE_GENERIC_MOUSE;
+    rid.dwFlags = 0;
+    if(::RegisterRawInputDevices(&rid, 1, sizeof(rid)) == FALSE) {
+        _fileLogger->LogAndFlush("Failed to register raw input device. Error Message:\n" + StringUtils::FormatWindowsLastErrorMessage());
+    }
+}
+
 void InputSystem::Initialize() {
+    InitializeMouseRawInput();
     UpdateXboxConnectedState();
     auto ss = std::to_string(_connected_controller_count) + " Xbox controllers detected!";
     _fileLogger->LogLineAndFlush(ss);
@@ -1491,6 +1555,26 @@ bool InputSystem::WasMouseWheelJustScrolledRight() const noexcept {
     return GetMouseWheelHorizontalPositionNormalized() > 0;
 }
 
+const bool InputSystem::IsMouseRawInputEnabled() const noexcept {
+    return _enableRawInput;
+}
+
+void InputSystem::SetMouseRawInput(bool value) noexcept {
+    _enableRawInput = value;
+}
+
+void InputSystem::ToggleMouseRawInput() noexcept {
+    _enableRawInput = !_enableRawInput;
+}
+
+void InputSystem::EnableMouseRawInput() noexcept {
+    _enableRawInput = true;
+}
+
+void InputSystem::DisableMouseRawInput() noexcept {
+    _enableRawInput = false;
+}
+
 std::size_t InputSystem::GetConnectedControllerCount() const noexcept {
     int connected_count = 0;
     for(const auto& controller : _xboxControllers) {
@@ -1516,5 +1600,3 @@ const XboxController& InputSystem::GetXboxController(const std::size_t& controll
 XboxController& InputSystem::GetXboxController(const std::size_t& controllerIndex) noexcept {
     return _xboxControllers[controllerIndex];
 }
-
-} // namespace a2de
