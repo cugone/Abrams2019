@@ -108,7 +108,8 @@ ColliderPolygon* ColliderPolygon::Clone() const noexcept {
 }
 
 ColliderOBB::ColliderOBB(const Vector2& position, const Vector2& half_extents)
-: ColliderPolygon(4, position, half_extents, 0.0f) {
+: m_obb{position, half_extents, 0.0f}
+{
     /* DO NOTHING */
 }
 
@@ -118,43 +119,43 @@ float ColliderOBB::CalcArea() const noexcept {
 }
 
 void ColliderOBB::DebugRender(Renderer& renderer) const noexcept {
-    renderer.DrawOBB2(_polygon.GetOrientationDegrees(), Rgba::Pink);
+    renderer.DrawOBB2(m_obb.orientationDegrees, Rgba::Pink);
 }
 
-const Vector2& ColliderOBB::GetHalfExtents() const noexcept {
-    return _polygon.GetHalfExtents();
+Vector2 ColliderOBB::GetHalfExtents() const noexcept {
+    return m_obb.half_extents;
 }
 
 Vector2 ColliderOBB::Support(const Vector2& d) const noexcept {
-    return ColliderPolygon::Support(d);
+    return MathUtils::CalcClosestPoint(m_obb.position + d, m_obb);
 }
 
 void ColliderOBB::SetPosition(const Vector2& position) noexcept {
-    ColliderPolygon::SetPosition(position);
+    m_obb.position = position;
 }
 
 float ColliderOBB::GetOrientationDegrees() const noexcept {
-    return _polygon.GetOrientationDegrees();
+    return m_obb.orientationDegrees;
 }
 
 void ColliderOBB::SetOrientationDegrees(float degrees) noexcept {
-    ColliderPolygon::SetOrientationDegrees(degrees);
+    m_obb.orientationDegrees = degrees;
 }
 
 Vector2 ColliderOBB::CalcDimensions() const noexcept {
-    return _polygon.GetHalfExtents() * 2.0f;
+    return m_obb.CalcDimensions();
 }
 
 OBB2 ColliderOBB::GetBounds() const noexcept {
-    return OBB2(_polygon.GetPosition(), _polygon.GetHalfExtents(), _polygon.GetOrientationDegrees());
+    return m_obb;
 }
 
 Vector2 ColliderOBB::CalcCenter() const noexcept {
-    return _polygon.GetPosition();
+    return m_obb.CalcCenter();
 }
 
 ColliderOBB* ColliderOBB::Clone() const noexcept {
-    return new ColliderOBB(GetPosition(), GetHalfExtents());
+    return new ColliderOBB(CalcCenter(), CalcDimensions() * 0.5f);
 }
 
 ColliderCircle::ColliderCircle(const Position& position, float radius)

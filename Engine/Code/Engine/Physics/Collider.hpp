@@ -79,6 +79,7 @@ public:
 
 protected:
 private:
+    OBB2 m_obb;
 };
 
 class ColliderCircle : public ColliderPolygon {
