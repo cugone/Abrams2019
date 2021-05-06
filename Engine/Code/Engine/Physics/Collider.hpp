@@ -16,7 +16,7 @@ public:
     [[nodiscard]] virtual Vector2 CalcDimensions() const noexcept = 0;
     [[nodiscard]] virtual Vector2 CalcCenter() const noexcept = 0;
     [[nodiscard]] virtual float CalcArea() const noexcept = 0;
-    [[nodiscard]] virtual const Vector2& GetHalfExtents() const noexcept = 0;
+    [[nodiscard]] virtual Vector2 GetHalfExtents() const noexcept = 0;
     virtual void SetPosition(const Vector2& position) noexcept = 0;
     virtual void SetOrientationDegrees(float orientationDegrees) noexcept = 0;
     [[nodiscard]] virtual float GetOrientationDegrees() const noexcept = 0;
@@ -49,7 +49,7 @@ public:
     void Translate(const Vector2& translation);
     void RotateDegrees(float displacementDegrees);
     void Rotate(float displacementDegrees);
-    [[nodiscard]] const Vector2& GetHalfExtents() const noexcept override;
+    [[nodiscard]] Vector2 GetHalfExtents() const noexcept override;
     void SetHalfExtents(const Vector2& newHalfExtents);
     [[nodiscard]] OBB2 GetBounds() const noexcept override;
 
@@ -67,7 +67,7 @@ public:
     [[nodiscard]] virtual float CalcArea() const noexcept override;
 
     virtual void DebugRender(Renderer& renderer) const noexcept override;
-    [[nodiscard]] virtual const Vector2& GetHalfExtents() const noexcept override;
+    [[nodiscard]] virtual Vector2 GetHalfExtents() const noexcept override;
     [[nodiscard]] virtual Vector2 Support(const Vector2& d) const noexcept override;
     virtual void SetPosition(const Vector2& position) noexcept override;
     [[nodiscard]] virtual float GetOrientationDegrees() const noexcept override;
@@ -85,7 +85,7 @@ class ColliderCircle : public ColliderPolygon {
 public:
     ColliderCircle(const Position& position, float radius);
     [[nodiscard]] virtual float CalcArea() const noexcept override;
-    [[nodiscard]] virtual const Vector2& GetHalfExtents() const noexcept override;
+    [[nodiscard]] virtual Vector2 GetHalfExtents() const noexcept override;
     [[nodiscard]] virtual Vector2 Support(const Vector2& d) const noexcept override;
     virtual void DebugRender(Renderer& renderer) const noexcept override;
     virtual void SetPosition(const Vector2& position) noexcept override;

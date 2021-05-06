@@ -59,7 +59,7 @@ void ColliderPolygon::SetOrientationDegrees(float degrees) noexcept {
     _polygon.SetOrientationDegrees(degrees);
 }
 
-const Vector2& ColliderPolygon::GetHalfExtents() const noexcept {
+Vector2 ColliderPolygon::GetHalfExtents() const noexcept {
     return _polygon.GetHalfExtents();
 }
 
@@ -172,7 +172,7 @@ float ColliderCircle::CalcArea() const noexcept {
     return MathUtils::M_PI * half_extents.x * half_extents.x;
 }
 
-const Vector2& ColliderCircle::GetHalfExtents() const noexcept {
+Vector2 ColliderCircle::GetHalfExtents() const noexcept {
     return _polygon.GetHalfExtents();
 }
 
