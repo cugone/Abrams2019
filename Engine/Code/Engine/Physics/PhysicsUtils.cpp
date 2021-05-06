@@ -6,7 +6,7 @@
 #include "Engine/Physics/Collider.hpp"
 
 Vector2 MathUtils::CalcClosestPoint(const Vector2& p, const Collider& collider) {
-    return collider.Support(p - collider.CalcCenter());
+    return collider.Support((p - collider.CalcCenter()).GetNormalize());
 }
 
 static constexpr int maxGJKIterations = 25;
