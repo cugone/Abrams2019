@@ -10,11 +10,6 @@ ColliderPolygon::ColliderPolygon(int sides /*= 4*/, const Vector2& position /*= 
     /* DO NOTHING */
 }
 
-ColliderPolygon::ColliderPolygon()
-: Collider() {
-    /* DO NOTHING */
-}
-
 void ColliderPolygon::DebugRender(Renderer& renderer) const noexcept {
     renderer.DrawPolygon2D(Vector2::ZERO, 0.5f, _polygon.GetSides(), Rgba::Pink);
 }

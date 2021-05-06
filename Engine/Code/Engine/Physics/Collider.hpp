@@ -27,7 +27,7 @@ public:
 
 class ColliderPolygon : public Collider {
 public:
-    ColliderPolygon();
+    ColliderPolygon() = default;
 
     explicit ColliderPolygon(int sides = 4, const Vector2& position = Vector2::ZERO, const Vector2& half_extents = Vector2(0.5f, 0.5f), float orientationDegrees = 0.0f);
 
