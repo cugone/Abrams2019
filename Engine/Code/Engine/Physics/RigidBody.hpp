@@ -155,6 +155,8 @@ public:
 
     void FellOutOfWorld() noexcept;
     [[nodiscard]] const bool ShouldKill() const noexcept;
+    [[nodiscard]] const bool IsRotationLocked() const noexcept;
+    void LockRotation(bool shouldLockRotation) noexcept;
 protected:
 private:
     void SetAcceleration(const Vector2& newAccleration) noexcept;
@@ -178,6 +180,7 @@ private:
     bool is_colliding = false;
     bool is_awake = true;
     bool should_kill = false;
+    bool should_lock_rotation = false;
 
     friend class PhysicsSystem;
 };

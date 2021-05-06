@@ -261,10 +261,12 @@ void RigidBody::ApplyForce(const Vector2& direction, float magnitude, const Time
 
 void RigidBody::ApplyTorque(float force, const TimeUtils::FPSeconds& duration) {
     SetAwake(true);
-    if(duration == TimeUtils::FPSeconds::zero()) {
-        angular_impulses.push_back(force);
-    } else {
-        angular_forces.push_back(std::make_pair(force, duration));
+    if(!IsRotationLocked()) {
+        if(duration == TimeUtils::FPSeconds::zero()) {
+            angular_impulses.push_back(force);
+        } else {
+            angular_forces.push_back(std::make_pair(force, duration));
+        }
     }
 }
 
@@ -385,6 +387,14 @@ void RigidBody::FellOutOfWorld() noexcept {
 
 const bool RigidBody::ShouldKill() const noexcept {
     return should_kill;
+}
+
+const bool RigidBody::IsRotationLocked() const noexcept {
+    return should_lock_rotation;
+}
+
+void RigidBody::LockRotation(bool shouldLockRotation) noexcept {
+    shouldLockRotation = shouldLockRotation;
 }
 
 void RigidBody::SetAcceleration(const Vector2& newAccleration) noexcept {
