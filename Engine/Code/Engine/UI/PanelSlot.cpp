@@ -1,5 +1,7 @@
 #include "Engine/UI/PanelSlot.hpp"
 
-namespace UI {
+namespace a2de {
+    namespace UI {
 
+    }
 }

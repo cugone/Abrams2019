@@ -2,6 +2,8 @@
 
 #include <sstream>
 
+namespace a2de {
+
 std::string StringUtils::to_string(const System::SystemDesc& system) noexcept {
     std::stringstream ss;
     ss << system.os;
@@ -30,3 +32,5 @@ System::SystemDesc System::GetSystemDesc() noexcept {
     desc.os = OS::GetOsDesc();
     return desc;
 }
+
+} // namespace a2de

@@ -3,52 +3,56 @@
 #include "Engine/Math/LineSegment3.hpp"
 #include "Engine/Math/Vector3.hpp"
 
-class Capsule3 {
-public:
-    static const Capsule3 UNIT_HORIZONTAL;
-    static const Capsule3 UNIT_VERTICAL;
-    static const Capsule3 UNIT_DEPTH;
-    static const Capsule3 UNIT_CENTERED_HORIZONTAL;
-    static const Capsule3 UNIT_CENTERED_VERTICAL;
-    static const Capsule3 UNIT_CENTERED_DEPTH;
+namespace a2de {
 
-    LineSegment3 line{};
-    float radius = 0.0f;
+    class Capsule3 {
+    public:
+        static const Capsule3 UNIT_HORIZONTAL;
+        static const Capsule3 UNIT_VERTICAL;
+        static const Capsule3 UNIT_DEPTH;
+        static const Capsule3 UNIT_CENTERED_HORIZONTAL;
+        static const Capsule3 UNIT_CENTERED_VERTICAL;
+        static const Capsule3 UNIT_CENTERED_DEPTH;
 
-    Capsule3() = default;
-    Capsule3(const Capsule3& rhs) = default;
-    Capsule3(Capsule3&& rhs) = default;
-    Capsule3& operator=(const Capsule3& rhs) = default;
-    Capsule3& operator=(Capsule3&& rhs) = default;
-    ~Capsule3() = default;
+        LineSegment3 line{};
+        float radius = 0.0f;
 
-    explicit Capsule3(const LineSegment3& line, float radius) noexcept;
-    explicit Capsule3(float startX, float startY, float startZ, float endX, float endY, float endZ, float radius) noexcept;
-    explicit Capsule3(const Vector3& start_position, const Vector3& end_position, float radius) noexcept;
-    explicit Capsule3(const Vector3& start_position, const Vector3& direction, float length, float radius) noexcept;
+        Capsule3() = default;
+        Capsule3(const Capsule3& rhs) = default;
+        Capsule3(Capsule3&& rhs) = default;
+        Capsule3& operator=(const Capsule3& rhs) = default;
+        Capsule3& operator=(Capsule3&& rhs) = default;
+        ~Capsule3() = default;
 
-    void SetLengthFromStart(float length) noexcept;
-    void SetLengthFromCenter(float length) noexcept;
-    void SetLengthFromEnd(float length) noexcept;
+        explicit Capsule3(const LineSegment3& line, float radius) noexcept;
+        explicit Capsule3(float startX, float startY, float startZ, float endX, float endY, float endZ, float radius) noexcept;
+        explicit Capsule3(const Vector3& start_position, const Vector3& end_position, float radius) noexcept;
+        explicit Capsule3(const Vector3& start_position, const Vector3& direction, float length, float radius) noexcept;
 
-    [[nodiscard]] Vector3 CalcCenter() const noexcept;
+        void SetLengthFromStart(float length) noexcept;
+        void SetLengthFromCenter(float length) noexcept;
+        void SetLengthFromEnd(float length) noexcept;
 
-    [[nodiscard]] float CalcLength() const noexcept;
-    [[nodiscard]] float CalcLengthSquared() const noexcept;
+        [[nodiscard]] Vector3 CalcCenter() const noexcept;
 
-    void SetStartEndPositions(const Vector3& start_position, const Vector3& end_position) noexcept;
+        [[nodiscard]] float CalcLength() const noexcept;
+        [[nodiscard]] float CalcLengthSquared() const noexcept;
 
-    void Translate(const Vector3& translation) noexcept;
+        void SetStartEndPositions(const Vector3& start_position, const Vector3& end_position) noexcept;
 
-    [[nodiscard]] Vector3 CalcDisplacement() const noexcept;
-    [[nodiscard]] Vector3 CalcDirection() const noexcept;
+        void Translate(const Vector3& translation) noexcept;
 
-    [[nodiscard]] Capsule3 operator+(const Vector3& translation) const noexcept;
-    [[nodiscard]] Capsule3 operator-(const Vector3& antiTranslation) const noexcept;
+        [[nodiscard]] Vector3 CalcDisplacement() const noexcept;
+        [[nodiscard]] Vector3 CalcDirection() const noexcept;
 
-    Capsule3& operator+=(const Vector3& translation) noexcept;
-    Capsule3& operator-=(const Vector3& antiTranslation) noexcept;
+        [[nodiscard]] Capsule3 operator+(const Vector3& translation) const noexcept;
+        [[nodiscard]] Capsule3 operator-(const Vector3& antiTranslation) const noexcept;
 
-protected:
-private:
-};
+        Capsule3& operator+=(const Vector3& translation) noexcept;
+        Capsule3& operator-=(const Vector3& antiTranslation) noexcept;
+
+    protected:
+    private:
+    };
+
+} // namespace a2de

@@ -4,67 +4,71 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Renderer/Camera2D.hpp"
 
-class Renderer;
-class InputSystem;
+namespace a2de {
 
-class OrthographicCameraController {
-public:
-    OrthographicCameraController() noexcept = default;
-    explicit OrthographicCameraController(Renderer* renderer, InputSystem* inputSystem, float aspectRatio = 1.777778f) noexcept;
+    class Renderer;
+    class InputSystem;
 
-    void Update([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept;
+    class OrthographicCameraController {
+    public:
+        OrthographicCameraController() noexcept = default;
+        explicit OrthographicCameraController(Renderer* renderer, InputSystem* inputSystem, float aspectRatio = 1.777778f) noexcept;
 
-    void SetupCameraShake(float maxShakeOffsetHorizontal, float maxShakeOffsetVertical, float maxShakeAngleDegrees);
+        void Update([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept;
 
-    void SetAspectRatio(float aspectRatio) noexcept;
-    [[nodiscard]] float GetAspectRatio() const noexcept;
+        void SetupCameraShake(float maxShakeOffsetHorizontal, float maxShakeOffsetVertical, float maxShakeAngleDegrees);
 
-    void SetPosition(const Vector2& newPosition) noexcept;
-    void Translate(const Vector2& offset) noexcept;
-    void TranslateTo(const Vector2& position, TimeUtils::FPSeconds t) noexcept;
-    void SetRotationDegrees(float newRotation) noexcept;
-    void SetRotationRadians(float newRotation) noexcept;
-    void RotateDegrees(float offset) noexcept;
-    void RotateRadians(float offset) noexcept;
+        void SetAspectRatio(float aspectRatio) noexcept;
+        [[nodiscard]] float GetAspectRatio() const noexcept;
 
-    void ZoomIn();
-    void ZoomOut();
+        void SetPosition(const Vector2& newPosition) noexcept;
+        void Translate(const Vector2& offset) noexcept;
+        void TranslateTo(const Vector2& position, TimeUtils::FPSeconds t) noexcept;
+        void SetRotationDegrees(float newRotation) noexcept;
+        void SetRotationRadians(float newRotation) noexcept;
+        void RotateDegrees(float offset) noexcept;
+        void RotateRadians(float offset) noexcept;
 
-    void ResetZoomLevelRange() noexcept;
-    float GetZoomLevel() const noexcept;
-    float GetZoomRatio() const noexcept;
-    void SetZoomLevel(float zoom) noexcept;
-    void SetZoomLevelRange(const Vector2& minmaxZoomLevel) noexcept;
-    void SetMinZoomLevel(float minimumLevel) noexcept;
-    void SetMaxZoomLevel(float maximumValue) noexcept;
+        void ZoomIn();
+        void ZoomOut();
 
-    [[nodiscard]] const Camera2D& GetCamera() const noexcept;
-    [[nodiscard]] Camera2D& GetCamera() noexcept;
+        void ResetZoomLevelRange() noexcept;
+        float GetZoomLevel() const noexcept;
+        float GetZoomRatio() const noexcept;
+        void SetZoomLevel(float zoom) noexcept;
+        void SetZoomLevelRange(const Vector2& minmaxZoomLevel) noexcept;
+        void SetMinZoomLevel(float minimumLevel) noexcept;
+        void SetMaxZoomLevel(float maximumValue) noexcept;
 
-    [[nodiscard]] float GetShake() const noexcept;
+        [[nodiscard]] const Camera2D& GetCamera() const noexcept;
+        [[nodiscard]] Camera2D& GetCamera() noexcept;
 
-    template<typename F>
-    void DoCameraShake(F&& f) {
-        m_Camera.trauma = f();
-    }
+        [[nodiscard]] float GetShake() const noexcept;
 
-protected:
-private:
-    Renderer* m_renderer{};
-    InputSystem* m_inputSystem{};
-    float m_aspectRatio = MathUtils::M_16_BY_9_RATIO;
-    float m_zoomLevel = 8.0f;
-    float m_defaultMinZoomLevel = 8.0f;
-    float m_defaultMaxZoomLevel = (std::numeric_limits<float>::max)();
-    float m_minZoomLevel = 8.0f;
-    float m_maxZoomLevel = (std::numeric_limits<float>::max)();
-    mutable Camera2D m_Camera{};
-    Camera2D m_ShakyCamera{};
-    float m_maxShakeOffsetHorizontal{10.0f};
-    float m_maxShakeOffsetVertical{10.0f};
-    float m_maxShakeAngle{25.0f};
-    float m_translationSpeed = 5.0f;
-    float m_rotationSpeed = 180.0f;
-    float m_zoomSpeed = 8.0f;
-    float m_maxZoomSpeed = 24.0f;
-};
+        template<typename F>
+        void DoCameraShake(F&& f) {
+            m_Camera.trauma = f();
+        }
+
+    protected:
+    private:
+        Renderer* m_renderer{};
+        InputSystem* m_inputSystem{};
+        float m_aspectRatio = MathUtils::M_16_BY_9_RATIO;
+        float m_zoomLevel = 8.0f;
+        float m_defaultMinZoomLevel = 8.0f;
+        float m_defaultMaxZoomLevel = (std::numeric_limits<float>::max)();
+        float m_minZoomLevel = 8.0f;
+        float m_maxZoomLevel = (std::numeric_limits<float>::max)();
+        mutable Camera2D m_Camera{};
+        Camera2D m_ShakyCamera{};
+        float m_maxShakeOffsetHorizontal{10.0f};
+        float m_maxShakeOffsetVertical{10.0f};
+        float m_maxShakeAngle{25.0f};
+        float m_translationSpeed = 5.0f;
+        float m_rotationSpeed = 180.0f;
+        float m_zoomSpeed = 8.0f;
+        float m_maxZoomSpeed = 24.0f;
+    };
+
+} // namespace a2de

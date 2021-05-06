@@ -5,21 +5,25 @@
 
 #include <vector>
 
-class RHIDevice;
-class RHIDeviceContext;
+namespace a2de {
 
-class StructuredBuffer : public Buffer<void*> {
-public:
-    StructuredBuffer(const RHIDevice& owner, const buffer_t& buffer, std::size_t element_size, std::size_t element_count, const BufferUsage& usage, const BufferBindUsage& bindUsage) noexcept;
-    virtual ~StructuredBuffer() noexcept;
+    class RHIDevice;
+    class RHIDeviceContext;
 
-    void Update(RHIDeviceContext& context, const buffer_t& buffer) noexcept;
+    class StructuredBuffer : public Buffer<void*> {
+    public:
+        StructuredBuffer(const RHIDevice& owner, const buffer_t& buffer, std::size_t element_size, std::size_t element_count, const BufferUsage& usage, const BufferBindUsage& bindUsage) noexcept;
+        virtual ~StructuredBuffer() noexcept;
 
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> dx_srv{};
+        void Update(RHIDeviceContext& context, const buffer_t& buffer) noexcept;
 
-protected:
-private:
-    std::size_t _element_count = 0;
-    std::size_t _element_size = 0;
-    std::size_t _buffer_size = 0;
-};
+        Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> dx_srv{};
+
+    protected:
+    private:
+        std::size_t _element_count = 0;
+        std::size_t _element_size = 0;
+        std::size_t _buffer_size = 0;
+    };
+
+} // namespace a2de

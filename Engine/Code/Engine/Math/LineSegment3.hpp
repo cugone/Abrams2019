@@ -2,51 +2,55 @@
 
 #include "Engine/Math/Vector3.hpp"
 
-class LineSegment3 {
-public:
-    Vector3 start = Vector3::ZERO;
-    Vector3 end = Vector3::ZERO;
+namespace a2de {
 
-    static const LineSegment3 UNIT_HORIZONTAL;
-    static const LineSegment3 UNIT_VERTICAL;
-    static const LineSegment3 UNIT_DEPTH;
-    static const LineSegment3 UNIT_CENTERED_HORIZONTAL;
-    static const LineSegment3 UNIT_CENTERED_VERTICAL;
-    static const LineSegment3 UNIT_CENTERED_DEPTH;
+    class LineSegment3 {
+    public:
+        Vector3 start = Vector3::ZERO;
+        Vector3 end = Vector3::ZERO;
 
-    LineSegment3() = default;
-    LineSegment3(const LineSegment3& rhs) = default;
-    LineSegment3(LineSegment3&& rhs) = default;
-    ~LineSegment3() = default;
-    LineSegment3& operator=(LineSegment3&& rhs) = default;
-    LineSegment3& operator=(const LineSegment3& rhs) = default;
+        static const LineSegment3 UNIT_HORIZONTAL;
+        static const LineSegment3 UNIT_VERTICAL;
+        static const LineSegment3 UNIT_DEPTH;
+        static const LineSegment3 UNIT_CENTERED_HORIZONTAL;
+        static const LineSegment3 UNIT_CENTERED_VERTICAL;
+        static const LineSegment3 UNIT_CENTERED_DEPTH;
 
-    explicit LineSegment3(float startX, float startY, float startZ, float endX, float endY, float endZ) noexcept;
-    explicit LineSegment3(const Vector3& startPosition, const Vector3& endPosition) noexcept;
-    explicit LineSegment3(const Vector3& startPosition, const Vector3& direction, float length) noexcept;
+        LineSegment3() = default;
+        LineSegment3(const LineSegment3& rhs) = default;
+        LineSegment3(LineSegment3&& rhs) = default;
+        ~LineSegment3() = default;
+        LineSegment3& operator=(LineSegment3&& rhs) = default;
+        LineSegment3& operator=(const LineSegment3& rhs) = default;
 
-    void SetLengthFromStart(float length) noexcept;
-    void SetLengthFromCenter(float length) noexcept;
-    void SetLengthFromEnd(float length) noexcept;
+        explicit LineSegment3(float startX, float startY, float startZ, float endX, float endY, float endZ) noexcept;
+        explicit LineSegment3(const Vector3& startPosition, const Vector3& endPosition) noexcept;
+        explicit LineSegment3(const Vector3& startPosition, const Vector3& direction, float length) noexcept;
 
-    [[nodiscard]] Vector3 CalcCenter() const noexcept;
+        void SetLengthFromStart(float length) noexcept;
+        void SetLengthFromCenter(float length) noexcept;
+        void SetLengthFromEnd(float length) noexcept;
 
-    [[nodiscard]] float CalcLength() const noexcept;
-    [[nodiscard]] float CalcLengthSquared() const noexcept;
+        [[nodiscard]] Vector3 CalcCenter() const noexcept;
 
-    void SetStartEndPositions(const Vector3& startPosition, const Vector3& endPosition) noexcept;
+        [[nodiscard]] float CalcLength() const noexcept;
+        [[nodiscard]] float CalcLengthSquared() const noexcept;
 
-    void Translate(const Vector3& translation) noexcept;
+        void SetStartEndPositions(const Vector3& startPosition, const Vector3& endPosition) noexcept;
 
-    [[nodiscard]] Vector3 CalcDisplacement() const noexcept;
-    [[nodiscard]] Vector3 CalcDirection() const noexcept;
+        void Translate(const Vector3& translation) noexcept;
 
-    [[nodiscard]] LineSegment3 operator+(const Vector3& translation) const noexcept;
-    [[nodiscard]] LineSegment3 operator-(const Vector3& antiTranslation) const noexcept;
-    LineSegment3& operator+=(const Vector3& translation) noexcept;
-    LineSegment3& operator-=(const Vector3& antiTranslation) noexcept;
+        [[nodiscard]] Vector3 CalcDisplacement() const noexcept;
+        [[nodiscard]] Vector3 CalcDirection() const noexcept;
 
-protected:
-private:
-    friend class Capsule3;
-};
+        [[nodiscard]] LineSegment3 operator+(const Vector3& translation) const noexcept;
+        [[nodiscard]] LineSegment3 operator-(const Vector3& antiTranslation) const noexcept;
+        LineSegment3& operator+=(const Vector3& translation) noexcept;
+        LineSegment3& operator-=(const Vector3& antiTranslation) noexcept;
+
+    protected:
+    private:
+        friend class Capsule3;
+    };
+
+} // namespace a2de

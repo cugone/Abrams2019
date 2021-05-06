@@ -5,49 +5,52 @@
 
 #include <memory>
 
-class Window;
-class RHIDevice;
-class IntVector2;
-class Rgba;
+namespace a2de {
 
-class RHIOutput {
-public:
-    RHIOutput(const RHIDevice& parent, std::unique_ptr<Window> wnd) noexcept;
-    ~RHIOutput() = default;
+    class Window;
+    class RHIDevice;
+    class IntVector2;
+    class Rgba;
 
-    [[nodiscard]] const RHIDevice& GetParentDevice() const noexcept;
+    class RHIOutput {
+    public:
+        RHIOutput(const RHIDevice& parent, std::unique_ptr<Window> wnd) noexcept;
+        ~RHIOutput() = default;
 
-    [[nodiscard]] const Window* GetWindow() const noexcept;
-    [[nodiscard]] Window* GetWindow() noexcept;
+        [[nodiscard]] const RHIDevice& GetParentDevice() const noexcept;
 
-    [[nodiscard]] Texture* GetBackBuffer() const noexcept;
-    [[nodiscard]] Texture* GetDepthStencil() const noexcept;
-    [[nodiscard]] Texture* GetFullscreenTexture() const noexcept;
+        [[nodiscard]] const Window* GetWindow() const noexcept;
+        [[nodiscard]] Window* GetWindow() noexcept;
 
-    void ResetBackbuffer() noexcept;
+        [[nodiscard]] Texture* GetBackBuffer() const noexcept;
+        [[nodiscard]] Texture* GetDepthStencil() const noexcept;
+        [[nodiscard]] Texture* GetFullscreenTexture() const noexcept;
 
-    [[nodiscard]] IntVector2 GetDimensions() const noexcept;
-    [[nodiscard]] IntVector2 GetCenter() const noexcept;
-    [[nodiscard]] float GetAspectRatio() const noexcept;
+        void ResetBackbuffer() noexcept;
 
-    void SetDisplayMode(const RHIOutputMode& newMode) noexcept;
-    void SetDimensions(const IntVector2& clientSize) noexcept;
-    void SetTitle(const std::string& newTitle) const noexcept;
+        [[nodiscard]] IntVector2 GetDimensions() const noexcept;
+        [[nodiscard]] IntVector2 GetCenter() const noexcept;
+        [[nodiscard]] float GetAspectRatio() const noexcept;
 
-    void Present(bool vsync) noexcept;
+        void SetDisplayMode(const RHIOutputMode& newMode) noexcept;
+        void SetDimensions(const IntVector2& clientSize) noexcept;
+        void SetTitle(const std::string& newTitle) const noexcept;
 
-protected:
-    void CreateBuffers() noexcept;
+        void Present(bool vsync) noexcept;
 
-    [[nodiscard]] std::unique_ptr<Texture> CreateBackbuffer() noexcept;
-    [[nodiscard]] std::unique_ptr<Texture> CreateDepthStencil() noexcept;
-    [[nodiscard]] std::unique_ptr<Texture> CreateFullscreenTexture() noexcept;
+    protected:
+        void CreateBuffers() noexcept;
 
-    const RHIDevice& _parent_device;
-    std::unique_ptr<Window> _window = nullptr;
-    std::unique_ptr<Texture> _back_buffer = nullptr;
-    std::unique_ptr<Texture> _depthstencil = nullptr;
-    std::unique_ptr<Texture> _fullscreen = nullptr;
+        [[nodiscard]] std::unique_ptr<Texture> CreateBackbuffer() noexcept;
+        [[nodiscard]] std::unique_ptr<Texture> CreateDepthStencil() noexcept;
+        [[nodiscard]] std::unique_ptr<Texture> CreateFullscreenTexture() noexcept;
 
-private:
-};
+        const RHIDevice& _parent_device;
+        std::unique_ptr<Window> _window = nullptr;
+        std::unique_ptr<Texture> _back_buffer = nullptr;
+        std::unique_ptr<Texture> _depthstencil = nullptr;
+        std::unique_ptr<Texture> _fullscreen = nullptr;
+
+    private:
+    };
+} // namespace a2de

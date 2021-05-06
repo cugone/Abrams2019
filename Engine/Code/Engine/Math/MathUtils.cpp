@@ -21,1515 +21,1519 @@
 #include <algorithm>
 #include <cmath>
 
-namespace MathUtils {
+namespace a2de {
 
-namespace {
-static thread_local unsigned int MT_RANDOM_SEED = 0u;
-}
+    namespace MathUtils {
 
-void SetRandomEngineSeed(unsigned int seed) noexcept {
-    MT_RANDOM_SEED = seed;
-    if(MT_RANDOM_SEED) {
-        GetMTRandomEngine(MT_RANDOM_SEED).seed(MT_RANDOM_SEED);
-        GetMT64RandomEngine(MT_RANDOM_SEED).seed(MT_RANDOM_SEED);
-    } else {
-        MT_RANDOM_SEED = GetRandomDevice()();
-        GetMTRandomEngine().seed(MT_RANDOM_SEED);
-        GetMT64RandomEngine().seed(MT_RANDOM_SEED);
+    namespace {
+    static thread_local unsigned int MT_RANDOM_SEED = 0u;
     }
-}
 
-std::pair<float, float> SplitFloatingPointValue(float value) noexcept {
-    auto int_part = 0.0f;
-    const float frac = std::modf(value, &int_part);
-    return std::make_pair(int_part, frac);
-}
-
-std::pair<double, double> SplitFloatingPointValue(double value) noexcept {
-    auto int_part = 0.0;
-    const auto frac = std::modf(value, &int_part);
-    return std::make_pair(int_part, frac);
-}
-
-std::pair<long double, long double> SplitFloatingPointValue(long double value) noexcept {
-    auto int_part = 0.0L;
-    const auto frac = std::modf(value, &int_part);
-    return std::make_pair(int_part, frac);
-}
-
-float ConvertDegreesToRadians(float degrees) noexcept {
-    return degrees * (MathUtils::M_PI / 180.0f);
-}
-
-float ConvertRadiansToDegrees(float radians) noexcept {
-    return radians * (180.0f * MathUtils::M_1_PI);
-}
-
-std::random_device& GetRandomDevice() noexcept {
-    static thread_local std::random_device rd;
-    return rd;
-}
-
-std::mt19937& GetMTRandomEngine(unsigned int seed /*= 0*/) noexcept {
-    static thread_local std::mt19937 e = std::mt19937(!seed ? GetRandomDevice()() : seed);
-    return e;
-}
-
-std::mt19937_64& GetMT64RandomEngine(unsigned int seed /*= 0*/) noexcept {
-    static thread_local std::mt19937_64 e = std::mt19937_64(!seed ? GetRandomDevice()() : seed);
-    return e;
-}
-
-bool GetRandomBool() noexcept {
-    return MathUtils::GetRandomIntLessThan(2) == 0;
-}
-
-int GetRandomIntLessThan(int maxValueNotInclusive) noexcept {
-    std::uniform_int_distribution<int> d(0, maxValueNotInclusive - 1);
-    return d(GetMTRandomEngine(MT_RANDOM_SEED));
-}
-
-int GetRandomIntInRange(int minInclusive, int maxInclusive) noexcept {
-    std::uniform_int_distribution<int> d(minInclusive, maxInclusive);
-    return d(GetMTRandomEngine(MT_RANDOM_SEED));
-}
-
-long GetRandomLongLessThan(long maxValueNotInclusive) noexcept {
-    std::uniform_int_distribution<long> d(0L, maxValueNotInclusive - 1L);
-    return d(GetMTRandomEngine(MT_RANDOM_SEED));
-}
-
-long GetRandomLongInRange(long minInclusive, long maxInclusive) noexcept {
-    std::uniform_int_distribution<long> d(minInclusive, maxInclusive);
-    return d(GetMTRandomEngine(MT_RANDOM_SEED));
-}
-
-long long GetRandomLongLongLessThan(long long maxValueNotInclusive) noexcept {
-    std::uniform_int_distribution<long long> d(0LL, maxValueNotInclusive - 1LL);
-    return d(GetMTRandomEngine(MT_RANDOM_SEED));
-}
-
-long long GetRandomLongLongInRange(long long minInclusive, long long maxInclusive) noexcept {
-    std::uniform_int_distribution<long long> d(minInclusive, maxInclusive);
-    return d(GetMTRandomEngine(MT_RANDOM_SEED));
-}
-
-float GetRandomFloatInRange(float minInclusive, float maxInclusive) noexcept {
-    std::uniform_real_distribution<float> d(minInclusive, std::nextafter(maxInclusive, maxInclusive + 1.0f));
-    return d(GetMTRandomEngine(MT_RANDOM_SEED));
-}
-
-float GetRandomFloatZeroToOne() noexcept {
-    std::uniform_real_distribution<float> d(0.0f, std::nextafter(1.0f, 2.0f));
-    return d(GetMTRandomEngine(MT_RANDOM_SEED));
-}
-
-float GetRandomFloatZeroUpToOne() noexcept {
-    std::uniform_real_distribution<float> d(0.0f, 1.0f);
-    return d(GetMTRandomEngine(MT_RANDOM_SEED));
-}
-
-float GetRandomFloatNegOneToOne() noexcept {
-    return GetRandomFloatInRange(-1.0f, 1.0f);
-}
-
-double GetRandomDoubleInRange(double minInclusive, double maxInclusive) noexcept {
-    std::uniform_real_distribution<double> d(minInclusive, std::nextafter(maxInclusive, maxInclusive + 1.0));
-    return d(GetMTRandomEngine(MT_RANDOM_SEED));
-}
-
-double GetRandomDoubleZeroToOne() noexcept {
-    std::uniform_real_distribution<double> d(0.0, std::nextafter(1.0, 2.0));
-    return d(GetMTRandomEngine(MT_RANDOM_SEED));
-}
-
-double GetRandomDoubleZeroUpToOne() noexcept {
-    std::uniform_real_distribution<double> d(0.0, 1.0);
-    return d(GetMTRandomEngine(MT_RANDOM_SEED));
-}
-
-double GetRandomDoubleNegOneToOne() noexcept {
-    return GetRandomDoubleInRange(-1.0, 1.0);
-}
-
-long double GetRandomLongDoubleInRange(long double minInclusive, long double maxInclusive) noexcept {
-    std::uniform_real_distribution<long double> d(minInclusive, std::nextafter(maxInclusive, maxInclusive + 1.0L));
-    return d(GetMTRandomEngine(MT_RANDOM_SEED));
-}
-
-long double GetRandomLongDoubleZeroToOne() noexcept {
-    std::uniform_real_distribution<long double> d(0.0L, std::nextafter(1.0L, 2.0L));
-    return d(GetMTRandomEngine(MT_RANDOM_SEED));
-}
-
-long double GetRandomLongDoubleZeroUpToOne() noexcept {
-    std::uniform_real_distribution<long double> d(0.0L, 1.0L);
-    return d(GetMTRandomEngine(MT_RANDOM_SEED));
-}
-
-long double GetRandomLongDoubleNegOneToOne() noexcept {
-    return GetRandomDoubleInRange(-1.0L, 1.0L);
-}
-
-bool IsPercentChance(float probability) noexcept {
-    auto d = std::bernoulli_distribution(std::clamp(probability, 0.0f, 1.0f));
-    return d(GetMTRandomEngine(MT_RANDOM_SEED));
-}
-
-bool IsPercentChance(double probability) noexcept {
-    auto d = std::bernoulli_distribution(std::clamp(probability, 0.0, 1.0));
-    return d(GetMTRandomEngine(MT_RANDOM_SEED));
-}
-
-double nCr(int n, int k) noexcept {
-    return 1 / ((n + 1) * std::beta(n - k + 1, k + 1));
-}
-
-double Combination(int n, int k) noexcept {
-    return nCr(n, k);
-}
-
-double Combination_multiset(int n, int k) noexcept {
-    return Combination(n + k - 1, k);
-}
-
-float CosDegrees(float degrees) noexcept {
-    const auto radians = MathUtils::ConvertDegreesToRadians(degrees);
-    return std::cos(radians);
-}
-
-float SinDegrees(float degrees) noexcept {
-    const auto radians = MathUtils::ConvertDegreesToRadians(degrees);
-    return std::sin(radians);
-}
-
-float Atan2Degrees(float y, float x) noexcept {
-    const auto radians = std::atan2(y, x);
-    return MathUtils::ConvertRadiansToDegrees(radians);
-}
-
-bool IsEquivalent(float a, float b, float epsilon /*= 0.00001f*/) noexcept {
-    return std::abs(a - b) < epsilon;
-}
-
-bool IsEquivalent(double a, double b, double epsilon /*= 0.0001*/) noexcept {
-    return std::abs(a - b) < epsilon;
-}
-
-bool IsEquivalent(long double a, long double b, long double epsilon /*= 0.0001L*/) noexcept {
-    return std::abs(a - b) < epsilon;
-}
-
-bool IsEquivalent(const Vector2& a, const Vector2& b, float epsilon /*= 0.0001f*/) noexcept {
-    return IsEquivalent(a.x, b.x, epsilon) && IsEquivalent(a.y, b.y, epsilon);
-}
-
-bool IsEquivalent(const Vector3& a, const Vector3& b, float epsilon /*= 0.0001f*/) noexcept {
-    return IsEquivalent(a.x, b.x, epsilon) && IsEquivalent(a.y, b.y, epsilon) && IsEquivalent(a.z, b.z, epsilon);
-}
-
-bool IsEquivalent(const Vector4& a, const Vector4& b, float epsilon /*= 0.0001f*/) noexcept {
-    return IsEquivalent(a.x, b.x, epsilon) && IsEquivalent(a.y, b.y, epsilon) && IsEquivalent(a.z, b.z, epsilon) && IsEquivalent(a.w, b.w, epsilon);
-}
-
-bool IsEquivalent(const Quaternion& a, const Quaternion& b, float epsilon /*= 0.0001f*/) noexcept {
-    return IsEquivalent(a.w, b.w, epsilon) && IsEquivalent(a.axis, b.axis, epsilon);
-}
-
-bool IsEquivalentOrLessThan(float a, float b, float epsilon /*= 0.00001f*/) noexcept {
-    return a < b || IsEquivalent(a, b, epsilon);
-}
-
-bool IsEquivalentOrLessThan(double a, double b, double epsilon /*= 0.0001*/) noexcept {
-    return a < b || IsEquivalent(a, b, epsilon);
-}
-
-bool IsEquivalentOrLessThan(long double a, long double b, long double epsilon /*= 0.0001L*/) noexcept {
-    return a < b || IsEquivalent(a, b, epsilon);
-}
-
-bool IsEquivalentOrLessThanZero(float a, float epsilon /*= 0.00001f*/) noexcept {
-    return IsEquivalentOrLessThan(a, 0.0f, epsilon);
-}
-
-bool IsEquivalentOrLessThanZero(double a, double epsilon /*= 0.0001*/) noexcept {
-    return IsEquivalentOrLessThan(a, 0.0, epsilon);
-}
-
-bool IsEquivalentOrLessThanZero(long double a, long double epsilon /*= 0.0001L*/) noexcept {
-    return IsEquivalentOrLessThan(a, 0.0L, epsilon);
-}
-
-bool IsEquivalentToZero(float a, float epsilon /*= 0.00001f*/) noexcept {
-    return IsEquivalent(a, 0.0f, epsilon);
-}
-
-bool IsEquivalentToZero(double a, double epsilon /*= 0.0001*/) noexcept {
-    return IsEquivalent(a, 0.0, epsilon);
-}
-
-bool IsEquivalentToZero(long double a, long double epsilon /*= 0.0001L*/) noexcept {
-    return IsEquivalent(a, 0.0L, epsilon);
-}
-
-bool IsEquivalentToZero(const Vector2& a, float epsilon /*= 0.0001f*/) noexcept {
-    return IsEquivalent(a, Vector2::ZERO, epsilon);
-}
-
-bool IsEquivalentToZero(const Vector3& a, float epsilon /*= 0.0001f*/) noexcept {
-    return IsEquivalent(a, Vector3::ZERO, epsilon);
-}
-
-bool IsEquivalentToZero(const Vector4& a, float epsilon /*= 0.0001f*/) noexcept {
-    return IsEquivalent(a, Vector4::ZERO, epsilon);
-}
-
-bool IsEquivalentToZero(const Quaternion& a, float epsilon /*= 0.0001f*/) noexcept {
-    return IsEquivalent(a, Quaternion::GetIdentity(), epsilon);
-}
-
-float CalcDistance(const Vector2& a, const Vector2& b) noexcept {
-    return (b - a).CalcLength();
-}
-
-float CalcDistance(const Vector3& a, const Vector3& b) noexcept {
-    return (b - a).CalcLength();
-}
-
-float CalcDistance(const Vector4& a, const Vector4& b) noexcept {
-    return (b - a).CalcLength4D();
-}
-
-float CalcDistance(const Vector2& p, const LineSegment2& line) noexcept {
-    return std::sqrt(CalcDistanceSquared(p, line));
-}
-
-float CalcDistance(const Vector3& p, const LineSegment3& line) noexcept {
-    return std::sqrt(CalcDistanceSquared(p, line));
-}
-
-float CalcDistance(const Vector2& p, const Polygon2& poly2) noexcept {
-    return std::sqrt(CalcDistanceSquared(p, poly2));
-}
-
-float CalcDistance(const LineSegment2& line, const Polygon2& poly2) noexcept {
-    return CalcDistance(poly2, line);
-}
-
-float CalcDistance(const Polygon2& poly2, const LineSegment2& line) noexcept {
-    return std::sqrt(CalcDistanceSquared(poly2, line));
-}
-
-float CalcDistance(const LineSegment2& lineA, const LineSegment2& lineB) noexcept {
-    return std::sqrt(CalcDistanceSquared(lineA, lineB));
-}
-
-float CalcDistance4D(const Vector4& a, const Vector4& b) noexcept {
-    return (b - a).CalcLength4D();
-}
-
-float CalcDistance3D(const Vector4& a, const Vector4& b) noexcept {
-    return (b - a).CalcLength3D();
-}
-
-float CalcDistanceSquared(const Vector2& a, const Vector2& b) noexcept {
-    return (b - a).CalcLengthSquared();
-}
-
-float CalcDistanceSquared(const Vector3& a, const Vector3& b) noexcept {
-    return (b - a).CalcLengthSquared();
-}
-
-float CalcDistanceSquared(const Vector4& a, const Vector4& b) noexcept {
-    return (b - a).CalcLength4DSquared();
-}
-
-float CalcDistanceSquared(const Vector2& p, const LineSegment2& line) noexcept {
-    return CalcDistanceSquared(p, CalcClosestPoint(p, line));
-}
-
-float CalcDistanceSquared(const Vector3& p, const LineSegment3& line) noexcept {
-    return CalcDistanceSquared(p, CalcClosestPoint(p, line));
-}
-
-float CalcDistanceSquared(const Vector2& p, const Polygon2& poly2) noexcept {
-    return CalcDistanceSquared(p, CalcClosestPoint(p, poly2));
-}
-
-float CalcDistanceSquared(const LineSegment2& line, const Polygon2& poly2) noexcept {
-    return CalcDistanceSquared(poly2, line);
-}
-
-float CalcDistanceSquared(const Polygon2& poly2, const LineSegment2& line) noexcept {
-    const auto& edges = poly2.GetEdges();
-
-    auto smallest_distance_sq = std::numeric_limits<float>::infinity();
-    for(const auto& edge : edges) {
-        const auto new_dist = CalcDistanceSquared(edge, line);
-        if(new_dist < smallest_distance_sq) {
-            smallest_distance_sq = new_dist;
-        }
-    }
-    return smallest_distance_sq;
-}
-
-float CalcDistanceSquared(const LineSegment2& lineA, const LineSegment2& lineB) noexcept {
-
-    //https://stackoverflow.com/a/11427699/421178
-
-    const auto a_len_sq = lineA.CalcLengthSquared();
-    const auto b_len_sq = lineB.CalcLengthSquared();
-    { //Early-out if either or both segments are too short to consider as segments.
-        const auto is_a_len_sq_zero = IsEquivalentToZero(a_len_sq);
-        const auto is_b_len_sq_zero = IsEquivalentToZero(b_len_sq);
-        //Both "segments" are actually points...
-        if(is_a_len_sq_zero && is_b_len_sq_zero) {
-            return CalcDistanceSquared(lineA.start, lineB.start);
-        }
-        //Else either one is a point.
-        if(is_a_len_sq_zero) {
-            return CalcDistanceSquared(lineA.start, lineB);
-        }
-        if(is_b_len_sq_zero) {
-            return CalcDistanceSquared(lineB.start, lineA);
+    void SetRandomEngineSeed(unsigned int seed) noexcept {
+        MT_RANDOM_SEED = seed;
+        if(MT_RANDOM_SEED) {
+            GetMTRandomEngine(MT_RANDOM_SEED).seed(MT_RANDOM_SEED);
+            GetMT64RandomEngine(MT_RANDOM_SEED).seed(MT_RANDOM_SEED);
+        } else {
+            MT_RANDOM_SEED = GetRandomDevice()();
+            GetMTRandomEngine().seed(MT_RANDOM_SEED);
+            GetMT64RandomEngine().seed(MT_RANDOM_SEED);
         }
     }
 
-    //Actual segment-segment distance...
-    if(DoLineSegmentOverlap(lineA, lineB)) {
-        return 0.0f;
+    std::pair<float, float> SplitFloatingPointValue(float value) noexcept {
+        auto int_part = 0.0f;
+        const float frac = std::modf(value, &int_part);
+        return std::make_pair(int_part, frac);
     }
 
-    const auto a1 = lineA.start;
-    const auto a2 = lineA.end;
-    const auto b1 = lineB.start;
-    const auto b2 = lineB.end;
-    const auto distances = std::vector<float>{CalcDistanceSquared(a1, lineB),CalcDistanceSquared(a2, lineB),CalcDistanceSquared(b1, lineA),CalcDistanceSquared(b2, lineA)};
-
-    return *std::min_element(std::cbegin(distances), std::cend(distances));
-}
-
-float CalcDistanceSquared4D(const Vector4& a, const Vector4& b) noexcept {
-    return CalcDistanceSquared(a, b);
-}
-
-float CalcDistanceSquared3D(const Vector4& a, const Vector4& b) noexcept {
-    return (b - a).CalcLength3DSquared();
-}
-
-float DotProduct(const Vector2& a, const Vector2& b) noexcept {
-    return a.x * b.x + a.y * b.y;
-}
-
-float DotProduct(const Vector3& a, const Vector3& b) noexcept {
-    return a.x * b.x + a.y * b.y + a.z * b.z;
-}
-
-float DotProduct(const Vector4& a, const Vector4& b) noexcept {
-    return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
-}
-
-float DotProduct(const Quaternion& a, const Quaternion& b) noexcept {
-    return (a.w * b.w) + DotProduct(a.axis, b.axis);
-}
-
-float CrossProduct(const Vector2& a, const Vector2& b) noexcept {
-    const auto a1 = a.x;
-    const auto a2 = a.y;
-
-    const auto b1 = b.x;
-    const auto b2 = b.y;
-
-    return a1 * b2 - a2 * b1;
-}
-
-Vector3 CrossProduct(const Vector3& a, const Vector3& b) noexcept {
-    const auto a1 = a.x;
-    const auto a2 = a.y;
-    const auto a3 = a.z;
-
-    const auto b1 = b.x;
-    const auto b2 = b.y;
-    const auto b3 = b.z;
-
-    return Vector3(a2 * b3 - a3 * b2, a3 * b1 - a1 * b3, a1 * b2 - a2 * b1);
-}
-
-float TripleProductScalar(const Vector3& a, const Vector3& b, const Vector3& c) noexcept {
-    return DotProduct(a, CrossProduct(b, c));
-}
-
-Vector2 TripleProductVector(const Vector2& a, const Vector2& b, const Vector2& c) noexcept {
-    //(A x B) x C = B * (A . C) - C * (A . B);
-    return (b * DotProduct(a, c)) - (c * DotProduct(a, b));
-}
-
-Vector3 TripleProductVector(const Vector3& a, const Vector3& b, const Vector3& c) noexcept {
-    return CrossProduct(CrossProduct(a, b), c);
-}
-
-Vector2 Project(const Vector2& a, const Vector2& b) noexcept {
-    return (DotProduct(a, b) / DotProduct(b, b)) * b;
-}
-
-Vector3 Project(const Vector3& a, const Vector3& b) noexcept {
-    return (DotProduct(a, b) / DotProduct(b, b)) * b;
-}
-
-Vector4 Project(const Vector4& a, const Vector4& b) noexcept {
-    return (DotProduct(a, b) / DotProduct(b, b)) * b;
-}
-
-Vector2 Reject(const Vector2& a, const Vector2& b) noexcept {
-    const auto proj_aB = Project(a, b);
-    return a - proj_aB;
-}
-
-Vector3 Reject(const Vector3& a, const Vector3& b) noexcept {
-    const auto proj_aB = Project(a, b);
-    return a - proj_aB;
-}
-
-Vector4 Reject(const Vector4& a, const Vector4& b) noexcept {
-    const auto proj_aB = Project(a, b);
-    return a - proj_aB;
-}
-
-std::pair<Vector2, Vector2> DivideIntoProjectAndReject(const Vector2& a, const Vector2& b) noexcept {
-    const auto proj = Project(a, b);
-    return std::make_pair(proj, a - proj);
-}
-std::pair<Vector3, Vector3> DivideIntoProjectAndReject(const Vector3& a, const Vector3& b) noexcept {
-    const auto proj = Project(a, b);
-    return std::make_pair(proj, a - proj);
-}
-std::pair<Vector4, Vector4> DivideIntoProjectAndReject(const Vector4& a, const Vector4& b) noexcept {
-    const auto proj = Project(a, b);
-    return std::make_pair(proj, a - proj);
-}
-
-Vector2 Reflect(const Vector2& in, const Vector2& normal) noexcept {
-    return in - ((2.0f * DotProduct(in, normal)) * normal);
-}
-
-Vector3 Reflect(const Vector3& in, const Vector3& normal) noexcept {
-    return in - ((2.0f * DotProduct(in, normal)) * normal);
-}
-
-Vector4 Reflect(const Vector4& in, const Vector4& normal) noexcept {
-    return in - ((2.0f * DotProduct(in, normal)) * normal);
-}
-
-Vector2 Rotate(const Vector2& v, const Quaternion& q) noexcept {
-    return Vector2(Rotate(Vector3(v, 0.0f), q));
-}
-
-Vector3 Rotate(const Vector3& v, const Quaternion& q) noexcept {
-    return (q * v * q.CalcInverse()).axis;
-}
-
-Vector2 ProjectAlongPlane(const Vector2& v, const Vector2& n) noexcept {
-    return v - (DotProduct(v, n) * n);
-}
-
-Vector3 ProjectAlongPlane(const Vector3& v, const Vector3& n) noexcept {
-    return v - (DotProduct(v, n) * n);
-}
-
-Vector4 ProjectAlongPlane(const Vector4& v, const Vector4& n) noexcept {
-    return v - (DotProduct(v, n) * n);
-}
-
-unsigned int CalculateManhattanDistance(const IntVector2& start, const IntVector2& end) noexcept {
-    return std::abs(end.x - start.x) + std::abs(end.y - start.y);
-}
-
-unsigned int CalculateManhattanDistance(const IntVector3& start, const IntVector3& end) noexcept {
-    return std::abs(end.x - start.x) + std::abs(end.y - start.y) + std::abs(end.z - start.z);
-}
-
-unsigned int CalculateManhattanDistance(const IntVector4& start, const IntVector4& end) noexcept {
-    return std::abs(end.x - start.x) + std::abs(end.y - start.y) + std::abs(end.z - start.z) + std::abs(end.w - start.w);
-}
-
-unsigned int CalculateChebyshevDistance(const IntVector2& start, const IntVector2& end) noexcept {
-    return (std::max)({std::abs(end.x - start.x), std::abs(end.y - start.y)});
-}
-
-unsigned int CalculateChebyshevDistance(const IntVector3& start, const IntVector3& end) noexcept {
-    return (std::max)({std::abs(end.x - start.x), std::abs(end.y - start.y), std::abs(end.z - start.z)});
-}
-
-unsigned int CalculateChebyshevDistance(const IntVector4& start, const IntVector4& end) noexcept {
-    return (std::max)({std::abs(end.x - start.x), std::abs(end.y - start.y), std::abs(end.z - start.z), std::abs(end.w - start.w)});
-}
-
-unsigned int CalculateChessboardDistance(const IntVector2& start, const IntVector2& end) noexcept {
-    return CalculateChebyshevDistance(start, end);
-}
-unsigned int CalculateChessboardDistance(const IntVector3& start, const IntVector3& end) noexcept {
-    return CalculateChebyshevDistance(start, end);
-}
-unsigned int CalculateChessboardDistance(const IntVector4& start, const IntVector4& end) noexcept {
-    return CalculateChebyshevDistance(start, end);
-}
-
-Vector2 GetRandomPointOn(const AABB2& aabb) noexcept {
-    float result[2]{0.0f, 0.0f};
-    const auto s = MathUtils::GetRandomIntLessThan(4);
-    const auto c = s % 2;
-    result[(c + 0) % 2] = s > 1 ? 1.0f : 0.0f;
-    result[(c + 1) % 2] = s > 1 ? 1.0f : 0.0f;
-    Vector2 point{result[0], result[1]};
-    return aabb.CalcCenter() + (point * aabb.CalcDimensions());
-}
-
-Vector2 GetRandomPointOn(const Disc2& disc) noexcept {
-    Vector2 point{};
-    point.SetLengthAndHeadingDegrees(MathUtils::GetRandomFloatZeroToOne() * 360.0f, disc.radius);
-    return disc.center + point;
-}
-
-Vector2 GetRandomPointOn(const LineSegment2& line) noexcept {
-    const auto dir = line.CalcDirection();
-    const auto len = line.CalcLength() * MathUtils::GetRandomFloatZeroToOne();
-    return line.start + (dir * len);
-}
-
-Vector3 GetRandomPointOn(const AABB3& aabb) noexcept {
-    float result[3]{0.0f, 0.0f, 0.0f};
-    const auto s = MathUtils::GetRandomIntLessThan(6);
-    const auto c = s % 3;
-    result[(c + 0) % 3] = s > 2 ? 1.0f : 0.0f;
-    result[(c + 1) % 3] = MathUtils::GetRandomFloatZeroToOne();
-    result[(c + 2) % 3] = MathUtils::GetRandomFloatZeroToOne();
-    Vector3 point{result[0], result[1], result[2]};
-    return aabb.CalcCenter() + (point * aabb.CalcDimensions());
-}
-
-Vector3 GetRandomPointOn(const Sphere3& sphere) noexcept {
-    //See: https://karthikkaranth.me/blog/generating-random-points-in-a-sphere/
-    const auto u = MathUtils::GetRandomFloatZeroToOne();
-    const auto v = MathUtils::GetRandomFloatZeroToOne();
-    const auto theta = MathUtils::M_2PI * u;
-    const auto phi = std::acos(2.0f * v - 1.0f);
-    const auto r = sphere.radius;
-    const auto sin_theta = std::sin(theta);
-    const auto cos_theta = std::cos(theta);
-    const auto sin_phi = std::sin(phi);
-    const auto cos_phi = std::cos(phi);
-    const auto x = r * sin_phi * cos_theta;
-    const auto y = r * sin_phi * sin_theta;
-    const auto z = r * cos_phi;
-    return sphere.center + Vector3{x, y, z};
-}
-
-Vector3 GetRandomPointOn(const LineSegment3& line) noexcept {
-    const auto dir = line.CalcDirection();
-    const auto len = line.CalcLength() * MathUtils::GetRandomFloatZeroToOne();
-    return line.start + (dir * len);
-}
-
-Vector2 GetRandomPointInside(const AABB2& aabb) noexcept {
-    return Vector2{MathUtils::GetRandomFloatInRange(aabb.mins.x, aabb.maxs.x), MathUtils::GetRandomFloatInRange(aabb.mins.y, aabb.maxs.y)};
-}
-
-Vector2 GetRandomPointInside(const Disc2& disc) noexcept {
-    Vector2 point{};
-    point.SetLengthAndHeadingDegrees(MathUtils::GetRandomFloatZeroToOne() * 360.0f, std::sqrt(MathUtils::GetRandomFloatZeroToOne()) * disc.radius);
-    return disc.center + point;
-}
-
-Vector3 GetRandomPointInside(const AABB3& aabb) noexcept {
-    return Vector3{MathUtils::GetRandomFloatInRange(aabb.mins.x, aabb.maxs.x), MathUtils::GetRandomFloatInRange(aabb.mins.y, aabb.maxs.y), MathUtils::GetRandomFloatInRange(aabb.mins.z, aabb.maxs.z)};
-}
-
-Vector3 GetRandomPointInside(const Sphere3& sphere) noexcept {
-    //See: https://karthikkaranth.me/blog/generating-random-points-in-a-sphere/
-    const auto u = MathUtils::GetRandomFloatZeroToOne();
-    const auto v = MathUtils::GetRandomFloatZeroToOne();
-    const auto theta = MathUtils::M_2PI * u;
-    const auto phi = std::acos(2.0f * v - 1.0f);
-    const auto r = sphere.radius * std::pow(MathUtils::GetRandomFloatZeroToOne(), 1.0f / 3.0f);
-    const auto sin_theta = std::sin(theta);
-    const auto cos_theta = std::cos(theta);
-    const auto sin_phi = std::sin(phi);
-    const auto cos_phi = std::cos(phi);
-    const auto x = r * sin_phi * cos_theta;
-    const auto y = r * sin_phi * sin_theta;
-    const auto z = r * cos_phi;
-    return sphere.center + Vector3{x, y, z};
-}
-
-bool Contains(const AABB2& aabb, const Vector2& point) noexcept {
-    return IsPointInside(aabb, point);
-}
-
-bool Contains(const AABB2& a, const AABB2& b) noexcept {
-    const auto tl = Vector2{b.mins.x, b.mins.y};
-    const auto tr = Vector2{b.maxs.x, b.mins.y};
-    const auto bl = Vector2{b.mins.x, b.maxs.y};
-    const auto br = Vector2{b.maxs.x, b.maxs.y};
-    return IsPointInside(a, tl) && IsPointInside(a, tr) && IsPointInside(a, bl) && IsPointInside(a, br);
-}
-
-bool Contains(const AABB2& a, const OBB2& b) noexcept {
-    return Contains(a, AABB2(b));
-}
-
-bool Contains(const OBB2& a, const AABB2& b) noexcept {
-    return Contains(AABB2(a), b);
-}
-
-bool Contains(const OBB2& a, const OBB2& b) noexcept {
-    return Contains(AABB2(a), AABB2(b));
-}
-
-bool IsPointInside(const AABB2& aabb, const Vector2& point) noexcept {
-    if(aabb.maxs.x < point.x)
-        return false;
-    if(point.x < aabb.mins.x)
-        return false;
-    if(aabb.maxs.y < point.y)
-        return false;
-    if(point.y < aabb.mins.y)
-        return false;
-    return true;
-}
-
-bool IsPointInside(const AABB3& aabb, const Vector3& point) noexcept {
-    if(aabb.maxs.x < point.x)
-        return false;
-    if(point.x < aabb.mins.x)
-        return false;
-    if(aabb.maxs.y < point.y)
-        return false;
-    if(point.y < aabb.mins.y)
-        return false;
-    if(aabb.maxs.z < point.z)
-        return false;
-    if(point.z < aabb.mins.z)
-        return false;
-    return true;
-}
-
-bool IsPointInside(const OBB2& obb, const Vector2& point) noexcept {
-    return DoOBBsOverlap(obb, {point, 0.0f});
-}
-
-bool IsPointInside(const Disc2& disc, const Vector2& point) noexcept {
-    return CalcDistanceSquared(disc.center, point) < (disc.radius * disc.radius);
-}
-
-bool IsPointInside(const Capsule2& capsule, const Vector2& point) noexcept {
-    return CalcDistanceSquared(point, capsule.line) < (capsule.radius * capsule.radius);
-}
-
-bool IsPointInside(const Polygon2& poly2, const Vector2& point) noexcept {
-    if(!IsPointInside(poly2.GetBounds(), point)) {
-        return false;
+    std::pair<double, double> SplitFloatingPointValue(double value) noexcept {
+        auto int_part = 0.0;
+        const auto frac = std::modf(value, &int_part);
+        return std::make_pair(int_part, frac);
     }
-    const auto& verts = poly2.GetVerts();
-    const auto pointCount = verts.size();
 
-    // Crossing Number Test and Winding Number Test
-    // Copyright 2000 softSurfer, 2012 Dan Sunday
-    // This code may be freely used and modified for any purpose
-    // providing that this copyright notice is included with it.
-    // SoftSurfer makes no warranty for this code, and cannot be held
-    // liable for any real or imagined damage resulting from its use.
-    // Users of this code must verify correctness for their application.
+    std::pair<long double, long double> SplitFloatingPointValue(long double value) noexcept {
+        auto int_part = 0.0L;
+        const auto frac = std::modf(value, &int_part);
+        return std::make_pair(int_part, frac);
+    }
 
+    float ConvertDegreesToRadians(float degrees) noexcept {
+        return degrees * (MathUtils::M_PI / 180.0f);
+    }
 
+    float ConvertRadiansToDegrees(float radians) noexcept {
+        return radians * (180.0f * MathUtils::M_1_PI);
+    }
 
-#if 0
-    //Crossing Number Test
-    const auto crossing_inside = [&]()
-    {
-        PROFILE_LOG_SCOPE("Crossing Inside");
-        int cn = 0; // the  crossing number counter
-        const auto n = pointCount;
-        // loop through all edges of the polygon
-        for(std::size_t i = 0u; i < n - 1u; i++) {                         // edge from V[i]  to V[i+1]
-            if(((verts[i].y <= point.y) && (verts[i + 1u].y > point.y))       // an upward crossing
-               || ((verts[i].y > point.y) && (verts[i + 1u].y <= point.y))) { // a downward crossing
-                // compute the actual edge-ray intersect x-coordinate
-                float vt = static_cast<float>(point.y - verts[i].y) / (verts[i + 1u].y - verts[i].y);
-                if(point.x < verts[i].x + vt * (verts[i + 1u].x - verts[i].x)) // point.x < intersect
-                    ++cn;                                     // a valid crossing of y=point.y right of point.x
+    std::random_device& GetRandomDevice() noexcept {
+        static thread_local std::random_device rd;
+        return rd;
+    }
+
+    std::mt19937& GetMTRandomEngine(unsigned int seed /*= 0*/) noexcept {
+        static thread_local std::mt19937 e = std::mt19937(!seed ? GetRandomDevice()() : seed);
+        return e;
+    }
+
+    std::mt19937_64& GetMT64RandomEngine(unsigned int seed /*= 0*/) noexcept {
+        static thread_local std::mt19937_64 e = std::mt19937_64(!seed ? GetRandomDevice()() : seed);
+        return e;
+    }
+
+    bool GetRandomBool() noexcept {
+        return MathUtils::GetRandomIntLessThan(2) == 0;
+    }
+
+    int GetRandomIntLessThan(int maxValueNotInclusive) noexcept {
+        std::uniform_int_distribution<int> d(0, maxValueNotInclusive - 1);
+        return d(GetMTRandomEngine(MT_RANDOM_SEED));
+    }
+
+    int GetRandomIntInRange(int minInclusive, int maxInclusive) noexcept {
+        std::uniform_int_distribution<int> d(minInclusive, maxInclusive);
+        return d(GetMTRandomEngine(MT_RANDOM_SEED));
+    }
+
+    long GetRandomLongLessThan(long maxValueNotInclusive) noexcept {
+        std::uniform_int_distribution<long> d(0L, maxValueNotInclusive - 1L);
+        return d(GetMTRandomEngine(MT_RANDOM_SEED));
+    }
+
+    long GetRandomLongInRange(long minInclusive, long maxInclusive) noexcept {
+        std::uniform_int_distribution<long> d(minInclusive, maxInclusive);
+        return d(GetMTRandomEngine(MT_RANDOM_SEED));
+    }
+
+    long long GetRandomLongLongLessThan(long long maxValueNotInclusive) noexcept {
+        std::uniform_int_distribution<long long> d(0LL, maxValueNotInclusive - 1LL);
+        return d(GetMTRandomEngine(MT_RANDOM_SEED));
+    }
+
+    long long GetRandomLongLongInRange(long long minInclusive, long long maxInclusive) noexcept {
+        std::uniform_int_distribution<long long> d(minInclusive, maxInclusive);
+        return d(GetMTRandomEngine(MT_RANDOM_SEED));
+    }
+
+    float GetRandomFloatInRange(float minInclusive, float maxInclusive) noexcept {
+        std::uniform_real_distribution<float> d(minInclusive, std::nextafter(maxInclusive, maxInclusive + 1.0f));
+        return d(GetMTRandomEngine(MT_RANDOM_SEED));
+    }
+
+    float GetRandomFloatZeroToOne() noexcept {
+        std::uniform_real_distribution<float> d(0.0f, std::nextafter(1.0f, 2.0f));
+        return d(GetMTRandomEngine(MT_RANDOM_SEED));
+    }
+
+    float GetRandomFloatZeroUpToOne() noexcept {
+        std::uniform_real_distribution<float> d(0.0f, 1.0f);
+        return d(GetMTRandomEngine(MT_RANDOM_SEED));
+    }
+
+    float GetRandomFloatNegOneToOne() noexcept {
+        return GetRandomFloatInRange(-1.0f, 1.0f);
+    }
+
+    double GetRandomDoubleInRange(double minInclusive, double maxInclusive) noexcept {
+        std::uniform_real_distribution<double> d(minInclusive, std::nextafter(maxInclusive, maxInclusive + 1.0));
+        return d(GetMTRandomEngine(MT_RANDOM_SEED));
+    }
+
+    double GetRandomDoubleZeroToOne() noexcept {
+        std::uniform_real_distribution<double> d(0.0, std::nextafter(1.0, 2.0));
+        return d(GetMTRandomEngine(MT_RANDOM_SEED));
+    }
+
+    double GetRandomDoubleZeroUpToOne() noexcept {
+        std::uniform_real_distribution<double> d(0.0, 1.0);
+        return d(GetMTRandomEngine(MT_RANDOM_SEED));
+    }
+
+    double GetRandomDoubleNegOneToOne() noexcept {
+        return GetRandomDoubleInRange(-1.0, 1.0);
+    }
+
+    long double GetRandomLongDoubleInRange(long double minInclusive, long double maxInclusive) noexcept {
+        std::uniform_real_distribution<long double> d(minInclusive, std::nextafter(maxInclusive, maxInclusive + 1.0L));
+        return d(GetMTRandomEngine(MT_RANDOM_SEED));
+    }
+
+    long double GetRandomLongDoubleZeroToOne() noexcept {
+        std::uniform_real_distribution<long double> d(0.0L, std::nextafter(1.0L, 2.0L));
+        return d(GetMTRandomEngine(MT_RANDOM_SEED));
+    }
+
+    long double GetRandomLongDoubleZeroUpToOne() noexcept {
+        std::uniform_real_distribution<long double> d(0.0L, 1.0L);
+        return d(GetMTRandomEngine(MT_RANDOM_SEED));
+    }
+
+    long double GetRandomLongDoubleNegOneToOne() noexcept {
+        return GetRandomDoubleInRange(-1.0L, 1.0L);
+    }
+
+    bool IsPercentChance(float probability) noexcept {
+        auto d = std::bernoulli_distribution(std::clamp(probability, 0.0f, 1.0f));
+        return d(GetMTRandomEngine(MT_RANDOM_SEED));
+    }
+
+    bool IsPercentChance(double probability) noexcept {
+        auto d = std::bernoulli_distribution(std::clamp(probability, 0.0, 1.0));
+        return d(GetMTRandomEngine(MT_RANDOM_SEED));
+    }
+
+    double nCr(int n, int k) noexcept {
+        return 1 / ((n + 1) * std::beta(n - k + 1, k + 1));
+    }
+
+    double Combination(int n, int k) noexcept {
+        return nCr(n, k);
+    }
+
+    double Combination_multiset(int n, int k) noexcept {
+        return Combination(n + k - 1, k);
+    }
+
+    float CosDegrees(float degrees) noexcept {
+        const auto radians = MathUtils::ConvertDegreesToRadians(degrees);
+        return std::cos(radians);
+    }
+
+    float SinDegrees(float degrees) noexcept {
+        const auto radians = MathUtils::ConvertDegreesToRadians(degrees);
+        return std::sin(radians);
+    }
+
+    float Atan2Degrees(float y, float x) noexcept {
+        const auto radians = std::atan2(y, x);
+        return MathUtils::ConvertRadiansToDegrees(radians);
+    }
+
+    bool IsEquivalent(float a, float b, float epsilon /*= 0.00001f*/) noexcept {
+        return std::abs(a - b) < epsilon;
+    }
+
+    bool IsEquivalent(double a, double b, double epsilon /*= 0.0001*/) noexcept {
+        return std::abs(a - b) < epsilon;
+    }
+
+    bool IsEquivalent(long double a, long double b, long double epsilon /*= 0.0001L*/) noexcept {
+        return std::abs(a - b) < epsilon;
+    }
+
+    bool IsEquivalent(const Vector2& a, const Vector2& b, float epsilon /*= 0.0001f*/) noexcept {
+        return IsEquivalent(a.x, b.x, epsilon) && IsEquivalent(a.y, b.y, epsilon);
+    }
+
+    bool IsEquivalent(const Vector3& a, const Vector3& b, float epsilon /*= 0.0001f*/) noexcept {
+        return IsEquivalent(a.x, b.x, epsilon) && IsEquivalent(a.y, b.y, epsilon) && IsEquivalent(a.z, b.z, epsilon);
+    }
+
+    bool IsEquivalent(const Vector4& a, const Vector4& b, float epsilon /*= 0.0001f*/) noexcept {
+        return IsEquivalent(a.x, b.x, epsilon) && IsEquivalent(a.y, b.y, epsilon) && IsEquivalent(a.z, b.z, epsilon) && IsEquivalent(a.w, b.w, epsilon);
+    }
+
+    bool IsEquivalent(const Quaternion& a, const Quaternion& b, float epsilon /*= 0.0001f*/) noexcept {
+        return IsEquivalent(a.w, b.w, epsilon) && IsEquivalent(a.axis, b.axis, epsilon);
+    }
+
+    bool IsEquivalentOrLessThan(float a, float b, float epsilon /*= 0.00001f*/) noexcept {
+        return a < b || IsEquivalent(a, b, epsilon);
+    }
+
+    bool IsEquivalentOrLessThan(double a, double b, double epsilon /*= 0.0001*/) noexcept {
+        return a < b || IsEquivalent(a, b, epsilon);
+    }
+
+    bool IsEquivalentOrLessThan(long double a, long double b, long double epsilon /*= 0.0001L*/) noexcept {
+        return a < b || IsEquivalent(a, b, epsilon);
+    }
+
+    bool IsEquivalentOrLessThanZero(float a, float epsilon /*= 0.00001f*/) noexcept {
+        return IsEquivalentOrLessThan(a, 0.0f, epsilon);
+    }
+
+    bool IsEquivalentOrLessThanZero(double a, double epsilon /*= 0.0001*/) noexcept {
+        return IsEquivalentOrLessThan(a, 0.0, epsilon);
+    }
+
+    bool IsEquivalentOrLessThanZero(long double a, long double epsilon /*= 0.0001L*/) noexcept {
+        return IsEquivalentOrLessThan(a, 0.0L, epsilon);
+    }
+
+    bool IsEquivalentToZero(float a, float epsilon /*= 0.00001f*/) noexcept {
+        return IsEquivalent(a, 0.0f, epsilon);
+    }
+
+    bool IsEquivalentToZero(double a, double epsilon /*= 0.0001*/) noexcept {
+        return IsEquivalent(a, 0.0, epsilon);
+    }
+
+    bool IsEquivalentToZero(long double a, long double epsilon /*= 0.0001L*/) noexcept {
+        return IsEquivalent(a, 0.0L, epsilon);
+    }
+
+    bool IsEquivalentToZero(const Vector2& a, float epsilon /*= 0.0001f*/) noexcept {
+        return IsEquivalent(a, Vector2::ZERO, epsilon);
+    }
+
+    bool IsEquivalentToZero(const Vector3& a, float epsilon /*= 0.0001f*/) noexcept {
+        return IsEquivalent(a, Vector3::ZERO, epsilon);
+    }
+
+    bool IsEquivalentToZero(const Vector4& a, float epsilon /*= 0.0001f*/) noexcept {
+        return IsEquivalent(a, Vector4::ZERO, epsilon);
+    }
+
+    bool IsEquivalentToZero(const Quaternion& a, float epsilon /*= 0.0001f*/) noexcept {
+        return IsEquivalent(a, Quaternion::GetIdentity(), epsilon);
+    }
+
+    float CalcDistance(const Vector2& a, const Vector2& b) noexcept {
+        return (b - a).CalcLength();
+    }
+
+    float CalcDistance(const Vector3& a, const Vector3& b) noexcept {
+        return (b - a).CalcLength();
+    }
+
+    float CalcDistance(const Vector4& a, const Vector4& b) noexcept {
+        return (b - a).CalcLength4D();
+    }
+
+    float CalcDistance(const Vector2& p, const LineSegment2& line) noexcept {
+        return std::sqrt(CalcDistanceSquared(p, line));
+    }
+
+    float CalcDistance(const Vector3& p, const LineSegment3& line) noexcept {
+        return std::sqrt(CalcDistanceSquared(p, line));
+    }
+
+    float CalcDistance(const Vector2& p, const Polygon2& poly2) noexcept {
+        return std::sqrt(CalcDistanceSquared(p, poly2));
+    }
+
+    float CalcDistance(const LineSegment2& line, const Polygon2& poly2) noexcept {
+        return CalcDistance(poly2, line);
+    }
+
+    float CalcDistance(const Polygon2& poly2, const LineSegment2& line) noexcept {
+        return std::sqrt(CalcDistanceSquared(poly2, line));
+    }
+
+    float CalcDistance(const LineSegment2& lineA, const LineSegment2& lineB) noexcept {
+        return std::sqrt(CalcDistanceSquared(lineA, lineB));
+    }
+
+    float CalcDistance4D(const Vector4& a, const Vector4& b) noexcept {
+        return (b - a).CalcLength4D();
+    }
+
+    float CalcDistance3D(const Vector4& a, const Vector4& b) noexcept {
+        return (b - a).CalcLength3D();
+    }
+
+    float CalcDistanceSquared(const Vector2& a, const Vector2& b) noexcept {
+        return (b - a).CalcLengthSquared();
+    }
+
+    float CalcDistanceSquared(const Vector3& a, const Vector3& b) noexcept {
+        return (b - a).CalcLengthSquared();
+    }
+
+    float CalcDistanceSquared(const Vector4& a, const Vector4& b) noexcept {
+        return (b - a).CalcLength4DSquared();
+    }
+
+    float CalcDistanceSquared(const Vector2& p, const LineSegment2& line) noexcept {
+        return CalcDistanceSquared(p, CalcClosestPoint(p, line));
+    }
+
+    float CalcDistanceSquared(const Vector3& p, const LineSegment3& line) noexcept {
+        return CalcDistanceSquared(p, CalcClosestPoint(p, line));
+    }
+
+    float CalcDistanceSquared(const Vector2& p, const Polygon2& poly2) noexcept {
+        return CalcDistanceSquared(p, CalcClosestPoint(p, poly2));
+    }
+
+    float CalcDistanceSquared(const LineSegment2& line, const Polygon2& poly2) noexcept {
+        return CalcDistanceSquared(poly2, line);
+    }
+
+    float CalcDistanceSquared(const Polygon2& poly2, const LineSegment2& line) noexcept {
+        const auto& edges = poly2.GetEdges();
+
+        auto smallest_distance_sq = std::numeric_limits<float>::infinity();
+        for(const auto& edge : edges) {
+            const auto new_dist = CalcDistanceSquared(edge, line);
+            if(new_dist < smallest_distance_sq) {
+                smallest_distance_sq = new_dist;
             }
         }
-        return (cn & 1) == 1; // 0 if even (out), and 1 if  odd (in)
-    }();
-#endif
-    //Winding Number Test
-    const auto winding_inside = [&]()
-    {
-        PROFILE_LOG_SCOPE("Winding Inside");
-        int wn = 0; // the  winding number counter
-        const auto isLeft = [&](const Vector2& P0, const Vector2& P1, const Vector2& P2) {
-            return ((P1.x - P0.x) * (P2.y - P0.y)
-                - (P2.x - P0.x) * (P1.y - P0.y));
-        };
-        const auto n = pointCount;
-        // loop through all edges of the polygon
-        for(std::size_t i = 0u; i < n - 1u; i++) {                  // edge from V[i] to  V[i+1]
-            if(verts[i].y <= point.y) {                       // start y <= point.y
-                if(verts[i + 1u].y > point.y)                  // an upward crossing
-                    if(isLeft(verts[i], verts[i + 1u], point) > 0) // P left of  edge
-                        ++wn;                         // have  a valid up intersect
-            } else {                                  // start y > point.y (no test needed)
-                if(verts[i + 1u].y <= point.y)                 // a downward crossing
-                    if(isLeft(verts[i], verts[i + 1u], point) < 0) // P right of  edge
-                        --wn;                         // have  a valid down intersect
+        return smallest_distance_sq;
+    }
+
+    float CalcDistanceSquared(const LineSegment2& lineA, const LineSegment2& lineB) noexcept {
+
+        //https://stackoverflow.com/a/11427699/421178
+
+        const auto a_len_sq = lineA.CalcLengthSquared();
+        const auto b_len_sq = lineB.CalcLengthSquared();
+        { //Early-out if either or both segments are too short to consider as segments.
+            const auto is_a_len_sq_zero = IsEquivalentToZero(a_len_sq);
+            const auto is_b_len_sq_zero = IsEquivalentToZero(b_len_sq);
+            //Both "segments" are actually points...
+            if(is_a_len_sq_zero && is_b_len_sq_zero) {
+                return CalcDistanceSquared(lineA.start, lineB.start);
+            }
+            //Else either one is a point.
+            if(is_a_len_sq_zero) {
+                return CalcDistanceSquared(lineA.start, lineB);
+            }
+            if(is_b_len_sq_zero) {
+                return CalcDistanceSquared(lineB.start, lineA);
             }
         }
-        return wn != 0;
-    }();
-    return winding_inside;
-}
 
-bool IsPointInside(const Sphere3& sphere, const Vector3& point) noexcept {
-    return CalcDistanceSquared(sphere.center, point) < (sphere.radius * sphere.radius);
-}
-
-bool IsPointInside(const Capsule3& capsule, const Vector3& point) noexcept {
-    return CalcDistanceSquared(point, capsule.line) < (capsule.radius * capsule.radius);
-}
-
-bool IsPointOn(const Disc2& disc, const Vector2& point) noexcept {
-    const auto distanceSquared = CalcDistanceSquared(disc.center, point);
-    const auto radiusSquared = disc.radius * disc.radius;
-    return !(distanceSquared < radiusSquared || radiusSquared < distanceSquared);
-}
-
-bool IsPointOn(const LineSegment2& line, const Vector2& point) noexcept {
-    return IsEquivalentToZero(CalcDistanceSquared(point, line));
-}
-
-bool IsPointOn(const Capsule2& capsule, const Vector2& point) noexcept {
-    const auto distanceSquared = CalcDistanceSquared(point, capsule.line);
-    const auto radiusSquared = capsule.radius * capsule.radius;
-    return !(distanceSquared < radiusSquared || radiusSquared < distanceSquared);
-}
-
-bool IsPointOn(const LineSegment3& line, const Vector3& point) noexcept {
-    return IsEquivalentToZero(CalcDistanceSquared(point, line));
-}
-
-bool IsPointOn(const Sphere3& sphere, const Vector3& point) noexcept {
-    const auto distanceSquared = CalcDistanceSquared(sphere.center, point);
-    const auto radiusSquared = sphere.radius * sphere.radius;
-    return !(distanceSquared < radiusSquared || radiusSquared < distanceSquared);
-}
-
-bool IsPointOn(const Capsule3& capsule, const Vector3& point) noexcept {
-    const auto distanceSquared = CalcDistanceSquared(point, capsule.line);
-    const auto radiusSquared = capsule.radius * capsule.radius;
-    return !(distanceSquared < radiusSquared || radiusSquared < distanceSquared);
-}
-
-bool IsPointOn(const Polygon2& poly2, const Vector2& point) noexcept {
-    const auto edges = poly2.GetEdges();
-    for(const auto& edge : edges) {
-        if(IsPointOn(edge, point)) {
-            return true;
-        }
-    }
-    return false;
-}
-
-Vector2 CalcClosestPoint(const Vector2& p, const AABB2& aabb) noexcept {
-    if(IsPointInside(aabb, p)) {
-        return p;
-    }
-    if(p.x < aabb.mins.x && aabb.maxs.y < p.y) {
-        return Vector2(aabb.mins.x, aabb.maxs.y);
-    }
-    if(p.x < aabb.mins.x && p.y < aabb.mins.y) {
-        return Vector2(aabb.mins.x, aabb.mins.y);
-    }
-    if(aabb.maxs.x < p.x && p.y < aabb.mins.y) {
-        return Vector2(aabb.maxs.x, aabb.mins.y);
-    }
-    if(aabb.maxs.x < p.x && aabb.maxs.y < p.y) {
-        return Vector2(aabb.maxs.x, aabb.maxs.y);
-    }
-    if(p.x < aabb.mins.x) {
-        return Vector2(aabb.mins.x, p.y);
-    }
-    if(aabb.maxs.x < p.x) {
-        return Vector2(aabb.maxs.x, p.y);
-    }
-    if(p.y < aabb.mins.y) {
-        return Vector2(p.x, aabb.mins.y);
-    }
-    if(aabb.maxs.y < p.y) {
-        return Vector2(p.x, aabb.maxs.y);
-    }
-    return Vector2::ZERO;
-}
-
-Vector2 CalcClosestPoint(const Vector2& p, const OBB2& obb) noexcept {
-    if(IsPointInside(obb, p)) {
-        return p;
-    }
-    const auto displacement = p - obb.position;
-    const auto T = Matrix4::CreateTranslationMatrix(obb.position);
-    const auto R = Matrix4::Create2DRotationDegreesMatrix(obb.orientationDegrees);
-    const auto M = Matrix4::MakeRT(R, T);
-    const auto u0 = M.TransformDirection(Vector2(obb.half_extents.x, 0.0f).GetNormalize());
-    const auto u1 = M.TransformDirection(Vector2(0.0f, obb.half_extents.y).GetNormalize());
-
-    auto x_distance = MathUtils::DotProduct(u0, displacement);
-    if(x_distance > obb.half_extents.x)
-        x_distance = obb.half_extents.x;
-    if(x_distance < -obb.half_extents.x)
-        x_distance = -obb.half_extents.x;
-    auto y_distance = MathUtils::DotProduct(u1, displacement);
-    if(y_distance > obb.half_extents.y)
-        y_distance = obb.half_extents.y;
-    if(y_distance < -obb.half_extents.y)
-        y_distance = -obb.half_extents.y;
-    return M.TransformPosition(Vector2{x_distance, y_distance});
-}
-
-Vector3 CalcClosestPoint(const Vector3& p, const AABB3& aabb) noexcept {
-    const auto nearestX = std::clamp(p.x, aabb.mins.x, aabb.maxs.x);
-    const auto nearestY = std::clamp(p.y, aabb.mins.y, aabb.maxs.y);
-    const auto nearestZ = std::clamp(p.z, aabb.mins.z, aabb.maxs.z);
-
-    return Vector3(nearestX, nearestY, nearestZ);
-}
-
-Vector2 CalcClosestPoint(const Vector2& p, const Polygon2& poly2) noexcept {
-    if(MathUtils::IsPointInside(poly2, p)) {
-        return p;
-    }
-    const auto& edges = poly2.GetEdges();
-    const auto segment_with_min_distance = *std::min_element(std::cbegin(edges), std::cend(edges), [&](const LineSegment2& a, const LineSegment2& b) {
-        return MathUtils::CalcDistanceSquared(p, a) < MathUtils::CalcDistanceSquared(p, b);
-    });
-    return MathUtils::CalcClosestPoint(p, segment_with_min_distance);
-}
-
-Vector2 CalcClosestPoint(const Vector2& p, const Disc2& disc) noexcept {
-    const auto dir = (p - disc.center).GetNormalize();
-    return disc.center + dir * disc.radius;
-}
-
-Vector2 CalcClosestPoint(const Vector2& p, const LineSegment2& line) noexcept {
-    const auto lineDisplacement = line.end - line.start;
-    const auto lineDirection = lineDisplacement.GetNormalize();
-
-    const auto lineSP = p - line.start;
-    const auto regionI = MathUtils::DotProduct(lineDirection, lineSP);
-    if(regionI < 0.0f) {
-        return line.start;
-    }
-
-    const auto lineEP = p - line.end;
-    const auto regionII = MathUtils::DotProduct(lineDirection, lineEP);
-    if(regionII > 0.0f) {
-        return line.end;
-    }
-
-    const auto lengthToClosestPoint = MathUtils::DotProduct(lineDirection, lineSP);
-    const auto C = lineDirection * lengthToClosestPoint;
-    const auto ConL = line.start + C;
-    return ConL;
-}
-
-Vector2 CalcClosestPoint(const Vector2& p, const Capsule2& capsule) noexcept {
-    const auto closestP = CalcClosestPoint(p, capsule.line);
-    const auto dir_to_p = (p - closestP).GetNormalize();
-    return closestP + (dir_to_p * capsule.radius);
-}
-
-Vector3 CalcClosestPoint(const Vector3& p, const LineSegment3& line) noexcept {
-    const auto D = line.end - line.start;
-    const auto T = D.GetNormalize();
-    const auto SP = p - line.start;
-    float regionI = MathUtils::DotProduct(T, SP);
-    if(regionI < 0.0f) {
-        return line.start;
-    }
-
-    const auto EP = p - line.end;
-    const auto regionII = MathUtils::DotProduct(T, EP);
-    if(regionII > 0.0f) {
-        return line.end;
-    }
-
-    const auto directionSE = D.GetNormalize();
-    const auto lengthToClosestPoint = MathUtils::DotProduct(directionSE, SP);
-    const auto C = directionSE * lengthToClosestPoint;
-    const auto ConL = line.start + C;
-    return ConL;
-}
-
-Vector3 CalcClosestPoint(const Vector3& p, const Sphere3& sphere) noexcept {
-    const auto dir = (p - sphere.center).GetNormalize();
-    return sphere.center + dir * sphere.radius;
-}
-
-Vector3 CalcClosestPoint(const Vector3& p, const Capsule3& capsule) noexcept {
-    const auto closestP = CalcClosestPoint(p, capsule.line);
-    const auto dir_to_p = (p - closestP).GetNormalize();
-    return closestP + (dir_to_p * capsule.radius);
-}
-
-Vector2 CalcNormalizedPointFromPoint(const Vector2& pos, const AABB2& bounds) noexcept {
-    const auto x_norm = RangeMap(pos.x, bounds.mins.x, bounds.maxs.x, 0.0f, 1.0f);
-    const auto y_norm = RangeMap(pos.y, bounds.mins.y, bounds.maxs.y, 0.0f, 1.0f);
-    return Vector2(x_norm, y_norm);
-}
-
-Vector2 CalcPointFromNormalizedPoint(const Vector2& uv, const AABB2& bounds) noexcept {
-    const auto x = RangeMap(uv.x, 0.0f, 1.0f, bounds.mins.x, bounds.maxs.x);
-    const auto y = RangeMap(uv.y, 0.0f, 1.0f, bounds.mins.y, bounds.maxs.y);
-    return Vector2(x, y);
-}
-
-Vector2 CalcNormalizedHalfExtentsFromPoint(const Vector2& pos, const AABB2& bounds) noexcept {
-    const auto x_norm = RangeMap(pos.x, bounds.mins.x, bounds.maxs.x, -0.5f, 0.5f);
-    const auto y_norm = RangeMap(pos.y, bounds.mins.y, bounds.maxs.y, -0.5f, 0.5f);
-    return Vector2(x_norm, y_norm);
-}
-
-Vector2 CalcPointFromNormalizedHalfExtents(const Vector2& uv, const AABB2& bounds) noexcept {
-    const auto x = RangeMap(uv.x, -0.5f, 0.5f, bounds.mins.x, bounds.maxs.x);
-    const auto y = RangeMap(uv.y, -0.5f, 0.5f, bounds.mins.y, bounds.maxs.y);
-    return Vector2(x, y);
-}
-
-bool DoDiscsOverlap(const Disc2& a, const Disc2& b) noexcept {
-    return DoDiscsOverlap(a.center, a.radius, b.center, b.radius);
-}
-
-bool DoDiscsOverlap(const Vector2& centerA, float radiusA, const Vector2& centerB, float radiusB) noexcept {
-    return CalcDistanceSquared(centerA, centerB) < (radiusA + radiusB) * (radiusA + radiusB);
-}
-
-bool DoDiscsOverlap(const Disc2& a, const Capsule2& b) noexcept {
-    return CalcDistanceSquared(a.center, b.line) < (a.radius + b.radius) * (a.radius + b.radius);
-}
-
-bool DoDiscsOverlap(const Disc2& a, const AABB2& b) noexcept {
-    const auto closest_point = CalcClosestPoint(a.center, b);
-    return IsPointInside(a, closest_point);
-}
-
-bool DoSpheresOverlap(const Sphere3& a, const Sphere3& b) noexcept {
-    return DoSpheresOverlap(a.center, a.radius, b.center, b.radius);
-}
-
-bool DoSpheresOverlap(const Vector3& centerA, float radiusA, const Vector3& centerB, float radiusB) noexcept {
-    return CalcDistanceSquared(centerA, centerB) < (radiusA + radiusB) * (radiusA + radiusB);
-}
-
-bool DoSpheresOverlap(const Sphere3& a, const Capsule3& b) noexcept {
-    return CalcDistanceSquared(a.center, b.line) < (a.radius + b.radius) * (a.radius + b.radius);
-}
-
-bool DoSpheresOverlap(const Sphere3& a, const AABB3& b) noexcept {
-    const auto closest_point = CalcClosestPoint(a.center, b);
-    return IsPointInside(a, closest_point);
-}
-
-bool DoAABBsOverlap(const AABB2& a, const AABB2& b) noexcept {
-    if(a.maxs.x < b.mins.x)
-        return false;
-    if(b.maxs.x < a.mins.x)
-        return false;
-    if(a.maxs.y < b.mins.y)
-        return false;
-    if(b.maxs.y < a.mins.y)
-        return false;
-    return true;
-}
-
-bool DoAABBsOverlap(const AABB3& a, const AABB3& b) noexcept {
-    if(a.maxs.x < b.mins.x)
-        return false;
-    if(b.maxs.x < a.mins.x)
-        return false;
-    if(a.maxs.y < b.mins.y)
-        return false;
-    if(b.maxs.y < a.mins.y)
-        return false;
-    if(a.maxs.z < b.mins.z)
-        return false;
-    if(b.maxs.z < a.mins.z)
-        return false;
-    return true;
-}
-
-bool DoAABBsOverlap(const AABB2& a, const Disc2& b) noexcept {
-    return DoDiscsOverlap(b, a);
-}
-
-bool DoAABBsOverlap(const AABB3& a, const Sphere3& b) noexcept {
-    return DoSpheresOverlap(b, a);
-}
-
-bool DoOBBsOverlap(const OBB2& a, const OBB2& b) noexcept {
-    const auto polyA = Polygon2(a);
-    const auto polyB = Polygon2(b);
-    return DoPolygonsOverlap(polyA, polyB);
-}
-
-bool DoPolygonsOverlap(const Polygon2& a, const Polygon2& b) noexcept {
-    //Separating Axis Theorem
-    const auto Pa = a.GetPosition();
-    const auto Oa = a.GetOrientationDegrees();
-    const auto Hea = a.GetHalfExtents();
-
-    const auto Pb = b.GetPosition();
-    const auto Ob = b.GetOrientationDegrees();
-    const auto Heb = b.GetHalfExtents();
-
-    for(const auto& an : a.GetNormals()) {
-        auto min_a = std::numeric_limits<float>::infinity();
-        auto max_a = std::numeric_limits<float>::lowest();
-        for(const auto& ac : a.GetVerts()) {
-            const auto proj_dp = DotProduct(ac, an);
-            min_a = (std::min)(min_a, proj_dp);
-            max_a = (std::max)(max_a, proj_dp);
+        //Actual segment-segment distance...
+        if(DoLineSegmentOverlap(lineA, lineB)) {
+            return 0.0f;
         }
 
-        auto min_b = std::numeric_limits<float>::infinity();
-        auto max_b = std::numeric_limits<float>::lowest();
-        for(const auto& bc : b.GetVerts()) {
-            const auto proj_dp = DotProduct(bc, an);
-            min_b = (std::min)(min_b, proj_dp);
-            max_b = (std::max)(max_b, proj_dp);
-        }
+        const auto a1 = lineA.start;
+        const auto a2 = lineA.end;
+        const auto b1 = lineB.start;
+        const auto b2 = lineB.end;
+        const auto distances = std::vector<float>{CalcDistanceSquared(a1, lineB),CalcDistanceSquared(a2, lineB),CalcDistanceSquared(b1, lineA),CalcDistanceSquared(b2, lineA)};
 
-        if(max_a < min_b)
+        return *std::min_element(std::cbegin(distances), std::cend(distances));
+    }
+
+    float CalcDistanceSquared4D(const Vector4& a, const Vector4& b) noexcept {
+        return CalcDistanceSquared(a, b);
+    }
+
+    float CalcDistanceSquared3D(const Vector4& a, const Vector4& b) noexcept {
+        return (b - a).CalcLength3DSquared();
+    }
+
+    float DotProduct(const Vector2& a, const Vector2& b) noexcept {
+        return a.x * b.x + a.y * b.y;
+    }
+
+    float DotProduct(const Vector3& a, const Vector3& b) noexcept {
+        return a.x * b.x + a.y * b.y + a.z * b.z;
+    }
+
+    float DotProduct(const Vector4& a, const Vector4& b) noexcept {
+        return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
+    }
+
+    float DotProduct(const Quaternion& a, const Quaternion& b) noexcept {
+        return (a.w * b.w) + DotProduct(a.axis, b.axis);
+    }
+
+    float CrossProduct(const Vector2& a, const Vector2& b) noexcept {
+        const auto a1 = a.x;
+        const auto a2 = a.y;
+
+        const auto b1 = b.x;
+        const auto b2 = b.y;
+
+        return a1 * b2 - a2 * b1;
+    }
+
+    Vector3 CrossProduct(const Vector3& a, const Vector3& b) noexcept {
+        const auto a1 = a.x;
+        const auto a2 = a.y;
+        const auto a3 = a.z;
+
+        const auto b1 = b.x;
+        const auto b2 = b.y;
+        const auto b3 = b.z;
+
+        return Vector3(a2 * b3 - a3 * b2, a3 * b1 - a1 * b3, a1 * b2 - a2 * b1);
+    }
+
+    float TripleProductScalar(const Vector3& a, const Vector3& b, const Vector3& c) noexcept {
+        return DotProduct(a, CrossProduct(b, c));
+    }
+
+    Vector2 TripleProductVector(const Vector2& a, const Vector2& b, const Vector2& c) noexcept {
+        //(A x B) x C = B * (A . C) - C * (A . B);
+        return (b * DotProduct(a, c)) - (c * DotProduct(a, b));
+    }
+
+    Vector3 TripleProductVector(const Vector3& a, const Vector3& b, const Vector3& c) noexcept {
+        return CrossProduct(CrossProduct(a, b), c);
+    }
+
+    Vector2 Project(const Vector2& a, const Vector2& b) noexcept {
+        return (DotProduct(a, b) / DotProduct(b, b)) * b;
+    }
+
+    Vector3 Project(const Vector3& a, const Vector3& b) noexcept {
+        return (DotProduct(a, b) / DotProduct(b, b)) * b;
+    }
+
+    Vector4 Project(const Vector4& a, const Vector4& b) noexcept {
+        return (DotProduct(a, b) / DotProduct(b, b)) * b;
+    }
+
+    Vector2 Reject(const Vector2& a, const Vector2& b) noexcept {
+        const auto proj_aB = Project(a, b);
+        return a - proj_aB;
+    }
+
+    Vector3 Reject(const Vector3& a, const Vector3& b) noexcept {
+        const auto proj_aB = Project(a, b);
+        return a - proj_aB;
+    }
+
+    Vector4 Reject(const Vector4& a, const Vector4& b) noexcept {
+        const auto proj_aB = Project(a, b);
+        return a - proj_aB;
+    }
+
+    std::pair<Vector2, Vector2> DivideIntoProjectAndReject(const Vector2& a, const Vector2& b) noexcept {
+        const auto proj = Project(a, b);
+        return std::make_pair(proj, a - proj);
+    }
+    std::pair<Vector3, Vector3> DivideIntoProjectAndReject(const Vector3& a, const Vector3& b) noexcept {
+        const auto proj = Project(a, b);
+        return std::make_pair(proj, a - proj);
+    }
+    std::pair<Vector4, Vector4> DivideIntoProjectAndReject(const Vector4& a, const Vector4& b) noexcept {
+        const auto proj = Project(a, b);
+        return std::make_pair(proj, a - proj);
+    }
+
+    Vector2 Reflect(const Vector2& in, const Vector2& normal) noexcept {
+        return in - ((2.0f * DotProduct(in, normal)) * normal);
+    }
+
+    Vector3 Reflect(const Vector3& in, const Vector3& normal) noexcept {
+        return in - ((2.0f * DotProduct(in, normal)) * normal);
+    }
+
+    Vector4 Reflect(const Vector4& in, const Vector4& normal) noexcept {
+        return in - ((2.0f * DotProduct(in, normal)) * normal);
+    }
+
+    Vector2 Rotate(const Vector2& v, const Quaternion& q) noexcept {
+        return Vector2(Rotate(Vector3(v, 0.0f), q));
+    }
+
+    Vector3 Rotate(const Vector3& v, const Quaternion& q) noexcept {
+        return (q * v * q.CalcInverse()).axis;
+    }
+
+    Vector2 ProjectAlongPlane(const Vector2& v, const Vector2& n) noexcept {
+        return v - (DotProduct(v, n) * n);
+    }
+
+    Vector3 ProjectAlongPlane(const Vector3& v, const Vector3& n) noexcept {
+        return v - (DotProduct(v, n) * n);
+    }
+
+    Vector4 ProjectAlongPlane(const Vector4& v, const Vector4& n) noexcept {
+        return v - (DotProduct(v, n) * n);
+    }
+
+    unsigned int CalculateManhattanDistance(const IntVector2& start, const IntVector2& end) noexcept {
+        return std::abs(end.x - start.x) + std::abs(end.y - start.y);
+    }
+
+    unsigned int CalculateManhattanDistance(const IntVector3& start, const IntVector3& end) noexcept {
+        return std::abs(end.x - start.x) + std::abs(end.y - start.y) + std::abs(end.z - start.z);
+    }
+
+    unsigned int CalculateManhattanDistance(const IntVector4& start, const IntVector4& end) noexcept {
+        return std::abs(end.x - start.x) + std::abs(end.y - start.y) + std::abs(end.z - start.z) + std::abs(end.w - start.w);
+    }
+
+    unsigned int CalculateChebyshevDistance(const IntVector2& start, const IntVector2& end) noexcept {
+        return (std::max)({std::abs(end.x - start.x), std::abs(end.y - start.y)});
+    }
+
+    unsigned int CalculateChebyshevDistance(const IntVector3& start, const IntVector3& end) noexcept {
+        return (std::max)({std::abs(end.x - start.x), std::abs(end.y - start.y), std::abs(end.z - start.z)});
+    }
+
+    unsigned int CalculateChebyshevDistance(const IntVector4& start, const IntVector4& end) noexcept {
+        return (std::max)({std::abs(end.x - start.x), std::abs(end.y - start.y), std::abs(end.z - start.z), std::abs(end.w - start.w)});
+    }
+
+    unsigned int CalculateChessboardDistance(const IntVector2& start, const IntVector2& end) noexcept {
+        return CalculateChebyshevDistance(start, end);
+    }
+    unsigned int CalculateChessboardDistance(const IntVector3& start, const IntVector3& end) noexcept {
+        return CalculateChebyshevDistance(start, end);
+    }
+    unsigned int CalculateChessboardDistance(const IntVector4& start, const IntVector4& end) noexcept {
+        return CalculateChebyshevDistance(start, end);
+    }
+
+    Vector2 GetRandomPointOn(const AABB2& aabb) noexcept {
+        float result[2]{0.0f, 0.0f};
+        const auto s = MathUtils::GetRandomIntLessThan(4);
+        const auto c = s % 2;
+        result[(c + 0) % 2] = s > 1 ? 1.0f : 0.0f;
+        result[(c + 1) % 2] = s > 1 ? 1.0f : 0.0f;
+        Vector2 point{result[0], result[1]};
+        return aabb.CalcCenter() + (point * aabb.CalcDimensions());
+    }
+
+    Vector2 GetRandomPointOn(const Disc2& disc) noexcept {
+        Vector2 point{};
+        point.SetLengthAndHeadingDegrees(MathUtils::GetRandomFloatZeroToOne() * 360.0f, disc.radius);
+        return disc.center + point;
+    }
+
+    Vector2 GetRandomPointOn(const LineSegment2& line) noexcept {
+        const auto dir = line.CalcDirection();
+        const auto len = line.CalcLength() * MathUtils::GetRandomFloatZeroToOne();
+        return line.start + (dir * len);
+    }
+
+    Vector3 GetRandomPointOn(const AABB3& aabb) noexcept {
+        float result[3]{0.0f, 0.0f, 0.0f};
+        const auto s = MathUtils::GetRandomIntLessThan(6);
+        const auto c = s % 3;
+        result[(c + 0) % 3] = s > 2 ? 1.0f : 0.0f;
+        result[(c + 1) % 3] = MathUtils::GetRandomFloatZeroToOne();
+        result[(c + 2) % 3] = MathUtils::GetRandomFloatZeroToOne();
+        Vector3 point{result[0], result[1], result[2]};
+        return aabb.CalcCenter() + (point * aabb.CalcDimensions());
+    }
+
+    Vector3 GetRandomPointOn(const Sphere3& sphere) noexcept {
+        //See: https://karthikkaranth.me/blog/generating-random-points-in-a-sphere/
+        const auto u = MathUtils::GetRandomFloatZeroToOne();
+        const auto v = MathUtils::GetRandomFloatZeroToOne();
+        const auto theta = MathUtils::M_2PI * u;
+        const auto phi = std::acos(2.0f * v - 1.0f);
+        const auto r = sphere.radius;
+        const auto sin_theta = std::sin(theta);
+        const auto cos_theta = std::cos(theta);
+        const auto sin_phi = std::sin(phi);
+        const auto cos_phi = std::cos(phi);
+        const auto x = r * sin_phi * cos_theta;
+        const auto y = r * sin_phi * sin_theta;
+        const auto z = r * cos_phi;
+        return sphere.center + Vector3{x, y, z};
+    }
+
+    Vector3 GetRandomPointOn(const LineSegment3& line) noexcept {
+        const auto dir = line.CalcDirection();
+        const auto len = line.CalcLength() * MathUtils::GetRandomFloatZeroToOne();
+        return line.start + (dir * len);
+    }
+
+    Vector2 GetRandomPointInside(const AABB2& aabb) noexcept {
+        return Vector2{MathUtils::GetRandomFloatInRange(aabb.mins.x, aabb.maxs.x), MathUtils::GetRandomFloatInRange(aabb.mins.y, aabb.maxs.y)};
+    }
+
+    Vector2 GetRandomPointInside(const Disc2& disc) noexcept {
+        Vector2 point{};
+        point.SetLengthAndHeadingDegrees(MathUtils::GetRandomFloatZeroToOne() * 360.0f, std::sqrt(MathUtils::GetRandomFloatZeroToOne()) * disc.radius);
+        return disc.center + point;
+    }
+
+    Vector3 GetRandomPointInside(const AABB3& aabb) noexcept {
+        return Vector3{MathUtils::GetRandomFloatInRange(aabb.mins.x, aabb.maxs.x), MathUtils::GetRandomFloatInRange(aabb.mins.y, aabb.maxs.y), MathUtils::GetRandomFloatInRange(aabb.mins.z, aabb.maxs.z)};
+    }
+
+    Vector3 GetRandomPointInside(const Sphere3& sphere) noexcept {
+        //See: https://karthikkaranth.me/blog/generating-random-points-in-a-sphere/
+        const auto u = MathUtils::GetRandomFloatZeroToOne();
+        const auto v = MathUtils::GetRandomFloatZeroToOne();
+        const auto theta = MathUtils::M_2PI * u;
+        const auto phi = std::acos(2.0f * v - 1.0f);
+        const auto r = sphere.radius * std::pow(MathUtils::GetRandomFloatZeroToOne(), 1.0f / 3.0f);
+        const auto sin_theta = std::sin(theta);
+        const auto cos_theta = std::cos(theta);
+        const auto sin_phi = std::sin(phi);
+        const auto cos_phi = std::cos(phi);
+        const auto x = r * sin_phi * cos_theta;
+        const auto y = r * sin_phi * sin_theta;
+        const auto z = r * cos_phi;
+        return sphere.center + Vector3{x, y, z};
+    }
+
+    bool Contains(const AABB2& aabb, const Vector2& point) noexcept {
+        return IsPointInside(aabb, point);
+    }
+
+    bool Contains(const AABB2& a, const AABB2& b) noexcept {
+        const auto tl = Vector2{b.mins.x, b.mins.y};
+        const auto tr = Vector2{b.maxs.x, b.mins.y};
+        const auto bl = Vector2{b.mins.x, b.maxs.y};
+        const auto br = Vector2{b.maxs.x, b.maxs.y};
+        return IsPointInside(a, tl) && IsPointInside(a, tr) && IsPointInside(a, bl) && IsPointInside(a, br);
+    }
+
+    bool Contains(const AABB2& a, const OBB2& b) noexcept {
+        return Contains(a, AABB2(b));
+    }
+
+    bool Contains(const OBB2& a, const AABB2& b) noexcept {
+        return Contains(AABB2(a), b);
+    }
+
+    bool Contains(const OBB2& a, const OBB2& b) noexcept {
+        return Contains(AABB2(a), AABB2(b));
+    }
+
+    bool IsPointInside(const AABB2& aabb, const Vector2& point) noexcept {
+        if(aabb.maxs.x < point.x)
             return false;
-        if(max_b < min_a)
+        if(point.x < aabb.mins.x)
             return false;
+        if(aabb.maxs.y < point.y)
+            return false;
+        if(point.y < aabb.mins.y)
+            return false;
+        return true;
     }
-    for(const auto& bn : b.GetNormals()) {
-        auto min_b = std::numeric_limits<float>::infinity();
-        auto max_b = std::numeric_limits<float>::lowest();
-        for(const auto& bc : b.GetVerts()) {
-            const auto proj_dp = DotProduct(bc, bn);
-            min_b = (std::min)(min_b, proj_dp);
-            max_b = (std::max)(max_b, proj_dp);
+
+    bool IsPointInside(const AABB3& aabb, const Vector3& point) noexcept {
+        if(aabb.maxs.x < point.x)
+            return false;
+        if(point.x < aabb.mins.x)
+            return false;
+        if(aabb.maxs.y < point.y)
+            return false;
+        if(point.y < aabb.mins.y)
+            return false;
+        if(aabb.maxs.z < point.z)
+            return false;
+        if(point.z < aabb.mins.z)
+            return false;
+        return true;
+    }
+
+    bool IsPointInside(const OBB2& obb, const Vector2& point) noexcept {
+        return DoOBBsOverlap(obb, {point, 0.0f});
+    }
+
+    bool IsPointInside(const Disc2& disc, const Vector2& point) noexcept {
+        return CalcDistanceSquared(disc.center, point) < (disc.radius * disc.radius);
+    }
+
+    bool IsPointInside(const Capsule2& capsule, const Vector2& point) noexcept {
+        return CalcDistanceSquared(point, capsule.line) < (capsule.radius * capsule.radius);
+    }
+
+    bool IsPointInside(const Polygon2& poly2, const Vector2& point) noexcept {
+        if(!IsPointInside(poly2.GetBounds(), point)) {
+            return false;
+        }
+        const auto& verts = poly2.GetVerts();
+        const auto pointCount = verts.size();
+
+        // Crossing Number Test and Winding Number Test
+        // Copyright 2000 softSurfer, 2012 Dan Sunday
+        // This code may be freely used and modified for any purpose
+        // providing that this copyright notice is included with it.
+        // SoftSurfer makes no warranty for this code, and cannot be held
+        // liable for any real or imagined damage resulting from its use.
+        // Users of this code must verify correctness for their application.
+
+
+
+    #if 0
+        //Crossing Number Test
+        const auto crossing_inside = [&]()
+        {
+            PROFILE_LOG_SCOPE("Crossing Inside");
+            int cn = 0; // the  crossing number counter
+            const auto n = pointCount;
+            // loop through all edges of the polygon
+            for(std::size_t i = 0u; i < n - 1u; i++) {                         // edge from V[i]  to V[i+1]
+                if(((verts[i].y <= point.y) && (verts[i + 1u].y > point.y))       // an upward crossing
+                   || ((verts[i].y > point.y) && (verts[i + 1u].y <= point.y))) { // a downward crossing
+                    // compute the actual edge-ray intersect x-coordinate
+                    float vt = static_cast<float>(point.y - verts[i].y) / (verts[i + 1u].y - verts[i].y);
+                    if(point.x < verts[i].x + vt * (verts[i + 1u].x - verts[i].x)) // point.x < intersect
+                        ++cn;                                     // a valid crossing of y=point.y right of point.x
+                }
+            }
+            return (cn & 1) == 1; // 0 if even (out), and 1 if  odd (in)
+        }();
+    #endif
+        //Winding Number Test
+        const auto winding_inside = [&]()
+        {
+            PROFILE_LOG_SCOPE("Winding Inside");
+            int wn = 0; // the  winding number counter
+            const auto isLeft = [&](const Vector2& P0, const Vector2& P1, const Vector2& P2) {
+                return ((P1.x - P0.x) * (P2.y - P0.y)
+                    - (P2.x - P0.x) * (P1.y - P0.y));
+            };
+            const auto n = pointCount;
+            // loop through all edges of the polygon
+            for(std::size_t i = 0u; i < n - 1u; i++) {                  // edge from V[i] to  V[i+1]
+                if(verts[i].y <= point.y) {                       // start y <= point.y
+                    if(verts[i + 1u].y > point.y)                  // an upward crossing
+                        if(isLeft(verts[i], verts[i + 1u], point) > 0) // P left of  edge
+                            ++wn;                         // have  a valid up intersect
+                } else {                                  // start y > point.y (no test needed)
+                    if(verts[i + 1u].y <= point.y)                 // a downward crossing
+                        if(isLeft(verts[i], verts[i + 1u], point) < 0) // P right of  edge
+                            --wn;                         // have  a valid down intersect
+                }
+            }
+            return wn != 0;
+        }();
+        return winding_inside;
+    }
+
+    bool IsPointInside(const Sphere3& sphere, const Vector3& point) noexcept {
+        return CalcDistanceSquared(sphere.center, point) < (sphere.radius * sphere.radius);
+    }
+
+    bool IsPointInside(const Capsule3& capsule, const Vector3& point) noexcept {
+        return CalcDistanceSquared(point, capsule.line) < (capsule.radius * capsule.radius);
+    }
+
+    bool IsPointOn(const Disc2& disc, const Vector2& point) noexcept {
+        const auto distanceSquared = CalcDistanceSquared(disc.center, point);
+        const auto radiusSquared = disc.radius * disc.radius;
+        return !(distanceSquared < radiusSquared || radiusSquared < distanceSquared);
+    }
+
+    bool IsPointOn(const LineSegment2& line, const Vector2& point) noexcept {
+        return IsEquivalentToZero(CalcDistanceSquared(point, line));
+    }
+
+    bool IsPointOn(const Capsule2& capsule, const Vector2& point) noexcept {
+        const auto distanceSquared = CalcDistanceSquared(point, capsule.line);
+        const auto radiusSquared = capsule.radius * capsule.radius;
+        return !(distanceSquared < radiusSquared || radiusSquared < distanceSquared);
+    }
+
+    bool IsPointOn(const LineSegment3& line, const Vector3& point) noexcept {
+        return IsEquivalentToZero(CalcDistanceSquared(point, line));
+    }
+
+    bool IsPointOn(const Sphere3& sphere, const Vector3& point) noexcept {
+        const auto distanceSquared = CalcDistanceSquared(sphere.center, point);
+        const auto radiusSquared = sphere.radius * sphere.radius;
+        return !(distanceSquared < radiusSquared || radiusSquared < distanceSquared);
+    }
+
+    bool IsPointOn(const Capsule3& capsule, const Vector3& point) noexcept {
+        const auto distanceSquared = CalcDistanceSquared(point, capsule.line);
+        const auto radiusSquared = capsule.radius * capsule.radius;
+        return !(distanceSquared < radiusSquared || radiusSquared < distanceSquared);
+    }
+
+    bool IsPointOn(const Polygon2& poly2, const Vector2& point) noexcept {
+        const auto edges = poly2.GetEdges();
+        for(const auto& edge : edges) {
+            if(IsPointOn(edge, point)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    Vector2 CalcClosestPoint(const Vector2& p, const AABB2& aabb) noexcept {
+        if(IsPointInside(aabb, p)) {
+            return p;
+        }
+        if(p.x < aabb.mins.x && aabb.maxs.y < p.y) {
+            return Vector2(aabb.mins.x, aabb.maxs.y);
+        }
+        if(p.x < aabb.mins.x && p.y < aabb.mins.y) {
+            return Vector2(aabb.mins.x, aabb.mins.y);
+        }
+        if(aabb.maxs.x < p.x && p.y < aabb.mins.y) {
+            return Vector2(aabb.maxs.x, aabb.mins.y);
+        }
+        if(aabb.maxs.x < p.x && aabb.maxs.y < p.y) {
+            return Vector2(aabb.maxs.x, aabb.maxs.y);
+        }
+        if(p.x < aabb.mins.x) {
+            return Vector2(aabb.mins.x, p.y);
+        }
+        if(aabb.maxs.x < p.x) {
+            return Vector2(aabb.maxs.x, p.y);
+        }
+        if(p.y < aabb.mins.y) {
+            return Vector2(p.x, aabb.mins.y);
+        }
+        if(aabb.maxs.y < p.y) {
+            return Vector2(p.x, aabb.maxs.y);
+        }
+        return Vector2::ZERO;
+    }
+
+    Vector2 CalcClosestPoint(const Vector2& p, const OBB2& obb) noexcept {
+        if(IsPointInside(obb, p)) {
+            return p;
+        }
+        const auto displacement = p - obb.position;
+        const auto T = Matrix4::CreateTranslationMatrix(obb.position);
+        const auto R = Matrix4::Create2DRotationDegreesMatrix(obb.orientationDegrees);
+        const auto M = Matrix4::MakeRT(R, T);
+        const auto u0 = M.TransformDirection(Vector2(obb.half_extents.x, 0.0f).GetNormalize());
+        const auto u1 = M.TransformDirection(Vector2(0.0f, obb.half_extents.y).GetNormalize());
+
+        auto x_distance = MathUtils::DotProduct(u0, displacement);
+        if(x_distance > obb.half_extents.x)
+            x_distance = obb.half_extents.x;
+        if(x_distance < -obb.half_extents.x)
+            x_distance = -obb.half_extents.x;
+        auto y_distance = MathUtils::DotProduct(u1, displacement);
+        if(y_distance > obb.half_extents.y)
+            y_distance = obb.half_extents.y;
+        if(y_distance < -obb.half_extents.y)
+            y_distance = -obb.half_extents.y;
+        return M.TransformPosition(Vector2{x_distance, y_distance});
+    }
+
+    Vector3 CalcClosestPoint(const Vector3& p, const AABB3& aabb) noexcept {
+        const auto nearestX = std::clamp(p.x, aabb.mins.x, aabb.maxs.x);
+        const auto nearestY = std::clamp(p.y, aabb.mins.y, aabb.maxs.y);
+        const auto nearestZ = std::clamp(p.z, aabb.mins.z, aabb.maxs.z);
+
+        return Vector3(nearestX, nearestY, nearestZ);
+    }
+
+    Vector2 CalcClosestPoint(const Vector2& p, const Polygon2& poly2) noexcept {
+        if(MathUtils::IsPointInside(poly2, p)) {
+            return p;
+        }
+        const auto& edges = poly2.GetEdges();
+        const auto segment_with_min_distance = *std::min_element(std::cbegin(edges), std::cend(edges), [&](const LineSegment2& a, const LineSegment2& b) {
+            return MathUtils::CalcDistanceSquared(p, a) < MathUtils::CalcDistanceSquared(p, b);
+        });
+        return MathUtils::CalcClosestPoint(p, segment_with_min_distance);
+    }
+
+    Vector2 CalcClosestPoint(const Vector2& p, const Disc2& disc) noexcept {
+        const auto dir = (p - disc.center).GetNormalize();
+        return disc.center + dir * disc.radius;
+    }
+
+    Vector2 CalcClosestPoint(const Vector2& p, const LineSegment2& line) noexcept {
+        const auto lineDisplacement = line.end - line.start;
+        const auto lineDirection = lineDisplacement.GetNormalize();
+
+        const auto lineSP = p - line.start;
+        const auto regionI = MathUtils::DotProduct(lineDirection, lineSP);
+        if(regionI < 0.0f) {
+            return line.start;
         }
 
-        auto min_a = std::numeric_limits<float>::infinity();
-        auto max_a = std::numeric_limits<float>::lowest();
-        for(const auto& ac : a.GetVerts()) {
-            const auto proj_dp = DotProduct(ac, bn);
-            min_a = (std::min)(min_a, proj_dp);
-            max_a = (std::max)(max_a, proj_dp);
+        const auto lineEP = p - line.end;
+        const auto regionII = MathUtils::DotProduct(lineDirection, lineEP);
+        if(regionII > 0.0f) {
+            return line.end;
         }
 
-        if(max_b < min_a)
-            return false;
-        if(max_a < min_b)
-            return false;
+        const auto lengthToClosestPoint = MathUtils::DotProduct(lineDirection, lineSP);
+        const auto C = lineDirection * lengthToClosestPoint;
+        const auto ConL = line.start + C;
+        return ConL;
     }
-    return true;
-}
 
-std::optional<Vector2> DoLineSegmentOverlap(const LineSegment2& a, const LineSegment2& b) noexcept {
+    Vector2 CalcClosestPoint(const Vector2& p, const Capsule2& capsule) noexcept {
+        const auto closestP = CalcClosestPoint(p, capsule.line);
+        const auto dir_to_p = (p - closestP).GetNormalize();
+        return closestP + (dir_to_p * capsule.radius);
+    }
 
-//https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
+    Vector3 CalcClosestPoint(const Vector3& p, const LineSegment3& line) noexcept {
+        const auto D = line.end - line.start;
+        const auto T = D.GetNormalize();
+        const auto SP = p - line.start;
+        float regionI = MathUtils::DotProduct(T, SP);
+        if(regionI < 0.0f) {
+            return line.start;
+        }
 
-    const auto x1 = a.start.x;
-    const auto y1 = a.start.y;
-    const auto x2 = a.end.x;
-    const auto y2 = a.end.y;
-    const auto x3 = b.start.x;
-    const auto y3 = b.start.y;
-    const auto x4 = b.end.x;
-    const auto y4 = b.end.y;
-    const auto denominator = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
-    if(MathUtils::IsEquivalentToZero(denominator)) {
+        const auto EP = p - line.end;
+        const auto regionII = MathUtils::DotProduct(T, EP);
+        if(regionII > 0.0f) {
+            return line.end;
+        }
+
+        const auto directionSE = D.GetNormalize();
+        const auto lengthToClosestPoint = MathUtils::DotProduct(directionSE, SP);
+        const auto C = directionSE * lengthToClosestPoint;
+        const auto ConL = line.start + C;
+        return ConL;
+    }
+
+    Vector3 CalcClosestPoint(const Vector3& p, const Sphere3& sphere) noexcept {
+        const auto dir = (p - sphere.center).GetNormalize();
+        return sphere.center + dir * sphere.radius;
+    }
+
+    Vector3 CalcClosestPoint(const Vector3& p, const Capsule3& capsule) noexcept {
+        const auto closestP = CalcClosestPoint(p, capsule.line);
+        const auto dir_to_p = (p - closestP).GetNormalize();
+        return closestP + (dir_to_p * capsule.radius);
+    }
+
+    Vector2 CalcNormalizedPointFromPoint(const Vector2& pos, const AABB2& bounds) noexcept {
+        const auto x_norm = RangeMap(pos.x, bounds.mins.x, bounds.maxs.x, 0.0f, 1.0f);
+        const auto y_norm = RangeMap(pos.y, bounds.mins.y, bounds.maxs.y, 0.0f, 1.0f);
+        return Vector2(x_norm, y_norm);
+    }
+
+    Vector2 CalcPointFromNormalizedPoint(const Vector2& uv, const AABB2& bounds) noexcept {
+        const auto x = RangeMap(uv.x, 0.0f, 1.0f, bounds.mins.x, bounds.maxs.x);
+        const auto y = RangeMap(uv.y, 0.0f, 1.0f, bounds.mins.y, bounds.maxs.y);
+        return Vector2(x, y);
+    }
+
+    Vector2 CalcNormalizedHalfExtentsFromPoint(const Vector2& pos, const AABB2& bounds) noexcept {
+        const auto x_norm = RangeMap(pos.x, bounds.mins.x, bounds.maxs.x, -0.5f, 0.5f);
+        const auto y_norm = RangeMap(pos.y, bounds.mins.y, bounds.maxs.y, -0.5f, 0.5f);
+        return Vector2(x_norm, y_norm);
+    }
+
+    Vector2 CalcPointFromNormalizedHalfExtents(const Vector2& uv, const AABB2& bounds) noexcept {
+        const auto x = RangeMap(uv.x, -0.5f, 0.5f, bounds.mins.x, bounds.maxs.x);
+        const auto y = RangeMap(uv.y, -0.5f, 0.5f, bounds.mins.y, bounds.maxs.y);
+        return Vector2(x, y);
+    }
+
+    bool DoDiscsOverlap(const Disc2& a, const Disc2& b) noexcept {
+        return DoDiscsOverlap(a.center, a.radius, b.center, b.radius);
+    }
+
+    bool DoDiscsOverlap(const Vector2& centerA, float radiusA, const Vector2& centerB, float radiusB) noexcept {
+        return CalcDistanceSquared(centerA, centerB) < (radiusA + radiusB) * (radiusA + radiusB);
+    }
+
+    bool DoDiscsOverlap(const Disc2& a, const Capsule2& b) noexcept {
+        return CalcDistanceSquared(a.center, b.line) < (a.radius + b.radius) * (a.radius + b.radius);
+    }
+
+    bool DoDiscsOverlap(const Disc2& a, const AABB2& b) noexcept {
+        const auto closest_point = CalcClosestPoint(a.center, b);
+        return IsPointInside(a, closest_point);
+    }
+
+    bool DoSpheresOverlap(const Sphere3& a, const Sphere3& b) noexcept {
+        return DoSpheresOverlap(a.center, a.radius, b.center, b.radius);
+    }
+
+    bool DoSpheresOverlap(const Vector3& centerA, float radiusA, const Vector3& centerB, float radiusB) noexcept {
+        return CalcDistanceSquared(centerA, centerB) < (radiusA + radiusB) * (radiusA + radiusB);
+    }
+
+    bool DoSpheresOverlap(const Sphere3& a, const Capsule3& b) noexcept {
+        return CalcDistanceSquared(a.center, b.line) < (a.radius + b.radius) * (a.radius + b.radius);
+    }
+
+    bool DoSpheresOverlap(const Sphere3& a, const AABB3& b) noexcept {
+        const auto closest_point = CalcClosestPoint(a.center, b);
+        return IsPointInside(a, closest_point);
+    }
+
+    bool DoAABBsOverlap(const AABB2& a, const AABB2& b) noexcept {
+        if(a.maxs.x < b.mins.x)
+            return false;
+        if(b.maxs.x < a.mins.x)
+            return false;
+        if(a.maxs.y < b.mins.y)
+            return false;
+        if(b.maxs.y < a.mins.y)
+            return false;
+        return true;
+    }
+
+    bool DoAABBsOverlap(const AABB3& a, const AABB3& b) noexcept {
+        if(a.maxs.x < b.mins.x)
+            return false;
+        if(b.maxs.x < a.mins.x)
+            return false;
+        if(a.maxs.y < b.mins.y)
+            return false;
+        if(b.maxs.y < a.mins.y)
+            return false;
+        if(a.maxs.z < b.mins.z)
+            return false;
+        if(b.maxs.z < a.mins.z)
+            return false;
+        return true;
+    }
+
+    bool DoAABBsOverlap(const AABB2& a, const Disc2& b) noexcept {
+        return DoDiscsOverlap(b, a);
+    }
+
+    bool DoAABBsOverlap(const AABB3& a, const Sphere3& b) noexcept {
+        return DoSpheresOverlap(b, a);
+    }
+
+    bool DoOBBsOverlap(const OBB2& a, const OBB2& b) noexcept {
+        const auto polyA = Polygon2(a);
+        const auto polyB = Polygon2(b);
+        return DoPolygonsOverlap(polyA, polyB);
+    }
+
+    bool DoPolygonsOverlap(const Polygon2& a, const Polygon2& b) noexcept {
+        //Separating Axis Theorem
+        const auto Pa = a.GetPosition();
+        const auto Oa = a.GetOrientationDegrees();
+        const auto Hea = a.GetHalfExtents();
+
+        const auto Pb = b.GetPosition();
+        const auto Ob = b.GetOrientationDegrees();
+        const auto Heb = b.GetHalfExtents();
+
+        for(const auto& an : a.GetNormals()) {
+            auto min_a = std::numeric_limits<float>::infinity();
+            auto max_a = std::numeric_limits<float>::lowest();
+            for(const auto& ac : a.GetVerts()) {
+                const auto proj_dp = DotProduct(ac, an);
+                min_a = (std::min)(min_a, proj_dp);
+                max_a = (std::max)(max_a, proj_dp);
+            }
+
+            auto min_b = std::numeric_limits<float>::infinity();
+            auto max_b = std::numeric_limits<float>::lowest();
+            for(const auto& bc : b.GetVerts()) {
+                const auto proj_dp = DotProduct(bc, an);
+                min_b = (std::min)(min_b, proj_dp);
+                max_b = (std::max)(max_b, proj_dp);
+            }
+
+            if(max_a < min_b)
+                return false;
+            if(max_b < min_a)
+                return false;
+        }
+        for(const auto& bn : b.GetNormals()) {
+            auto min_b = std::numeric_limits<float>::infinity();
+            auto max_b = std::numeric_limits<float>::lowest();
+            for(const auto& bc : b.GetVerts()) {
+                const auto proj_dp = DotProduct(bc, bn);
+                min_b = (std::min)(min_b, proj_dp);
+                max_b = (std::max)(max_b, proj_dp);
+            }
+
+            auto min_a = std::numeric_limits<float>::infinity();
+            auto max_a = std::numeric_limits<float>::lowest();
+            for(const auto& ac : a.GetVerts()) {
+                const auto proj_dp = DotProduct(ac, bn);
+                min_a = (std::min)(min_a, proj_dp);
+                max_a = (std::max)(max_a, proj_dp);
+            }
+
+            if(max_b < min_a)
+                return false;
+            if(max_a < min_b)
+                return false;
+        }
+        return true;
+    }
+
+    std::optional<Vector2> DoLineSegmentOverlap(const LineSegment2& a, const LineSegment2& b) noexcept {
+
+    //https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
+
+        const auto x1 = a.start.x;
+        const auto y1 = a.start.y;
+        const auto x2 = a.end.x;
+        const auto y2 = a.end.y;
+        const auto x3 = b.start.x;
+        const auto y3 = b.start.y;
+        const auto x4 = b.end.x;
+        const auto y4 = b.end.y;
+        const auto denominator = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+        if(MathUtils::IsEquivalentToZero(denominator)) {
+            return {};
+        }
+
+        const auto tNumerator = (x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4);
+        const auto t = tNumerator / denominator;
+
+        if(0.0f <= t && t <= 1.0f) {
+            const auto vT = Vector2{x1 + t * (x2 - x1), y1 + t * (y2 - y1)};
+            if(MathUtils::IsPointOn(a, vT) && MathUtils::IsPointOn(b, vT)) {
+                return std::make_optional(vT);
+            }
+        }
         return {};
     }
 
-    const auto tNumerator = (x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4);
-    const auto t = tNumerator / denominator;
+    bool DoLineSegmentOverlap(const Disc2& a, const LineSegment2& b) noexcept {
+        return CalcDistanceSquared(a.center, b) < a.radius * a.radius;
+    }
 
-    if(0.0f <= t && t <= 1.0f) {
-        const auto vT = Vector2{x1 + t * (x2 - x1), y1 + t * (y2 - y1)};
-        if(MathUtils::IsPointOn(a, vT) && MathUtils::IsPointOn(b, vT)) {
-            return std::make_optional(vT);
+    bool DoLineSegmentOverlap(const Sphere3& a, const LineSegment3& b) noexcept {
+        return CalcDistanceSquared(a.center, b) < a.radius * a.radius;
+    }
+
+    bool DoCapsuleOverlap(const Disc2& a, const Capsule2& b) noexcept {
+        return CalcDistanceSquared(a.center, b.line) < (a.radius + b.radius) * (a.radius + b.radius);
+    }
+
+    bool DoCapsuleOverlap(const Sphere3& a, const Capsule3& b) noexcept {
+        return CalcDistanceSquared(a.center, b.line) < (a.radius + b.radius) * (a.radius + b.radius);
+    }
+
+    bool DoPlaneOverlap(const Disc2& a, const Plane2& b) noexcept {
+        return std::fabs(DotProduct(a.center, b.normal) - b.dist) < a.radius;
+    }
+
+    bool DoPlaneOverlap(const Sphere3& a, const Plane3& b) noexcept {
+        return std::fabs(DotProduct(a.center, b.normal) - b.dist) < a.radius;
+    }
+
+    bool DoPlaneOverlap(const Capsule2& a, const Plane2& b) noexcept {
+        const auto both_capsule_points_in_front = IsPointInFrontOfPlane(a.line.start, b) && IsPointInFrontOfPlane(a.line.end, b);
+        const auto both_capsule_points_in_back = IsPointBehindOfPlane(a.line.start, b) && IsPointBehindOfPlane(a.line.end, b);
+
+        if(both_capsule_points_in_front || both_capsule_points_in_back) {
+            return CalcDistanceSquared(Vector2::ZERO, a.line) < (a.radius + b.dist) * (a.radius + b.dist);
         }
-    }
-    return {};
-}
-
-bool DoLineSegmentOverlap(const Disc2& a, const LineSegment2& b) noexcept {
-    return CalcDistanceSquared(a.center, b) < a.radius * a.radius;
-}
-
-bool DoLineSegmentOverlap(const Sphere3& a, const LineSegment3& b) noexcept {
-    return CalcDistanceSquared(a.center, b) < a.radius * a.radius;
-}
-
-bool DoCapsuleOverlap(const Disc2& a, const Capsule2& b) noexcept {
-    return CalcDistanceSquared(a.center, b.line) < (a.radius + b.radius) * (a.radius + b.radius);
-}
-
-bool DoCapsuleOverlap(const Sphere3& a, const Capsule3& b) noexcept {
-    return CalcDistanceSquared(a.center, b.line) < (a.radius + b.radius) * (a.radius + b.radius);
-}
-
-bool DoPlaneOverlap(const Disc2& a, const Plane2& b) noexcept {
-    return std::fabs(DotProduct(a.center, b.normal) - b.dist) < a.radius;
-}
-
-bool DoPlaneOverlap(const Sphere3& a, const Plane3& b) noexcept {
-    return std::fabs(DotProduct(a.center, b.normal) - b.dist) < a.radius;
-}
-
-bool DoPlaneOverlap(const Capsule2& a, const Plane2& b) noexcept {
-    const auto both_capsule_points_in_front = IsPointInFrontOfPlane(a.line.start, b) && IsPointInFrontOfPlane(a.line.end, b);
-    const auto both_capsule_points_in_back = IsPointBehindOfPlane(a.line.start, b) && IsPointBehindOfPlane(a.line.end, b);
-
-    if(both_capsule_points_in_front || both_capsule_points_in_back) {
-        return CalcDistanceSquared(Vector2::ZERO, a.line) < (a.radius + b.dist) * (a.radius + b.dist);
-    }
-    return true;
-}
-
-bool DoPlaneOverlap(const Capsule3& a, const Plane3& b) noexcept {
-    const auto both_capsule_points_in_front = IsPointInFrontOfPlane(a.line.start, b) && IsPointInFrontOfPlane(a.line.end, b);
-    const auto both_capsule_points_in_back = IsPointBehindOfPlane(a.line.start, b) && IsPointBehindOfPlane(a.line.end, b);
-
-    if(both_capsule_points_in_front || both_capsule_points_in_back) {
-        return CalcDistanceSquared(Vector3::ZERO, a.line) < (a.radius + b.dist) * (a.radius + b.dist);
-    }
-    return true;
-}
-
-bool IsPointInFrontOfPlane(const Vector3& point, const Plane3& plane) noexcept {
-    return (DotProduct(point, plane.normal) > plane.dist);
-}
-
-bool IsPointBehindOfPlane(const Vector3& point, const Plane3& plane) noexcept {
-    return (DotProduct(point, plane.normal) < plane.dist);
-}
-
-bool IsPointOnPlane(const Vector3& point, const Plane3& plane) noexcept {
-    return !IsPointInFrontOfPlane(point, plane) && !IsPointBehindOfPlane(point, plane);
-}
-
-bool IsPointInFrontOfPlane(const Vector2& point, const Plane2& plane) noexcept {
-    return (DotProduct(point, plane.normal) > plane.dist);
-}
-
-bool IsPointBehindOfPlane(const Vector2& point, const Plane2& plane) noexcept {
-    return (DotProduct(point, plane.normal) < plane.dist);
-}
-
-bool IsPointOnPlane(const Vector2& point, const Plane2& plane) noexcept {
-    return !IsPointInFrontOfPlane(point, plane) && !IsPointBehindOfPlane(point, plane);
-}
-
-float CalculateMatrix3Determinant(float m00, float m01, float m02, float m10, float m11, float m12, float m20, float m21, float m22) noexcept {
-    const auto a = m00;
-    const auto b = m01;
-    const auto c = m02;
-    const auto det_not_a = CalculateMatrix2Determinant(m11, m12, m21, m22);
-    const auto det_not_b = CalculateMatrix2Determinant(m10, m12, m20, m22);
-    const auto det_not_c = CalculateMatrix2Determinant(m10, m11, m20, m21);
-
-    return a * det_not_a - b * det_not_b + c * det_not_c;
-}
-
-float CalculateMatrix2Determinant(float m00, float m01, float m10, float m11) noexcept {
-    return m00 * m11 - m01 * m10;
-}
-
-/************************************************************************/
-/* https://en.wikipedia.org/wiki/Slerp#Source_Code                      */
-/************************************************************************/
-Quaternion SLERP(const Quaternion& a, const Quaternion& b, float t) noexcept {
-    Quaternion start = a;
-    Quaternion end = b;
-
-    start.Normalize();
-    end.Normalize();
-
-    auto dp = MathUtils::DotProduct(start, end);
-
-    if(dp < 0.0f) {
-        end = -end;
-        dp = -dp;
+        return true;
     }
 
-    //Really close together
-    if(dp > 0.99995f) {
-        auto result = MathUtils::Interpolate(start, end, t);
-        result.Normalize();
+    bool DoPlaneOverlap(const Capsule3& a, const Plane3& b) noexcept {
+        const auto both_capsule_points_in_front = IsPointInFrontOfPlane(a.line.start, b) && IsPointInFrontOfPlane(a.line.end, b);
+        const auto both_capsule_points_in_back = IsPointBehindOfPlane(a.line.start, b) && IsPointBehindOfPlane(a.line.end, b);
+
+        if(both_capsule_points_in_front || both_capsule_points_in_back) {
+            return CalcDistanceSquared(Vector3::ZERO, a.line) < (a.radius + b.dist) * (a.radius + b.dist);
+        }
+        return true;
+    }
+
+    bool IsPointInFrontOfPlane(const Vector3& point, const Plane3& plane) noexcept {
+        return (DotProduct(point, plane.normal) > plane.dist);
+    }
+
+    bool IsPointBehindOfPlane(const Vector3& point, const Plane3& plane) noexcept {
+        return (DotProduct(point, plane.normal) < plane.dist);
+    }
+
+    bool IsPointOnPlane(const Vector3& point, const Plane3& plane) noexcept {
+        return !IsPointInFrontOfPlane(point, plane) && !IsPointBehindOfPlane(point, plane);
+    }
+
+    bool IsPointInFrontOfPlane(const Vector2& point, const Plane2& plane) noexcept {
+        return (DotProduct(point, plane.normal) > plane.dist);
+    }
+
+    bool IsPointBehindOfPlane(const Vector2& point, const Plane2& plane) noexcept {
+        return (DotProduct(point, plane.normal) < plane.dist);
+    }
+
+    bool IsPointOnPlane(const Vector2& point, const Plane2& plane) noexcept {
+        return !IsPointInFrontOfPlane(point, plane) && !IsPointBehindOfPlane(point, plane);
+    }
+
+    float CalculateMatrix3Determinant(float m00, float m01, float m02, float m10, float m11, float m12, float m20, float m21, float m22) noexcept {
+        const auto a = m00;
+        const auto b = m01;
+        const auto c = m02;
+        const auto det_not_a = CalculateMatrix2Determinant(m11, m12, m21, m22);
+        const auto det_not_b = CalculateMatrix2Determinant(m10, m12, m20, m22);
+        const auto det_not_c = CalculateMatrix2Determinant(m10, m11, m20, m21);
+
+        return a * det_not_a - b * det_not_b + c * det_not_c;
+    }
+
+    float CalculateMatrix2Determinant(float m00, float m01, float m10, float m11) noexcept {
+        return m00 * m11 - m01 * m10;
+    }
+
+    /************************************************************************/
+    /* https://en.wikipedia.org/wiki/Slerp#Source_Code                      */
+    /************************************************************************/
+    Quaternion SLERP(const Quaternion& a, const Quaternion& b, float t) noexcept {
+        Quaternion start = a;
+        Quaternion end = b;
+
+        start.Normalize();
+        end.Normalize();
+
+        auto dp = MathUtils::DotProduct(start, end);
+
+        if(dp < 0.0f) {
+            end = -end;
+            dp = -dp;
+        }
+
+        //Really close together
+        if(dp > 0.99995f) {
+            auto result = MathUtils::Interpolate(start, end, t);
+            result.Normalize();
+            return result;
+        }
+
+        dp = std::clamp(dp, -1.0f, 1.0f);
+
+        const auto theta_0 = std::acos(dp);
+        const auto theta = theta_0 * t;
+
+        const auto scale0 = std::cos(theta) - dp * std::sin(theta) / std::sin(theta_0);
+        const auto scale1 = std::sin(theta) / std::sin(theta_0);
+
+        return (scale0 * start) + (scale1 * end);
+    }
+
+    template<>
+    Vector2 Interpolate(const Vector2& a, const Vector2& b, float t) {
+        const auto x = Interpolate(a.x, b.x, t);
+        const auto y = Interpolate(a.y, b.y, t);
+        return Vector2(x, y);
+    }
+
+    template<>
+    Vector3 Interpolate(const Vector3& a, const Vector3& b, float t) {
+        const auto x = Interpolate(a.x, b.x, t);
+        const auto y = Interpolate(a.y, b.y, t);
+        const auto z = Interpolate(a.z, b.z, t);
+        return Vector3(x, y, z);
+    }
+
+    template<>
+    Vector4 Interpolate(const Vector4& a, const Vector4& b, float t) {
+        const auto x = Interpolate(a.x, b.x, t);
+        const auto y = Interpolate(a.y, b.y, t);
+        const auto z = Interpolate(a.z, b.z, t);
+        const auto w = Interpolate(a.w, b.w, t);
+        return Vector4(x, y, z, w);
+    }
+
+    template<>
+    IntVector2 Interpolate(const IntVector2& a, const IntVector2& b, float t) {
+        const auto x = Interpolate(static_cast<float>(a.x), static_cast<float>(b.x), t);
+        const auto y = Interpolate(static_cast<float>(a.y), static_cast<float>(b.y), t);
+        return IntVector2(Vector2(x, y));
+    }
+
+    template<>
+    IntVector3 Interpolate(const IntVector3& a, const IntVector3& b, float t) {
+        const auto x = Interpolate(static_cast<float>(a.x), static_cast<float>(b.x), t);
+        const auto y = Interpolate(static_cast<float>(a.y), static_cast<float>(b.y), t);
+        const auto z = Interpolate(static_cast<float>(a.z), static_cast<float>(b.z), t);
+        return IntVector3(Vector3(x, y, z));
+    }
+
+    template<>
+    IntVector4 Interpolate(const IntVector4& a, const IntVector4& b, float t) {
+        const auto x = Interpolate(static_cast<float>(a.x), static_cast<float>(b.x), t);
+        const auto y = Interpolate(static_cast<float>(a.y), static_cast<float>(b.y), t);
+        const auto z = Interpolate(static_cast<float>(a.z), static_cast<float>(b.z), t);
+        const auto w = Interpolate(static_cast<float>(a.w), static_cast<float>(b.w), t);
+        return IntVector4(Vector4(x, y, z, w));
+    }
+
+    template<>
+    AABB2 Interpolate(const AABB2& a, const AABB2& b, float t) {
+        const auto mins(Interpolate(a.mins, b.mins, t));
+        const auto maxs(Interpolate(a.maxs, b.maxs, t));
+        return AABB2(mins, maxs);
+    }
+
+    template<>
+    AABB3 Interpolate(const AABB3& a, const AABB3& b, float t) {
+        const auto mins(Interpolate(a.mins, b.mins, t));
+        const auto maxs(Interpolate(a.maxs, b.maxs, t));
+        return AABB3(mins, maxs);
+    }
+
+    template<>
+    OBB2 Interpolate(const OBB2& a, const OBB2& b, float t) {
+        const auto orientation(Interpolate(a.orientationDegrees, b.orientationDegrees, t));
+        const auto he(Interpolate(a.half_extents, b.half_extents, t));
+        const auto p(Interpolate(a.position, b.position, t));
+        return OBB2(p, he, orientation);
+    }
+
+    template<>
+    Polygon2 Interpolate(const Polygon2& a, const Polygon2& b, float t) {
+        const auto sides = static_cast<int>(Interpolate(static_cast<float>(a.GetSides()), static_cast<float>(b.GetSides()), t));
+        const auto orientation(Interpolate(a.GetOrientationDegrees(), b.GetOrientationDegrees(), t));
+        const auto he(Interpolate(a.GetHalfExtents(), b.GetHalfExtents(), t));
+        const auto p(Interpolate(a.GetPosition(), b.GetPosition(), t));
+        return Polygon2(sides, p, he, orientation);
+    }
+
+    template<>
+    Disc2 Interpolate(const Disc2& a, const Disc2& b, float t) {
+        const auto c(Interpolate(a.center, b.center, t));
+        const auto r(Interpolate(a.radius, b.radius, t));
+        return Disc2(c, r);
+    }
+
+    template<>
+    LineSegment2 Interpolate(const LineSegment2& a, const LineSegment2& b, float t) {
+        const auto start(Interpolate(a.start, b.start, t));
+        const auto end(Interpolate(a.end, b.end, t));
+        return LineSegment2(start, end);
+    }
+
+    template<>
+    Capsule2 Interpolate(const Capsule2& a, const Capsule2& b, float t) {
+        const auto line(Interpolate(a.line, b.line, t));
+        const auto r(Interpolate(a.radius, b.radius, t));
+        return Capsule2(line, r);
+    }
+
+    template<>
+    LineSegment3 Interpolate(const LineSegment3& a, const LineSegment3& b, float t) {
+        const auto start(Interpolate(a.start, b.start, t));
+        const auto end(Interpolate(a.end, b.end, t));
+        return LineSegment3(start, end);
+    }
+
+    template<>
+    Sphere3 Interpolate(const Sphere3& a, const Sphere3& b, float t) {
+        const auto c(Interpolate(a.center, b.center, t));
+        const auto r(Interpolate(a.radius, b.radius, t));
+        return Sphere3(c, r);
+    }
+
+    template<>
+    Capsule3 Interpolate(const Capsule3& a, const Capsule3& b, float t) {
+        const auto line(Interpolate(a.line, b.line, t));
+        const auto r(Interpolate(a.radius, b.radius, t));
+        return Capsule3(line, r);
+    }
+
+    template<>
+    Plane2 Interpolate(const Plane2& a, const Plane2& b, float t) {
+        const auto d = Interpolate(a.dist, b.dist, t);
+        const auto n = Interpolate(a.normal, b.normal, t);
+        return Plane2(n, d);
+    }
+
+    template<>
+    Plane3 Interpolate(const Plane3& a, const Plane3& b, float t) {
+        const auto d = Interpolate(a.dist, b.dist, t);
+        const auto n = Interpolate(a.normal, b.normal, t);
+        return Plane3(n, d);
+    }
+
+    template<>
+    Quaternion Interpolate(const Quaternion& a, const Quaternion& b, float t) {
+        const auto w = Interpolate(a.w, b.w, t);
+        const auto axis = Interpolate(a.axis, b.axis, t);
+        return Quaternion(w, axis);
+    }
+
+    template<>
+    Rgba Interpolate(const Rgba& a, const Rgba& b, float t) {
+        float a_color[4];
+        a.GetAsFloats(a_color[0], a_color[1], a_color[2], a_color[3]);
+        float b_color[4];
+        b.GetAsFloats(b_color[0], b_color[1], b_color[2], b_color[3]);
+
+        const auto red = Interpolate(a_color[0], b_color[0], t);
+        const auto green = Interpolate(a_color[1], b_color[1], t);
+        const auto blue = Interpolate(a_color[2], b_color[2], t);
+        const auto alpha = Interpolate(a_color[3], b_color[3], t);
+
+        Rgba result;
+        result.SetAsFloats(red, green, blue, alpha);
         return result;
     }
 
-    dp = std::clamp(dp, -1.0f, 1.0f);
+    Vector2 RangeMap(const Vector2& valueToMap, const Vector2& minmaxInputRange, const Vector2& minmaxOutputRange) {
+        const auto x = RangeMap(valueToMap.x, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
+        const auto y = RangeMap(valueToMap.y, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
+        return Vector2{x, y};
+    }
 
-    const auto theta_0 = std::acos(dp);
-    const auto theta = theta_0 * t;
+    Vector3 RangeMap(const Vector3& valueToMap, const Vector2& minmaxInputRange, const Vector2& minmaxOutputRange) {
+        const auto x = RangeMap(valueToMap.x, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
+        const auto y = RangeMap(valueToMap.y, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
+        const auto z = RangeMap(valueToMap.z, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
+        return Vector3{x, y, z};
+    }
 
-    const auto scale0 = std::cos(theta) - dp * std::sin(theta) / std::sin(theta_0);
-    const auto scale1 = std::sin(theta) / std::sin(theta_0);
+    Vector4 RangeMap(const Vector4& valueToMap, const Vector2& minmaxInputRange, const Vector2& minmaxOutputRange) {
+        const auto x = RangeMap(valueToMap.x, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
+        const auto y = RangeMap(valueToMap.y, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
+        const auto z = RangeMap(valueToMap.z, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
+        const auto w = RangeMap(valueToMap.w, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
+        return Vector4{x, y, z, w};
+    }
 
-    return (scale0 * start) + (scale1 * end);
-}
+    IntVector2 RangeMap(const IntVector2& valueToMap, const IntVector2& minmaxInputRange, const IntVector2& minmaxOutputRange) {
+        const auto x = RangeMap(valueToMap.x, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
+        const auto y = RangeMap(valueToMap.y, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
+        return IntVector2{x, y};
+    }
 
-template<>
-Vector2 Interpolate(const Vector2& a, const Vector2& b, float t) {
-    const auto x = Interpolate(a.x, b.x, t);
-    const auto y = Interpolate(a.y, b.y, t);
-    return Vector2(x, y);
-}
+    IntVector3 RangeMap(const IntVector3& valueToMap, const IntVector2& minmaxInputRange, const IntVector2& minmaxOutputRange) {
+        const auto x = RangeMap(valueToMap.x, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
+        const auto y = RangeMap(valueToMap.y, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
+        const auto z = RangeMap(valueToMap.z, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
+        return IntVector3{x, y, z};
+    }
 
-template<>
-Vector3 Interpolate(const Vector3& a, const Vector3& b, float t) {
-    const auto x = Interpolate(a.x, b.x, t);
-    const auto y = Interpolate(a.y, b.y, t);
-    const auto z = Interpolate(a.z, b.z, t);
-    return Vector3(x, y, z);
-}
+    IntVector4 RangeMap(const IntVector4& valueToMap, const IntVector2& minmaxInputRange, const IntVector2& minmaxOutputRange) {
+        const auto x = RangeMap(valueToMap.x, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
+        const auto y = RangeMap(valueToMap.y, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
+        const auto z = RangeMap(valueToMap.z, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
+        const auto w = RangeMap(valueToMap.w, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
+        return IntVector4{x, y, z, w};
+    }
 
-template<>
-Vector4 Interpolate(const Vector4& a, const Vector4& b, float t) {
-    const auto x = Interpolate(a.x, b.x, t);
-    const auto y = Interpolate(a.y, b.y, t);
-    const auto z = Interpolate(a.z, b.z, t);
-    const auto w = Interpolate(a.w, b.w, t);
-    return Vector4(x, y, z, w);
-}
+    template<>
+    Vector4 Wrap(const Vector4& valuesToWrap, const Vector4& minValues, const Vector4& maxValues) {
+        const auto x = Wrap(valuesToWrap.x, minValues.x, maxValues.x);
+        const auto y = Wrap(valuesToWrap.y, minValues.y, maxValues.y);
+        const auto z = Wrap(valuesToWrap.z, minValues.z, maxValues.z);
+        const auto w = Wrap(valuesToWrap.w, minValues.w, maxValues.w);
+        return Vector4(x, y, z, w);
+    }
 
-template<>
-IntVector2 Interpolate(const IntVector2& a, const IntVector2& b, float t) {
-    const auto x = Interpolate(static_cast<float>(a.x), static_cast<float>(b.x), t);
-    const auto y = Interpolate(static_cast<float>(a.y), static_cast<float>(b.y), t);
-    return IntVector2(Vector2(x, y));
-}
+    template<>
+    Vector3 Wrap(const Vector3& valuesToWrap, const Vector3& minValues, const Vector3& maxValues) {
+        const auto x = Wrap(valuesToWrap.x, minValues.x, maxValues.x);
+        const auto y = Wrap(valuesToWrap.y, minValues.y, maxValues.y);
+        const auto z = Wrap(valuesToWrap.z, minValues.z, maxValues.z);
+        return Vector3(x, y, z);
+    }
 
-template<>
-IntVector3 Interpolate(const IntVector3& a, const IntVector3& b, float t) {
-    const auto x = Interpolate(static_cast<float>(a.x), static_cast<float>(b.x), t);
-    const auto y = Interpolate(static_cast<float>(a.y), static_cast<float>(b.y), t);
-    const auto z = Interpolate(static_cast<float>(a.z), static_cast<float>(b.z), t);
-    return IntVector3(Vector3(x, y, z));
-}
+    template<>
+    Vector2 Wrap(const Vector2& valuesToWrap, const Vector2& minValues, const Vector2& maxValues) {
+        const auto x = Wrap(valuesToWrap.x, minValues.x, maxValues.x);
+        const auto y = Wrap(valuesToWrap.y, minValues.y, maxValues.y);
+        return Vector2(x, y);
+    }
 
-template<>
-IntVector4 Interpolate(const IntVector4& a, const IntVector4& b, float t) {
-    const auto x = Interpolate(static_cast<float>(a.x), static_cast<float>(b.x), t);
-    const auto y = Interpolate(static_cast<float>(a.y), static_cast<float>(b.y), t);
-    const auto z = Interpolate(static_cast<float>(a.z), static_cast<float>(b.z), t);
-    const auto w = Interpolate(static_cast<float>(a.w), static_cast<float>(b.w), t);
-    return IntVector4(Vector4(x, y, z, w));
-}
+    template<>
+    IntVector4 Wrap(const IntVector4& valuesToWrap, const IntVector4& minValues, const IntVector4& maxValues) {
+        const auto x = Wrap(valuesToWrap.x, minValues.x, maxValues.x);
+        const auto y = Wrap(valuesToWrap.y, minValues.y, maxValues.y);
+        const auto z = Wrap(valuesToWrap.z, minValues.z, maxValues.z);
+        const auto w = Wrap(valuesToWrap.w, minValues.w, maxValues.w);
+        return IntVector4(x, y, z, w);
+    }
 
-template<>
-AABB2 Interpolate(const AABB2& a, const AABB2& b, float t) {
-    const auto mins(Interpolate(a.mins, b.mins, t));
-    const auto maxs(Interpolate(a.maxs, b.maxs, t));
-    return AABB2(mins, maxs);
-}
+    template<>
+    IntVector3 Wrap(const IntVector3& valuesToWrap, const IntVector3& minValues, const IntVector3& maxValues) {
+        const auto x = Wrap(valuesToWrap.x, minValues.x, maxValues.x);
+        const auto y = Wrap(valuesToWrap.y, minValues.y, maxValues.y);
+        const auto z = Wrap(valuesToWrap.z, minValues.z, maxValues.z);
+        return IntVector3(x, y, z);
+    }
 
-template<>
-AABB3 Interpolate(const AABB3& a, const AABB3& b, float t) {
-    const auto mins(Interpolate(a.mins, b.mins, t));
-    const auto maxs(Interpolate(a.maxs, b.maxs, t));
-    return AABB3(mins, maxs);
-}
+    template<>
+    IntVector2 Wrap(const IntVector2& valuesToWrap, const IntVector2& minValues, const IntVector2& maxValues) {
+        const auto x = Wrap(valuesToWrap.x, minValues.x, maxValues.x);
+        const auto y = Wrap(valuesToWrap.y, minValues.y, maxValues.y);
+        return IntVector2(x, y);
+    }
 
-template<>
-OBB2 Interpolate(const OBB2& a, const OBB2& b, float t) {
-    const auto orientation(Interpolate(a.orientationDegrees, b.orientationDegrees, t));
-    const auto he(Interpolate(a.half_extents, b.half_extents, t));
-    const auto p(Interpolate(a.position, b.position, t));
-    return OBB2(p, he, orientation);
-}
+    } // namespace MathUtils
 
-template<>
-Polygon2 Interpolate(const Polygon2& a, const Polygon2& b, float t) {
-    const auto sides = static_cast<int>(Interpolate(static_cast<float>(a.GetSides()), static_cast<float>(b.GetSides()), t));
-    const auto orientation(Interpolate(a.GetOrientationDegrees(), b.GetOrientationDegrees(), t));
-    const auto he(Interpolate(a.GetHalfExtents(), b.GetHalfExtents(), t));
-    const auto p(Interpolate(a.GetPosition(), b.GetPosition(), t));
-    return Polygon2(sides, p, he, orientation);
-}
-
-template<>
-Disc2 Interpolate(const Disc2& a, const Disc2& b, float t) {
-    const auto c(Interpolate(a.center, b.center, t));
-    const auto r(Interpolate(a.radius, b.radius, t));
-    return Disc2(c, r);
-}
-
-template<>
-LineSegment2 Interpolate(const LineSegment2& a, const LineSegment2& b, float t) {
-    const auto start(Interpolate(a.start, b.start, t));
-    const auto end(Interpolate(a.end, b.end, t));
-    return LineSegment2(start, end);
-}
-
-template<>
-Capsule2 Interpolate(const Capsule2& a, const Capsule2& b, float t) {
-    const auto line(Interpolate(a.line, b.line, t));
-    const auto r(Interpolate(a.radius, b.radius, t));
-    return Capsule2(line, r);
-}
-
-template<>
-LineSegment3 Interpolate(const LineSegment3& a, const LineSegment3& b, float t) {
-    const auto start(Interpolate(a.start, b.start, t));
-    const auto end(Interpolate(a.end, b.end, t));
-    return LineSegment3(start, end);
-}
-
-template<>
-Sphere3 Interpolate(const Sphere3& a, const Sphere3& b, float t) {
-    const auto c(Interpolate(a.center, b.center, t));
-    const auto r(Interpolate(a.radius, b.radius, t));
-    return Sphere3(c, r);
-}
-
-template<>
-Capsule3 Interpolate(const Capsule3& a, const Capsule3& b, float t) {
-    const auto line(Interpolate(a.line, b.line, t));
-    const auto r(Interpolate(a.radius, b.radius, t));
-    return Capsule3(line, r);
-}
-
-template<>
-Plane2 Interpolate(const Plane2& a, const Plane2& b, float t) {
-    const auto d = Interpolate(a.dist, b.dist, t);
-    const auto n = Interpolate(a.normal, b.normal, t);
-    return Plane2(n, d);
-}
-
-template<>
-Plane3 Interpolate(const Plane3& a, const Plane3& b, float t) {
-    const auto d = Interpolate(a.dist, b.dist, t);
-    const auto n = Interpolate(a.normal, b.normal, t);
-    return Plane3(n, d);
-}
-
-template<>
-Quaternion Interpolate(const Quaternion& a, const Quaternion& b, float t) {
-    const auto w = Interpolate(a.w, b.w, t);
-    const auto axis = Interpolate(a.axis, b.axis, t);
-    return Quaternion(w, axis);
-}
-
-template<>
-Rgba Interpolate(const Rgba& a, const Rgba& b, float t) {
-    float a_color[4];
-    a.GetAsFloats(a_color[0], a_color[1], a_color[2], a_color[3]);
-    float b_color[4];
-    b.GetAsFloats(b_color[0], b_color[1], b_color[2], b_color[3]);
-
-    const auto red = Interpolate(a_color[0], b_color[0], t);
-    const auto green = Interpolate(a_color[1], b_color[1], t);
-    const auto blue = Interpolate(a_color[2], b_color[2], t);
-    const auto alpha = Interpolate(a_color[3], b_color[3], t);
-
-    Rgba result;
-    result.SetAsFloats(red, green, blue, alpha);
-    return result;
-}
-
-Vector2 RangeMap(const Vector2& valueToMap, const Vector2& minmaxInputRange, const Vector2& minmaxOutputRange) {
-    const auto x = RangeMap(valueToMap.x, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
-    const auto y = RangeMap(valueToMap.y, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
-    return Vector2{x, y};
-}
-
-Vector3 RangeMap(const Vector3& valueToMap, const Vector2& minmaxInputRange, const Vector2& minmaxOutputRange) {
-    const auto x = RangeMap(valueToMap.x, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
-    const auto y = RangeMap(valueToMap.y, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
-    const auto z = RangeMap(valueToMap.z, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
-    return Vector3{x, y, z};
-}
-
-Vector4 RangeMap(const Vector4& valueToMap, const Vector2& minmaxInputRange, const Vector2& minmaxOutputRange) {
-    const auto x = RangeMap(valueToMap.x, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
-    const auto y = RangeMap(valueToMap.y, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
-    const auto z = RangeMap(valueToMap.z, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
-    const auto w = RangeMap(valueToMap.w, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
-    return Vector4{x, y, z, w};
-}
-
-IntVector2 RangeMap(const IntVector2& valueToMap, const IntVector2& minmaxInputRange, const IntVector2& minmaxOutputRange) {
-    const auto x = RangeMap(valueToMap.x, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
-    const auto y = RangeMap(valueToMap.y, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
-    return IntVector2{x, y};
-}
-
-IntVector3 RangeMap(const IntVector3& valueToMap, const IntVector2& minmaxInputRange, const IntVector2& minmaxOutputRange) {
-    const auto x = RangeMap(valueToMap.x, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
-    const auto y = RangeMap(valueToMap.y, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
-    const auto z = RangeMap(valueToMap.z, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
-    return IntVector3{x, y, z};
-}
-
-IntVector4 RangeMap(const IntVector4& valueToMap, const IntVector2& minmaxInputRange, const IntVector2& minmaxOutputRange) {
-    const auto x = RangeMap(valueToMap.x, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
-    const auto y = RangeMap(valueToMap.y, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
-    const auto z = RangeMap(valueToMap.z, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
-    const auto w = RangeMap(valueToMap.w, minmaxInputRange.x, minmaxInputRange.y, minmaxOutputRange.x, minmaxOutputRange.y);
-    return IntVector4{x, y, z, w};
-}
-
-template<>
-Vector4 Wrap(const Vector4& valuesToWrap, const Vector4& minValues, const Vector4& maxValues) {
-    const auto x = Wrap(valuesToWrap.x, minValues.x, maxValues.x);
-    const auto y = Wrap(valuesToWrap.y, minValues.y, maxValues.y);
-    const auto z = Wrap(valuesToWrap.z, minValues.z, maxValues.z);
-    const auto w = Wrap(valuesToWrap.w, minValues.w, maxValues.w);
-    return Vector4(x, y, z, w);
-}
-
-template<>
-Vector3 Wrap(const Vector3& valuesToWrap, const Vector3& minValues, const Vector3& maxValues) {
-    const auto x = Wrap(valuesToWrap.x, minValues.x, maxValues.x);
-    const auto y = Wrap(valuesToWrap.y, minValues.y, maxValues.y);
-    const auto z = Wrap(valuesToWrap.z, minValues.z, maxValues.z);
-    return Vector3(x, y, z);
-}
-
-template<>
-Vector2 Wrap(const Vector2& valuesToWrap, const Vector2& minValues, const Vector2& maxValues) {
-    const auto x = Wrap(valuesToWrap.x, minValues.x, maxValues.x);
-    const auto y = Wrap(valuesToWrap.y, minValues.y, maxValues.y);
-    return Vector2(x, y);
-}
-
-template<>
-IntVector4 Wrap(const IntVector4& valuesToWrap, const IntVector4& minValues, const IntVector4& maxValues) {
-    const auto x = Wrap(valuesToWrap.x, minValues.x, maxValues.x);
-    const auto y = Wrap(valuesToWrap.y, minValues.y, maxValues.y);
-    const auto z = Wrap(valuesToWrap.z, minValues.z, maxValues.z);
-    const auto w = Wrap(valuesToWrap.w, minValues.w, maxValues.w);
-    return IntVector4(x, y, z, w);
-}
-
-template<>
-IntVector3 Wrap(const IntVector3& valuesToWrap, const IntVector3& minValues, const IntVector3& maxValues) {
-    const auto x = Wrap(valuesToWrap.x, minValues.x, maxValues.x);
-    const auto y = Wrap(valuesToWrap.y, minValues.y, maxValues.y);
-    const auto z = Wrap(valuesToWrap.z, minValues.z, maxValues.z);
-    return IntVector3(x, y, z);
-}
-
-template<>
-IntVector2 Wrap(const IntVector2& valuesToWrap, const IntVector2& minValues, const IntVector2& maxValues) {
-    const auto x = Wrap(valuesToWrap.x, minValues.x, maxValues.x);
-    const auto y = Wrap(valuesToWrap.y, minValues.y, maxValues.y);
-    return IntVector2(x, y);
-}
-
-} // namespace MathUtils
+} // namespace a2de

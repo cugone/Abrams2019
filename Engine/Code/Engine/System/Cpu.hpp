@@ -2,40 +2,44 @@
 
 #include <ostream>
 
-namespace System::Cpu {
+namespace a2de {
 
-enum class ProcessorArchitecture {
-    Intel,
-    Mips,
-    Alpha,
-    Ppc,
-    Shx,
-    Arm,
-    Ia64,
-    Alpha64,
-    Msil,
-    Amd64,
-    Ia32OnWin64,
-    Neutral,
-    Arm64,
-    Arm32OnWin64,
-    Ia32OnArm64,
-    x64 = Amd64,
-    x86 = Intel,
-    Unknown = 0xFFFF
-};
+    namespace System::Cpu {
 
-struct CpuDesc {
-    ProcessorArchitecture type{};
-    unsigned long socketCount = 0;
-    unsigned long logicalCount = 0;
-};
-std::ostream& operator<<(std::ostream& out, const CpuDesc& cpu) noexcept;
+        enum class ProcessorArchitecture {
+            Intel,
+            Mips,
+            Alpha,
+            Ppc,
+            Shx,
+            Arm,
+            Ia64,
+            Alpha64,
+            Msil,
+            Amd64,
+            Ia32OnWin64,
+            Neutral,
+            Arm64,
+            Arm32OnWin64,
+            Ia32OnArm64,
+            x64 = Amd64,
+            x86 = Intel,
+            Unknown = 0xFFFF
+        };
 
-[[nodiscard]] CpuDesc GetCpuDesc() noexcept;
+        struct CpuDesc {
+            ProcessorArchitecture type{};
+            unsigned long socketCount = 0;
+            unsigned long logicalCount = 0;
+        };
+        std::ostream& operator<<(std::ostream& out, const CpuDesc& cpu) noexcept;
 
-} // namespace System::Cpu
+        [[nodiscard]] CpuDesc GetCpuDesc() noexcept;
 
-namespace StringUtils {
-[[nodiscard]] std::string to_string(const System::Cpu::ProcessorArchitecture& architecture) noexcept;
-}
+    } // namespace System::Cpu
+
+    namespace StringUtils {
+        [[nodiscard]] std::string to_string(const System::Cpu::ProcessorArchitecture& architecture) noexcept;
+    }
+
+} // namespace a2de

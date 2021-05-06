@@ -7,14 +7,18 @@
 #include <iomanip>
 #include <sstream>
 
-ProfileLogScope::ProfileLogScope(const char* scopeName) noexcept
-: _scope_name(scopeName)
-, _time_at_creation(TimeUtils::Now()) {
-    /* DO NOTHING */
-}
+namespace a2de {
 
-ProfileLogScope::~ProfileLogScope() noexcept {
-    const auto now = TimeUtils::Now();
-    TimeUtils::FPMilliseconds elapsedTime = (now - _time_at_creation);
-    DebuggerPrintf("ProfileLogScope %s took %.02f ms.\n", _scope_name, elapsedTime.count());
-}
+    ProfileLogScope::ProfileLogScope(const char* scopeName) noexcept
+        : _scope_name(scopeName)
+        , _time_at_creation(TimeUtils::Now()) {
+        /* DO NOTHING */
+    }
+
+    ProfileLogScope::~ProfileLogScope() noexcept {
+        const auto now = TimeUtils::Now();
+        TimeUtils::FPMilliseconds elapsedTime = (now - _time_at_creation);
+        DebuggerPrintf("ProfileLogScope %s took %.02f ms.\n", _scope_name, elapsedTime.count());
+    }
+
+} // namespace a2de

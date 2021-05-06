@@ -4,24 +4,28 @@
 
 #include <vector>
 
-class RigidBody;
+namespace a2de {
 
-class ForceGenerator {
-public:
-    ForceGenerator() noexcept = default;
-    ForceGenerator(const ForceGenerator& other) = default;
-    ForceGenerator(ForceGenerator&& other) = default;
-    ForceGenerator& operator=(const ForceGenerator& other) = default;
-    ForceGenerator& operator=(ForceGenerator&& other) = default;
-    virtual ~ForceGenerator() noexcept = default;
+    class RigidBody;
 
-    void attach(RigidBody* body) noexcept;
-    void detach(RigidBody* body) noexcept;
-    virtual void notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) const noexcept = 0;
+    class ForceGenerator {
+    public:
+        ForceGenerator() noexcept = default;
+        ForceGenerator(const ForceGenerator& other) = default;
+        ForceGenerator(ForceGenerator&& other) = default;
+        ForceGenerator& operator=(const ForceGenerator& other) = default;
+        ForceGenerator& operator=(ForceGenerator&& other) = default;
+        virtual ~ForceGenerator() noexcept = default;
 
-    [[nodiscard]] bool is_attached(const RigidBody* const body) const noexcept;
-    void detach_all() noexcept;
-protected:
-    std::vector<RigidBody*> _observers{};
-private:
-};
+        void attach(RigidBody* body) noexcept;
+        void detach(RigidBody* body) noexcept;
+        virtual void notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) const noexcept = 0;
+
+        [[nodiscard]] bool is_attached(const RigidBody* const body) const noexcept;
+        void detach_all() noexcept;
+    protected:
+        std::vector<RigidBody*> _observers{};
+    private:
+    };
+
+} // namespace a2de

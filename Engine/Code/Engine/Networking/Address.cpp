@@ -1,17 +1,20 @@
 #include "Engine/Networking/Address.hpp"
 
-namespace Net {
+namespace a2de {
 
-Address::Address(const std::string& /*value*/) noexcept {
-    //TODO: Implement Address constructor from string
-}
+    namespace Net {
 
-bool Address::operator!=(const Address& rhs) const noexcept {
-    return !(*this == rhs);
-}
+        Address::Address(const std::string& /*value*/) noexcept {
+            //TODO: Implement Address constructor from string
+        }
 
-bool Address::operator==(const Address& rhs) const noexcept {
-    return address.ipv4 == rhs.address.ipv4 && address.ipv6 == rhs.address.ipv6 && port == rhs.port;
-}
+        bool Address::operator!=(const Address& rhs) const noexcept {
+            return !(*this == rhs);
+        }
 
-} // namespace Net
+        bool Address::operator==(const Address& rhs) const noexcept {
+            return address.ipv4 == rhs.address.ipv4 && address.ipv6 == rhs.address.ipv6 && port == rhs.port;
+        }
+
+    } // namespace Net
+} // namespace a2de

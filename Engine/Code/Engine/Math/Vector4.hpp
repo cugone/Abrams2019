@@ -2,104 +2,108 @@
 
 #include <string>
 
-class Vector2;
-class Vector3;
-class IntVector4;
+namespace a2de {
 
-class Vector4 {
-public:
-    static const Vector4 ZERO;
-    static const Vector4 ONE;
-    static const Vector4 ZERO_XYZ_ONE_W;
-    static const Vector4 ONE_XYZ_ZERO_W;
-    static const Vector4 X_AXIS;
-    static const Vector4 XY_AXIS;
-    static const Vector4 XZ_AXIS;
-    static const Vector4 XW_AXIS;
-    static const Vector4 Y_AXIS;
-    static const Vector4 YX_AXIS;
-    static const Vector4 YZ_AXIS;
-    static const Vector4 YW_AXIS;
-    static const Vector4 Z_AXIS;
-    static const Vector4 ZX_AXIS;
-    static const Vector4 ZY_AXIS;
-    static const Vector4 ZW_AXIS;
-    static const Vector4 W_AXIS;
-    static const Vector4 WX_AXIS;
-    static const Vector4 WY_AXIS;
-    static const Vector4 WZ_AXIS;
-    static const Vector4 XYZ_AXIS;
-    static const Vector4 YZW_AXIS;
-    static const Vector4 XZW_AXIS;
-    static const Vector4 XYW_AXIS;
+    class Vector2;
+    class Vector3;
+    class IntVector4;
 
-    [[nodiscard]] static Vector4 CalcHomogeneous(const Vector4& v) noexcept;
+    class Vector4 {
+    public:
+        static const Vector4 ZERO;
+        static const Vector4 ONE;
+        static const Vector4 ZERO_XYZ_ONE_W;
+        static const Vector4 ONE_XYZ_ZERO_W;
+        static const Vector4 X_AXIS;
+        static const Vector4 XY_AXIS;
+        static const Vector4 XZ_AXIS;
+        static const Vector4 XW_AXIS;
+        static const Vector4 Y_AXIS;
+        static const Vector4 YX_AXIS;
+        static const Vector4 YZ_AXIS;
+        static const Vector4 YW_AXIS;
+        static const Vector4 Z_AXIS;
+        static const Vector4 ZX_AXIS;
+        static const Vector4 ZY_AXIS;
+        static const Vector4 ZW_AXIS;
+        static const Vector4 W_AXIS;
+        static const Vector4 WX_AXIS;
+        static const Vector4 WY_AXIS;
+        static const Vector4 WZ_AXIS;
+        static const Vector4 XYZ_AXIS;
+        static const Vector4 YZW_AXIS;
+        static const Vector4 XZW_AXIS;
+        static const Vector4 XYW_AXIS;
 
-    Vector4() noexcept = default;
-    explicit Vector4(const std::string& value) noexcept;
-    explicit Vector4(const IntVector4& intvec4) noexcept;
-    explicit Vector4(const Vector3& xyz, float initialW) noexcept;
-    explicit Vector4(const Vector2& xy, float initialZ, float initialW) noexcept;
-    explicit Vector4(const Vector2& xy, const Vector2& zw) noexcept;
-    explicit Vector4(float initialX, float initialY, float initialZ, float initialW) noexcept;
+        [[nodiscard]] static Vector4 CalcHomogeneous(const Vector4& v) noexcept;
 
-    [[nodiscard]] bool operator==(const Vector4& rhs) const noexcept;
-    [[nodiscard]] bool operator!=(const Vector4& rhs) const noexcept;
+        Vector4() noexcept = default;
+        explicit Vector4(const std::string& value) noexcept;
+        explicit Vector4(const IntVector4& intvec4) noexcept;
+        explicit Vector4(const Vector3& xyz, float initialW) noexcept;
+        explicit Vector4(const Vector2& xy, float initialZ, float initialW) noexcept;
+        explicit Vector4(const Vector2& xy, const Vector2& zw) noexcept;
+        explicit Vector4(float initialX, float initialY, float initialZ, float initialW) noexcept;
 
-    [[nodiscard]] Vector4 operator+(const Vector4& rhs) const noexcept;
-    [[nodiscard]] Vector4 operator-(const Vector4& rhs) const noexcept;
-    [[nodiscard]] Vector4 operator*(const Vector4& rhs) const noexcept;
-    [[nodiscard]] Vector4 operator*(float scale) const noexcept;
-    [[nodiscard]] Vector4 operator/(const Vector4 rhs) const noexcept;
-    [[nodiscard]] Vector4 operator/(float inv_scale) const noexcept;
+        [[nodiscard]] bool operator==(const Vector4& rhs) const noexcept;
+        [[nodiscard]] bool operator!=(const Vector4& rhs) const noexcept;
 
-    friend Vector4 operator*(float lhs, const Vector4& rhs) noexcept;
-    Vector4& operator*=(float scale) noexcept;
-    Vector4& operator*=(const Vector4& rhs) noexcept;
-    Vector4& operator/=(const Vector4& rhs) noexcept;
-    Vector4& operator+=(const Vector4& rhs) noexcept;
-    Vector4& operator-=(const Vector4& rhs) noexcept;
+        [[nodiscard]] Vector4 operator+(const Vector4& rhs) const noexcept;
+        [[nodiscard]] Vector4 operator-(const Vector4& rhs) const noexcept;
+        [[nodiscard]] Vector4 operator*(const Vector4& rhs) const noexcept;
+        [[nodiscard]] Vector4 operator*(float scale) const noexcept;
+        [[nodiscard]] Vector4 operator/(const Vector4 rhs) const noexcept;
+        [[nodiscard]] Vector4 operator/(float inv_scale) const noexcept;
 
-    [[nodiscard]] Vector4 operator-() const noexcept;
+        friend Vector4 operator*(float lhs, const Vector4& rhs) noexcept;
+        Vector4& operator*=(float scale) noexcept;
+        Vector4& operator*=(const Vector4& rhs) noexcept;
+        Vector4& operator/=(const Vector4& rhs) noexcept;
+        Vector4& operator+=(const Vector4& rhs) noexcept;
+        Vector4& operator-=(const Vector4& rhs) noexcept;
 
-    friend std::ostream& operator<<(std::ostream& out_stream, const Vector4& v) noexcept;
-    friend std::istream& operator>>(std::istream& in_stream, Vector4& v) noexcept;
+        [[nodiscard]] Vector4 operator-() const noexcept;
 
-    [[nodiscard]] Vector2 GetXY() const noexcept;
-    [[nodiscard]] Vector2 GetZW() const noexcept;
+        friend std::ostream& operator<<(std::ostream& out_stream, const Vector4& v) noexcept;
+        friend std::istream& operator>>(std::istream& in_stream, Vector4& v) noexcept;
 
-    //TODO: These should return tuples
-    void GetXYZ(float& out_x, float& out_y, float& out_z) const noexcept;
-    void GetXYZW(float& out_x, float& out_y, float& out_z, float& out_w) const noexcept;
+        [[nodiscard]] Vector2 GetXY() const noexcept;
+        [[nodiscard]] Vector2 GetZW() const noexcept;
 
-    void SetXYZ(float newX, float newY, float newZ) noexcept;
-    void SetXYZW(float newX, float newY, float newZ, float newW) noexcept;
+        //TODO: These should return tuples
+        void GetXYZ(float& out_x, float& out_y, float& out_z) const noexcept;
+        void GetXYZW(float& out_x, float& out_y, float& out_z, float& out_w) const noexcept;
 
-    [[nodiscard]] float* GetAsFloatArray() noexcept;
+        void SetXYZ(float newX, float newY, float newZ) noexcept;
+        void SetXYZW(float newX, float newY, float newZ, float newW) noexcept;
 
-    [[nodiscard]] float CalcLength3D() const noexcept;
-    [[nodiscard]] float CalcLength3DSquared() const noexcept;
-    [[nodiscard]] float CalcLength4D() const noexcept;
-    [[nodiscard]] float CalcLength4DSquared() const noexcept;
-    void CalcHomogeneous() noexcept;
+        [[nodiscard]] float* GetAsFloatArray() noexcept;
 
-    float Normalize4D() noexcept;
-    float Normalize3D() noexcept;
+        [[nodiscard]] float CalcLength3D() const noexcept;
+        [[nodiscard]] float CalcLength3DSquared() const noexcept;
+        [[nodiscard]] float CalcLength4D() const noexcept;
+        [[nodiscard]] float CalcLength4DSquared() const noexcept;
+        void CalcHomogeneous() noexcept;
 
-    [[nodiscard]] Vector4 GetNormalize4D() const noexcept;
-    [[nodiscard]] Vector4 GetNormalize3D() const noexcept;
+        float Normalize4D() noexcept;
+        float Normalize3D() noexcept;
 
-    friend void swap(Vector4& a, Vector4& b) noexcept;
+        [[nodiscard]] Vector4 GetNormalize4D() const noexcept;
+        [[nodiscard]] Vector4 GetNormalize3D() const noexcept;
 
-    float x = 0.0f;
-    float y = 0.0f;
-    float z = 0.0f;
-    float w = 0.0f;
+        friend void swap(Vector4& a, Vector4& b) noexcept;
 
-protected:
-private:
-};
+        float x = 0.0f;
+        float y = 0.0f;
+        float z = 0.0f;
+        float w = 0.0f;
 
-namespace StringUtils {
-[[nodiscard]] std::string to_string(const Vector4& v) noexcept;
-}
+    protected:
+    private:
+    };
+
+    namespace StringUtils {
+        [[nodiscard]] std::string to_string(const Vector4& v) noexcept;
+    }
+
+} // namespace a2de

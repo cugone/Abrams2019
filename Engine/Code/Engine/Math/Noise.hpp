@@ -41,142 +41,145 @@
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
-namespace MathUtils {
-//-----------------------------------------------------------------------------------------------
-// Raw pseudorandom noise functions (random-access / deterministic).  Basis of all other noise.
-//
-[[nodiscard]] unsigned int Get1dNoiseUint(int index, unsigned int seed = 0) noexcept;
-[[nodiscard]] unsigned int Get2dNoiseUint(int indexX, int indexY, unsigned int seed = 0) noexcept;
-[[nodiscard]] unsigned int Get3dNoiseUint(int indexX, int indexY, int indexZ, unsigned int seed = 0) noexcept;
-[[nodiscard]] unsigned int Get4dNoiseUint(int indexX, int indexY, int indexZ, int indexT, unsigned int seed = 0) noexcept;
+namespace a2de {
 
-//-----------------------------------------------------------------------------------------------
-// Same functions, mapped to floats in [0,1] for convenience.
-//
-[[nodiscard]] float Get1dNoiseZeroToOne(int index, unsigned int seed = 0) noexcept;
-[[nodiscard]] float Get2dNoiseZeroToOne(int indexX, int indexY, unsigned int seed = 0) noexcept;
-[[nodiscard]] float Get3dNoiseZeroToOne(int indexX, int indexY, int indexZ, unsigned int seed = 0) noexcept;
-[[nodiscard]] float Get4dNoiseZeroToOne(int indexX, int indexY, int indexZ, int indexT, unsigned int seed = 0) noexcept;
+    namespace MathUtils {
+        //-----------------------------------------------------------------------------------------------
+        // Raw pseudorandom noise functions (random-access / deterministic).  Basis of all other noise.
+        //
+        [[nodiscard]] unsigned int Get1dNoiseUint(int index, unsigned int seed = 0) noexcept;
+        [[nodiscard]] unsigned int Get2dNoiseUint(int indexX, int indexY, unsigned int seed = 0) noexcept;
+        [[nodiscard]] unsigned int Get3dNoiseUint(int indexX, int indexY, int indexZ, unsigned int seed = 0) noexcept;
+        [[nodiscard]] unsigned int Get4dNoiseUint(int indexX, int indexY, int indexZ, int indexT, unsigned int seed = 0) noexcept;
 
-//-----------------------------------------------------------------------------------------------
-// Same functions, mapped to floats in [-1,1] for convenience.
-//
-[[nodiscard]] float Get1dNoiseNegOneToOne(int index, unsigned int seed = 0) noexcept;
-[[nodiscard]] float Get2dNoiseNegOneToOne(int indexX, int indexY, unsigned int seed = 0) noexcept;
-[[nodiscard]] float Get3dNoiseNegOneToOne(int indexX, int indexY, int indexZ, unsigned int seed = 0) noexcept;
-[[nodiscard]] float Get4dNoiseNegOneToOne(int indexX, int indexY, int indexZ, int indexT, unsigned int seed = 0) noexcept;
+        //-----------------------------------------------------------------------------------------------
+        // Same functions, mapped to floats in [0,1] for convenience.
+        //
+        [[nodiscard]] float Get1dNoiseZeroToOne(int index, unsigned int seed = 0) noexcept;
+        [[nodiscard]] float Get2dNoiseZeroToOne(int indexX, int indexY, unsigned int seed = 0) noexcept;
+        [[nodiscard]] float Get3dNoiseZeroToOne(int indexX, int indexY, int indexZ, unsigned int seed = 0) noexcept;
+        [[nodiscard]] float Get4dNoiseZeroToOne(int indexX, int indexY, int indexZ, int indexT, unsigned int seed = 0) noexcept;
 
-//-----------------------------------------------------------------------------------------------
-// Smooth/fractal pseudorandom noise functions (random-access / deterministic)
-//
-// These are less "organic" (and more axial) than Perlin's functions, but simpler and faster.
-//
-// <numOctaves>			Number of layers of noise added together
-// <octavePersistence>	Amplitude multiplier for each subsequent octave (each octave is quieter)
-// <octaveScale>		Frequency multiplier for each subsequent octave (each octave is busier)
-// <renormalize>		If true, uses nonlinear (SmoothStep) renormalization to within [-1,1]
-//
-[[nodiscard]] float Compute1dFractalNoise(float position, float scale = 1.f, unsigned int numOctaves = 1, float octavePersistence = 0.5f, float octaveScale = 2.f, bool renormalize = true, unsigned int seed = 0) noexcept;
-[[nodiscard]] float Compute2dFractalNoise(float posX, float posY, float scale = 1.f, unsigned int numOctaves = 1, float octavePersistence = 0.5f, float octaveScale = 2.f, bool renormalize = true, unsigned int seed = 0) noexcept;
-[[nodiscard]] float Compute3dFractalNoise(float posX, float posY, float posZ, float scale = 1.f, unsigned int numOctaves = 1, float octavePersistence = 0.5f, float octaveScale = 2.f, bool renormalize = true, unsigned int seed = 0) noexcept;
-[[nodiscard]] float Compute4dFractalNoise(float posX, float posY, float posZ, float posT, float scale = 1.f, unsigned int numOctaves = 1, float octavePersistence = 0.5f, float octaveScale = 2.f, bool renormalize = true, unsigned int seed = 0) noexcept;
+        //-----------------------------------------------------------------------------------------------
+        // Same functions, mapped to floats in [-1,1] for convenience.
+        //
+        [[nodiscard]] float Get1dNoiseNegOneToOne(int index, unsigned int seed = 0) noexcept;
+        [[nodiscard]] float Get2dNoiseNegOneToOne(int indexX, int indexY, unsigned int seed = 0) noexcept;
+        [[nodiscard]] float Get3dNoiseNegOneToOne(int indexX, int indexY, int indexZ, unsigned int seed = 0) noexcept;
+        [[nodiscard]] float Get4dNoiseNegOneToOne(int indexX, int indexY, int indexZ, int indexT, unsigned int seed = 0) noexcept;
 
-//-----------------------------------------------------------------------------------------------
-// Perlin noise functions (random-access / deterministic)
-//
-// Perlin noise is slightly more expensive, but more organic-looking (less axial) than regular
-//	square fractal noise, through the use of blended dot products vs. randomized gradient vectors.
-//
-// <numOctaves>			Number of layers of noise added together
-// <octavePersistence>	Amplitude multiplier for each subsequent octave (each octave is quieter)
-// <octaveScale>		Frequency multiplier for each subsequent octave (each octave is busier)
-// <renormalize>		If true, uses nonlinear (SmoothStep) renormalization to within [-1,1]
-//
-[[nodiscard]] float Compute1dPerlinNoise(float position, float scale = 1.f, unsigned int numOctaves = 1, float octavePersistence = 0.5f, float octaveScale = 2.f, bool renormalize = true, unsigned int seed = 0) noexcept;
-[[nodiscard]] float Compute2dPerlinNoise(float posX, float posY, float scale = 1.f, unsigned int numOctaves = 1, float octavePersistence = 0.5f, float octaveScale = 2.f, bool renormalize = true, unsigned int seed = 0) noexcept;
-[[nodiscard]] float Compute3dPerlinNoise(float posX, float posY, float posZ, float scale = 1.f, unsigned int numOctaves = 1, float octavePersistence = 0.5f, float octaveScale = 2.f, bool renormalize = true, unsigned int seed = 0) noexcept;
-[[nodiscard]] float Compute4dPerlinNoise(float posX, float posY, float posZ, float posT, float scale = 1.f, unsigned int numOctaves = 1, float octavePersistence = 0.5f, float octaveScale = 2.f, bool renormalize = true, unsigned int seed = 0) noexcept;
+        //-----------------------------------------------------------------------------------------------
+        // Smooth/fractal pseudorandom noise functions (random-access / deterministic)
+        //
+        // These are less "organic" (and more axial) than Perlin's functions, but simpler and faster.
+        //
+        // <numOctaves>			Number of layers of noise added together
+        // <octavePersistence>	Amplitude multiplier for each subsequent octave (each octave is quieter)
+        // <octaveScale>		Frequency multiplier for each subsequent octave (each octave is busier)
+        // <renormalize>		If true, uses nonlinear (SmoothStep) renormalization to within [-1,1]
+        //
+        [[nodiscard]] float Compute1dFractalNoise(float position, float scale = 1.f, unsigned int numOctaves = 1, float octavePersistence = 0.5f, float octaveScale = 2.f, bool renormalize = true, unsigned int seed = 0) noexcept;
+        [[nodiscard]] float Compute2dFractalNoise(float posX, float posY, float scale = 1.f, unsigned int numOctaves = 1, float octavePersistence = 0.5f, float octaveScale = 2.f, bool renormalize = true, unsigned int seed = 0) noexcept;
+        [[nodiscard]] float Compute3dFractalNoise(float posX, float posY, float posZ, float scale = 1.f, unsigned int numOctaves = 1, float octavePersistence = 0.5f, float octaveScale = 2.f, bool renormalize = true, unsigned int seed = 0) noexcept;
+        [[nodiscard]] float Compute4dFractalNoise(float posX, float posY, float posZ, float posT, float scale = 1.f, unsigned int numOctaves = 1, float octavePersistence = 0.5f, float octaveScale = 2.f, bool renormalize = true, unsigned int seed = 0) noexcept;
 
-//-----------------------------------------------------------------------------------------------
-// Simplex noise functions (random-access / deterministic)
-//
-// Simplex noise (also by Ken Perlin) is supposedly faster than - and apparently superior to -
-//	Perlin noise, in that it is more organic-looking.  I'm not sure I like the look of it better,
-//	though, and examples of cross-sectional 4D simplex noise look worse to me than 4D Perlin.
-//
-// Simplex noise is based on a regular simplex (2D triangle, 3D tetrahedron, 4-simplex/5-cell)
-//	grid, which is a bit more fiddly, so I haven't written my own yet.
-//
-//TODO: Implement simplex noise in 2D, 3D, 4D (1D simplex is identical to 1D Perlin, I think?)
-//TODO: Test actual simplex noise implementation in 2D/3D to compare speeds (branches vs. math!)
+        //-----------------------------------------------------------------------------------------------
+        // Perlin noise functions (random-access / deterministic)
+        //
+        // Perlin noise is slightly more expensive, but more organic-looking (less axial) than regular
+        //	square fractal noise, through the use of blended dot products vs. randomized gradient vectors.
+        //
+        // <numOctaves>			Number of layers of noise added together
+        // <octavePersistence>	Amplitude multiplier for each subsequent octave (each octave is quieter)
+        // <octaveScale>		Frequency multiplier for each subsequent octave (each octave is busier)
+        // <renormalize>		If true, uses nonlinear (SmoothStep) renormalization to within [-1,1]
+        //
+        [[nodiscard]] float Compute1dPerlinNoise(float position, float scale = 1.f, unsigned int numOctaves = 1, float octavePersistence = 0.5f, float octaveScale = 2.f, bool renormalize = true, unsigned int seed = 0) noexcept;
+        [[nodiscard]] float Compute2dPerlinNoise(float posX, float posY, float scale = 1.f, unsigned int numOctaves = 1, float octavePersistence = 0.5f, float octaveScale = 2.f, bool renormalize = true, unsigned int seed = 0) noexcept;
+        [[nodiscard]] float Compute3dPerlinNoise(float posX, float posY, float posZ, float scale = 1.f, unsigned int numOctaves = 1, float octavePersistence = 0.5f, float octaveScale = 2.f, bool renormalize = true, unsigned int seed = 0) noexcept;
+        [[nodiscard]] float Compute4dPerlinNoise(float posX, float posY, float posZ, float posT, float scale = 1.f, unsigned int numOctaves = 1, float octavePersistence = 0.5f, float octaveScale = 2.f, bool renormalize = true, unsigned int seed = 0) noexcept;
 
-//-----------------------------------------------------------------------------------------------
-[[nodiscard]] inline unsigned int Get2dNoiseUint(int indexX, int indexY, unsigned int seed) noexcept {
-    const int PRIME_NUMBER = 198491317; // Large prime number with non-boring bits
-    return Get1dNoiseUint(indexX + (PRIME_NUMBER * indexY), seed);
-}
+        //-----------------------------------------------------------------------------------------------
+        // Simplex noise functions (random-access / deterministic)
+        //
+        // Simplex noise (also by Ken Perlin) is supposedly faster than - and apparently superior to -
+        //	Perlin noise, in that it is more organic-looking.  I'm not sure I like the look of it better,
+        //	though, and examples of cross-sectional 4D simplex noise look worse to me than 4D Perlin.
+        //
+        // Simplex noise is based on a regular simplex (2D triangle, 3D tetrahedron, 4-simplex/5-cell)
+        //	grid, which is a bit more fiddly, so I haven't written my own yet.
+        //
+        //TODO: Implement simplex noise in 2D, 3D, 4D (1D simplex is identical to 1D Perlin, I think?)
+        //TODO: Test actual simplex noise implementation in 2D/3D to compare speeds (branches vs. math!)
 
-//-----------------------------------------------------------------------------------------------
-[[nodiscard]] inline unsigned int Get3dNoiseUint(int indexX, int indexY, int indexZ, unsigned int seed) noexcept {
-    const int PRIME1 = 198491317; // Large prime number with non-boring bits
-    const int PRIME2 = 6542989;   // Large prime number with distinct and non-boring bits
-    return Get1dNoiseUint(indexX + (PRIME1 * indexY) + (PRIME2 * indexZ), seed);
-}
+        //-----------------------------------------------------------------------------------------------
+        [[nodiscard]] inline unsigned int Get2dNoiseUint(int indexX, int indexY, unsigned int seed) noexcept {
+            const int PRIME_NUMBER = 198491317; // Large prime number with non-boring bits
+            return Get1dNoiseUint(indexX + (PRIME_NUMBER * indexY), seed);
+        }
 
-//-----------------------------------------------------------------------------------------------
-[[nodiscard]] inline unsigned int Get4dNoiseUint(int indexX, int indexY, int indexZ, int indexT, unsigned int seed) noexcept {
-    const int PRIME1 = 198491317; // Large prime number with non-boring bits
-    const int PRIME2 = 6542989;   // Large prime number with distinct and non-boring bits
-    const int PRIME3 = 357239;    // Large prime number with distinct and non-boring bits
-    return Get1dNoiseUint(indexX + (PRIME1 * indexY) + (PRIME2 * indexZ) + (PRIME3 * indexT), seed);
-}
+        //-----------------------------------------------------------------------------------------------
+        [[nodiscard]] inline unsigned int Get3dNoiseUint(int indexX, int indexY, int indexZ, unsigned int seed) noexcept {
+            const int PRIME1 = 198491317; // Large prime number with non-boring bits
+            const int PRIME2 = 6542989;   // Large prime number with distinct and non-boring bits
+            return Get1dNoiseUint(indexX + (PRIME1 * indexY) + (PRIME2 * indexZ), seed);
+        }
 
-//-----------------------------------------------------------------------------------------------
-[[nodiscard]] inline float Get1dNoiseZeroToOne(int index, unsigned int seed) noexcept {
-    const double ONE_OVER_MAX_UINT = (1.0 / (double)0xFFFFFFFF);
-    return (float)(ONE_OVER_MAX_UINT * (double)Get1dNoiseUint(index, seed));
-}
+        //-----------------------------------------------------------------------------------------------
+        [[nodiscard]] inline unsigned int Get4dNoiseUint(int indexX, int indexY, int indexZ, int indexT, unsigned int seed) noexcept {
+            const int PRIME1 = 198491317; // Large prime number with non-boring bits
+            const int PRIME2 = 6542989;   // Large prime number with distinct and non-boring bits
+            const int PRIME3 = 357239;    // Large prime number with distinct and non-boring bits
+            return Get1dNoiseUint(indexX + (PRIME1 * indexY) + (PRIME2 * indexZ) + (PRIME3 * indexT), seed);
+        }
 
-//-----------------------------------------------------------------------------------------------
-[[nodiscard]] inline float Get2dNoiseZeroToOne(int indexX, int indexY, unsigned int seed) noexcept {
-    const double ONE_OVER_MAX_UINT = (1.0 / (double)0xFFFFFFFF);
-    return (float)(ONE_OVER_MAX_UINT * (double)Get2dNoiseUint(indexX, indexY, seed));
-}
+        //-----------------------------------------------------------------------------------------------
+        [[nodiscard]] inline float Get1dNoiseZeroToOne(int index, unsigned int seed) noexcept {
+            const double ONE_OVER_MAX_UINT = (1.0 / (double)0xFFFFFFFF);
+            return (float)(ONE_OVER_MAX_UINT * (double)Get1dNoiseUint(index, seed));
+        }
 
-//-----------------------------------------------------------------------------------------------
-[[nodiscard]] inline float Get3dNoiseZeroToOne(int indexX, int indexY, int indexZ, unsigned int seed) noexcept {
-    const double ONE_OVER_MAX_UINT = (1.0 / (double)0xFFFFFFFF);
-    return (float)(ONE_OVER_MAX_UINT * (double)Get3dNoiseUint(indexX, indexY, indexZ, seed));
-}
+        //-----------------------------------------------------------------------------------------------
+        [[nodiscard]] inline float Get2dNoiseZeroToOne(int indexX, int indexY, unsigned int seed) noexcept {
+            const double ONE_OVER_MAX_UINT = (1.0 / (double)0xFFFFFFFF);
+            return (float)(ONE_OVER_MAX_UINT * (double)Get2dNoiseUint(indexX, indexY, seed));
+        }
 
-//-----------------------------------------------------------------------------------------------
-[[nodiscard]] inline float Get4dNoiseZeroToOne(int indexX, int indexY, int indexZ, int indexT, unsigned int seed) noexcept {
-    const double ONE_OVER_MAX_UINT = (1.0 / (double)0xFFFFFFFF);
-    return (float)(ONE_OVER_MAX_UINT * (double)Get4dNoiseUint(indexX, indexY, indexZ, indexT, seed));
-}
+        //-----------------------------------------------------------------------------------------------
+        [[nodiscard]] inline float Get3dNoiseZeroToOne(int indexX, int indexY, int indexZ, unsigned int seed) noexcept {
+            const double ONE_OVER_MAX_UINT = (1.0 / (double)0xFFFFFFFF);
+            return (float)(ONE_OVER_MAX_UINT * (double)Get3dNoiseUint(indexX, indexY, indexZ, seed));
+        }
 
-//-----------------------------------------------------------------------------------------------
-[[nodiscard]] inline float Get1dNoiseNegOneToOne(int index, unsigned int seed) noexcept {
-    const double ONE_OVER_MAX_INT = (1.0 / (double)0x7FFFFFFF);
-    return (float)(ONE_OVER_MAX_INT * (double)(int)Get1dNoiseUint(index, seed));
-}
+        //-----------------------------------------------------------------------------------------------
+        [[nodiscard]] inline float Get4dNoiseZeroToOne(int indexX, int indexY, int indexZ, int indexT, unsigned int seed) noexcept {
+            const double ONE_OVER_MAX_UINT = (1.0 / (double)0xFFFFFFFF);
+            return (float)(ONE_OVER_MAX_UINT * (double)Get4dNoiseUint(indexX, indexY, indexZ, indexT, seed));
+        }
 
-//-----------------------------------------------------------------------------------------------
-[[nodiscard]] inline float Get2dNoiseNegOneToOne(int indexX, int indexY, unsigned int seed) noexcept {
-    const double ONE_OVER_MAX_INT = (1.0 / (double)0x7FFFFFFF);
-    return (float)(ONE_OVER_MAX_INT * (double)(int)Get2dNoiseUint(indexX, indexY, seed));
-}
+        //-----------------------------------------------------------------------------------------------
+        [[nodiscard]] inline float Get1dNoiseNegOneToOne(int index, unsigned int seed) noexcept {
+            const double ONE_OVER_MAX_INT = (1.0 / (double)0x7FFFFFFF);
+            return (float)(ONE_OVER_MAX_INT * (double)(int)Get1dNoiseUint(index, seed));
+        }
 
-//-----------------------------------------------------------------------------------------------
-[[nodiscard]] inline float Get3dNoiseNegOneToOne(int indexX, int indexY, int indexZ, unsigned int seed) noexcept {
-    const double ONE_OVER_MAX_INT = (1.0 / (double)0x7FFFFFFF);
-    return (float)(ONE_OVER_MAX_INT * (double)(int)Get3dNoiseUint(indexX, indexY, indexZ, seed));
-}
+        //-----------------------------------------------------------------------------------------------
+        [[nodiscard]] inline float Get2dNoiseNegOneToOne(int indexX, int indexY, unsigned int seed) noexcept {
+            const double ONE_OVER_MAX_INT = (1.0 / (double)0x7FFFFFFF);
+            return (float)(ONE_OVER_MAX_INT * (double)(int)Get2dNoiseUint(indexX, indexY, seed));
+        }
 
-//-----------------------------------------------------------------------------------------------
-[[nodiscard]] inline float Get4dNoiseNegOneToOne(int indexX, int indexY, int indexZ, int indexT, unsigned int seed) noexcept {
-    const double ONE_OVER_MAX_INT = (1.0 / (double)0x7FFFFFFF);
-    return (float)(ONE_OVER_MAX_INT * (double)(int)Get4dNoiseUint(indexX, indexY, indexZ, indexT, seed));
-}
+        //-----------------------------------------------------------------------------------------------
+        [[nodiscard]] inline float Get3dNoiseNegOneToOne(int indexX, int indexY, int indexZ, unsigned int seed) noexcept {
+            const double ONE_OVER_MAX_INT = (1.0 / (double)0x7FFFFFFF);
+            return (float)(ONE_OVER_MAX_INT * (double)(int)Get3dNoiseUint(indexX, indexY, indexZ, seed));
+        }
 
-} // namespace MathUtils
+        //-----------------------------------------------------------------------------------------------
+        [[nodiscard]] inline float Get4dNoiseNegOneToOne(int indexX, int indexY, int indexZ, int indexT, unsigned int seed) noexcept {
+            const double ONE_OVER_MAX_INT = (1.0 / (double)0x7FFFFFFF);
+            return (float)(ONE_OVER_MAX_INT * (double)(int)Get4dNoiseUint(indexX, indexY, indexZ, indexT, seed));
+        }
+
+    } // namespace MathUtils
+} // namespace a2de

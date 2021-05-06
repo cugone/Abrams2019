@@ -13,6 +13,8 @@
 
 #include <hidusage.h>
 
+namespace a2de {
+
 unsigned char InputSystem::ConvertKeyCodeToWinVK(const KeyCode& code) noexcept {
     switch(code) {
     case KeyCode::LButton: return VK_LBUTTON;
@@ -1600,3 +1602,5 @@ const XboxController& InputSystem::GetXboxController(const std::size_t& controll
 XboxController& InputSystem::GetXboxController(const std::size_t& controllerIndex) noexcept {
     return _xboxControllers[controllerIndex];
 }
+
+} // namespace a2de

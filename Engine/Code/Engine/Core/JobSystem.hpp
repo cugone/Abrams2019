@@ -10,95 +10,99 @@
 #include <thread>
 #include <vector>
 
-class Job;
-class JobSystem;
+namespace a2de {
 
-enum class JobType : std::size_t {
-    Generic,
-    Logging,
-    Io,
-    Render,
-    Main,
-    Max,
-};
+    class Job;
+    class JobSystem;
 
-enum class JobState : unsigned int {
-    None,
-    Created,
-    Dispatched,
-    Enqueued,
-    Running,
-    Finished,
-    Max,
-};
+    enum class JobType : std::size_t {
+        Generic,
+        Logging,
+        Io,
+        Render,
+        Main,
+        Max,
+    };
 
-class Job {
-public:
-    explicit Job(JobSystem& jobSystem) noexcept;
-    ~Job() noexcept;
-    JobType type{};
-    JobState state{};
-    std::function<void(void*)> work_cb;
-    void* user_data{};
+    enum class JobState : unsigned int {
+        None,
+        Created,
+        Dispatched,
+        Enqueued,
+        Running,
+        Finished,
+        Max,
+    };
 
-    void DependencyOf(Job* dependency) noexcept;
-    void DependentOn(Job* parent) noexcept;
-    void OnDependancyFinished() noexcept;
-    void OnFinish() noexcept;
+    class Job {
+    public:
+        explicit Job(JobSystem& jobSystem) noexcept;
+        ~Job() noexcept;
+        JobType type{};
+        JobState state{};
+        std::function<void(void*)> work_cb;
+        void* user_data{};
 
-    std::vector<Job*> dependents{};
-    std::atomic<unsigned int> num_dependencies{0u};
+        void DependencyOf(Job* dependency) noexcept;
+        void DependentOn(Job* parent) noexcept;
+        void OnDependancyFinished() noexcept;
+        void OnFinish() noexcept;
 
-private:
-    void AddDependent(Job* dependent) noexcept;
-    JobSystem* _job_system = nullptr;
-};
+        std::vector<Job*> dependents{};
+        std::atomic<unsigned int> num_dependencies{0u};
 
-class JobConsumer {
-public:
-    void AddCategory(const JobType& category) noexcept;
-    bool ConsumeJob() noexcept;
-    unsigned int ConsumeAll() noexcept;
-    void ConsumeFor(TimeUtils::FPMilliseconds consume_duration) noexcept;
-    [[nodiscard]] bool HasJobs() const noexcept;
+    private:
+        void AddDependent(Job* dependent) noexcept;
+        JobSystem* _job_system = nullptr;
+    };
 
-private:
-    std::vector<ThreadSafeQueue<Job*>*> _consumables{};
-    friend class JobSystem;
-};
+    class JobConsumer {
+    public:
+        void AddCategory(const JobType& category) noexcept;
+        bool ConsumeJob() noexcept;
+        unsigned int ConsumeAll() noexcept;
+        void ConsumeFor(TimeUtils::FPMilliseconds consume_duration) noexcept;
+        [[nodiscard]] bool HasJobs() const noexcept;
 
-class JobSystem {
-public:
-    JobSystem(int genericCount, std::size_t categoryCount, std::condition_variable* mainJobSignal) noexcept;
-    ~JobSystem() noexcept;
+    private:
+        std::vector<ThreadSafeQueue<Job*>*> _consumables{};
+        friend class JobSystem;
+    };
 
-    void BeginFrame() noexcept;
-    void Shutdown() noexcept;
+    class JobSystem {
+    public:
+        JobSystem(int genericCount, std::size_t categoryCount, std::condition_variable* mainJobSignal) noexcept;
+        ~JobSystem() noexcept;
 
-    void SetCategorySignal(const JobType& category_id, std::condition_variable* signal) noexcept;
-    [[nodiscard]] Job* Create(const JobType& category, const std::function<void(void*)>& cb, void* user_data) noexcept;
-    void Run(const JobType& category, const std::function<void(void*)>& cb, void* user_data) noexcept;
-    void Dispatch(Job* job) noexcept;
-    bool Release(Job* job) noexcept;
-    void Wait(Job* job) noexcept;
-    void DispatchAndRelease(Job* job) noexcept;
-    void WaitAndRelease(Job* job) noexcept;
-    [[nodiscard]] bool IsRunning() const noexcept;
-    void SetIsRunning(bool value = true) noexcept;
+        void BeginFrame() noexcept;
+        void Shutdown() noexcept;
 
-    [[nodiscard]] std::condition_variable* GetMainJobSignal() const noexcept;
+        void SetCategorySignal(const JobType& category_id, std::condition_variable* signal) noexcept;
+        [[nodiscard]] Job* Create(const JobType& category, const std::function<void(void*)>& cb, void* user_data) noexcept;
+        void Run(const JobType& category, const std::function<void(void*)>& cb, void* user_data) noexcept;
+        void Dispatch(Job* job) noexcept;
+        bool Release(Job* job) noexcept;
+        void Wait(Job* job) noexcept;
+        void DispatchAndRelease(Job* job) noexcept;
+        void WaitAndRelease(Job* job) noexcept;
+        [[nodiscard]] bool IsRunning() const noexcept;
+        void SetIsRunning(bool value = true) noexcept;
 
-protected:
-private:
-    void Initialize(int genericCount, std::size_t categoryCount) noexcept;
-    void MainStep() noexcept;
-    void GenericJobWorker(std::condition_variable* signal) noexcept;
+        [[nodiscard]] std::condition_variable* GetMainJobSignal() const noexcept;
 
-    static std::vector<ThreadSafeQueue<Job*>*> _queues;
-    static std::vector<std::condition_variable*> _signals;
-    static std::vector<std::thread> _threads;
-    std::condition_variable* _main_job_signal = nullptr;
-    std::mutex _cs{};
-    std::atomic_bool _is_running = false;
-    friend class JobConsumer;
-};
+    protected:
+    private:
+        void Initialize(int genericCount, std::size_t categoryCount) noexcept;
+        void MainStep() noexcept;
+        void GenericJobWorker(std::condition_variable* signal) noexcept;
+
+        static std::vector<ThreadSafeQueue<Job*>*> _queues;
+        static std::vector<std::condition_variable*> _signals;
+        static std::vector<std::thread> _threads;
+        std::condition_variable* _main_job_signal = nullptr;
+        std::mutex _cs{};
+        std::atomic_bool _is_running = false;
+        friend class JobConsumer;
+    };
+
+} // namespace a2de

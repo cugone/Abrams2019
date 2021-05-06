@@ -7,33 +7,37 @@
 #include <filesystem>
 #include <string>
 
-class Renderer;
-class Texture;
+namespace a2de {
 
-class SpriteSheet {
-public:
-    SpriteSheet(Renderer& renderer, const XMLElement& elem) noexcept;
-    ~SpriteSheet() = default;
+    class Renderer;
+    class Texture;
 
-    [[nodiscard]] AABB2 GetTexCoordsFromSpriteCoords(int spriteX, int spriteY) const noexcept;
-    [[nodiscard]] AABB2 GetTexCoordsFromSpriteCoords(const IntVector2& spriteCoords) const noexcept;
-    [[nodiscard]] AABB2 GetTexCoordsFromSpriteIndex(int spriteIndex) const noexcept;
-    [[nodiscard]] int GetNumSprites() const noexcept;
-    [[nodiscard]] int GetFrameWidth() const noexcept;
-    [[nodiscard]] int GetFrameHeight() const noexcept;
-    [[nodiscard]] IntVector2 GetFrameDimensions() const noexcept;
-    [[nodiscard]] const IntVector2& GetLayout() const noexcept;
-    [[nodiscard]] const Texture* GetTexture() const noexcept;
-    [[nodiscard]] Texture* GetTexture() noexcept;
+    class SpriteSheet {
+    public:
+        SpriteSheet(Renderer& renderer, const XMLElement& elem) noexcept;
+        ~SpriteSheet() = default;
 
-protected:
-private:
-    SpriteSheet(Texture* texture, int tilesWide, int tilesHigh) noexcept;
-    SpriteSheet(Renderer& renderer, const std::filesystem::path& texturePath, int tilesWide, int tilesHigh) noexcept;
+        [[nodiscard]] AABB2 GetTexCoordsFromSpriteCoords(int spriteX, int spriteY) const noexcept;
+        [[nodiscard]] AABB2 GetTexCoordsFromSpriteCoords(const IntVector2& spriteCoords) const noexcept;
+        [[nodiscard]] AABB2 GetTexCoordsFromSpriteIndex(int spriteIndex) const noexcept;
+        [[nodiscard]] int GetNumSprites() const noexcept;
+        [[nodiscard]] int GetFrameWidth() const noexcept;
+        [[nodiscard]] int GetFrameHeight() const noexcept;
+        [[nodiscard]] IntVector2 GetFrameDimensions() const noexcept;
+        [[nodiscard]] const IntVector2& GetLayout() const noexcept;
+        [[nodiscard]] const Texture* GetTexture() const noexcept;
+        [[nodiscard]] Texture* GetTexture() noexcept;
 
-    void LoadFromXml(Renderer& renderer, const XMLElement& elem) noexcept;
-    Texture* _spriteSheetTexture = nullptr;
-    IntVector2 _spriteLayout{1, 1};
+    protected:
+    private:
+        SpriteSheet(Texture* texture, int tilesWide, int tilesHigh) noexcept;
+        SpriteSheet(Renderer& renderer, const std::filesystem::path& texturePath, int tilesWide, int tilesHigh) noexcept;
 
-    friend class Renderer;
-};
+        void LoadFromXml(Renderer& renderer, const XMLElement& elem) noexcept;
+        Texture* _spriteSheetTexture = nullptr;
+        IntVector2 _spriteLayout{1, 1};
+
+        friend class Renderer;
+    };
+
+} // namespace a2de

@@ -2,80 +2,84 @@
 
 #include <string>
 
-class Vector2;
-class IntVector3;
-class Vector4;
-class Quaternion;
+namespace a2de {
 
-class Vector3 {
-public:
-    static const Vector3 ONE;
-    static const Vector3 ZERO;
-    static const Vector3 X_AXIS;
-    static const Vector3 Y_AXIS;
-    static const Vector3 Z_AXIS;
-    static const Vector3 XY_AXIS;
-    static const Vector3 XZ_AXIS;
-    static const Vector3 YZ_AXIS;
+    class Vector2;
+    class IntVector3;
+    class Vector4;
+    class Quaternion;
 
-    Vector3() noexcept = default;
-    explicit Vector3(const std::string& value) noexcept;
-    explicit Vector3(float initialX, float initialY, float initialZ) noexcept;
-    explicit Vector3(const Vector2& vec2) noexcept;
-    explicit Vector3(const IntVector3& intvec3) noexcept;
-    explicit Vector3(const Vector2& xy, float initialZ) noexcept;
-    explicit Vector3(const Vector4& vec4) noexcept;
-    explicit Vector3(const Quaternion& q) noexcept;
+    class Vector3 {
+    public:
+        static const Vector3 ONE;
+        static const Vector3 ZERO;
+        static const Vector3 X_AXIS;
+        static const Vector3 Y_AXIS;
+        static const Vector3 Z_AXIS;
+        static const Vector3 XY_AXIS;
+        static const Vector3 XZ_AXIS;
+        static const Vector3 YZ_AXIS;
 
-    [[nodiscard]] Vector3 operator+(const Vector3& rhs) const noexcept;
-    Vector3& operator+=(const Vector3& rhs) noexcept;
+        Vector3() noexcept = default;
+        explicit Vector3(const std::string& value) noexcept;
+        explicit Vector3(float initialX, float initialY, float initialZ) noexcept;
+        explicit Vector3(const Vector2& vec2) noexcept;
+        explicit Vector3(const IntVector3& intvec3) noexcept;
+        explicit Vector3(const Vector2& xy, float initialZ) noexcept;
+        explicit Vector3(const Vector4& vec4) noexcept;
+        explicit Vector3(const Quaternion& q) noexcept;
 
-    [[nodiscard]] Vector3 operator-() const noexcept;
-    [[nodiscard]] Vector3 operator-(const Vector3& rhs) const noexcept;
-    Vector3& operator-=(const Vector3& rhs) noexcept;
+        [[nodiscard]] Vector3 operator+(const Vector3& rhs) const noexcept;
+        Vector3& operator+=(const Vector3& rhs) noexcept;
 
-    friend Vector3 operator*(float lhs, const Vector3& rhs) noexcept;
-    [[nodiscard]] Vector3 operator*(float scalar) const noexcept;
-    Vector3& operator*=(float scalar) noexcept;
-    [[nodiscard]] Vector3 operator*(const Vector3& rhs) const noexcept;
-    Vector3& operator*=(const Vector3& rhs) noexcept;
+        [[nodiscard]] Vector3 operator-() const noexcept;
+        [[nodiscard]] Vector3 operator-(const Vector3& rhs) const noexcept;
+        Vector3& operator-=(const Vector3& rhs) noexcept;
 
-    friend Vector3 operator/(float lhs, const Vector3& v) noexcept;
-    [[nodiscard]] Vector3 operator/(float scalar) const noexcept;
-    Vector3 operator/=(float scalar) noexcept;
-    [[nodiscard]] Vector3 operator/(const Vector3& rhs) const noexcept;
-    Vector3 operator/=(const Vector3& rhs) noexcept;
+        friend Vector3 operator*(float lhs, const Vector3& rhs) noexcept;
+        [[nodiscard]] Vector3 operator*(float scalar) const noexcept;
+        Vector3& operator*=(float scalar) noexcept;
+        [[nodiscard]] Vector3 operator*(const Vector3& rhs) const noexcept;
+        Vector3& operator*=(const Vector3& rhs) noexcept;
 
-    [[nodiscard]] bool operator==(const Vector3& rhs) const noexcept;
-    [[nodiscard]] bool operator!=(const Vector3& rhs) const noexcept;
+        friend Vector3 operator/(float lhs, const Vector3& v) noexcept;
+        [[nodiscard]] Vector3 operator/(float scalar) const noexcept;
+        Vector3 operator/=(float scalar) noexcept;
+        [[nodiscard]] Vector3 operator/(const Vector3& rhs) const noexcept;
+        Vector3 operator/=(const Vector3& rhs) noexcept;
 
-    friend std::ostream& operator<<(std::ostream& out_stream, const Vector3& v) noexcept;
-    friend std::istream& operator>>(std::istream& in_stream, Vector3& v) noexcept;
+        [[nodiscard]] bool operator==(const Vector3& rhs) const noexcept;
+        [[nodiscard]] bool operator!=(const Vector3& rhs) const noexcept;
 
-    //TODO: Consider removing Vector3::GetXYZ(float&, float&, float&)
-    void GetXYZ(float& outX, float& outY, float& outZ) const noexcept;
-    [[nodiscard]] Vector2 GetXY() const noexcept;
-    [[nodiscard]] Vector3 GetXYZ() const noexcept;
-    [[nodiscard]] float* GetAsFloatArray() noexcept;
+        friend std::ostream& operator<<(std::ostream& out_stream, const Vector3& v) noexcept;
+        friend std::istream& operator>>(std::istream& in_stream, Vector3& v) noexcept;
 
-    [[nodiscard]] float CalcLength() const noexcept;
-    [[nodiscard]] float CalcLengthSquared() const noexcept;
+        //TODO: Consider removing Vector3::GetXYZ(float&, float&, float&)
+        void GetXYZ(float& outX, float& outY, float& outZ) const noexcept;
+        [[nodiscard]] Vector2 GetXY() const noexcept;
+        [[nodiscard]] Vector3 GetXYZ() const noexcept;
+        [[nodiscard]] float* GetAsFloatArray() noexcept;
 
-    float Normalize() noexcept;
-    [[nodiscard]] Vector3 GetNormalize() const noexcept;
+        [[nodiscard]] float CalcLength() const noexcept;
+        [[nodiscard]] float CalcLengthSquared() const noexcept;
 
-    void SetXYZ(float newX, float newY, float newZ) noexcept;
+        float Normalize() noexcept;
+        [[nodiscard]] Vector3 GetNormalize() const noexcept;
 
-    float x = 0.0f;
-    float y = 0.0f;
-    float z = 0.0f;
+        void SetXYZ(float newX, float newY, float newZ) noexcept;
 
-    friend void swap(Vector3& a, Vector3& b) noexcept;
+        float x = 0.0f;
+        float y = 0.0f;
+        float z = 0.0f;
 
-protected:
-private:
-};
+        friend void swap(Vector3& a, Vector3& b) noexcept;
 
-namespace StringUtils {
-[[nodiscard]] std::string to_string(const Vector3& v) noexcept;
-}
+    protected:
+    private:
+    };
+
+    namespace StringUtils {
+        [[nodiscard]] std::string to_string(const Vector3& v) noexcept;
+    }
+
+} // namespace a2de

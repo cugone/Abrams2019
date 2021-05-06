@@ -4,15 +4,19 @@
 
 #include "Engine/Math/MathUtils.hpp"
 
-class Ray2 {
-public:
-    Vector2 position{};
-    Vector2 direction{1.0f, 0.0f};
+namespace a2de {
 
-    void SetOrientationDegrees(float angleDegrees);
-    void SetOrientationRadians(float angleRadians);
-    [[nodiscard]] Vector2 Interpolate(float t);
+    class Ray2 {
+    public:
+        Vector2 position{};
+        Vector2 direction{1.0f, 0.0f};
 
-protected:
-private:
-};
+        void SetOrientationDegrees(float angleDegrees);
+        void SetOrientationRadians(float angleRadians);
+        [[nodiscard]] Vector2 Interpolate(float t);
+
+    protected:
+    private:
+    };
+
+} // namespace a2de

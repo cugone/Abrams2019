@@ -7,180 +7,184 @@
 
 #include <memory>
 
-struct RigidBodyDesc {
-    Position initialPosition{};
-    Velocity initialVelocity{};
-    Acceleration initialAcceleration{};
-    Collider* collider{};
-    PhysicsMaterial physicsMaterial{};
-    PhysicsDesc physicsDesc{};
-    RigidBodyDesc() noexcept {
-        /* DO NOTHING */
-    }
-    RigidBodyDesc(Position initialPos, Velocity initialVel, Acceleration initialAcc, Collider* coll, const PhysicsMaterial& physMat, const PhysicsDesc& physDesc) noexcept
-        : initialPosition{initialPos}
-        , initialVelocity{initialVel}
-        , initialAcceleration{initialAcc}
-        , collider{coll}
-        , physicsMaterial{physMat}
-        , physicsDesc{physDesc}
-    {
-        /* DO NOTHING */
-    }
-    RigidBodyDesc(RigidBodyDesc&& other) noexcept
-        : initialPosition(std::move(other.initialPosition))
-        , initialVelocity(std::move(other.initialVelocity))
-        , initialAcceleration(std::move(other.initialAcceleration))
-        , physicsMaterial(std::move(other.physicsMaterial))
-        , physicsDesc(std::move(other.physicsDesc))
-    {
-        collider = std::move(other.collider);
-        other.collider = nullptr;
-    }
-    RigidBodyDesc& operator=(RigidBodyDesc&& other) noexcept {
-        initialPosition = std::move(other.initialPosition);
-        initialVelocity = std::move(other.initialVelocity);
-        initialAcceleration = std::move(other.initialAcceleration);
-        physicsMaterial = std::move(other.physicsMaterial);
-        physicsDesc = std::move(other.physicsDesc);
-        collider = std::move(other.collider);
-        other.collider = nullptr;
-        return *this;
-    }
+namespace a2de {
 
-    RigidBodyDesc(const RigidBodyDesc& other) noexcept
-    : initialPosition(other.initialPosition)
-    ,initialVelocity(other.initialVelocity)
-    ,initialAcceleration(other.initialAcceleration)
-    ,physicsMaterial(other.physicsMaterial)
-    ,physicsDesc(other.physicsDesc)
-    {
-        auto new_collider = other.collider->Clone();
-        delete collider;
-        collider = new_collider;
-    }
-    RigidBodyDesc& operator=(const RigidBodyDesc& other) noexcept {
-        initialPosition = other.initialPosition;
-        initialVelocity = other.initialVelocity;
-        initialAcceleration = other.initialAcceleration;
-        physicsMaterial = other.physicsMaterial;
-        physicsDesc = other.physicsDesc;
-        auto new_collider = other.collider->Clone();
-        delete collider;
-        collider = new_collider;
-        return *this;
-    }
-    ~RigidBodyDesc() noexcept {
-        delete collider;
-        collider = nullptr;
-    }
-};
+    struct RigidBodyDesc {
+        Position initialPosition{};
+        Velocity initialVelocity{};
+        Acceleration initialAcceleration{};
+        Collider* collider{};
+        PhysicsMaterial physicsMaterial{};
+        PhysicsDesc physicsDesc{};
+        RigidBodyDesc() noexcept {
+            /* DO NOTHING */
+        }
+        RigidBodyDesc(Position initialPos, Velocity initialVel, Acceleration initialAcc, Collider* coll, const PhysicsMaterial& physMat, const PhysicsDesc& physDesc) noexcept
+            : initialPosition{initialPos}
+            , initialVelocity{initialVel}
+            , initialAcceleration{initialAcc}
+            , collider{coll}
+            , physicsMaterial{physMat}
+            , physicsDesc{physDesc}
+        {
+            /* DO NOTHING */
+        }
+        RigidBodyDesc(RigidBodyDesc&& other) noexcept
+            : initialPosition(std::move(other.initialPosition))
+            , initialVelocity(std::move(other.initialVelocity))
+            , initialAcceleration(std::move(other.initialAcceleration))
+            , physicsMaterial(std::move(other.physicsMaterial))
+            , physicsDesc(std::move(other.physicsDesc))
+        {
+            collider = std::move(other.collider);
+            other.collider = nullptr;
+        }
+        RigidBodyDesc& operator=(RigidBodyDesc&& other) noexcept {
+            initialPosition = std::move(other.initialPosition);
+            initialVelocity = std::move(other.initialVelocity);
+            initialAcceleration = std::move(other.initialAcceleration);
+            physicsMaterial = std::move(other.physicsMaterial);
+            physicsDesc = std::move(other.physicsDesc);
+            collider = std::move(other.collider);
+            other.collider = nullptr;
+            return *this;
+        }
 
-struct PhysicsSystemDesc;
-class PhysicsSystem;
+        RigidBodyDesc(const RigidBodyDesc& other) noexcept
+            : initialPosition(other.initialPosition)
+            , initialVelocity(other.initialVelocity)
+            , initialAcceleration(other.initialAcceleration)
+            , physicsMaterial(other.physicsMaterial)
+            , physicsDesc(other.physicsDesc)
+        {
+            auto new_collider = other.collider->Clone();
+            delete collider;
+            collider = new_collider;
+        }
+        RigidBodyDesc& operator=(const RigidBodyDesc& other) noexcept {
+            initialPosition = other.initialPosition;
+            initialVelocity = other.initialVelocity;
+            initialAcceleration = other.initialAcceleration;
+            physicsMaterial = other.physicsMaterial;
+            physicsDesc = other.physicsDesc;
+            auto new_collider = other.collider->Clone();
+            delete collider;
+            collider = new_collider;
+            return *this;
+        }
+        ~RigidBodyDesc() noexcept {
+            delete collider;
+            collider = nullptr;
+        }
+    };
 
-class RigidBody {
-public:
-    explicit RigidBody(PhysicsSystem* physicsSystem, const RigidBodyDesc& desc = RigidBodyDesc{});
+    struct PhysicsSystemDesc;
+    class PhysicsSystem;
 
-    RigidBody() = delete;
-    RigidBody(RigidBody&& other) noexcept = default;
-    RigidBody& operator=(RigidBody&& rhs) noexcept = default;
+    class RigidBody {
+    public:
+        explicit RigidBody(PhysicsSystem* physicsSystem, const RigidBodyDesc& desc = RigidBodyDesc{});
 
-    RigidBody(const RigidBody& other) noexcept = default;
-    RigidBody& operator=(const RigidBody& rhs) noexcept = default;
-    ~RigidBody() noexcept = default;
+        RigidBody() = delete;
+        RigidBody(RigidBody&& other) noexcept = default;
+        RigidBody& operator=(RigidBody&& rhs) noexcept = default;
 
-    Matrix4 transform{};
+        RigidBody(const RigidBody& other) noexcept = default;
+        RigidBody& operator=(const RigidBody& rhs) noexcept = default;
+        ~RigidBody() noexcept = default;
 
-    void BeginFrame();
-    void Update(TimeUtils::FPSeconds deltaSeconds);
-    void DebugRender(Renderer& renderer) const;
-    void Endframe();
+        Matrix4 transform{};
 
-    void EnablePhysics(bool enabled);
-    void EnableGravity(bool enabled);
-    void EnableDrag(bool enabled);
-    [[nodiscard]] bool IsPhysicsEnabled() const;
-    [[nodiscard]] bool IsGravityEnabled() const;
-    [[nodiscard]] bool IsDragEnabled() const;
-    [[nodiscard]] bool IsDynamic() const noexcept;
+        void BeginFrame();
+        void Update(TimeUtils::FPSeconds deltaSeconds);
+        void DebugRender(Renderer& renderer) const;
+        void Endframe();
 
-    void SetAwake(bool awake) noexcept;
-    void Wake() noexcept;
-    void Sleep() noexcept;
-    [[nodiscard]] bool IsAwake() const;
+        void EnablePhysics(bool enabled);
+        void EnableGravity(bool enabled);
+        void EnableDrag(bool enabled);
+        [[nodiscard]] bool IsPhysicsEnabled() const;
+        [[nodiscard]] bool IsGravityEnabled() const;
+        [[nodiscard]] bool IsDragEnabled() const;
+        [[nodiscard]] bool IsDynamic() const noexcept;
 
-    [[nodiscard]] float GetMass() const;
-    [[nodiscard]] float GetInverseMass() const;
+        void SetAwake(bool awake) noexcept;
+        void Wake() noexcept;
+        void Sleep() noexcept;
+        [[nodiscard]] bool IsAwake() const;
 
-    [[nodiscard]] Matrix4 GetParentTransform() const;
+        [[nodiscard]] float GetMass() const;
+        [[nodiscard]] float GetInverseMass() const;
 
-    [[nodiscard]] Vector2 CalcForceVector() noexcept;
+        [[nodiscard]] Matrix4 GetParentTransform() const;
 
-    void ApplyImpulse(const Vector2& impulse);
-    void ApplyImpulse(const Vector2& direction, float magnitude);
+        [[nodiscard]] Vector2 CalcForceVector() noexcept;
 
-    void ApplyForce(const Vector2& force, const TimeUtils::FPSeconds& duration);
-    void ApplyForce(const Vector2& direction, float magnitude, const TimeUtils::FPSeconds& duration);
+        void ApplyImpulse(const Vector2& impulse);
+        void ApplyImpulse(const Vector2& direction, float magnitude);
 
-    void ApplyTorque(float force, const TimeUtils::FPSeconds& duration);
-    void ApplyTorque(const Vector2& direction, float magnitude, const TimeUtils::FPSeconds& duration);
+        void ApplyForce(const Vector2& force, const TimeUtils::FPSeconds& duration);
+        void ApplyForce(const Vector2& direction, float magnitude, const TimeUtils::FPSeconds& duration);
 
-    void ApplyTorqueAt(const Vector2& position_on_object, const Vector2& force, const TimeUtils::FPSeconds& duration);
-    void ApplyTorqueAt(const Vector2& position_on_object, const Vector2& direction, float magnitude, const TimeUtils::FPSeconds& duration);
+        void ApplyTorque(float force, const TimeUtils::FPSeconds& duration);
+        void ApplyTorque(const Vector2& direction, float magnitude, const TimeUtils::FPSeconds& duration);
 
-    void ApplyForceAt(const Vector2& position_on_object, const Vector2& direction, float magnitude, const TimeUtils::FPSeconds& duration);
-    void ApplyForceAt(const Vector2& position_on_object, const Vector2& force, const TimeUtils::FPSeconds& duration);
+        void ApplyTorqueAt(const Vector2& position_on_object, const Vector2& force, const TimeUtils::FPSeconds& duration);
+        void ApplyTorqueAt(const Vector2& position_on_object, const Vector2& direction, float magnitude, const TimeUtils::FPSeconds& duration);
 
-    void ApplyImpulseAt(const Vector2& position_on_object, const Vector2& direction, float magnitude);
-    void ApplyImpulseAt(const Vector2& position_on_object, const Vector2& force);
+        void ApplyForceAt(const Vector2& position_on_object, const Vector2& direction, float magnitude, const TimeUtils::FPSeconds& duration);
+        void ApplyForceAt(const Vector2& position_on_object, const Vector2& force, const TimeUtils::FPSeconds& duration);
 
-    [[nodiscard]] const OBB2 GetBounds() const;
+        void ApplyImpulseAt(const Vector2& position_on_object, const Vector2& direction, float magnitude);
+        void ApplyImpulseAt(const Vector2& position_on_object, const Vector2& force);
 
-    void SetPosition(const Vector2& newPosition, bool teleport = false) noexcept;
-    [[nodiscard]] const Vector2& GetPosition() const;
+        [[nodiscard]] const OBB2 GetBounds() const;
 
-    void SetVelocity(const Vector2& newVelocity) noexcept;
-    [[nodiscard]] const Vector2& GetVelocity() const;
+        void SetPosition(const Vector2& newPosition, bool teleport = false) noexcept;
+        [[nodiscard]] const Vector2& GetPosition() const;
 
-    [[nodiscard]] const Vector2& GetAcceleration() const;
-    [[nodiscard]] Vector2 CalcDimensions() const;
-    [[nodiscard]] float GetOrientationDegrees() const;
-    [[nodiscard]] float GetAngularVelocityDegrees() const;
-    [[nodiscard]] float GetAngularAccelerationDegrees() const;
+        void SetVelocity(const Vector2& newVelocity) noexcept;
+        [[nodiscard]] const Vector2& GetVelocity() const;
 
-    [[nodiscard]] const Collider* GetCollider() const noexcept;
-    [[nodiscard]] Collider* GetCollider() noexcept;
+        [[nodiscard]] const Vector2& GetAcceleration() const;
+        [[nodiscard]] Vector2 CalcDimensions() const;
+        [[nodiscard]] float GetOrientationDegrees() const;
+        [[nodiscard]] float GetAngularVelocityDegrees() const;
+        [[nodiscard]] float GetAngularAccelerationDegrees() const;
 
-    void FellOutOfWorld() noexcept;
-    [[nodiscard]] const bool ShouldKill() const noexcept;
-    [[nodiscard]] const bool IsRotationLocked() const noexcept;
-    void LockRotation(bool shouldLockRotation) noexcept;
-protected:
-private:
-    void SetAcceleration(const Vector2& newAccleration) noexcept;
+        [[nodiscard]] const Collider* GetCollider() const noexcept;
+        [[nodiscard]] Collider* GetCollider() noexcept;
 
-    PhysicsSystem* parentPhysicsSystem{nullptr};
-    RigidBodyDesc rigidbodyDesc{};
-    RigidBody* parent = nullptr;
-    std::vector<RigidBody*> children{};
-    Vector2 position{};
-    Vector2 velocity{};
-    Vector2 acceleration{};
-    float prev_orientationDegrees = 0.0f;
-    float orientationDegrees = 0.0f;
-    float angular_acceleration = 0.0f;
-    TimeUtils::FPSeconds dt{};
-    TimeUtils::FPSeconds time_since_last_move{};
-    std::vector<std::pair<Vector2, TimeUtils::FPSeconds>> linear_forces{};
-    std::vector<Vector2> linear_impulses{};
-    std::vector<std::pair<float, TimeUtils::FPSeconds>> angular_forces{};
-    std::vector<float> angular_impulses{};
-    bool is_colliding = false;
-    bool is_awake = true;
-    bool should_kill = false;
-    bool should_lock_rotation = false;
+        void FellOutOfWorld() noexcept;
+        [[nodiscard]] const bool ShouldKill() const noexcept;
+        [[nodiscard]] const bool IsRotationLocked() const noexcept;
+        void LockRotation(bool shouldLockRotation) noexcept;
+    protected:
+    private:
+        void SetAcceleration(const Vector2& newAccleration) noexcept;
 
-    friend class PhysicsSystem;
-};
+        PhysicsSystem* parentPhysicsSystem{nullptr};
+        RigidBodyDesc rigidbodyDesc{};
+        RigidBody* parent = nullptr;
+        std::vector<RigidBody*> children{};
+        Vector2 position{};
+        Vector2 velocity{};
+        Vector2 acceleration{};
+        float prev_orientationDegrees = 0.0f;
+        float orientationDegrees = 0.0f;
+        float angular_acceleration = 0.0f;
+        TimeUtils::FPSeconds dt{};
+        TimeUtils::FPSeconds time_since_last_move{};
+        std::vector<std::pair<Vector2, TimeUtils::FPSeconds>> linear_forces{};
+        std::vector<Vector2> linear_impulses{};
+        std::vector<std::pair<float, TimeUtils::FPSeconds>> angular_forces{};
+        std::vector<float> angular_impulses{};
+        bool is_colliding = false;
+        bool is_awake = true;
+        bool should_kill = false;
+        bool should_lock_rotation = false;
+
+        friend class PhysicsSystem;
+    };
+
+} // namespace a2de

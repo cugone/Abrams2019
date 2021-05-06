@@ -2,15 +2,19 @@
 
 #include "Engine/Math/Vector3.hpp"
 
-class Ray3 {
-public:
-    Vector3 position;
-    Vector3 direction;
+namespace a2de {
 
-    void SetDirection(const Vector3& newDirection) noexcept;
-    [[nodiscard]] Vector3 Interpolate(float t);
+    class Ray3 {
+    public:
+        Vector3 position;
+        Vector3 direction;
 
-protected:
-private:
-    
-};
+        void SetDirection(const Vector3& newDirection) noexcept;
+        [[nodiscard]] Vector3 Interpolate(float t);
+
+    protected:
+    private:
+
+    };
+
+} // namespace a2de

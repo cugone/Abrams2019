@@ -2,61 +2,65 @@
 
 #include "Engine/Renderer/DirectX/DX11.hpp"
 
-Texture::Texture(const RHIDevice& device) noexcept
-: _device(device) {
-    /* DO NOTHING */
-}
+namespace a2de {
 
-Texture::~Texture() = default;
+    Texture::Texture(const RHIDevice& device) noexcept
+        : _device(device) {
+        /* DO NOTHING */
+    }
 
-const IntVector3& Texture::GetDimensions() const noexcept {
-    return _dimensions;
-}
+    Texture::~Texture() = default;
 
-ID3D11Resource* Texture::GetDxResource() const noexcept {
-    return nullptr;
-}
+    const IntVector3& Texture::GetDimensions() const noexcept {
+        return _dimensions;
+    }
 
-void Texture::IsLoaded(bool is_loaded) noexcept {
-    _isLoaded = is_loaded;
-}
+    ID3D11Resource* Texture::GetDxResource() const noexcept {
+        return nullptr;
+    }
 
-bool Texture::IsLoaded() const noexcept {
-    return _isLoaded;
-}
+    void Texture::IsLoaded(bool is_loaded) noexcept {
+        _isLoaded = is_loaded;
+    }
 
-bool Texture::IsArray() const noexcept {
-    return _isArray;
-}
+    bool Texture::IsLoaded() const noexcept {
+        return _isLoaded;
+    }
 
-ID3D11DepthStencilView* Texture::GetDepthStencilView() const noexcept {
-    return _dsv.Get();
-}
+    bool Texture::IsArray() const noexcept {
+        return _isArray;
+    }
 
-ID3D11RenderTargetView* Texture::GetRenderTargetView() const noexcept {
-    return _rtv.Get();
-}
+    ID3D11DepthStencilView* Texture::GetDepthStencilView() const noexcept {
+        return _dsv.Get();
+    }
 
-ID3D11ShaderResourceView* Texture::GetShaderResourceView() const noexcept {
-    return _srv.Get();
-}
+    ID3D11RenderTargetView* Texture::GetRenderTargetView() const noexcept {
+        return _rtv.Get();
+    }
 
-ID3D11UnorderedAccessView* Texture::GetUnorderedAccessView() const noexcept {
-    return _uav.Get();
-}
+    ID3D11ShaderResourceView* Texture::GetShaderResourceView() const noexcept {
+        return _srv.Get();
+    }
 
-ID3D11DepthStencilView* Texture::GetDepthStencilView() noexcept {
-    return _dsv.Get();
-}
+    ID3D11UnorderedAccessView* Texture::GetUnorderedAccessView() const noexcept {
+        return _uav.Get();
+    }
 
-ID3D11RenderTargetView* Texture::GetRenderTargetView() noexcept {
-    return _rtv.Get();
-}
+    ID3D11DepthStencilView* Texture::GetDepthStencilView() noexcept {
+        return _dsv.Get();
+    }
 
-ID3D11ShaderResourceView* Texture::GetShaderResourceView() noexcept {
-    return _srv.Get();
-}
+    ID3D11RenderTargetView* Texture::GetRenderTargetView() noexcept {
+        return _rtv.Get();
+    }
 
-ID3D11UnorderedAccessView* Texture::GetUnorderedAccessView() noexcept {
-    return _uav.Get();
-}
+    ID3D11ShaderResourceView* Texture::GetShaderResourceView() noexcept {
+        return _srv.Get();
+    }
+
+    ID3D11UnorderedAccessView* Texture::GetUnorderedAccessView() noexcept {
+        return _uav.Get();
+    }
+
+} // namespace a2de

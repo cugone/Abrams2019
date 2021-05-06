@@ -3,49 +3,53 @@
 #include "Engine/Physics/Joint.hpp"
 #include "Engine/Math/Vector2.hpp"
 
-class Renderer;
+namespace a2de {
 
-struct SpringJointDef : public JointDef {
-    SpringJointDef() = default;
-    virtual ~SpringJointDef() = default;
-    float length = 1.0f;
-    float k = 1.0f;
-};
+    class Renderer;
 
-class SpringJoint : public Joint {
-public:
-    SpringJoint() = delete;
-    explicit SpringJoint(const SpringJointDef& def) noexcept;
-    SpringJoint(const SpringJoint& other) = default;
-    SpringJoint(SpringJoint&& other) = default;
-    SpringJoint& operator=(const SpringJoint& other) = default;
-    SpringJoint& operator=(SpringJoint&& other) = default;
-    virtual ~SpringJoint() = default;
+    struct SpringJointDef : public JointDef {
+        SpringJointDef() = default;
+        virtual ~SpringJointDef() = default;
+        float length = 1.0f;
+        float k = 1.0f;
+    };
 
-    void Notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept override;
-    void DebugRender(Renderer& renderer) const noexcept override;
-    
-    [[nodiscard]] bool IsNotAttached() const noexcept override;
-    void Attach(RigidBody* a, RigidBody* b, Vector2 localAnchorA = Vector2::ZERO, Vector2 localAnchorB = Vector2::ZERO) noexcept override;
-    void Detach(const RigidBody* body) noexcept override;
-    void DetachAll() noexcept override;
+    class SpringJoint : public Joint {
+    public:
+        SpringJoint() = delete;
+        explicit SpringJoint(const SpringJointDef& def) noexcept;
+        SpringJoint(const SpringJoint& other) = default;
+        SpringJoint(SpringJoint&& other) = default;
+        SpringJoint& operator=(const SpringJoint& other) = default;
+        SpringJoint& operator=(SpringJoint&& other) = default;
+        virtual ~SpringJoint() = default;
 
-    [[nodiscard]] RigidBody* GetBodyA() const noexcept override;
-    [[nodiscard]] RigidBody* GetBodyB() const noexcept override;
+        void Notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept override;
+        void DebugRender(Renderer& renderer) const noexcept override;
 
-    [[nodiscard]] Vector2 GetAnchorA() const noexcept override;
-    [[nodiscard]] Vector2 GetAnchorB() const noexcept override;
+        [[nodiscard]] bool IsNotAttached() const noexcept override;
+        void Attach(RigidBody* a, RigidBody* b, Vector2 localAnchorA = Vector2::ZERO, Vector2 localAnchorB = Vector2::ZERO) noexcept override;
+        void Detach(const RigidBody* body) noexcept override;
+        void DetachAll() noexcept override;
 
-    [[nodiscard]] float GetMassA() const noexcept override;
-    [[nodiscard]] float GetMassB() const noexcept override;
+        [[nodiscard]] RigidBody* GetBodyA() const noexcept override;
+        [[nodiscard]] RigidBody* GetBodyB() const noexcept override;
 
-protected:
-private:
-    SpringJointDef _def{};
+        [[nodiscard]] Vector2 GetAnchorA() const noexcept override;
+        [[nodiscard]] Vector2 GetAnchorB() const noexcept override;
 
-    [[nodiscard]] bool ConstraintViolated() const noexcept override;
-    void SolvePositionConstraint() const noexcept override;
-    void SolveVelocityConstraint() const noexcept override;
+        [[nodiscard]] float GetMassA() const noexcept override;
+        [[nodiscard]] float GetMassB() const noexcept override;
 
-    friend class PhysicsSystem;
-};
+    protected:
+    private:
+        SpringJointDef _def{};
+
+        [[nodiscard]] bool ConstraintViolated() const noexcept override;
+        void SolvePositionConstraint() const noexcept override;
+        void SolveVelocityConstraint() const noexcept override;
+
+        friend class PhysicsSystem;
+    };
+
+} // namespace a2de

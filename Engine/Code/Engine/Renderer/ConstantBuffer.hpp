@@ -5,17 +5,21 @@
 
 #include <vector>
 
-class RHIDevice;
-class RHIDeviceContext;
+namespace a2de {
 
-class ConstantBuffer : public Buffer<void*> {
-public:
-    ConstantBuffer(const RHIDevice& owner, const buffer_t& buffer, const std::size_t& buffer_size, const BufferUsage& usage, const BufferBindUsage& bindUsage) noexcept;
-    virtual ~ConstantBuffer() noexcept;
+    class RHIDevice;
+    class RHIDeviceContext;
 
-    void Update(RHIDeviceContext& context, const buffer_t& buffer) noexcept;
+    class ConstantBuffer : public Buffer<void*> {
+    public:
+        ConstantBuffer(const RHIDevice& owner, const buffer_t& buffer, const std::size_t& buffer_size, const BufferUsage& usage, const BufferBindUsage& bindUsage) noexcept;
+        virtual ~ConstantBuffer() noexcept;
 
-protected:
-private:
-    std::size_t _buffer_size = 0;
-};
+        void Update(RHIDeviceContext& context, const buffer_t& buffer) noexcept;
+
+    protected:
+    private:
+        std::size_t _buffer_size = 0;
+    };
+
+} // namespace a2de

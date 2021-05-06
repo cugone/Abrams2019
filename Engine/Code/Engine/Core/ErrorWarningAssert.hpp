@@ -14,41 +14,43 @@
 //-----------------------------------------------------------------------------------------------
 #include <string>
 
-//-----------------------------------------------------------------------------------------------
-enum class SeverityLevel {
-    Information,
-    Question,
-    Warning,
-    Fatal
-};
+namespace a2de {
 
-//-----------------------------------------------------------------------------------------------
-void DebuggerPrintf(const char* messageFormat, ...) noexcept;
-[[nodiscard]] bool IsDebuggerAvailable() noexcept;
-[[noreturn]] void FatalError(const char* filePath, const char* functionName, int lineNum, const std::string& reasonForError, const char* conditionText = nullptr);
-void RecoverableWarning(const char* filePath, const char* functionName, int lineNum, const std::string& reasonForWarning, const char* conditionText = nullptr) noexcept;
-void SystemDialogue_Okay(const std::string& messageTitle, const std::string& messageText, SeverityLevel severity) noexcept;
-[[nodiscard]] bool SystemDialogue_OkayCancel(const std::string& messageTitle, const std::string& messageText, SeverityLevel severity) noexcept;
-[[nodiscard]] bool SystemDialogue_YesNo(const std::string& messageTitle, const std::string& messageText, SeverityLevel severity) noexcept;
-[[nodiscard]] int SystemDialogue_YesNoCancel(const std::string& messageTitle, const std::string& messageText, SeverityLevel severity) noexcept;
+    //-----------------------------------------------------------------------------------------------
+    enum class SeverityLevel {
+        Information,
+        Question,
+        Warning,
+        Fatal
+    };
 
-//-----------------------------------------------------------------------------------------------
-// ERROR_AND_DIE
-//
-// Present in all builds.
-// No condition; always triggers if reached.
-// Depending on the platform, this typically:
-//	- Logs an error message to the console and/or log file
-//	- Opens an error/message dialogue box
-//	- Triggers a debug breakpoint (if appropriate development suite is present)
-//	- Shuts down the app
-//
-// Use this when reaching a certain line of code should never happen under any circumstances,
-// and continued execution is dangerous or impossible.
-//
+    //-----------------------------------------------------------------------------------------------
+    void DebuggerPrintf(const char* messageFormat, ...) noexcept;
+    [[nodiscard]] bool IsDebuggerAvailable() noexcept;
+    [[noreturn]] void FatalError(const char* filePath, const char* functionName, int lineNum, const std::string& reasonForError, const char* conditionText = nullptr);
+    void RecoverableWarning(const char* filePath, const char* functionName, int lineNum, const std::string& reasonForWarning, const char* conditionText = nullptr) noexcept;
+    void SystemDialogue_Okay(const std::string& messageTitle, const std::string& messageText, SeverityLevel severity) noexcept;
+    [[nodiscard]] bool SystemDialogue_OkayCancel(const std::string& messageTitle, const std::string& messageText, SeverityLevel severity) noexcept;
+    [[nodiscard]] bool SystemDialogue_YesNo(const std::string& messageTitle, const std::string& messageText, SeverityLevel severity) noexcept;
+    [[nodiscard]] int SystemDialogue_YesNoCancel(const std::string& messageTitle, const std::string& messageText, SeverityLevel severity) noexcept;
+
+    //-----------------------------------------------------------------------------------------------
+    // ERROR_AND_DIE
+    //
+    // Present in all builds.
+    // No condition; always triggers if reached.
+    // Depending on the platform, this typically:
+    //	- Logs an error message to the console and/or log file
+    //	- Opens an error/message dialogue box
+    //	- Triggers a debug breakpoint (if appropriate development suite is present)
+    //	- Shuts down the app
+    //
+    // Use this when reaching a certain line of code should never happen under any circumstances,
+    // and continued execution is dangerous or impossible.
+    //
 #define ERROR_AND_DIE(errorMessageText)                                 \
     {                                                                   \
-        FatalError(__FILE__, __FUNCTION__, __LINE__, errorMessageText); \
+        a2de::FatalError(__FILE__, __FUNCTION__, __LINE__, errorMessageText); \
     }
 
 //-----------------------------------------------------------------------------------------------
@@ -64,7 +66,7 @@ void SystemDialogue_Okay(const std::string& messageTitle, const std::string& mes
 //
 #define ERROR_RECOVERABLE(errorMessageText)                                     \
     {                                                                           \
-        RecoverableWarning(__FILE__, __FUNCTION__, __LINE__, errorMessageText); \
+        a2de::RecoverableWarning(__FILE__, __FUNCTION__, __LINE__, errorMessageText); \
     }
 
 //-----------------------------------------------------------------------------------------------
@@ -82,7 +84,7 @@ void SystemDialogue_Okay(const std::string& messageTitle, const std::string& mes
     {                                                                                      \
         if(!(condition)) {                                                                 \
             const char* conditionText = #condition;                                        \
-            FatalError(__FILE__, __FUNCTION__, __LINE__, errorMessageText, conditionText); \
+            a2de::FatalError(__FILE__, __FUNCTION__, __LINE__, errorMessageText, conditionText); \
         }                                                                                  \
     }
 
@@ -101,7 +103,7 @@ void SystemDialogue_Okay(const std::string& messageTitle, const std::string& mes
     {                                                                                              \
         if(!(condition)) {                                                                         \
             const char* conditionText = #condition;                                                \
-            RecoverableWarning(__FILE__, __FUNCTION__, __LINE__, errorMessageText, conditionText); \
+            a2de::RecoverableWarning(__FILE__, __FUNCTION__, __LINE__, errorMessageText, conditionText); \
         }                                                                                          \
     }
 
@@ -117,14 +119,14 @@ void SystemDialogue_Okay(const std::string& messageTitle, const std::string& mes
 //	- Shuts down the app
 //
 #if defined(DISABLE_ASSERTS)
-    #define ASSERT_OR_DIE(condition, errorMessageText) \
+#define ASSERT_OR_DIE(condition, errorMessageText) \
         { (void)(condition); }
 #else
-    #define ASSERT_OR_DIE(condition, errorMessageText)                                         \
+#define ASSERT_OR_DIE(condition, errorMessageText)                                         \
         {                                                                                      \
             if(!(condition)) {                                                                 \
                 const char* conditionText = #condition;                                        \
-                FatalError(__FILE__, __FUNCTION__, __LINE__, errorMessageText, conditionText); \
+                a2de::FatalError(__FILE__, __FUNCTION__, __LINE__, errorMessageText, conditionText); \
             }                                                                                  \
         }
 #endif
@@ -141,14 +143,16 @@ void SystemDialogue_Okay(const std::string& messageTitle, const std::string& mes
 //	- Continues execution
 //
 #if defined(DISABLE_ASSERTS)
-    #define ASSERT_RECOVERABLE(condition, errorMessageText) \
+#define ASSERT_RECOVERABLE(condition, errorMessageText) \
         { (void)(condition); }
 #else
-    #define ASSERT_RECOVERABLE(condition, errorMessageText)                                            \
+#define ASSERT_RECOVERABLE(condition, errorMessageText)                                            \
         {                                                                                              \
             if(!(condition)) {                                                                         \
                 const char* conditionText = #condition;                                                \
-                RecoverableWarning(__FILE__, __FUNCTION__, __LINE__, errorMessageText, conditionText); \
+                a2de::RecoverableWarning(__FILE__, __FUNCTION__, __LINE__, errorMessageText, conditionText); \
             }                                                                                          \
         }
 #endif
+
+} // namespace a2de

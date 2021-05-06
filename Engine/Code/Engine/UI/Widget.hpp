@@ -7,37 +7,41 @@
 #include <filesystem>
 #include <memory>
 
-class Renderer;
+namespace a2de {
 
-namespace UI {
+    class Renderer;
 
-class Panel;
+    namespace UI {
 
-class Widget {
-public:
-    Widget(Renderer& renderer, const std::filesystem::path& path);
-    ~Widget();
-    std::string name{"DEFAULT WIDGET"};
-    void BeginFrame();
-    void Update(TimeUtils::FPSeconds deltaSeconds);
-    void Render() const;
-    void DebugRender() const;
-    void EndFrame();
+        class Panel;
 
-    Renderer& GetRenderer() const;
-protected:
-    [[nodiscard]] bool LoadFromXML(const std::filesystem::path& path);
-    void LoadUI(const XMLElement& element);
+        class Widget {
+        public:
+            Widget(Renderer& renderer, const std::filesystem::path& path);
+            ~Widget();
+            std::string name{"DEFAULT WIDGET"};
+            void BeginFrame();
+            void Update(TimeUtils::FPSeconds deltaSeconds);
+            void Render() const;
+            void DebugRender() const;
+            void EndFrame();
 
-    [[nodiscard]] std::shared_ptr<Element> CreateWigetTypeFromTypename(std::string nameString, const XMLElement& elem);
-private:
-    [[nodiscard]] bool HasPanelChild(const XMLElement& elem);
+            Renderer& GetRenderer() const;
+        protected:
+            [[nodiscard]] bool LoadFromXML(const std::filesystem::path& path);
+            void LoadUI(const XMLElement& element);
 
-    std::vector<std::shared_ptr<Element>> _elements{};
-    Renderer& _renderer;
-    Panel* _panel{};
+            [[nodiscard]] std::shared_ptr<Element> CreateWigetTypeFromTypename(std::string nameString, const XMLElement& elem);
+        private:
+            [[nodiscard]] bool HasPanelChild(const XMLElement& elem);
 
-    friend class Panel;
-};
+            std::vector<std::shared_ptr<Element>> _elements{};
+            Renderer& _renderer;
+            Panel* _panel{};
 
-} // namespace UI
+            friend class Panel;
+        };
+
+    } // namespace UI
+
+} //namespace a2de
