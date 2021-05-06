@@ -208,3 +208,56 @@ Vector2 ColliderCircle::CalcCenter() const noexcept {
 ColliderCircle* ColliderCircle::Clone() const noexcept {
     return new ColliderCircle(GetPosition(), GetHalfExtents().x);
 }
+
+ColliderAABB::ColliderAABB(const Vector2& position, const Vector2& half_extents)
+    : ColliderPolygon(4, position, half_extents, 45.0f)
+{
+    /* DO NOTHING */
+}
+
+float ColliderAABB::CalcArea() const noexcept {
+    const auto& dims = CalcDimensions();
+    return dims.x * dims.y;
+}
+
+void ColliderAABB::DebugRender(Renderer& renderer) const noexcept {
+    AABB2 aabb = AABB2::NEG_ONE_TO_ONE;
+    aabb.ScalePadding(0.5f, 0.5f);
+    renderer.DrawAABB2(aabb, Rgba::Pink, Rgba::NoAlpha);
+}
+
+Vector2 ColliderAABB::GetHalfExtents() const noexcept {
+    return CalcDimensions() * 0.5f;
+}
+
+Vector2 ColliderAABB::Support(const Vector2& d) const noexcept {
+    return ColliderPolygon::Support(d);
+}
+
+void ColliderAABB::SetPosition(const Vector2& position) noexcept {
+    ColliderPolygon::SetPosition(position);
+}
+
+float ColliderAABB::GetOrientationDegrees() const noexcept {
+    return 0.0f;
+}
+
+void ColliderAABB::SetOrientationDegrees(float /*degrees*/) noexcept {
+    ColliderPolygon::SetOrientationDegrees(45.0f);
+}
+
+Vector2 ColliderAABB::CalcDimensions() const noexcept {
+    return ColliderPolygon::CalcDimensions();
+}
+
+OBB2 ColliderAABB::GetBounds() const noexcept {
+    return ColliderPolygon::GetBounds();
+}
+
+Vector2 ColliderAABB::CalcCenter() const noexcept {
+    return ColliderPolygon::CalcCenter();
+}
+
+ColliderAABB* ColliderAABB::Clone() const noexcept {
+    return new ColliderAABB(CalcCenter(), CalcDimensions() * 0.5f);
+}

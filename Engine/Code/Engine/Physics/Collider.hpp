@@ -60,7 +60,30 @@ protected:
 private:
 };
 
-class ColliderOBB : public ColliderPolygon {
+
+class ColliderAABB : public ColliderPolygon {
+public:
+    ColliderAABB(const Vector2& position, const Vector2& half_extents);
+    virtual ~ColliderAABB() = default;
+    [[nodiscard]] virtual float CalcArea() const noexcept override;
+
+    virtual void DebugRender(Renderer& renderer) const noexcept override;
+    [[nodiscard]] virtual Vector2 GetHalfExtents() const noexcept override;
+    [[nodiscard]] virtual Vector2 Support(const Vector2& d) const noexcept override;
+    virtual void SetPosition(const Vector2& position) noexcept override;
+    [[nodiscard]] virtual float GetOrientationDegrees() const noexcept override;
+    virtual void SetOrientationDegrees(float degrees) noexcept override;
+    [[nodiscard]] virtual Vector2 CalcDimensions() const noexcept override;
+    [[nodiscard]] virtual OBB2 GetBounds() const noexcept override;
+    [[nodiscard]] virtual Vector2 CalcCenter() const noexcept override;
+    [[nodiscard]] virtual ColliderAABB* Clone() const noexcept override;
+
+protected:
+private:
+};
+
+
+class ColliderOBB : public Collider {
 public:
     ColliderOBB(const Vector2& position, const Vector2& half_extents);
     virtual ~ColliderOBB() = default;
