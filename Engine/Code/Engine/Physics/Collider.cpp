@@ -4,7 +4,7 @@
 #include "Engine/Core/Rgba.hpp"
 #include "Engine/Physics/PhysicsTypes.hpp"
 
-ColliderPolygon::ColliderPolygon(int sides /*= 4*/, const Vector2& position /*= Vector2::ZERO*/, const Vector2& half_extents /*= Vector2(0.5f, 0.5f)*/, float orientationDegrees /*= 0.0f*/)
+ColliderPolygon::ColliderPolygon(int sides, const Vector2& position, const Vector2& half_extents, float orientationDegrees)
 : Collider()
 , _polygon{sides, position, half_extents, orientationDegrees} {
     /* DO NOTHING */

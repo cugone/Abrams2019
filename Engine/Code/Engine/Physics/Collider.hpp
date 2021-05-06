@@ -28,8 +28,7 @@ public:
 class ColliderPolygon : public Collider {
 public:
     ColliderPolygon() = default;
-
-    explicit ColliderPolygon(int sides = 4, const Vector2& position = Vector2::ZERO, const Vector2& half_extents = Vector2(0.5f, 0.5f), float orientationDegrees = 0.0f);
+    explicit ColliderPolygon(int sides, const Vector2& position, const Vector2& half_extents, float orientationDegrees);
 
     virtual ~ColliderPolygon() = default;
     virtual void DebugRender(Renderer& renderer) const noexcept override;
