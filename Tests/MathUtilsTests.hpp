@@ -5,8 +5,8 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Quaternion.hpp"
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <sstream>
 
 TEST(MathUtilsFunctions, SplitFloatingPointValue) {
@@ -20,8 +20,8 @@ TEST(MathUtilsFunctions, SplitFloatingPointValue) {
     EXPECT_DOUBLE_EQ(rd.second, 0.2);
     auto ld = 1.2l;
     auto rld = MathUtils::SplitFloatingPointValue(ld);
-    EXPECT_DOUBLE_EQ(rld.first, 1.0l);
-    EXPECT_DOUBLE_EQ(rld.second, 0.2l);
+    EXPECT_DOUBLE_EQ(static_cast<double>(rld.first), static_cast<double>(1.0l));
+    EXPECT_DOUBLE_EQ(static_cast<double>(rld.second),static_cast<double>(0.2l));
 }
 
 TEST(MathUtilsFunctions, IsEquivalentToZero) {
