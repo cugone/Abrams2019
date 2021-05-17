@@ -1258,16 +1258,16 @@ void Renderer::DrawFilledCircle2D(const Vector2& center, float radius, const Rgb
 }
 
 void Renderer::DrawAABB2(const AABB2& bounds, const Rgba& edgeColor, const Rgba& fillColor, const Vector2& edgeHalfExtents /*= Vector2::ZERO*/) noexcept {
-    Vector2 lt_inner(bounds.mins.x, bounds.mins.y);
-    Vector2 lb_inner(bounds.mins.x, bounds.maxs.y);
-    Vector2 rt_inner(bounds.maxs.x, bounds.mins.y);
-    Vector2 rb_inner(bounds.maxs.x, bounds.maxs.y);
-    Vector2 lt_outer(bounds.mins.x - edgeHalfExtents.x, bounds.mins.y - edgeHalfExtents.y);
-    Vector2 lb_outer(bounds.mins.x - edgeHalfExtents.x, bounds.maxs.y + edgeHalfExtents.y);
-    Vector2 rt_outer(bounds.maxs.x + edgeHalfExtents.x, bounds.mins.y - edgeHalfExtents.y);
-    Vector2 rb_outer(bounds.maxs.x + edgeHalfExtents.x, bounds.maxs.y + edgeHalfExtents.y);
+    const Vector2 lt_inner(bounds.mins.x, bounds.mins.y);
+    const Vector2 lb_inner(bounds.mins.x, bounds.maxs.y);
+    const Vector2 rt_inner(bounds.maxs.x, bounds.mins.y);
+    const Vector2 rb_inner(bounds.maxs.x, bounds.maxs.y);
+    const Vector2 lt_outer(bounds.mins.x - edgeHalfExtents.x, bounds.mins.y - edgeHalfExtents.y);
+    const Vector2 lb_outer(bounds.mins.x - edgeHalfExtents.x, bounds.maxs.y + edgeHalfExtents.y);
+    const Vector2 rt_outer(bounds.maxs.x + edgeHalfExtents.x, bounds.mins.y - edgeHalfExtents.y);
+    const Vector2 rb_outer(bounds.maxs.x + edgeHalfExtents.x, bounds.maxs.y + edgeHalfExtents.y);
 
-    std::vector<Vertex3D> vbo = {
+    const std::vector<Vertex3D> vbo = {
     Vertex3D(Vector3(rt_outer, 0.0f), edgeColor),
     Vertex3D(Vector3(lt_outer, 0.0f), edgeColor),
     Vertex3D(Vector3(lt_inner, 0.0f), edgeColor),
@@ -1282,7 +1282,7 @@ void Renderer::DrawAABB2(const AABB2& bounds, const Rgba& edgeColor, const Rgba&
     Vertex3D(Vector3(rb_inner, 0.0f), fillColor),
     };
 
-    std::vector<unsigned int> ibo{
+    const std::vector<unsigned int> ibo{
     8, 9, 10,
     8, 10, 11,
     0, 1, 2,
