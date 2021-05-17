@@ -1,22 +1,20 @@
-#include "Engine/UI/Widget.hpp"
+#include "Engine/UI/UIWidget.hpp"
 
 #include "Engine/Core/DataUtils.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/FileUtils.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Renderer/Renderer.hpp"
-#include "Engine/UI/Canvas.hpp"
-#include "Engine/UI/Label.hpp"
-#include "Engine/UI/Panel.hpp"
-#include "Engine/UI/PictureBox.hpp"
+#include "Engine/UI/UICanvas.hpp"
+#include "Engine/UI/UILabel.hpp"
+#include "Engine/UI/UIPanel.hpp"
+#include "Engine/UI/UIPictureBox.hpp"
 #include "Thirdparty/TinyXML2/tinyxml2.h"
 
 #include <memory>
 #include <typeinfo>
 
-namespace UI {
-
-Widget::Widget(Renderer& renderer, const std::filesystem::path& path)
+UIWidget::UIWidget(Renderer& renderer, const std::filesystem::path& path)
 : _renderer(renderer) {
     {
         auto err_msg{"Failed loading Widget:\n" + path.string() + "\n is ill-formed."};
@@ -24,41 +22,41 @@ Widget::Widget(Renderer& renderer, const std::filesystem::path& path)
     }
 }
 
-Widget::~Widget() {
+UIWidget::~UIWidget() {
     _elements.clear();
     _elements.shrink_to_fit();
 
     _panel = nullptr;
 }
 
-void Widget::BeginFrame() {
+void UIWidget::BeginFrame() {
     /* DO NOTHING */
 }
 
-void Widget::Update(TimeUtils::FPSeconds deltaSeconds) {
+void UIWidget::Update(TimeUtils::FPSeconds deltaSeconds) {
     if(_panel) {
         _panel->Update(deltaSeconds);
     }
 }
 
-void Widget::Render() const {
+void UIWidget::Render() const {
     _renderer.SetMaterial(_renderer.GetMaterial("__2D"));
     if(_panel) {
         _panel->Render(_renderer);
     }
 }
 
-void Widget::DebugRender() const {
+void UIWidget::DebugRender() const {
     if(_panel) {
         _panel->DebugRender(_renderer);
     }
 }
 
-void Widget::EndFrame() {
+void UIWidget::EndFrame() {
     /* DO NOTHING */
 }
 
-bool Widget::LoadFromXML(const std::filesystem::path& path) {
+bool UIWidget::LoadFromXML(const std::filesystem::path& path) {
     if(!FileUtils::IsSafeReadPath(path)) {
         return false;
     }
@@ -74,7 +72,7 @@ bool Widget::LoadFromXML(const std::filesystem::path& path) {
     return false;
 }
 
-void Widget::LoadUI(const XMLElement& element) {
+void UIWidget::LoadUI(const XMLElement& element) {
     DataUtils::ValidateXmlElement(element, "ui", "", "name", "canvas");
     name = DataUtils::ParseXmlAttribute(element, "name", name);
     const auto load_children = [this](const XMLElement& elem) {
@@ -89,46 +87,46 @@ void Widget::LoadUI(const XMLElement& element) {
     DataUtils::ForEachChildElement(element, std::string{}, load_all_children);
 }
 
-Renderer& Widget::GetRenderer() const {
+Renderer& UIWidget::GetRenderer() const {
     return _renderer;
 }
 
-std::shared_ptr<Element> Widget::CreateWigetTypeFromTypename(std::string nameString, const XMLElement& elem) {
+std::shared_ptr<UIElement> UIWidget::CreateWigetTypeFromTypename(std::string nameString, const XMLElement& elem) {
     const auto childname = StringUtils::ToLowerCase(nameString);
     if(childname == "canvas") {
-        auto c = std::make_shared<Canvas>(this, _renderer, elem);
+        auto c = std::make_shared<UICanvas>(this, _renderer, elem);
         _panel = c.get();
         return c;
     } else if(childname == "label") {
         if(const auto* parent = elem.Parent(); parent->ToElement()) {
             const auto parent_name = DataUtils::ParseXmlAttribute(*parent->ToElement(), "name", "");
-            const auto found = std::find_if(std::begin(_elements), std::end(_elements), [&parent_name](std::shared_ptr<Element>& element) { return element->GetName() == parent_name; });
+            const auto found = std::find_if(std::begin(_elements), std::end(_elements), [&parent_name](std::shared_ptr<UIElement>& element) { return element->GetName() == parent_name; });
             if(found != std::end(_elements)) {
-                if(auto* foundAsPanel = dynamic_cast<Panel*>(found->get())) {
-                    auto lbl = std::make_shared<Label>(elem, foundAsPanel);
+                if(auto* foundAsPanel = dynamic_cast<UIPanel*>(found->get())) {
+                    auto lbl = std::make_shared<UILabel>(elem, foundAsPanel);
                     return lbl;
                 }
             }
         }
-        return std::make_shared<Label>(elem);
+        return std::make_shared<UILabel>(elem);
     } else if(childname == "picturebox") {
         if(const auto* parent = elem.Parent(); parent->ToElement()) {
             const auto parent_name = DataUtils::ParseXmlAttribute(*parent->ToElement(), "name", "");
-            const auto found = std::find_if(std::begin(_elements), std::end(_elements), [&parent_name](std::shared_ptr<Element>& element) { return element->GetName() == parent_name; });
+            const auto found = std::find_if(std::begin(_elements), std::end(_elements), [&parent_name](std::shared_ptr<UIElement>& element) { return element->GetName() == parent_name; });
             if(found != std::end(_elements)) {
-                if(auto* foundAsPanel = dynamic_cast<Panel*>(found->get())) {
-                    auto pic = std::make_shared<PictureBox>(elem, foundAsPanel);
+                if(auto* foundAsPanel = dynamic_cast<UIPanel*>(found->get())) {
+                    auto pic = std::make_shared<UIPictureBox>(elem, foundAsPanel);
                     return pic;
                 }
             }
         }
-        return std::make_shared<PictureBox>(elem);
+        return std::make_shared<UIPictureBox>(elem);
     } else {
         return nullptr;
     }
 }
 
-bool Widget::HasPanelChild(const XMLElement& elem) {
+bool UIWidget::HasPanelChild(const XMLElement& elem) {
     if(const auto* first_child = elem.FirstChildElement()) {
         const auto* elem_name_cstr = first_child->Name();
         const auto elem_name = std::string{elem_name_cstr ? elem_name_cstr : ""};
@@ -136,5 +134,3 @@ bool Widget::HasPanelChild(const XMLElement& elem) {
     }
     return false;
 }
-
-} // namespace UI

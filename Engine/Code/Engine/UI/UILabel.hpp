@@ -2,22 +2,20 @@
 
 #include "Engine/Core/DataUtils.hpp"
 #include "Engine/Core/Rgba.hpp"
-#include "Engine/UI/Element.hpp"
+#include "Engine/UI/UIElement.hpp"
 
 #include <string>
 
 class KerningFont;
 
-namespace UI {
+class UICanvas;
 
-class Canvas;
-
-class Label : public Element {
+class UILabel : public UIElement {
 public:
-    explicit Label(Panel* parent);
-    explicit Label(const XMLElement& elem, Panel* parent = nullptr);
-    explicit Label(Panel* parent, KerningFont* font, const std::string& text = "Label");
-    virtual ~Label() = default;
+    explicit UILabel(UIPanel* parent);
+    explicit UILabel(const XMLElement& elem, UIPanel* parent = nullptr);
+    explicit UILabel(UIPanel* parent, KerningFont* font, const std::string& text = "Label");
+    virtual ~UILabel() = default;
 
     virtual void Render(Renderer& renderer) const override;
 
@@ -53,5 +51,3 @@ private:
     Rgba _color = Rgba::White;
     float _scale = 1.0f;
 };
-
-} // namespace UI

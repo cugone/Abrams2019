@@ -5,20 +5,17 @@
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/Matrix4.hpp"
 #include "Engine/Math/Vector2.hpp"
-#include "Engine/UI/PanelSlot.hpp"
-#include "Engine/UI/Types.hpp"
+#include "Engine/UI/UIPanelSlot.hpp"
+#include "Engine/UI/UITypes.hpp"
 
 class Renderer;
+class UIPanel;
+struct UIPanelSlot;
 
-namespace UI {
-
-class Panel;
-struct PanelSlot;
-
-class Element {
+class UIElement {
 public:
-    explicit Element(Panel* parent = nullptr);
-    virtual ~Element() = 0;
+    explicit UIElement(UIPanel* parent = nullptr);
+    virtual ~UIElement() = 0;
 
     virtual void Update(TimeUtils::FPSeconds deltaSeconds);
     virtual void Render(Renderer& renderer) const;
@@ -38,7 +35,7 @@ public:
 
     void SetPivot(const Vector2& pivotPosition);
     [[nodiscard]] const Vector2& GetPivot() const;
-    void SetPivot(const PivotPosition& pivotPosition);
+    void SetPivot(const UIPivotPosition& pivotPosition);
 
     void SetOrientationDegrees(float value);
     void SetOrientationRadians(float value);
@@ -48,7 +45,7 @@ public:
     [[nodiscard]] bool HasParent() const;
     [[nodiscard]] AABB2 GetParentBounds() const noexcept;
 
-    [[nodiscard]] Panel* GetParent() const noexcept;
+    [[nodiscard]] UIPanel* GetParent() const noexcept;
 
     [[nodiscard]] bool IsHidden() const;
     [[nodiscard]] bool IsVisible() const;
@@ -72,9 +69,9 @@ public:
 
     [[nodiscard]] bool HasSlot() const noexcept;
     void ResetSlot() noexcept;
-    void SetSlot(PanelSlot* newSlot) noexcept;
-    [[nodiscard]] const PanelSlot* const GetSlot() const noexcept;
-    [[nodiscard]] PanelSlot* GetSlot() noexcept;
+    void SetSlot(UIPanelSlot* newSlot) noexcept;
+    [[nodiscard]] const UIPanelSlot* const GetSlot() const noexcept;
+    [[nodiscard]] UIPanelSlot* GetSlot() noexcept;
 
 protected:
     [[nodiscard]] Vector2 CalcLocalPosition() const;
@@ -101,8 +98,8 @@ protected:
     [[nodiscard]] Matrix4 GetWorldTransform() const noexcept;
     [[nodiscard]] Matrix4 GetParentWorldTransform() const noexcept;
 
-    void DirtyElement(InvalidateElementReason reason = InvalidateElementReason::Any);
-    [[nodiscard]] bool IsDirty(InvalidateElementReason reason = InvalidateElementReason::Any) const;
+    void DirtyElement(UIInvalidateElementReason reason = UIInvalidateElementReason::Any);
+    [[nodiscard]] bool IsDirty(UIInvalidateElementReason reason = UIInvalidateElementReason::Any) const;
     [[nodiscard]] bool IsParent() const;
     [[nodiscard]] bool IsChild() const;
 
@@ -136,18 +133,17 @@ private:
     Vector2 _pivot{};
 
     Rgba _pivot_color = Rgba::Red;
-    PanelSlot* _slot = &s_NullPanelSlot;
+    UIPanelSlot* _slot = &s_NullPanelSlot;
     float _orientationRadians = 0.0f;
-    InvalidateElementReason _dirty_reason = InvalidateElementReason::None;
+    UIInvalidateElementReason _dirty_reason = UIInvalidateElementReason::None;
     bool _hidden = false;
     bool _enabled = true;
 
     [[nodiscard]] float GetParentOrientationRadians() const;
     [[nodiscard]] float GetParentOrientationDegrees() const;
 
-    friend class Panel;
-    friend struct PanelSlot;
-    static NullPanelSlot s_NullPanelSlot;
+    friend class UIPanel;
+    friend struct UIPanelSlot;
+    static UINullPanelSlot s_NullPanelSlot;
 };
 
-} // namespace UI

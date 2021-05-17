@@ -280,19 +280,19 @@
     <ClCompile Include="Core\Config.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="UI\Canvas.cpp">
+    <ClCompile Include="UI\UICanvas.cpp">
       <Filter>UI</Filter>
     </ClCompile>
-    <ClCompile Include="UI\Element.cpp">
+    <ClCompile Include="UI\UIElement.cpp">
       <Filter>UI</Filter>
     </ClCompile>
-    <ClCompile Include="UI\Types.cpp">
+    <ClCompile Include="UI\UITypes.cpp">
       <Filter>UI</Filter>
     </ClCompile>
-    <ClCompile Include="UI\Panel.cpp">
+    <ClCompile Include="UI\UIPanel.cpp">
       <Filter>UI</Filter>
     </ClCompile>
-    <ClCompile Include="UI\Label.cpp">
+    <ClCompile Include="UI\UILabel.cpp">
       <Filter>UI</Filter>
     </ClCompile>
     <ClCompile Include="Core\Stopwatch.cpp">
@@ -406,13 +406,13 @@
     <ClCompile Include="Math\Ray3.cpp">
       <Filter>Math</Filter>
     </ClCompile>
-    <ClCompile Include="UI\Widget.cpp">
+    <ClCompile Include="UI\UIWidget.cpp">
       <Filter>UI</Filter>
     </ClCompile>
-    <ClCompile Include="UI\PictureBox.cpp">
+    <ClCompile Include="UI\UIPictureBox.cpp">
       <Filter>UI</Filter>
     </ClCompile>
-    <ClCompile Include="UI\PanelSlot.cpp">
+    <ClCompile Include="UI\UIPanelSlot.cpp">
       <Filter>UI</Filter>
     </ClCompile>
     <ClCompile Include="Renderer\Camera.cpp">
@@ -696,19 +696,19 @@
     <ClInclude Include="Core\Event.hpp">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="UI\Canvas.hpp">
+    <ClInclude Include="UI\UICanvas.hpp">
       <Filter>UI</Filter>
     </ClInclude>
-    <ClInclude Include="UI\Element.hpp">
+    <ClInclude Include="UI\UIElement.hpp">
       <Filter>UI</Filter>
     </ClInclude>
-    <ClInclude Include="UI\Types.hpp">
+    <ClInclude Include="UI\UITypes.hpp">
       <Filter>UI</Filter>
     </ClInclude>
-    <ClInclude Include="UI\Panel.hpp">
+    <ClInclude Include="UI\UIPanel.hpp">
       <Filter>UI</Filter>
     </ClInclude>
-    <ClInclude Include="UI\Label.hpp">
+    <ClInclude Include="UI\UILabel.hpp">
       <Filter>UI</Filter>
     </ClInclude>
     <ClInclude Include="Core\Stopwatch.hpp">
@@ -837,13 +837,13 @@
     <ClInclude Include="Math\Ray3.hpp">
       <Filter>Math</Filter>
     </ClInclude>
-    <ClInclude Include="UI\Widget.hpp">
+    <ClInclude Include="UI\UIWidget.hpp">
       <Filter>UI</Filter>
     </ClInclude>
-    <ClInclude Include="UI\PictureBox.hpp">
+    <ClInclude Include="UI\UIPictureBox.hpp">
       <Filter>UI</Filter>
     </ClInclude>
-    <ClInclude Include="UI\PanelSlot.hpp">
+    <ClInclude Include="UI\UIPanelSlot.hpp">
       <Filter>UI</Filter>
     </ClInclude>
     <ClInclude Include="Renderer\Camera.hpp">

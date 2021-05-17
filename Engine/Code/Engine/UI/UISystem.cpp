@@ -8,7 +8,7 @@
 #include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/Window.hpp"
-#include "Engine/UI/Widget.hpp"
+#include "Engine/UI/UIWidget.hpp"
 #include "Thirdparty/Imgui/imgui_internal.h"
 
 #include <algorithm>
@@ -231,14 +231,14 @@ bool UISystem::IsAnyImguiDebugWindowVisible() const noexcept {
 
 void UISystem::RegisterUiWidgetsFromFolder(std::filesystem::path folderpath, bool recursive /*= false*/) {
     const auto widgets_lambda = [this](const std::filesystem::path& path) {
-        auto newWidget = std::make_unique<UI::Widget>(_renderer, path);
+        auto newWidget = std::make_unique<UIWidget>(_renderer, path);
         const auto name = newWidget->name;
         _widgets.try_emplace(name, std::move(newWidget));
     };
     FileUtils::ForEachFileInFolder(folderpath, ".ui", widgets_lambda, recursive);
 }
 
-bool UISystem::IsWidgetLoaded(const UI::Widget& widget) const noexcept {
+bool UISystem::IsWidgetLoaded(const UIWidget& widget) const noexcept {
     return std::find(std::begin(_active_widgets), std::end(_active_widgets), &widget) != std::end(_active_widgets);
 }
 
@@ -262,10 +262,10 @@ void UISystem::LoadUiWidget(const std::string& name) {
 }
 
 void UISystem::UnloadUiWidget(const std::string& name) {
-    _active_widgets.erase(std::remove_if(std::begin(_active_widgets), std::end(_active_widgets), [&name](UI::Widget* widget) { return widget->name == name; }), std::end(_active_widgets));
+    _active_widgets.erase(std::remove_if(std::begin(_active_widgets), std::end(_active_widgets), [&name](UIWidget* widget) { return widget->name == name; }), std::end(_active_widgets));
 }
 
-void UISystem::AddUiWidgetToViewport(UI::Widget& widget) {
+void UISystem::AddUiWidgetToViewport(UIWidget& widget) {
     const auto viewport = _renderer.GetCurrentViewport();
     const auto viewportDims = Vector2{viewport.width, viewport.height};
     if(!IsWidgetLoaded(widget)) {
@@ -273,11 +273,11 @@ void UISystem::AddUiWidgetToViewport(UI::Widget& widget) {
     }
 }
 
-void UISystem::RemoveUiWidgetFromViewport(UI::Widget& widget) {
+void UISystem::RemoveUiWidgetFromViewport(UIWidget& widget) {
     UnloadUiWidget(widget.name);
 }
 
-UI::Widget* UISystem::GetWidgetByName(const std::string& name) const {
+UIWidget* UISystem::GetWidgetByName(const std::string& name) const {
     if(const auto& found = _widgets.find(name); found != std::end(_widgets)) {
         return found->second.get();
     }

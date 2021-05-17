@@ -1,29 +1,27 @@
-#include "Engine/UI/Element.hpp"
+#include "Engine/UI/UIElement.hpp"
 
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/KerningFont.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Renderer/Renderer.hpp"
-#include "Engine/UI/Panel.hpp"
+#include "Engine/UI/UIPanel.hpp"
 
 #include <sstream>
 
-namespace UI {
+UINullPanelSlot UIElement::s_NullPanelSlot = UINullPanelSlot{};
 
-NullPanelSlot Element::s_NullPanelSlot = NullPanelSlot{};
-
-Element::Element(Panel* parent /*= nullptr*/) {
+UIElement::UIElement(UIPanel* parent /*= nullptr*/) {
     if(parent) {
         _slot = parent->AddChild(this);
     }
 }
 
-Element::~Element() {
+UIElement::~UIElement() {
     RemoveSelf();
 }
 
-void Element::RemoveSelf() {
+void UIElement::RemoveSelf() {
     if(_slot && _slot->parent) {
         _slot->parent->RemoveChild(this);
         _slot->parent = nullptr;
@@ -32,110 +30,110 @@ void Element::RemoveSelf() {
     }
 }
 
-bool Element::HasSlot() const noexcept {
+bool UIElement::HasSlot() const noexcept {
     return _slot != &s_NullPanelSlot;
 }
 
-void Element::ResetSlot() noexcept {
+void UIElement::ResetSlot() noexcept {
     _slot = &s_NullPanelSlot;
 }
 
-void Element::SetSlot(PanelSlot* newSlot) noexcept {
+void UIElement::SetSlot(UIPanelSlot* newSlot) noexcept {
     _slot = newSlot;
 }
 
-const PanelSlot* const Element::GetSlot() const noexcept {
+const UIPanelSlot* const UIElement::GetSlot() const noexcept {
     return _slot;
 }
 
-PanelSlot* Element::GetSlot() noexcept {
-    return const_cast<PanelSlot*>(static_cast<const Element&>(*this).GetSlot());
+UIPanelSlot* UIElement::GetSlot() noexcept {
+    return const_cast<UIPanelSlot*>(static_cast<const UIElement&>(*this).GetSlot());
 }
 
-void Element::SetBorderColor(const Rgba& color) {
+void UIElement::SetBorderColor(const Rgba& color) {
     SetDebugColors(color, _fill_color, _pivot_color);
 }
 
-void Element::SetBackgroundColor(const Rgba& color) {
+void UIElement::SetBackgroundColor(const Rgba& color) {
     SetDebugColors(_edge_color, color, _pivot_color);
 }
 
-void Element::SetPivotColor(const Rgba& color) {
+void UIElement::SetPivotColor(const Rgba& color) {
     SetDebugColors(_edge_color, _fill_color, color);
 }
 
-void Element::SetDebugColors(const Rgba& edge, const Rgba& fill, const Rgba& pivot /*= Rgba::RED*/) {
+void UIElement::SetDebugColors(const Rgba& edge, const Rgba& fill, const Rgba& pivot /*= Rgba::RED*/) {
     _edge_color = edge;
     _fill_color = fill;
     _pivot_color = pivot;
 }
 
-Vector2 Element::CalcLocalPosition() const {
+Vector2 UIElement::CalcLocalPosition() const {
     AABB2 local_bounds = GetParentBounds();
     return MathUtils::CalcPointFromNormalizedPoint(_position.GetXY(), local_bounds) + _position.GetZW();
 }
 
-Vector2 Element::CalcRelativePosition(const Vector2& position) const {
+Vector2 UIElement::CalcRelativePosition(const Vector2& position) const {
     AABB2 parent_bounds = GetParentLocalBounds();
     return MathUtils::CalcPointFromNormalizedPoint(position, parent_bounds);
 }
 
-Vector2 Element::CalcRelativePosition() const {
+Vector2 UIElement::CalcRelativePosition() const {
     AABB2 parent_bounds = GetParentLocalBounds();
     return MathUtils::CalcPointFromNormalizedPoint(_pivot, parent_bounds);
 }
 
-const Vector4& Element::GetPosition() const {
+const Vector4& UIElement::GetPosition() const {
     return _position;
 }
 
-void Element::SetPosition(const Vector4& position) {
-    DirtyElement(InvalidateElementReason::Layout);
+void UIElement::SetPosition(const Vector4& position) {
+    DirtyElement(UIInvalidateElementReason::Layout);
     _position = position;
     CalcBounds();
 }
 
-void Element::SetPositionRatio(const Vector2& ratio) {
-    Element::SetPosition(Vector4{ratio, _position.GetZW()});
+void UIElement::SetPositionRatio(const Vector2& ratio) {
+    UIElement::SetPosition(Vector4{ratio, _position.GetZW()});
 }
 
-void Element::SetPositionOffset(const Vector2& offset) {
-    Element::SetPosition(Vector4{_position.GetXY(), offset});
+void UIElement::SetPositionOffset(const Vector2& offset) {
+    UIElement::SetPosition(Vector4{_position.GetXY(), offset});
 }
 
-void Element::SetPivot(const Vector2& pivotPosition) {
-    DirtyElement(InvalidateElementReason::Layout);
+void UIElement::SetPivot(const Vector2& pivotPosition) {
+    DirtyElement(UIInvalidateElementReason::Layout);
     _pivot = pivotPosition;
     CalcBounds();
 }
 
-void Element::SetPivot(const PivotPosition& pivotPosition) {
+void UIElement::SetPivot(const UIPivotPosition& pivotPosition) {
     switch(pivotPosition) {
-    case PivotPosition::Center:
+    case UIPivotPosition::Center:
         SetPivot(Vector2(0.5f, 0.5f));
         break;
-    case PivotPosition::TopLeft:
+    case UIPivotPosition::TopLeft:
         SetPivot(Vector2(0.0f, 0.0f));
         break;
-    case PivotPosition::Top:
+    case UIPivotPosition::Top:
         SetPivot(Vector2(0.5f, 0.0f));
         break;
-    case PivotPosition::TopRight:
+    case UIPivotPosition::TopRight:
         SetPivot(Vector2(1.0f, 0.0f));
         break;
-    case PivotPosition::Right:
+    case UIPivotPosition::Right:
         SetPivot(Vector2(1.0f, 0.5f));
         break;
-    case PivotPosition::BottomRight:
+    case UIPivotPosition::BottomRight:
         SetPivot(Vector2(1.0f, 1.0f));
         break;
-    case PivotPosition::Bottom:
+    case UIPivotPosition::Bottom:
         SetPivot(Vector2(0.5f, 1.0f));
         break;
-    case PivotPosition::BottomLeft:
+    case UIPivotPosition::BottomLeft:
         SetPivot(Vector2(0.0f, 1.0f));
         break;
-    case PivotPosition::Left:
+    case UIPivotPosition::Left:
         SetPivot(Vector2(0.0f, 0.5f));
         break;
     default:
@@ -145,27 +143,27 @@ void Element::SetPivot(const PivotPosition& pivotPosition) {
     }
 }
 
-const Vector2& Element::GetPivot() const {
+const Vector2& UIElement::GetPivot() const {
     return _pivot;
 }
 
-void Element::Update(TimeUtils::FPSeconds /*deltaSeconds*/) {
+void UIElement::Update(TimeUtils::FPSeconds /*deltaSeconds*/) {
     /* DO NOTHING */
 }
 
-void Element::Render(Renderer& /*renderer*/) const {
+void UIElement::Render(Renderer& /*renderer*/) const {
     /* DO NOTHING */
 }
 
-void Element::DebugRender(Renderer& renderer) const {
+void UIElement::DebugRender(Renderer& renderer) const {
     DebugRenderBoundsAndPivot(renderer);
 }
 
-void Element::EndFrame() {
+void UIElement::EndFrame() {
     /* DO NOTHING */
 }
 
-Matrix4 Element::GetLocalTransform() const noexcept {
+Matrix4 UIElement::GetLocalTransform() const noexcept {
     const auto T = Matrix4::CreateTranslationMatrix(CalcLocalPosition());
     const auto R = Matrix4::Create2DRotationMatrix(CalcLocalRotationRadians());
     const auto S = Matrix4::CreateScaleMatrix(CalcLocalScale());
@@ -173,7 +171,7 @@ Matrix4 Element::GetLocalTransform() const noexcept {
     return M;
 }
 
-Vector2 Element::CalcLocalScale() const {
+Vector2 UIElement::CalcLocalScale() const {
     const auto my_bounds = CalcLocalBounds();
     const auto parent_bounds = GetParentBounds();
     const auto parent_width = parent_bounds.maxs.x - parent_bounds.mins.x;
@@ -186,25 +184,25 @@ Vector2 Element::CalcLocalScale() const {
     return parent ? Vector2(width_scale, height_scale) : Vector2::ONE;
 }
 
-Matrix4 Element::GetWorldTransform() const noexcept {
+Matrix4 UIElement::GetWorldTransform() const noexcept {
     return Matrix4::MakeRT(GetLocalTransform(), GetParentWorldTransform());
 }
 
-Matrix4 Element::GetParentWorldTransform() const noexcept {
+Matrix4 UIElement::GetParentWorldTransform() const noexcept {
     const auto* parent = GetParent();
     return parent ? parent->GetWorldTransform() : Matrix4::I;
 }
 
-void Element::DirtyElement(InvalidateElementReason reason /*= InvalidateElementReason::Any*/) {
+void UIElement::DirtyElement(UIInvalidateElementReason reason /*= InvalidateElementReason::Any*/) {
     _dirty_reason = reason;
 }
 
-void Element::DebugRenderBoundsAndPivot(Renderer& renderer) const {
+void UIElement::DebugRenderBoundsAndPivot(Renderer& renderer) const {
     DebugRenderBounds(renderer);
     DebugRenderPivot(renderer);
 }
 
-void Element::DebugRenderPivot(Renderer& renderer) const {
+void UIElement::DebugRenderPivot(Renderer& renderer) const {
     const auto world_transform = GetWorldTransform();
     const auto scale = world_transform.GetScale();
     const auto inv_scale_matrix = Matrix4::CalculateInverse(Matrix4::CreateScaleMatrix(Vector3(scale.x * 0.10f, scale.y * 0.10f, 1.0f)));
@@ -216,97 +214,97 @@ void Element::DebugRenderPivot(Renderer& renderer) const {
     renderer.DrawX2D(_pivot_color);
 }
 
-void Element::DebugRenderBounds(Renderer& renderer) const {
+void UIElement::DebugRenderBounds(Renderer& renderer) const {
     const auto world_transform = GetWorldTransform();
     renderer.SetModelMatrix(world_transform);
     renderer.SetMaterial(renderer.GetMaterial("__2D"));
     renderer.DrawAABB2(_edge_color, _fill_color);
 }
 
-AABB2 Element::GetParentBounds() const noexcept {
+AABB2 UIElement::GetParentBounds() const noexcept {
     const auto* parent = GetParent();
     return parent ? parent->_bounds : AABB2::ZERO_TO_ONE;
 }
 
-Panel* Element::GetParent() const noexcept {
+UIPanel* UIElement::GetParent() const noexcept {
     return _slot->parent;
 }
 
-bool Element::IsHidden() const {
+bool UIElement::IsHidden() const {
     return _hidden;
 }
 
-bool Element::IsVisible() const {
+bool UIElement::IsVisible() const {
     return !_hidden;
 }
 
-void Element::Hide() {
+void UIElement::Hide() {
     SetHidden();
 }
 
-void Element::Show() {
+void UIElement::Show() {
     SetHidden(false);
 }
 
-void Element::SetHidden(bool hidden /*= true*/) {
+void UIElement::SetHidden(bool hidden /*= true*/) {
     _hidden = hidden;
 }
 
-void Element::ToggleHidden() {
+void UIElement::ToggleHidden() {
     _hidden = !_hidden;
 }
 
-void Element::ToggleVisibility() {
+void UIElement::ToggleVisibility() {
     ToggleHidden();
 }
 
-bool Element::IsEnabled() const {
+bool UIElement::IsEnabled() const {
     return _enabled;
 }
 
-bool Element::IsDisabled() const {
+bool UIElement::IsDisabled() const {
     return !_enabled;
 }
 
-void Element::Enable() {
+void UIElement::Enable() {
     _enabled = true;
 }
 
-void Element::Disable() {
+void UIElement::Disable() {
     _enabled = false;
 }
 
-void Element::SetEnabled(bool enabled /*= true*/) {
+void UIElement::SetEnabled(bool enabled /*= true*/) {
     _enabled = enabled;
 }
 
-void Element::ToggleEnabled() {
+void UIElement::ToggleEnabled() {
     _enabled = !_enabled;
 }
 
-const std::string& Element::GetName() const {
+const std::string& UIElement::GetName() const {
     return _name;
 }
 
-std::string& Element::GetName() {
-    return const_cast<std::string&>(static_cast<const Element&>(*this).GetName());
+std::string& UIElement::GetName() {
+    return const_cast<std::string&>(static_cast<const UIElement&>(*this).GetName());
 }
 
-void Element::CalcBounds() noexcept {
-    DirtyElement(InvalidateElementReason::Layout);
+void UIElement::CalcBounds() noexcept {
+    DirtyElement(UIInvalidateElementReason::Layout);
     const auto desired_size = this->CalcDesiredSize();
     _bounds.mins = desired_size.GetXY();
     _bounds.maxs = desired_size.GetZW();
 }
 
-void Element::CalcBoundsAndPivot() noexcept {
-    DirtyElement(InvalidateElementReason::Layout);
+void UIElement::CalcBoundsAndPivot() noexcept {
+    DirtyElement(UIInvalidateElementReason::Layout);
     const auto slot = GetSlot();
     CalcBounds();
     slot->CalcPivot();
 }
 
-AABB2 Element::CalcBoundsRelativeToParent() const noexcept {
+AABB2 UIElement::CalcBoundsRelativeToParent() const noexcept {
     const auto parent = GetParent();
     AABB2 parent_bounds = parent ? parent->CalcLocalBounds() : CalcLocalBounds();
     Vector2 parent_size = parent_bounds.CalcDimensions();
@@ -319,7 +317,7 @@ AABB2 Element::CalcBoundsRelativeToParent() const noexcept {
     return my_local_bounds;
 }
 
-AABB2 Element::CalcRelativeBounds() const noexcept {
+AABB2 UIElement::CalcRelativeBounds() const noexcept {
     Vector2 size = CalcDesiredSize().GetZW();
     Vector2 pivot_position = size * _pivot;
 
@@ -330,7 +328,7 @@ AABB2 Element::CalcRelativeBounds() const noexcept {
     return bounds;
 }
 
-AABB2 Element::CalcAbsoluteBounds() const noexcept {
+AABB2 UIElement::CalcAbsoluteBounds() const noexcept {
     const auto size = CalcDesiredSize();
     const auto parent_bounds = GetParentBounds();
     const auto pivot_position = MathUtils::CalcPointFromNormalizedPoint(_pivot, parent_bounds);
@@ -340,14 +338,14 @@ AABB2 Element::CalcAbsoluteBounds() const noexcept {
     return CalcAlignedAbsoluteBounds();
 }
 
-AABB2 Element::AlignBoundsToContainer(AABB2 bounds, AABB2 container, const Vector2& alignment) const noexcept {
+AABB2 UIElement::AlignBoundsToContainer(AABB2 bounds, AABB2 container, const Vector2& alignment) const noexcept {
     Vector2 max_distance = MathUtils::CalcPointFromNormalizedPoint(alignment, bounds);
     Vector2 distance = MathUtils::CalcPointFromNormalizedPoint(alignment, container) + max_distance;
     bounds.Translate(distance);
     return bounds;
 }
 
-AABB2 Element::CalcAlignedAbsoluteBounds() const noexcept {
+AABB2 UIElement::CalcAlignedAbsoluteBounds() const noexcept {
     AABB2 parent_bounds = GetParentLocalBounds();
     const auto ratio = _position.GetXY();
     AABB2 alignedBounds = AlignBoundsToContainer(CalcBoundsRelativeToParent(), parent_bounds, ratio);
@@ -362,39 +360,39 @@ AABB2 Element::CalcAlignedAbsoluteBounds() const noexcept {
     return alignedBounds;
 }
 
-AABB2 Element::CalcLocalBounds() const noexcept {
+AABB2 UIElement::CalcLocalBounds() const noexcept {
     return AABB2{CalcDesiredSize()};
 }
 
-bool Element::IsDirty(InvalidateElementReason reason /*= InvalidateElementReason::Any*/) const {
+bool UIElement::IsDirty(UIInvalidateElementReason reason /*= InvalidateElementReason::Any*/) const {
     return (_dirty_reason & reason) == reason;
 }
 
-bool Element::IsParent() const {
+bool UIElement::IsParent() const {
     return !IsChild();
 }
 
-bool Element::IsChild() const {
+bool UIElement::IsChild() const {
     return GetParent() != nullptr;
 }
 
-AABB2 Element::GetParentLocalBounds() const {
+AABB2 UIElement::GetParentLocalBounds() const {
     const auto* parent = GetParent();
     return parent ? parent->CalcLocalBounds() : AABB2(Vector2::ZERO, _bounds.CalcDimensions());
 }
 
-AABB2 Element::GetParentRelativeBounds() const {
+AABB2 UIElement::GetParentRelativeBounds() const {
     const auto* parent = GetParent();
     return parent ? parent->CalcBoundsRelativeToParent() : AABB2{0.0f, 0.0f, 0.0f, 0.0f};
 }
 
-AABB2 Element::GetBounds(const AABB2& parent, const Vector4& anchors, const Vector4& offsets) const noexcept {
+AABB2 UIElement::GetBounds(const AABB2& parent, const Vector4& anchors, const Vector4& offsets) const noexcept {
     Vector2 boundMins = MathUtils::CalcPointFromNormalizedPoint(Vector2(anchors.x, anchors.y), parent) + Vector2(offsets.x, offsets.y);
     Vector2 boundMaxs = MathUtils::CalcPointFromNormalizedPoint(Vector2(anchors.z, anchors.w), parent) + Vector2(offsets.z, offsets.w);
     return AABB2(boundMins, boundMaxs);
 }
 
-Vector2 Element::GetSmallestOffset(AABB2 a, AABB2 b) const noexcept {
+Vector2 UIElement::GetSmallestOffset(AABB2 a, AABB2 b) const noexcept {
     const auto width = a.CalcDimensions().x;
     const auto height = a.CalcDimensions().y;
     const auto center = a.CalcCenter();
@@ -403,80 +401,78 @@ Vector2 Element::GetSmallestOffset(AABB2 a, AABB2 b) const noexcept {
     return closestPoint - center;
 }
 
-AABB2 Element::MoveToBestFit(const AABB2& obj, const AABB2& container) const noexcept {
+AABB2 UIElement::MoveToBestFit(const AABB2& obj, const AABB2& container) const noexcept {
     Vector2 offset = GetSmallestOffset(obj, container);
     return obj + offset;
 }
 
-float Element::GetAspectRatio() const noexcept {
+float UIElement::GetAspectRatio() const noexcept {
     const auto dims = _bounds.CalcDimensions();
     return dims.x / dims.y;
 }
 
-Vector2 Element::GetTopLeft() const noexcept {
+Vector2 UIElement::GetTopLeft() const noexcept {
     return _bounds.mins;
 }
 
-Vector2 Element::GetTopRight() const noexcept {
+Vector2 UIElement::GetTopRight() const noexcept {
     return Vector2{_bounds.maxs.x, _bounds.mins.y};
 }
 
-Vector2 Element::GetBottomLeft() const noexcept {
+Vector2 UIElement::GetBottomLeft() const noexcept {
     return Vector2{_bounds.mins.x, _bounds.maxs.y};
 }
 
-Vector2 Element::GetBottomRight() const noexcept {
+Vector2 UIElement::GetBottomRight() const noexcept {
     return _bounds.maxs;
 }
 
-bool Element::HasParent() const {
+bool UIElement::HasParent() const {
     return GetParent();
 }
 
-float Element::GetParentOrientationRadians() const {
+float UIElement::GetParentOrientationRadians() const {
     const auto parent = GetParent();
     return parent ? parent->GetOrientationRadians() : 0.0f;
 }
 
-float Element::GetParentOrientationDegrees() const {
+float UIElement::GetParentOrientationDegrees() const {
     const auto parent = GetParent();
     return parent ? parent->GetOrientationDegrees() : 0.0f;
 }
 
-void Element::SetOrientationDegrees(float value) {
+void UIElement::SetOrientationDegrees(float value) {
     _orientationRadians = MathUtils::ConvertDegreesToRadians(value);
 }
 
-void Element::SetOrientationRadians(float value) {
+void UIElement::SetOrientationRadians(float value) {
     _orientationRadians = value;
 }
 
-float Element::GetOrientationDegrees() const {
+float UIElement::GetOrientationDegrees() const {
     return MathUtils::ConvertRadiansToDegrees(GetOrientationRadians());
 }
 
-float Element::GetOrientationRadians() const {
+float UIElement::GetOrientationRadians() const {
     return _orientationRadians;
 }
 
-float Element::CalcLocalRotationDegrees() const {
+float UIElement::CalcLocalRotationDegrees() const {
     return MathUtils::ConvertRadiansToDegrees(GetOrientationDegrees());
 }
 
-float Element::CalcLocalRotationRadians() const {
+float UIElement::CalcLocalRotationRadians() const {
     return GetOrientationRadians();
 }
 
-float Element::CalcWorldRotationRadians() const {
+float UIElement::CalcWorldRotationRadians() const {
     return GetParentOrientationRadians() + GetOrientationRadians();
 }
 
-float Element::CalcWorldRotationDegrees() const {
+float UIElement::CalcWorldRotationDegrees() const {
     return GetParentOrientationDegrees() + GetOrientationDegrees();
 }
 
-float Element::GetInvAspectRatio() const noexcept {
+float UIElement::GetInvAspectRatio() const noexcept {
     return 1.0f / GetAspectRatio();
 }
-
-} // namespace UI

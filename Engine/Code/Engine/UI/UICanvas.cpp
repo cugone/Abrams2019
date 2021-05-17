@@ -1,4 +1,4 @@
-#include "Engine/UI/Canvas.hpp"
+#include "Engine/UI/UICanvas.hpp"
 
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/StringUtils.hpp"
@@ -11,10 +11,8 @@
 #include <memory>
 #include <sstream>
 
-namespace UI {
-
-Canvas::Canvas(Widget* owner, Renderer& renderer)
-: Panel(owner)
+UICanvas::UICanvas(UIWidget* owner, Renderer& renderer)
+: UIPanel(owner)
 , _renderer(renderer) {
     const auto [dimensions, aspect_ratio] = CalcDimensionsAndAspectRatio();
     const auto desired_size = CalcDesiredSize();
@@ -27,20 +25,20 @@ Canvas::Canvas(Widget* owner, Renderer& renderer)
     _renderer.CreateAndRegisterDepthStencilStateFromDepthStencilDescription("UIDepthStencil", desc);
 }
 
-Canvas::Canvas(Widget* owner, Renderer& renderer, const XMLElement& elem)
-: Panel(owner)
+UICanvas::UICanvas(UIWidget* owner, Renderer& renderer, const XMLElement& elem)
+: UIPanel(owner)
 , _renderer(renderer) {
     GUARANTEE_OR_DIE(LoadFromXml(elem), "Canvas constructor failed to load.");
 }
 
-void Canvas::Update(TimeUtils::FPSeconds deltaSeconds) {
+void UICanvas::Update(TimeUtils::FPSeconds deltaSeconds) {
     if(IsDisabled()) {
         return;
     }
     UpdateChildren(deltaSeconds);
 }
 
-void Canvas::Render(Renderer& renderer) const {
+void UICanvas::Render(Renderer& renderer) const {
     if(IsHidden()) {
         return;
     }
@@ -50,11 +48,11 @@ void Canvas::Render(Renderer& renderer) const {
     renderer.SetCamera(old_camera);
 }
 
-void Canvas::SetupMVPFromTargetAndCamera(Renderer& renderer) const {
+void UICanvas::SetupMVPFromTargetAndCamera(Renderer& renderer) const {
     SetupMVPFromViewportAndCamera(renderer);
 }
 
-void Canvas::SetupMVPFromViewportAndCamera(Renderer& renderer) const {
+void UICanvas::SetupMVPFromViewportAndCamera(Renderer& renderer) const {
     renderer.ResetModelViewProjection();
     const auto& vp = renderer.GetCurrentViewport();
     const auto target_dims = Vector2(vp.width, vp.height);
@@ -70,7 +68,7 @@ void Canvas::SetupMVPFromViewportAndCamera(Renderer& renderer) const {
     renderer.SetModelMatrix(GetWorldTransform());
 }
 
-void Canvas::DebugRender(Renderer& renderer) const {
+void UICanvas::DebugRender(Renderer& renderer) const {
     const auto& target = _camera.GetRenderTarget();
     renderer.SetRenderTarget(target.color_target, target.depthstencil_target);
     renderer.DisableDepth();
@@ -80,18 +78,18 @@ void Canvas::DebugRender(Renderer& renderer) const {
     renderer.SetMaterial(nullptr);
 }
 
-void Canvas::EndFrame() {
-    Panel::EndFrame();
-    if(IsDirty(InvalidateElementReason::Layout)) {
+void UICanvas::EndFrame() {
+    UIPanel::EndFrame();
+    if(IsDirty(UIInvalidateElementReason::Layout)) {
         ReorderAllChildren();
     }
 }
 
-const Camera2D& Canvas::GetUICamera() const {
+const Camera2D& UICanvas::GetUICamera() const {
     return _camera;
 }
 
-void Canvas::UpdateChildren(TimeUtils::FPSeconds deltaSeconds) {
+void UICanvas::UpdateChildren(TimeUtils::FPSeconds deltaSeconds) {
     for(auto& slot : _slots) {
         if(auto* child = slot->content) {
             child->Update(deltaSeconds);
@@ -99,7 +97,7 @@ void Canvas::UpdateChildren(TimeUtils::FPSeconds deltaSeconds) {
     }
 }
 
-void Canvas::RenderChildren(Renderer& renderer) const {
+void UICanvas::RenderChildren(Renderer& renderer) const {
     for(auto& slot : _slots) {
         if(auto* child = slot->content) {
             child->Render(renderer);
@@ -107,15 +105,15 @@ void Canvas::RenderChildren(Renderer& renderer) const {
     }
 }
 
-const Renderer& Canvas::GetRenderer() const {
+const Renderer& UICanvas::GetRenderer() const {
     return _renderer;
 }
 
-Renderer& Canvas::GetRenderer() {
-    return const_cast<Renderer&>(static_cast<const Canvas&>(*this).GetRenderer());
+Renderer& UICanvas::GetRenderer() {
+    return const_cast<Renderer&>(static_cast<const UICanvas&>(*this).GetRenderer());
 }
 
-Vector4 Canvas::AnchorTextToAnchorValues(const std::string& text) noexcept {
+Vector4 UICanvas::AnchorTextToAnchorValues(const std::string& text) noexcept {
     const auto values = StringUtils::Split(text, '/');
     GUARANTEE_OR_DIE(values.size() == 2, "UI Anchor Text must be exactly two values separated by a '/'");
     Vector4 anchors{0.5f, 0.5f, 0.5f, 0.5f};
@@ -170,53 +168,53 @@ Vector4 Canvas::AnchorTextToAnchorValues(const std::string& text) noexcept {
     }
 }
 
-CanvasSlot* Canvas::AddChild(Element* child) {
-    DirtyElement(InvalidateElementReason::Layout);
-    auto newSlot = std::make_shared<CanvasSlot>(child, this);
+UICanvasSlot* UICanvas::AddChild(UIElement* child) {
+    DirtyElement(UIInvalidateElementReason::Layout);
+    auto newSlot = std::make_shared<UICanvasSlot>(child, this);
     auto ptr = newSlot.get();
     _slots.emplace_back(newSlot);
     child->SetSlot(ptr);
     return ptr;
 }
 
-CanvasSlot* Canvas::AddChildAt(Element* child, std::size_t index) {
-    DirtyElement(InvalidateElementReason::Layout);
-    auto newSlot = std::make_shared<CanvasSlot>(child, this);
+UICanvasSlot* UICanvas::AddChildAt(UIElement* child, std::size_t index) {
+    DirtyElement(UIInvalidateElementReason::Layout);
+    auto newSlot = std::make_shared<UICanvasSlot>(child, this);
     CalcBoundsForMeThenMyChildren();
     auto ptr = newSlot.get();
     _slots[index] = std::move(newSlot);
-    if(IsDirty(InvalidateElementReason::Layout)) {
+    if(IsDirty(UIInvalidateElementReason::Layout)) {
         ReorderAllChildren();
     }
     return ptr;
 }
 
-CanvasSlot* Canvas::AddChildFromXml(const XMLElement& elem, Element* child) {
-    DirtyElement(InvalidateElementReason::Layout);
-    auto newSlot = std::make_shared<CanvasSlot>(elem, child, this);
+UICanvasSlot* UICanvas::AddChildFromXml(const XMLElement& elem, UIElement* child) {
+    DirtyElement(UIInvalidateElementReason::Layout);
+    auto newSlot = std::make_shared<UICanvasSlot>(elem, child, this);
     auto ptr = newSlot.get();
     _slots.emplace_back(newSlot);
     child->SetSlot(ptr);
-    if(IsDirty(InvalidateElementReason::Layout)) {
+    if(IsDirty(UIInvalidateElementReason::Layout)) {
         ReorderAllChildren();
     }
     return ptr;
 }
 
-CanvasSlot* Canvas::AddChildFromXml(const XMLElement& elem, Element* child, std::size_t index) {
-    DirtyElement(InvalidateElementReason::Layout);
-    auto newSlot = std::make_shared<CanvasSlot>(elem, child, this);
+UICanvasSlot* UICanvas::AddChildFromXml(const XMLElement& elem, UIElement* child, std::size_t index) {
+    DirtyElement(UIInvalidateElementReason::Layout);
+    auto newSlot = std::make_shared<UICanvasSlot>(elem, child, this);
     CalcBoundsForMeThenMyChildren();
     auto ptr = newSlot.get();
     _slots[index] = std::move(newSlot);
-    if(IsDirty(InvalidateElementReason::Layout)) {
+    if(IsDirty(UIInvalidateElementReason::Layout)) {
         ReorderAllChildren();
     }
     return ptr;
 }
 
-void Canvas::RemoveChild(Element* child) {
-    DirtyElement(InvalidateElementReason::Any);
+void UICanvas::RemoveChild(UIElement* child) {
+    DirtyElement(UIInvalidateElementReason::Any);
     _slots.erase(
     std::remove_if(std::begin(_slots), std::end(_slots),
                    [child](const decltype(_slots)::value_type& c) {
@@ -227,19 +225,19 @@ void Canvas::RemoveChild(Element* child) {
     CalcBoundsForMeThenMyChildren();
 }
 
-void Canvas::RemoveAllChildren() {
-    DirtyElement(InvalidateElementReason::Any);
+void UICanvas::RemoveAllChildren() {
+    DirtyElement(UIInvalidateElementReason::Any);
     _slots.clear();
     _slots.shrink_to_fit();
     CalcBoundsForMeThenMyChildren();
 }
 
-Vector4 Canvas::CalcDesiredSize() const noexcept {
+Vector4 UICanvas::CalcDesiredSize() const noexcept {
     const auto childBounds = CalcChildrenDesiredBounds();
     return Vector4{childBounds.mins, childBounds.maxs};
 }
 
-AABB2 Canvas::CalcChildrenDesiredBounds() const {
+AABB2 UICanvas::CalcChildrenDesiredBounds() const {
     AABB2 result;
     for(const auto& slot : _slots) {
         const auto desired_size = slot->content->CalcDesiredSize();
@@ -249,11 +247,11 @@ AABB2 Canvas::CalcChildrenDesiredBounds() const {
     return result;
 }
 
-void Canvas::ArrangeChildren() noexcept {
+void UICanvas::ArrangeChildren() noexcept {
     /* DO NOTHING */
 }
 
-std::pair<Vector2, float> Canvas::CalcDimensionsAndAspectRatio() const {
+std::pair<Vector2, float> UICanvas::CalcDimensionsAndAspectRatio() const {
     const auto& viewport = _renderer.GetCurrentViewport();
     const auto viewport_dims = Vector2{viewport.width, viewport.height};
 
@@ -269,7 +267,7 @@ std::pair<Vector2, float> Canvas::CalcDimensionsAndAspectRatio() const {
     return std::make_pair(dims, dims.x / dims.y);
 }
 
-AABB2 Canvas::CalcAlignedAbsoluteBounds() const noexcept {
+AABB2 UICanvas::CalcAlignedAbsoluteBounds() const noexcept {
     AABB2 parent_bounds = GetParentLocalBounds();
     auto ratio = GetPosition().GetXY();
     AABB2 alignedBounds = AlignBoundsToContainer(CalcBoundsRelativeToParent(), parent_bounds, ratio);
@@ -284,11 +282,11 @@ AABB2 Canvas::CalcAlignedAbsoluteBounds() const noexcept {
     return alignedBounds;
 }
 
-void Canvas::ReorderAllChildren() {
+void UICanvas::ReorderAllChildren() {
     std::sort(std::begin(_slots), std::end(_slots),
-              [](const std::shared_ptr<PanelSlot>& a, const std::shared_ptr<PanelSlot>& b) {
-                  const auto aAsCs = std::dynamic_pointer_cast<CanvasSlot>(a);
-                  const auto bAsCs = std::dynamic_pointer_cast<CanvasSlot>(b);
+              [](const std::shared_ptr<UIPanelSlot>& a, const std::shared_ptr<UIPanelSlot>& b) {
+                  const auto aAsCs = std::dynamic_pointer_cast<UICanvasSlot>(a);
+                  const auto bAsCs = std::dynamic_pointer_cast<UICanvasSlot>(b);
                   if(aAsCs && bAsCs) {
                       return aAsCs->zOrder < bAsCs->zOrder;
                   }
@@ -304,26 +302,26 @@ void Canvas::ReorderAllChildren() {
               });
 }
 
-bool Canvas::LoadFromXml(const XMLElement& elem) noexcept {
+bool UICanvas::LoadFromXml(const XMLElement& elem) noexcept {
     DataUtils::ValidateXmlElement(elem, "canvas", "", "name", "canvas,label,panel,picturebox,button");
     _name = DataUtils::ParseXmlAttribute(elem, "name", _name);
     return true;
 }
 
-CanvasSlot::CanvasSlot(Element* content /*= nullptr*/, Panel* parent /*= nullptr*/)
-: PanelSlot(content, parent) {
+UICanvasSlot::UICanvasSlot(UIElement* content /*= nullptr*/, UIPanel* parent /*= nullptr*/)
+: UIPanelSlot(content, parent) {
 }
 
-CanvasSlot::CanvasSlot(const XMLElement& elem,
-                       Element* content /*= nullptr*/,
-                       Panel* parent /*= nullptr*/)
-: PanelSlot(content, parent) {
+UICanvasSlot::UICanvasSlot(const XMLElement& elem,
+                       UIElement* content /*= nullptr*/,
+                       UIPanel* parent /*= nullptr*/)
+: UIPanelSlot(content, parent) {
     LoadFromXml(elem);
 }
 
-void CanvasSlot::LoadFromXml(const XMLElement& elem) {
+void UICanvasSlot::LoadFromXml(const XMLElement& elem) {
     DataUtils::ValidateXmlElement(elem, "slot", "", "", "", "anchors,position,size,alignment,autosize");
-    const auto anchorValues = AABB2{Canvas::AnchorTextToAnchorValues(DataUtils::ParseXmlAttribute(elem, "anchors", std::string{"center/center"}))};
+    const auto anchorValues = AABB2{UICanvas::AnchorTextToAnchorValues(DataUtils::ParseXmlAttribute(elem, "anchors", std::string{"center/center"}))};
     anchors = anchorValues;
     CalcPivot();
     autoSize = DataUtils::ParseXmlAttribute(elem, "autosize", autoSize);
@@ -331,7 +329,7 @@ void CanvasSlot::LoadFromXml(const XMLElement& elem) {
     position = DataUtils::ParseXmlAttribute(elem, "position", Vector2{0.5f, 0.5f});
 }
 
-void CanvasSlot::CalcPivot() {
+void UICanvasSlot::CalcPivot() {
     const auto desired_size = content->CalcDesiredSize();
     const auto parent_bounds = content->GetParentBounds();
     const auto pivot_position = MathUtils::CalcPointFromNormalizedPoint(content->GetPivot(), parent_bounds);
@@ -339,8 +337,6 @@ void CanvasSlot::CalcPivot() {
     content->SetPivot(pivot_position);
 }
 
-Vector2 CanvasSlot::CalcPosition() const {
+Vector2 UICanvasSlot::CalcPosition() const {
     return position;
 }
-
-} // namespace UI

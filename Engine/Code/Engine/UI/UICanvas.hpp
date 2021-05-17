@@ -2,20 +2,18 @@
 
 #include "Engine/Core/DataUtils.hpp"
 #include "Engine/Renderer/Camera2D.hpp"
-#include "Engine/UI/Panel.hpp"
+#include "Engine/UI/UIPanel.hpp"
 
 class Texture;
 class Renderer;
 
-namespace UI {
-
-class CanvasSlot : public PanelSlot {
+class UICanvasSlot : public UIPanelSlot {
 public:
-    explicit CanvasSlot(Element* content = nullptr,
-                        Panel* parent = nullptr);
-    explicit CanvasSlot(const XMLElement& elem,
-                        Element* content = nullptr,
-                        Panel* parent = nullptr);
+    explicit UICanvasSlot(UIElement* content = nullptr,
+                        UIPanel* parent = nullptr);
+    explicit UICanvasSlot(const XMLElement& elem,
+                        UIElement* content = nullptr,
+                        UIPanel* parent = nullptr);
     void LoadFromXml(const XMLElement& elem);
     AABB2 anchors{};
     Vector2 position{};
@@ -27,11 +25,11 @@ public:
     [[nodiscard]] Vector2 CalcPosition() const override;
 };
 
-class Canvas : public Panel {
+class UICanvas : public UIPanel {
 public:
-    explicit Canvas(Widget* owner, Renderer& renderer);
-    explicit Canvas(Widget* owner, Renderer& renderer, const XMLElement& elem);
-    virtual ~Canvas() = default;
+    explicit UICanvas(UIWidget* owner, Renderer& renderer);
+    explicit UICanvas(UIWidget* owner, Renderer& renderer, const XMLElement& elem);
+    virtual ~UICanvas() = default;
     void Update(TimeUtils::FPSeconds deltaSeconds) override;
     void Render(Renderer& renderer) const override;
     void SetupMVPFromTargetAndCamera(Renderer& renderer) const;
@@ -48,13 +46,13 @@ public:
 
     [[nodiscard]] static Vector4 AnchorTextToAnchorValues(const std::string& text) noexcept;
 
-    CanvasSlot* AddChild(Element* child) override;
-    CanvasSlot* AddChildAt(Element* child, std::size_t index) override;
+    UICanvasSlot* AddChild(UIElement* child) override;
+    UICanvasSlot* AddChildAt(UIElement* child, std::size_t index) override;
 
-    CanvasSlot* AddChildFromXml(const XMLElement& elem, Element* child) override;
-    CanvasSlot* AddChildFromXml(const XMLElement& elem, Element* child, std::size_t index) override;
+    UICanvasSlot* AddChildFromXml(const XMLElement& elem, UIElement* child) override;
+    UICanvasSlot* AddChildFromXml(const XMLElement& elem, UIElement* child, std::size_t index) override;
 
-    void RemoveChild(Element* child) override;
+    void RemoveChild(UIElement* child) override;
     void RemoveAllChildren() override;
 
     [[nodiscard]] Vector4 CalcDesiredSize() const noexcept override;
@@ -73,8 +71,6 @@ private:
     mutable Camera2D _camera{};
     Renderer& _renderer;
 
-    friend class CanvasSlot;
-    friend class Widget;
+    friend class UICanvasSlot;
+    friend class UIWidget;
 };
-
-} // namespace UI

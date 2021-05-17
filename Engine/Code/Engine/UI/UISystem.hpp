@@ -21,9 +21,7 @@
 #include <map>
 #include <memory>
 
-namespace UI {
-class Widget;
-}
+class UIWidget;
 class Renderer;
 class FileLogger;
 class InputSystem;
@@ -61,22 +59,22 @@ public:
     void LoadUiWidget(const std::string& name);
     void UnloadUiWidget(const std::string& name);
 
-    void AddUiWidgetToViewport(UI::Widget& widget);
-    void RemoveUiWidgetFromViewport(UI::Widget& widget);
-    [[nodiscard]] UI::Widget* GetWidgetByName(const std::string& nameOrFilepath) const;
+    void AddUiWidgetToViewport(UIWidget& widget);
+    void RemoveUiWidgetFromViewport(UIWidget& widget);
+    [[nodiscard]] UIWidget* GetWidgetByName(const std::string& nameOrFilepath) const;
     void RegisterUiWidgetsFromFolder(std::filesystem::path folderpath, bool recursive = false);
 
 protected:
 private:
-    [[nodiscard]] bool IsWidgetLoaded(const UI::Widget& widget) const noexcept;
+    [[nodiscard]] bool IsWidgetLoaded(const UIWidget& widget) const noexcept;
 
     FileLogger& _fileLogger;
     Renderer& _renderer;
     InputSystem& _inputSystem;
     ImGuiContext* _context{};
     mutable Camera2D _ui_camera{};
-    std::map<std::string, std::unique_ptr<UI::Widget>> _widgets{};
-    std::vector<UI::Widget*> _active_widgets{};
+    std::map<std::string, std::unique_ptr<UIWidget>> _widgets{};
+    std::vector<UIWidget*> _active_widgets{};
     std::filesystem::path _ini_filepath{"Engine/Config/ui.ini"};
     std::filesystem::path _log_filepath{"Engine/Config/ui.log"};
     bool show_imgui_demo_window = false;

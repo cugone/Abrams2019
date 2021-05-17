@@ -1,23 +1,21 @@
-#include "Engine/UI/Label.hpp"
+#include "Engine/UI/UILabel.hpp"
 
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/KerningFont.hpp"
 #include "Engine/Renderer/Camera2D.hpp"
 #include "Engine/Renderer/Renderer.hpp"
-#include "Engine/UI/Canvas.hpp"
-#include "Engine/UI/Panel.hpp"
-#include "Engine/UI/Types.hpp"
-#include "Engine/UI/Widget.hpp"
+#include "Engine/UI/UICanvas.hpp"
+#include "Engine/UI/UIPanel.hpp"
+#include "Engine/UI/UITypes.hpp"
+#include "Engine/UI/UIWidget.hpp"
 
-namespace UI {
-
-Label::Label(Panel* parent)
-: Element(parent) {
+UILabel::UILabel(UIPanel* parent)
+: UIElement(parent) {
     /* DO NOTHING */
 }
 
-Label::Label(Panel* parent, KerningFont* font, const std::string& text /*= "Label"*/)
-: Element(parent)
+UILabel::UILabel(UIPanel* parent, KerningFont* font, const std::string& text /*= "Label"*/)
+: UIElement(parent)
 , _font(font)
 , _text(text) {
     const auto desired_size = CalcDesiredSize();
@@ -25,12 +23,12 @@ Label::Label(Panel* parent, KerningFont* font, const std::string& text /*= "Labe
     _bounds.maxs = desired_size.GetZW();
 }
 
-Label::Label(const XMLElement& elem, Panel* parent /*= nullptr*/)
-: Element(parent) {
+UILabel::UILabel(const XMLElement& elem, UIPanel* parent /*= nullptr*/)
+: UIElement(parent) {
     GUARANTEE_OR_DIE(LoadFromXml(elem), "Label constructor failed to load.");
 }
 
-void Label::Render(Renderer& renderer) const {
+void UILabel::Render(Renderer& renderer) const {
     if(IsHidden()) {
         return;
     }
@@ -43,74 +41,74 @@ void Label::Render(Renderer& renderer) const {
     renderer.DrawMultilineText(_font, _text, _color);
 }
 
-const KerningFont* const Label::GetFont() const {
+const KerningFont* const UILabel::GetFont() const {
     return _font;
 }
 
-void Label::SetFont(KerningFont* font) {
+void UILabel::SetFont(KerningFont* font) {
     _font = font;
     DirtyElement();
     CalcBounds();
 }
 
-void Label::SetText(const std::string& text) {
+void UILabel::SetText(const std::string& text) {
     _text = text;
     DirtyElement();
     CalcBounds();
 }
 
-const std::string& Label::GetText() const {
+const std::string& UILabel::GetText() const {
     return _text;
 }
 
-std::string& Label::GetText() {
+std::string& UILabel::GetText() {
     return _text;
 }
 
-void Label::SetColor(const Rgba& color) {
+void UILabel::SetColor(const Rgba& color) {
     _color = color;
 }
 
-const Rgba& Label::GetColor() const {
+const Rgba& UILabel::GetColor() const {
     return _color;
 }
 
-Rgba& Label::GetColor() {
+Rgba& UILabel::GetColor() {
     return _color;
 }
 
-void Label::SetScale(float value) {
+void UILabel::SetScale(float value) {
     _scale = value;
     DirtyElement();
     CalcBounds();
 }
 
-float Label::GetScale() const {
+float UILabel::GetScale() const {
     return _scale;
 }
 
-float Label::GetScale() {
-    return static_cast<const Label&>(*this).GetScale();
+float UILabel::GetScale() {
+    return static_cast<const UILabel&>(*this).GetScale();
 }
 
-void Label::SetPosition(const Vector4& position) {
-    Element::SetPosition(position);
+void UILabel::SetPosition(const Vector4& position) {
+    UIElement::SetPosition(position);
 }
 
-void Label::SetPositionOffset(const Vector2& offset) {
-    Element::SetPositionOffset(offset);
+void UILabel::SetPositionOffset(const Vector2& offset) {
+    UIElement::SetPositionOffset(offset);
 }
 
-void Label::SetPositionRatio(const Vector2& ratio) {
-    Element::SetPositionRatio(ratio);
+void UILabel::SetPositionRatio(const Vector2& ratio) {
+    UIElement::SetPositionRatio(ratio);
 }
 
-Vector4 Label::CalcDesiredSize() const noexcept {
+Vector4 UILabel::CalcDesiredSize() const noexcept {
     const auto desired_size = CalcBoundsFromFont(_font);
     return Vector4{Vector2::ZERO, desired_size};
 }
 
-Vector2 Label::CalcBoundsFromFont(KerningFont* font) const {
+Vector2 UILabel::CalcBoundsFromFont(KerningFont* font) const {
     if(font == nullptr) {
         return {};
     }
@@ -119,7 +117,7 @@ Vector2 Label::CalcBoundsFromFont(KerningFont* font) const {
     return Vector2{width, height};
 }
 
-bool Label::LoadFromXml(const XMLElement& elem) noexcept {
+bool UILabel::LoadFromXml(const XMLElement& elem) noexcept {
     DataUtils::ValidateXmlElement(elem, "label", "", "name", "canvas,label,panel,picturebox,button,slot", "font,value");
     _name = DataUtils::ParseXmlAttribute(elem, "name", _name);
     _fontname = DataUtils::ParseXmlAttribute(elem, "font", _fontname);
@@ -134,4 +132,3 @@ bool Label::LoadFromXml(const XMLElement& elem) noexcept {
     return true;
 }
 
-} // namespace UI

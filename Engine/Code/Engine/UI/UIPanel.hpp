@@ -1,39 +1,37 @@
 #pragma once
 
 #include "Engine/Core/DataUtils.hpp"
-#include "Engine/UI/Element.hpp"
-#include "Engine/UI/PanelSlot.hpp"
-#include "Engine/UI/Widget.hpp"
+#include "Engine/UI/UIElement.hpp"
+#include "Engine/UI/UIPanelSlot.hpp"
+#include "Engine/UI/UIWidget.hpp"
 
 #include <memory>
 #include <vector>
 
 class Renderer;
 
-namespace UI {
-
-class Panel : public Element {
+class UIPanel : public UIElement {
 public:
-    explicit Panel(Widget* owner);
-    Panel(Panel&& other) = default;
-    Panel& operator=(Panel&& rhs) = default;
-    Panel(const Panel& other) = delete;
-    Panel& operator=(Panel& other) = delete;
-    virtual ~Panel() = default;
+    explicit UIPanel(UIWidget* owner);
+    UIPanel(UIPanel&& other) = default;
+    UIPanel& operator=(UIPanel&& rhs) = default;
+    UIPanel(const UIPanel& other) = delete;
+    UIPanel& operator=(UIPanel& other) = delete;
+    virtual ~UIPanel() = default;
 
     void Update(TimeUtils::FPSeconds deltaSeconds) override;
     void Render(Renderer& renderer) const override;
     void DebugRender(Renderer& renderer) const override;
     void EndFrame() override;
-    virtual PanelSlot* AddChild(Element* child) = 0;
-    virtual PanelSlot* AddChildAt(Element* child, std::size_t index) = 0;
-    virtual PanelSlot* AddChildFromXml(const XMLElement& elem, Element* child) = 0;
-    virtual PanelSlot* AddChildFromXml(const XMLElement& elem, Element* child, std::size_t index) = 0;
-    virtual void RemoveChild(Element* child) = 0;
+    virtual UIPanelSlot* AddChild(UIElement* child) = 0;
+    virtual UIPanelSlot* AddChildAt(UIElement* child, std::size_t index) = 0;
+    virtual UIPanelSlot* AddChildFromXml(const XMLElement& elem, UIElement* child) = 0;
+    virtual UIPanelSlot* AddChildFromXml(const XMLElement& elem, UIElement* child, std::size_t index) = 0;
+    virtual void RemoveChild(UIElement* child) = 0;
     virtual void RemoveAllChildren() = 0;
 
-    [[nodiscard]] const Widget* const GetOwningWidget() const noexcept;
-    void SetOwningWidget(Widget* owner) noexcept;
+    [[nodiscard]] const UIWidget* const GetOwningWidget() const noexcept;
+    void SetOwningWidget(UIWidget* owner) noexcept;
 
     [[nodiscard]] Vector4 CalcDesiredSize() const noexcept override;
 
@@ -54,10 +52,9 @@ protected:
     void CalcBoundsMyChildrenThenMe() noexcept;
 
     [[nodiscard]] virtual bool CanHaveManyChildren() const noexcept;
-    std::vector<std::shared_ptr<PanelSlot>> _slots{};
+    std::vector<std::shared_ptr<UIPanelSlot>> _slots{};
 
 private:
-    Widget* _owner{};
+    UIWidget* _owner{};
 };
 
-} // namespace UI

@@ -1,15 +1,13 @@
-#include "Engine/UI/Panel.hpp"
+#include "Engine/UI/UIPanel.hpp"
 
-#include "Engine/UI/Canvas.hpp"
+#include "Engine/UI/UICanvas.hpp"
 
-namespace UI {
-
-Panel::Panel(Widget* owner)
+UIPanel::UIPanel(UIWidget* owner)
 : _owner(owner) {
     /* DO NOTHING */
 }
 
-void Panel::Update(TimeUtils::FPSeconds deltaSeconds) {
+void UIPanel::Update(TimeUtils::FPSeconds deltaSeconds) {
     if(IsDisabled()) {
         return;
     }
@@ -23,7 +21,7 @@ void Panel::Update(TimeUtils::FPSeconds deltaSeconds) {
 //    UpdateChildren(deltaSeconds);
 //}
 
-void Panel::Render(Renderer& renderer) const {
+void UIPanel::Render(Renderer& renderer) const {
     if(IsHidden()) {
         return;
     }
@@ -33,37 +31,37 @@ void Panel::Render(Renderer& renderer) const {
     RenderChildren(renderer);
 }
 
-void Panel::DebugRender(Renderer& renderer) const {
+void UIPanel::DebugRender(Renderer& renderer) const {
     DebugRenderBottomUp(renderer);
 }
 
-void Panel::EndFrame() {
+void UIPanel::EndFrame() {
     CalcBoundsForMeThenMyChildren();
 }
 
-const Widget* const Panel::GetOwningWidget() const noexcept {
+const UIWidget* const UIPanel::GetOwningWidget() const noexcept {
     return _owner;
 }
 
-void Panel::SetOwningWidget(Widget* owner) noexcept {
+void UIPanel::SetOwningWidget(UIWidget* owner) noexcept {
     _owner = owner;
 }
 
-Vector4 Panel::CalcDesiredSize() const noexcept {
+Vector4 UIPanel::CalcDesiredSize() const noexcept {
     return Vector4::ZERO;
 }
 
-void Panel::DebugRenderBottomUp(Renderer& renderer) const {
+void UIPanel::DebugRenderBottomUp(Renderer& renderer) const {
     DebugRenderBoundsAndPivot(renderer);
     DebugRenderChildren(renderer);
 }
 
-void Panel::DebugRenderTopDown(Renderer& renderer) const {
+void UIPanel::DebugRenderTopDown(Renderer& renderer) const {
     DebugRenderChildren(renderer);
     DebugRenderBoundsAndPivot(renderer);
 }
 
-void Panel::DebugRenderChildren(Renderer& renderer) const {
+void UIPanel::DebugRenderChildren(Renderer& renderer) const {
     for(auto& slot : _slots) {
         if(slot) {
             slot->content->DebugRender(renderer);
@@ -71,10 +69,10 @@ void Panel::DebugRenderChildren(Renderer& renderer) const {
     }
 }
 
-void Panel::SortChildren() {
+void UIPanel::SortChildren() {
 }
 
-void Panel::CalcBoundsForChildren() noexcept {
+void UIPanel::CalcBoundsForChildren() noexcept {
     for(auto& slot : _slots) {
         if(slot && slot->content) {
             slot->content->CalcBounds();
@@ -82,24 +80,22 @@ void Panel::CalcBoundsForChildren() noexcept {
     }
 }
 
-void Panel::CalcBoundsForMeThenMyChildren() noexcept {
+void UIPanel::CalcBoundsForMeThenMyChildren() noexcept {
     CalcBounds();
     CalcBoundsForChildren();
 }
 
-void Panel::CalcBoundsMyChildrenThenMe() noexcept {
+void UIPanel::CalcBoundsMyChildrenThenMe() noexcept {
     CalcBoundsForChildren();
     CalcBounds();
 }
 
-bool Panel::CanHaveManyChildren() const noexcept {
+bool UIPanel::CanHaveManyChildren() const noexcept {
     return true;
 }
 
-void Panel::UpdateChildren(TimeUtils::FPSeconds) {
+void UIPanel::UpdateChildren(TimeUtils::FPSeconds) {
 }
 
-void Panel::RenderChildren(Renderer&) const {
+void UIPanel::RenderChildren(Renderer&) const {
 }
-
-} // namespace UI

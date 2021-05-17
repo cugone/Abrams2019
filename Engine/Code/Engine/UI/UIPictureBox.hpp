@@ -1,21 +1,19 @@
 #pragma once
 
 #include "Engine/Core/DataUtils.hpp"
-#include "Engine/UI/Element.hpp"
+#include "Engine/UI/UIElement.hpp"
 
 #include <memory>
 
 class AnimatedSprite;
 
-namespace UI {
+class UIPanel;
 
-class Panel;
-
-class PictureBox : public Element {
+class UIPictureBox : public UIElement {
 public:
-    explicit PictureBox(Panel* parent = nullptr);
-    explicit PictureBox(const XMLElement& elem, Panel* parent = nullptr);
-    virtual ~PictureBox() = default;
+    explicit UIPictureBox(UIPanel* parent = nullptr);
+    explicit UIPictureBox(const XMLElement& elem, UIPanel* parent = nullptr);
+    virtual ~UIPictureBox() = default;
 
     void SetImage(std::unique_ptr<AnimatedSprite> sprite) noexcept;
     [[nodiscard]] const AnimatedSprite* const GetImage() const noexcept;
@@ -32,4 +30,3 @@ private:
     std::unique_ptr<AnimatedSprite> _sprite{};
 };
 
-} // namespace UI

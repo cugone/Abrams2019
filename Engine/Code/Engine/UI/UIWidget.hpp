@@ -1,21 +1,18 @@
 #pragma once
 
 #include "Engine/Core/DataUtils.hpp"
-#include "Engine/UI/Element.hpp"
+#include "Engine/UI/UIElement.hpp"
 
 #include <filesystem>
 #include <memory>
 
 class Renderer;
+class UIPanel;
 
-namespace UI {
-
-class Panel;
-
-class Widget {
+class UIWidget {
 public:
-    Widget(Renderer& renderer, const std::filesystem::path& path);
-    ~Widget();
+    UIWidget(Renderer& renderer, const std::filesystem::path& path);
+    ~UIWidget();
     std::string name{"DEFAULT WIDGET"};
     void BeginFrame();
     void Update(TimeUtils::FPSeconds deltaSeconds);
@@ -29,16 +26,14 @@ protected:
     [[nodiscard]] bool LoadFromXML(const std::filesystem::path& path);
     void LoadUI(const XMLElement& element);
 
-    [[nodiscard]] std::shared_ptr<Element> CreateWigetTypeFromTypename(std::string nameString, const XMLElement& elem);
+    [[nodiscard]] std::shared_ptr<UIElement> CreateWigetTypeFromTypename(std::string nameString, const XMLElement& elem);
 
 private:
     [[nodiscard]] bool HasPanelChild(const XMLElement& elem);
 
-    std::vector<std::shared_ptr<Element>> _elements{};
+    std::vector<std::shared_ptr<UIElement>> _elements{};
     Renderer& _renderer;
-    Panel* _panel{};
+    UIPanel* _panel{};
 
-    friend class Panel;
+    friend class UIPanel;
 };
-
-} // namespace UI
