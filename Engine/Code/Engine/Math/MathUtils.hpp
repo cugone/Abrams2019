@@ -329,64 +329,25 @@ template<typename T>
     return ((1.0f - t) * a) + (t * b);
 }
 
-template<>
 [[nodiscard]] Vector2 Interpolate(const Vector2& a, const Vector2& b, float t);
-
-template<>
 [[nodiscard]] Vector3 Interpolate(const Vector3& a, const Vector3& b, float t);
-
-template<>
 [[nodiscard]] Vector4 Interpolate(const Vector4& a, const Vector4& b, float t);
-
-template<>
 [[nodiscard]] IntVector2 Interpolate(const IntVector2& a, const IntVector2& b, float t);
-
-template<>
 [[nodiscard]] IntVector3 Interpolate(const IntVector3& a, const IntVector3& b, float t);
-
-template<>
 [[nodiscard]] IntVector4 Interpolate(const IntVector4& a, const IntVector4& b, float t);
-
-template<>
 [[nodiscard]] AABB2 Interpolate(const AABB2& a, const AABB2& b, float t);
-
-template<>
 [[nodiscard]] AABB3 Interpolate(const AABB3& a, const AABB3& b, float t);
-
-template<>
 [[nodiscard]] OBB2 Interpolate(const OBB2& a, const OBB2& b, float t);
-
-template<>
 [[nodiscard]] Polygon2 Interpolate(const Polygon2& a, const Polygon2& b, float t);
-
-template<>
 [[nodiscard]] Disc2 Interpolate(const Disc2& a, const Disc2& b, float t);
-
-template<>
 [[nodiscard]] LineSegment2 Interpolate(const LineSegment2& a, const LineSegment2& b, float t);
-
-template<>
 [[nodiscard]] Capsule2 Interpolate(const Capsule2& a, const Capsule2& b, float t);
-
-template<>
 [[nodiscard]] LineSegment3 Interpolate(const LineSegment3& a, const LineSegment3& b, float t);
-
-template<>
 [[nodiscard]] Sphere3 Interpolate(const Sphere3& a, const Sphere3& b, float t);
-
-template<>
 [[nodiscard]] Capsule3 Interpolate(const Capsule3& a, const Capsule3& b, float t);
-
-template<>
 [[nodiscard]] Plane2 Interpolate(const Plane2& a, const Plane2& b, float t);
-
-template<>
 [[nodiscard]] Plane3 Interpolate(const Plane3& a, const Plane3& b, float t);
-
-template<>
 [[nodiscard]] Quaternion Interpolate(const Quaternion& a, const Quaternion& b, float t);
-
-template<>
 [[nodiscard]] Rgba Interpolate(const Rgba& a, const Rgba& b, float t);
 
 template<typename T>
@@ -414,22 +375,11 @@ template<typename T>
     return result;
 }
 
-template<>
 [[nodiscard]] Vector4 Wrap(const Vector4& valuesToWrap, const Vector4& minValues, const Vector4& maxValues);
-
-template<>
 [[nodiscard]] Vector3 Wrap(const Vector3& valuesToWrap, const Vector3& minValues, const Vector3& maxValues);
-
-template<>
 [[nodiscard]] Vector2 Wrap(const Vector2& valuesToWrap, const Vector2& minValues, const Vector2& maxValues);
-
-template<>
 [[nodiscard]] IntVector4 Wrap(const IntVector4& valuesToWrap, const IntVector4& minValues, const IntVector4& maxValues);
-
-template<>
 [[nodiscard]] IntVector3 Wrap(const IntVector3& valuesToWrap, const IntVector3& minValues, const IntVector3& maxValues);
-
-template<>
 [[nodiscard]] IntVector2 Wrap(const IntVector2& valuesToWrap, const IntVector2& minValues, const IntVector2& maxValues);
 
 namespace EasingFunctions {

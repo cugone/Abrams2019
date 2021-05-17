@@ -1283,14 +1283,12 @@ Quaternion SLERP(const Quaternion& a, const Quaternion& b, float t) noexcept {
     return (scale0 * start) + (scale1 * end);
 }
 
-template<>
 Vector2 Interpolate(const Vector2& a, const Vector2& b, float t) {
     const auto x = Interpolate(a.x, b.x, t);
     const auto y = Interpolate(a.y, b.y, t);
     return Vector2(x, y);
 }
 
-template<>
 Vector3 Interpolate(const Vector3& a, const Vector3& b, float t) {
     const auto x = Interpolate(a.x, b.x, t);
     const auto y = Interpolate(a.y, b.y, t);
@@ -1298,7 +1296,6 @@ Vector3 Interpolate(const Vector3& a, const Vector3& b, float t) {
     return Vector3(x, y, z);
 }
 
-template<>
 Vector4 Interpolate(const Vector4& a, const Vector4& b, float t) {
     const auto x = Interpolate(a.x, b.x, t);
     const auto y = Interpolate(a.y, b.y, t);
@@ -1307,14 +1304,12 @@ Vector4 Interpolate(const Vector4& a, const Vector4& b, float t) {
     return Vector4(x, y, z, w);
 }
 
-template<>
 IntVector2 Interpolate(const IntVector2& a, const IntVector2& b, float t) {
     const auto x = Interpolate(static_cast<float>(a.x), static_cast<float>(b.x), t);
     const auto y = Interpolate(static_cast<float>(a.y), static_cast<float>(b.y), t);
     return IntVector2(Vector2(x, y));
 }
 
-template<>
 IntVector3 Interpolate(const IntVector3& a, const IntVector3& b, float t) {
     const auto x = Interpolate(static_cast<float>(a.x), static_cast<float>(b.x), t);
     const auto y = Interpolate(static_cast<float>(a.y), static_cast<float>(b.y), t);
@@ -1322,7 +1317,6 @@ IntVector3 Interpolate(const IntVector3& a, const IntVector3& b, float t) {
     return IntVector3(Vector3(x, y, z));
 }
 
-template<>
 IntVector4 Interpolate(const IntVector4& a, const IntVector4& b, float t) {
     const auto x = Interpolate(static_cast<float>(a.x), static_cast<float>(b.x), t);
     const auto y = Interpolate(static_cast<float>(a.y), static_cast<float>(b.y), t);
@@ -1331,21 +1325,18 @@ IntVector4 Interpolate(const IntVector4& a, const IntVector4& b, float t) {
     return IntVector4(Vector4(x, y, z, w));
 }
 
-template<>
 AABB2 Interpolate(const AABB2& a, const AABB2& b, float t) {
     const auto mins(Interpolate(a.mins, b.mins, t));
     const auto maxs(Interpolate(a.maxs, b.maxs, t));
     return AABB2(mins, maxs);
 }
 
-template<>
 AABB3 Interpolate(const AABB3& a, const AABB3& b, float t) {
     const auto mins(Interpolate(a.mins, b.mins, t));
     const auto maxs(Interpolate(a.maxs, b.maxs, t));
     return AABB3(mins, maxs);
 }
 
-template<>
 OBB2 Interpolate(const OBB2& a, const OBB2& b, float t) {
     const auto orientation(Interpolate(a.orientationDegrees, b.orientationDegrees, t));
     const auto he(Interpolate(a.half_extents, b.half_extents, t));
@@ -1353,7 +1344,6 @@ OBB2 Interpolate(const OBB2& a, const OBB2& b, float t) {
     return OBB2(p, he, orientation);
 }
 
-template<>
 Polygon2 Interpolate(const Polygon2& a, const Polygon2& b, float t) {
     const auto sides = static_cast<int>(Interpolate(static_cast<float>(a.GetSides()), static_cast<float>(b.GetSides()), t));
     const auto orientation(Interpolate(a.GetOrientationDegrees(), b.GetOrientationDegrees(), t));
@@ -1362,70 +1352,60 @@ Polygon2 Interpolate(const Polygon2& a, const Polygon2& b, float t) {
     return Polygon2(sides, p, he, orientation);
 }
 
-template<>
 Disc2 Interpolate(const Disc2& a, const Disc2& b, float t) {
     const auto c(Interpolate(a.center, b.center, t));
     const auto r(Interpolate(a.radius, b.radius, t));
     return Disc2(c, r);
 }
 
-template<>
 LineSegment2 Interpolate(const LineSegment2& a, const LineSegment2& b, float t) {
     const auto start(Interpolate(a.start, b.start, t));
     const auto end(Interpolate(a.end, b.end, t));
     return LineSegment2(start, end);
 }
 
-template<>
 Capsule2 Interpolate(const Capsule2& a, const Capsule2& b, float t) {
     const auto line(Interpolate(a.line, b.line, t));
     const auto r(Interpolate(a.radius, b.radius, t));
     return Capsule2(line, r);
 }
 
-template<>
 LineSegment3 Interpolate(const LineSegment3& a, const LineSegment3& b, float t) {
     const auto start(Interpolate(a.start, b.start, t));
     const auto end(Interpolate(a.end, b.end, t));
     return LineSegment3(start, end);
 }
 
-template<>
 Sphere3 Interpolate(const Sphere3& a, const Sphere3& b, float t) {
     const auto c(Interpolate(a.center, b.center, t));
     const auto r(Interpolate(a.radius, b.radius, t));
     return Sphere3(c, r);
 }
 
-template<>
 Capsule3 Interpolate(const Capsule3& a, const Capsule3& b, float t) {
     const auto line(Interpolate(a.line, b.line, t));
     const auto r(Interpolate(a.radius, b.radius, t));
     return Capsule3(line, r);
 }
 
-template<>
 Plane2 Interpolate(const Plane2& a, const Plane2& b, float t) {
     const auto d = Interpolate(a.dist, b.dist, t);
     const auto n = Interpolate(a.normal, b.normal, t);
     return Plane2(n, d);
 }
 
-template<>
 Plane3 Interpolate(const Plane3& a, const Plane3& b, float t) {
     const auto d = Interpolate(a.dist, b.dist, t);
     const auto n = Interpolate(a.normal, b.normal, t);
     return Plane3(n, d);
 }
 
-template<>
 Quaternion Interpolate(const Quaternion& a, const Quaternion& b, float t) {
     const auto w = Interpolate(a.w, b.w, t);
     const auto axis = Interpolate(a.axis, b.axis, t);
     return Quaternion(w, axis);
 }
 
-template<>
 Rgba Interpolate(const Rgba& a, const Rgba& b, float t) {
     float a_color[4];
     a.GetAsFloats(a_color[0], a_color[1], a_color[2], a_color[3]);
@@ -1484,7 +1464,6 @@ IntVector4 RangeMap(const IntVector4& valueToMap, const IntVector2& minmaxInputR
     return IntVector4{x, y, z, w};
 }
 
-template<>
 Vector4 Wrap(const Vector4& valuesToWrap, const Vector4& minValues, const Vector4& maxValues) {
     const auto x = Wrap(valuesToWrap.x, minValues.x, maxValues.x);
     const auto y = Wrap(valuesToWrap.y, minValues.y, maxValues.y);
@@ -1493,7 +1472,6 @@ Vector4 Wrap(const Vector4& valuesToWrap, const Vector4& minValues, const Vector
     return Vector4(x, y, z, w);
 }
 
-template<>
 Vector3 Wrap(const Vector3& valuesToWrap, const Vector3& minValues, const Vector3& maxValues) {
     const auto x = Wrap(valuesToWrap.x, minValues.x, maxValues.x);
     const auto y = Wrap(valuesToWrap.y, minValues.y, maxValues.y);
@@ -1501,14 +1479,12 @@ Vector3 Wrap(const Vector3& valuesToWrap, const Vector3& minValues, const Vector
     return Vector3(x, y, z);
 }
 
-template<>
 Vector2 Wrap(const Vector2& valuesToWrap, const Vector2& minValues, const Vector2& maxValues) {
     const auto x = Wrap(valuesToWrap.x, minValues.x, maxValues.x);
     const auto y = Wrap(valuesToWrap.y, minValues.y, maxValues.y);
     return Vector2(x, y);
 }
 
-template<>
 IntVector4 Wrap(const IntVector4& valuesToWrap, const IntVector4& minValues, const IntVector4& maxValues) {
     const auto x = Wrap(valuesToWrap.x, minValues.x, maxValues.x);
     const auto y = Wrap(valuesToWrap.y, minValues.y, maxValues.y);
@@ -1517,7 +1493,6 @@ IntVector4 Wrap(const IntVector4& valuesToWrap, const IntVector4& minValues, con
     return IntVector4(x, y, z, w);
 }
 
-template<>
 IntVector3 Wrap(const IntVector3& valuesToWrap, const IntVector3& minValues, const IntVector3& maxValues) {
     const auto x = Wrap(valuesToWrap.x, minValues.x, maxValues.x);
     const auto y = Wrap(valuesToWrap.y, minValues.y, maxValues.y);
@@ -1525,7 +1500,6 @@ IntVector3 Wrap(const IntVector3& valuesToWrap, const IntVector3& minValues, con
     return IntVector3(x, y, z);
 }
 
-template<>
 IntVector2 Wrap(const IntVector2& valuesToWrap, const IntVector2& minValues, const IntVector2& maxValues) {
     const auto x = Wrap(valuesToWrap.x, minValues.x, maxValues.x);
     const auto y = Wrap(valuesToWrap.y, minValues.y, maxValues.y);
