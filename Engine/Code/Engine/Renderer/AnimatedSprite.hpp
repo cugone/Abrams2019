@@ -13,15 +13,16 @@ struct AnimatedSpriteDesc;
 
 class AnimatedSprite {
 public:
+    // clang-format off
     enum class SpriteAnimMode : int {
-        Play_To_End,       // Play from time=0 to durationSeconds, then finish
-        Play_To_Beginning, // Play from time=durationSeconds to 0, then finish
-        Looping,           // Play from time=0 to end then repeat (never finish)
-        Looping_Reverse,   // Play from time=durationSeconds then repeat (never finish)
-        Ping_Pong,         // Play forwards, backwards, forwards, backwards...
-        Max,
+        Play_To_End       // Play from time=0 to durationSeconds, then finish
+        ,Play_To_Beginning // Play from time=durationSeconds to 0, then finish
+        ,Looping           // Play from time=0 to end then repeat (never finish)
+        ,Looping_Reverse   // Play from time=durationSeconds then repeat (never finish)
+        ,Ping_Pong         // Play forwards, backwards, forwards, backwards...
+        ,Max
     };
-
+    // clang-format on
     AnimatedSprite(Renderer& renderer, const XMLElement& elem) noexcept;
     AnimatedSprite(Renderer& renderer, const AnimatedSpriteDesc& desc) noexcept;
     AnimatedSprite(Renderer& renderer, std::weak_ptr<SpriteSheet> sheet, const XMLElement& elem) noexcept;

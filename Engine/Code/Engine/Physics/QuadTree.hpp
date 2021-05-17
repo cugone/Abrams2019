@@ -36,14 +36,14 @@ protected:
 private:
     explicit QuadTree(QuadTree<T>* parent, const AABB2& bounds);
     explicit QuadTree(QuadTree<T>* parent, const AABB2& bounds, const std::vector<T>& elements);
-
+    // clang-format off
     enum class ChildID {
-        BottomLeft,
-        TopLeft,
-        TopRight,
-        BottomRight
+        BottomLeft
+        ,TopLeft
+        ,TopRight
+        ,BottomRight
     };
-
+    // clang-format off
     void DebugRender_helper(Renderer& renderer) const;
     [[nodiscard]] bool IsParent(const QuadTree<T>* node) const;
     [[nodiscard]] bool IsChild(const QuadTree<T>* node) const;

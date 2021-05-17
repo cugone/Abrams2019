@@ -8,10 +8,12 @@
 #include "Engine/Math/Vector3.hpp"
 #include "Engine/Renderer/RenderTargetStack.hpp"
 
+// clang-format off
 enum class ProjectionMode {
-    Orthographic,
-    Perspective
+    Orthographic
+    ,Perspective
 };
+// clang-format on
 
 class Camera {
 public:

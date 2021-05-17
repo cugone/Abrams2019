@@ -11,33 +11,33 @@
 
 class XboxController {
 public:
+    // clang-format off
     enum class Button : unsigned char {
         First_ /* Internal use only. */
-        ,
-        A = First_,
-        B,
-        X,
-        Y,
-        Start,
-        Back,
-        Up,
-        Down,
-        Left,
-        Right,
-        LeftThumb,
-        RightThumb,
-        RightBumper,
-        LeftBumper,
-        Last_ /* Internal use only. */
-        ,
-        Max = Last_ /* Internal use only. */
+        ,A = First_
+        ,B
+        ,X
+        ,Y
+        ,Start
+        ,Back
+        ,Up
+        ,Down
+        ,Left
+        ,Right
+        ,LeftThumb
+        ,RightThumb
+        ,RightBumper
+        ,LeftBumper
+        ,Last_ /* Internal use only. */
+        ,Max = Last_ /* Internal use only. */
     };
 
     enum class Motor {
-        Left,
-        Right,
-        Both
+        Left
+        ,Right
+        ,Both
     };
+    // clang-format on
     [[nodiscard]] const Vector2& GetLeftThumbPosition() const noexcept;
     [[nodiscard]] const Vector2& GetRightThumbPosition() const noexcept;
 
@@ -91,14 +91,14 @@ private:
     void SetMotorSpeed(int controller_number, const Motor& motor, unsigned short value) noexcept;
 
     [[nodiscard]] bool DidMotorStateChange() const noexcept;
-
+    // clang-format off
     enum class ActiveState {
-        Connected,
-        LMotor,
-        RMotor,
-        Max
+        Connected
+        ,LMotor
+        ,RMotor
+        ,Max
     };
-
+    // clang-format on
     Vector2 _leftThumbDistance = Vector2::ZERO;
     Vector2 _rightThumbDistance = Vector2::ZERO;
     Vector2 _triggerDistances = Vector2::ZERO;

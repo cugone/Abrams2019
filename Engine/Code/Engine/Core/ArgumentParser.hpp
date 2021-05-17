@@ -14,13 +14,15 @@ class IntVector3;
 class IntVector4;
 class Matrix4;
 
+// clang-format off
 enum class ArgumentParserState : uint8_t {
-    None,
-    BadBit,
-    FailBit,
-    EndOfFileBit,
-    Max
+    None
+    ,BadBit
+    ,FailBit
+    ,EndOfFileBit
+    ,Max
 };
+// clang-format off
 
 template<>
 struct TypeUtils::is_bitflag_enum_type<ArgumentParserState> : std::true_type {};

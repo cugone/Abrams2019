@@ -18,10 +18,15 @@ public:
 
     class Builder {
     public:
+        // clang-format off
         enum class Primitive {
-            Point, Line, Triangle, TriangleStrip, Quad
+            Point
+            ,Line
+            ,Triangle
+            ,TriangleStrip
+            ,Quad
         };
-
+        // clang-format on
         Builder() = default;
         Builder(const Builder& other) = default;
         Builder(Builder&& other) = default;

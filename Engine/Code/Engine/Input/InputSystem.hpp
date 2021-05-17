@@ -16,6 +16,7 @@ class FileLogger;
 class Renderer;
 class Window;
 
+// clang-format off
 enum class KeyCode : int {
     FirstMouseButton_ /* Internal use only. */
     ,LButton = FirstMouseButton_ /* Left Mouse Button */
@@ -279,6 +280,7 @@ enum class KeyCode : int {
     ,Unknown = 0xFF /* A manufacturer-specific key was pressed. */
     ,Max /* Internal use only */
 };
+// clang-format on
 
 template<>
 struct TypeUtils::is_incrementable_enum_type<KeyCode> : std::true_type {};
