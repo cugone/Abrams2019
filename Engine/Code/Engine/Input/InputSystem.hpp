@@ -318,12 +318,6 @@ public:
     [[nodiscard]] bool WasMouseWheelJustScrolledRight() const noexcept;
     [[nodiscard]] bool WasMouseWheelJustUsed() const noexcept;
 
-    [[nodiscard]] const bool IsMouseRawInputEnabled() const noexcept;
-    void SetMouseRawInput(bool value) noexcept;
-    void ToggleMouseRawInput() noexcept;
-    void EnableMouseRawInput() noexcept;
-    void DisableMouseRawInput() noexcept;
-
     [[nodiscard]] std::size_t GetConnectedControllerCount() const noexcept;
     [[nodiscard]] bool IsAnyControllerConnected() const noexcept;
     [[nodiscard]] const XboxController& GetXboxController(const std::size_t& controllerIndex) const noexcept;
@@ -374,7 +368,6 @@ public:
     [[nodiscard]] bool WasAnyControllerJustUsed() const noexcept;
 protected:
 private:
-    void InitializeMouseRawInput() noexcept;
     void UpdateXboxConnectedState() noexcept;
 
     void SetMouseCoords(float newX, float newY) noexcept;
@@ -399,6 +392,5 @@ private:
     int _mouseWheelHPosition = 0;
     int _connected_controller_count = 0;
     bool _cursor_visible = true;
-    bool _enableRawInput = false;
     mutable bool _should_clip_cursor = false;
 };
