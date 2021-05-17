@@ -242,7 +242,7 @@ void AudioSystem::RegisterWavFilesFromFolder(std::filesystem::path folderpath, b
 void AudioSystem::DeactivateChannel(Channel& channel) noexcept {
     std::scoped_lock<std::mutex> lock(_cs);
     const auto found_iter = std::find_if(std::begin(_active_channels), std::end(_active_channels),
-                                   [&channel](const std::unique_ptr<Channel>& c) { return c.get() == &channel; });
+                                         [&channel](const std::unique_ptr<Channel>& c) { return c.get() == &channel; });
     _active_channels.erase(found_iter);
 }
 
@@ -353,8 +353,7 @@ void STDMETHODCALLTYPE AudioSystem::Channel::VoiceCallback::OnLoopEnd(void* pBuf
 
 AudioSystem::Channel::Channel(AudioSystem& audioSystem, const ChannelDesc& desc) noexcept
 : _audio_system(&audioSystem)
-, _desc{desc}
-{
+, _desc{desc} {
     static VoiceCallback vcb;
     _buffer.pContext = this;
     auto fmt = reinterpret_cast<const WAVEFORMATEX*>(&(_audio_system->GetFormat()));
@@ -404,8 +403,7 @@ void AudioSystem::Channel::Stop() noexcept {
 }
 
 AudioSystem::Channel::ChannelDesc::ChannelDesc(AudioSystem* audioSystem)
-    : audio_system{audioSystem}
-{
+: audio_system{audioSystem} {
     /* DO NOTHING */
 }
 

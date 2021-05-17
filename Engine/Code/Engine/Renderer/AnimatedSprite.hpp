@@ -16,11 +16,11 @@ public:
     // clang-format off
     enum class SpriteAnimMode : int {
         Play_To_End       // Play from time=0 to durationSeconds, then finish
-        ,Play_To_Beginning // Play from time=durationSeconds to 0, then finish
-        ,Looping           // Play from time=0 to end then repeat (never finish)
-        ,Looping_Reverse   // Play from time=durationSeconds then repeat (never finish)
-        ,Ping_Pong         // Play forwards, backwards, forwards, backwards...
-        ,Max
+        , Play_To_Beginning // Play from time=durationSeconds to 0, then finish
+        , Looping           // Play from time=0 to end then repeat (never finish)
+        , Looping_Reverse   // Play from time=durationSeconds then repeat (never finish)
+        , Ping_Pong         // Play forwards, backwards, forwards, backwards...
+        , Max
     };
     // clang-format on
     AnimatedSprite(Renderer& renderer, const XMLElement& elem) noexcept;
@@ -36,9 +36,9 @@ public:
     [[nodiscard]] int GetNumSprites() const noexcept;
     [[nodiscard]] IntVector2 GetFrameDimensions() const noexcept;
     void TogglePause() noexcept;
-    void Pause() noexcept;                                    // Starts unpaused (playing) by default
-    void Resume() noexcept;                                   // Resume after pausing
-    void Reset() noexcept;                                    // Rewinds to time 0 and starts (re)playing
+    void Pause() noexcept;                                                  // Starts unpaused (playing) by default
+    void Resume() noexcept;                                                 // Resume after pausing
+    void Reset() noexcept;                                                  // Rewinds to time 0 and starts (re)playing
     [[nodiscard]] bool IsFinished() const noexcept;                         //{ return m_isFinished; }
     [[nodiscard]] bool IsPlaying() const noexcept;                          //{ return m_isPlaying; }
     [[nodiscard]] TimeUtils::FPSeconds GetDurationSeconds() const noexcept; //{ return m_durationSeconds; }
@@ -81,8 +81,7 @@ struct AnimatedSpriteDesc {
     std::weak_ptr<SpriteSheet> spriteSheet{};
     TimeUtils::FPSeconds durationSeconds{TimeUtils::FPFrames{1.0f}};
     int startSpriteIndex{-1};
-    IntVector2 startSpriteCoords{-1,-1};
+    IntVector2 startSpriteCoords{-1, -1};
     int frameLength{1};
     AnimatedSprite::SpriteAnimMode playbackMode = AnimatedSprite::SpriteAnimMode::Looping;
 };
-

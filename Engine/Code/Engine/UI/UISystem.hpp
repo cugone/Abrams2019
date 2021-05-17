@@ -2,7 +2,6 @@
 
 #include "Engine/Core/BuildConfig.hpp"
 #include "Engine/Core/EngineSubsystem.hpp"
-
 #include "Engine/Renderer/Camera2D.hpp"
 
 #ifndef UI_DEBUG
@@ -18,12 +17,12 @@
 #include "Thirdparty/Imgui/imgui_impl_win32.h"
 #include "Thirdparty/Imgui/imgui_stdlib.h"
 
+#include <filesystem>
 #include <map>
 #include <memory>
-#include <filesystem>
 
 namespace UI {
-    class Widget;
+class Widget;
 }
 class Renderer;
 class FileLogger;
@@ -69,7 +68,6 @@ public:
 
 protected:
 private:
-    
     [[nodiscard]] bool IsWidgetLoaded(const UI::Widget& widget) const noexcept;
 
     FileLogger& _fileLogger;

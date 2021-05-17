@@ -89,20 +89,18 @@ std::ostream& operator<<(std::ostream& os, const Argb& rhs) noexcept {
 }
 
 Argb::Argb(const Rgba& rgba) noexcept
-    : a{rgba.a}
-    , r{rgba.r}
-    , g{rgba.g}
-    , b{rgba.b}
-{
+: a{rgba.a}
+, r{rgba.r}
+, g{rgba.g}
+, b{rgba.b} {
     /* DO NOTHING */
 }
 
 Argb::Argb(Rgba&& rgba) noexcept
-    : a(rgba.a)
-    , r(rgba.r)
-    , g(rgba.g)
-    , b(rgba.b)
-{
+: a(rgba.a)
+, r(rgba.r)
+, g(rgba.g)
+, b(rgba.b) {
     rgba.SetFromRawValue(std::uint32_t{0u});
 }
 

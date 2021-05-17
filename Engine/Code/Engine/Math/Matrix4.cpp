@@ -267,8 +267,8 @@ Matrix4 Matrix4::CreateYZXRotationMatrix(float pitchRadians, float yawRadians, f
 
 Matrix4 Matrix4::CreateYZXRotationMatrixDegrees(const Vector3& anglesDegrees) noexcept {
     const auto angles = Vector3{MathUtils::ConvertDegreesToRadians(anglesDegrees.x),
-                        MathUtils::ConvertDegreesToRadians(anglesDegrees.y),
-                        MathUtils::ConvertDegreesToRadians(anglesDegrees.z)};
+                                MathUtils::ConvertDegreesToRadians(anglesDegrees.y),
+                                MathUtils::ConvertDegreesToRadians(anglesDegrees.z)};
     return CreateYZXRotationMatrix(angles);
 }
 
@@ -743,23 +743,23 @@ float Matrix4::CalculateDeterminant(const Matrix4& mat) noexcept {
 
     const auto a = mat.m_indicies[0];
     const auto det_not_a = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[5], mat.m_indicies[6], mat.m_indicies[7],
-                                                             mat.m_indicies[9], mat.m_indicies[10], mat.m_indicies[11],
-                                                             mat.m_indicies[13], mat.m_indicies[14], mat.m_indicies[15]);
+                                                                  mat.m_indicies[9], mat.m_indicies[10], mat.m_indicies[11],
+                                                                  mat.m_indicies[13], mat.m_indicies[14], mat.m_indicies[15]);
 
     const auto b = mat.m_indicies[1];
     const auto det_not_b = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[4], mat.m_indicies[6], mat.m_indicies[7],
-                                                             mat.m_indicies[8], mat.m_indicies[10], mat.m_indicies[11],
-                                                             mat.m_indicies[12], mat.m_indicies[14], mat.m_indicies[15]);
+                                                                  mat.m_indicies[8], mat.m_indicies[10], mat.m_indicies[11],
+                                                                  mat.m_indicies[12], mat.m_indicies[14], mat.m_indicies[15]);
 
     const auto c = mat.m_indicies[2];
     const auto det_not_c = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[4], mat.m_indicies[5], mat.m_indicies[7],
-                                                             mat.m_indicies[8], mat.m_indicies[9], mat.m_indicies[11],
-                                                             mat.m_indicies[12], mat.m_indicies[13], mat.m_indicies[15]);
+                                                                  mat.m_indicies[8], mat.m_indicies[9], mat.m_indicies[11],
+                                                                  mat.m_indicies[12], mat.m_indicies[13], mat.m_indicies[15]);
 
     const auto d = mat.m_indicies[3];
     const auto det_not_d = MathUtils::CalculateMatrix3Determinant(mat.m_indicies[4], mat.m_indicies[5], mat.m_indicies[6],
-                                                             mat.m_indicies[8], mat.m_indicies[9], mat.m_indicies[10],
-                                                             mat.m_indicies[12], mat.m_indicies[13], mat.m_indicies[14]);
+                                                                  mat.m_indicies[8], mat.m_indicies[9], mat.m_indicies[10],
+                                                                  mat.m_indicies[12], mat.m_indicies[13], mat.m_indicies[14]);
 
     return (a * det_not_a) - (b * det_not_b) + (c * det_not_c) - (d * det_not_d);
 }

@@ -1,8 +1,7 @@
 #include "Engine/Physics/PhysicsSystem.hpp"
 
-#include "Engine/Physics/PhysicsUtils.hpp"
-
 #include "Engine/Math/Plane2.hpp"
+#include "Engine/Physics/PhysicsUtils.hpp"
 
 #include <algorithm>
 #include <mutex>
@@ -173,7 +172,7 @@ std::vector<RigidBody*> PhysicsSystem::BroadPhaseCollision(const AABB2& /*query_
             if(MathUtils::DoAABBsOverlap(bodyABoundsAsAABB2, bodyBBoundsAsAABB2)) {
                 //const auto queried_bodies = _world_partition.Query(query_area);
                 //for(auto* query : queried_bodies) {
-                    //potential_collisions.push_back(query);
+                //potential_collisions.push_back(query);
                 //}
                 potential_collisions.push_back(bodyA);
                 potential_collisions.push_back(bodyB);
@@ -271,7 +270,7 @@ void PhysicsSystem::EndFrame() noexcept {
     }
     _pending_removal.clear();
     _pending_removal.shrink_to_fit();
-    _joints.erase(std::remove_if(std::begin(_joints), std::end(_joints), [](auto&& joint)->bool { return joint->IsNotAttached(); }), std::end(_joints));
+    _joints.erase(std::remove_if(std::begin(_joints), std::end(_joints), [](auto&& joint) -> bool { return joint->IsNotAttached(); }), std::end(_joints));
 }
 
 void PhysicsSystem::AddObject(RigidBody* body) {

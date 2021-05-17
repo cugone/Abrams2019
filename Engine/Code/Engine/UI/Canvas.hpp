@@ -4,7 +4,6 @@
 #include "Engine/Renderer/Camera2D.hpp"
 #include "Engine/UI/Panel.hpp"
 
-
 class Texture;
 class Renderer;
 

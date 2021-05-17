@@ -4,14 +4,11 @@
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/FileUtils.hpp"
 #include "Engine/Core/StringUtils.hpp"
-
 #include "Engine/Renderer/Renderer.hpp"
-
 #include "Engine/UI/Canvas.hpp"
 #include "Engine/UI/Label.hpp"
 #include "Engine/UI/Panel.hpp"
 #include "Engine/UI/PictureBox.hpp"
-
 #include "Thirdparty/TinyXML2/tinyxml2.h"
 
 #include <memory>

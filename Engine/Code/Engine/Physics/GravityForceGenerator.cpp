@@ -1,13 +1,11 @@
 #include "Engine/Physics/GravityForceGenerator.hpp"
 
-#include "Engine/Physics/RigidBody.hpp"
-
 #include "Engine/Math/Vector2.hpp"
+#include "Engine/Physics/RigidBody.hpp"
 
 GravityForceGenerator::GravityForceGenerator(const Vector2& gravity) noexcept
 : ForceGenerator()
-, g(gravity)
-{
+, g(gravity) {
     /* DO NOTHING */
 }
 

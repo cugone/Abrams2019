@@ -2,23 +2,19 @@
 
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/FileUtils.hpp"
-
 #include "Engine/Renderer/AnimatedSprite.hpp"
 #include "Engine/Renderer/Renderer.hpp"
-
 #include "Engine/UI/Panel.hpp"
 #include "Engine/UI/Widget.hpp"
 
 namespace UI {
 
 PictureBox::PictureBox(Panel* parent /*= nullptr*/)
-: Element(parent)
-{
+: Element(parent) {
     /* DO NOTHING */
 }
 PictureBox::PictureBox(const XMLElement& elem, Panel* parent /*= nullptr*/)
-: Element(parent)
-{
+: Element(parent) {
     GUARANTEE_OR_DIE(!LoadFromXml(elem), "PictureBox constructor failed to load.");
 }
 
@@ -54,7 +50,6 @@ void PictureBox::DebugRender(Renderer& renderer) const {
     Element::DebugRender(renderer);
 }
 
-
 Vector4 PictureBox::CalcDesiredSize() const noexcept {
     const auto dims = _sprite->GetFrameDimensions();
     const auto w = static_cast<float>(dims.x);
@@ -73,6 +68,5 @@ bool PictureBox::LoadFromXml(const XMLElement& elem) noexcept {
     }
     return false;
 }
-
 
 } // namespace UI

@@ -14,69 +14,69 @@ public:
     // clang-format off
     enum class TextureID : std::size_t {
         Diffuse
-        ,Normal
-        ,Displacement
-        ,Specular
-        ,Occlusion
-        ,Emissive
-        ,Custom1
-        ,Custom2
-        ,Custom3
-        ,Custom4
-        ,Custom5
-        ,Custom6
-        ,Custom7
-        ,Custom8
-        ,Custom9
-        ,Custom10
-        ,Custom11
-        ,Custom12
-        ,Custom13
-        ,Custom14
-        ,Custom15
-        ,Custom16
-        ,Custom17
-        ,Custom18
-        ,Custom19
-        ,Custom20
-        ,Custom21
-        ,Custom22
-        ,Custom23
-        ,Custom24
-        ,Custom25
-        ,Custom26
-        ,Custom27
-        ,Custom28
-        ,Custom29
-        ,Custom30
-        ,Custom31
-        ,Custom32
-        ,Custom33
-        ,Custom34
-        ,Custom35
-        ,Custom36
-        ,Custom37
-        ,Custom38
-        ,Custom39
-        ,Custom40
-        ,Custom41
-        ,Custom42
-        ,Custom43
-        ,Custom44
-        ,Custom45
-        ,Custom46
-        ,Custom47
-        ,Custom48
-        ,Custom49
-        ,Custom50
-        ,Custom51
-        ,Custom52
-        ,Custom53
-        ,Custom54
-        ,Custom55
-        ,Custom56
-        ,Custom57
-        ,Custom58
+        , Normal
+        , Displacement
+        , Specular
+        , Occlusion
+        , Emissive
+        , Custom1
+        , Custom2
+        , Custom3
+        , Custom4
+        , Custom5
+        , Custom6
+        , Custom7
+        , Custom8
+        , Custom9
+        , Custom10
+        , Custom11
+        , Custom12
+        , Custom13
+        , Custom14
+        , Custom15
+        , Custom16
+        , Custom17
+        , Custom18
+        , Custom19
+        , Custom20
+        , Custom21
+        , Custom22
+        , Custom23
+        , Custom24
+        , Custom25
+        , Custom26
+        , Custom27
+        , Custom28
+        , Custom29
+        , Custom30
+        , Custom31
+        , Custom32
+        , Custom33
+        , Custom34
+        , Custom35
+        , Custom36
+        , Custom37
+        , Custom38
+        , Custom39
+        , Custom40
+        , Custom41
+        , Custom42
+        , Custom43
+        , Custom44
+        , Custom45
+        , Custom46
+        , Custom47
+        , Custom48
+        , Custom49
+        , Custom50
+        , Custom51
+        , Custom52
+        , Custom53
+        , Custom54
+        , Custom55
+        , Custom56
+        , Custom57
+        , Custom58
     };
     // clang-format on
     explicit Material(Renderer& renderer) noexcept;
@@ -96,6 +96,7 @@ public:
     void SetFilepath(const std::filesystem::path& p) noexcept;
     [[nodiscard]] const std::filesystem::path& GetFilepath() const noexcept;
     void SetTextureSlot(const TextureID& slotId, Texture* texture) noexcept;
+
 protected:
 private:
     [[nodiscard]] bool LoadFromXml(const XMLElement& element) noexcept;

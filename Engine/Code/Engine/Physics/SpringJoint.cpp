@@ -1,8 +1,7 @@
 #include "Engine/Physics/SpringJoint.hpp"
 
-#include "Engine/Physics/RigidBody.hpp"
 #include "Engine/Physics/PhysicsUtils.hpp"
-
+#include "Engine/Physics/RigidBody.hpp"
 #include "Engine/Renderer/Renderer.hpp"
 
 SpringJoint::SpringJoint(const SpringJointDef& def) noexcept {
@@ -50,7 +49,6 @@ void SpringJoint::Notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noe
     first_body->ApplyImpulse(right_direction * right_magnitude);
     //Apply Left Force to Right Object.
     second_body->ApplyImpulse(left_direction * left_magnitude);
-
 }
 
 void SpringJoint::DebugRender(Renderer& renderer) const noexcept {

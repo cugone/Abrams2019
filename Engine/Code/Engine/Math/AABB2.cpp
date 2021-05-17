@@ -27,8 +27,7 @@ AABB2::AABB2(const Vector2& mins, const Vector2& maxs) noexcept
 }
 
 AABB2::AABB2(const Vector4& minsMaxs) noexcept
-: AABB2(minsMaxs.GetXY(), minsMaxs.GetZW())
-{
+: AABB2(minsMaxs.GetXY(), minsMaxs.GetZW()) {
     /* DO NOTHING */
 }
 AABB2::AABB2(const Vector2& center, float radiusX, float radiusY) noexcept
@@ -85,7 +84,6 @@ void AABB2::AddPaddingToSides(float paddingX, float paddingY) noexcept {
     if(maxs.y < mins.y) {
         std::swap(maxs.y, mins.y);
     }
-
 }
 
 void AABB2::AddPaddingToSidesClamped(float paddingX, float paddingY) noexcept {

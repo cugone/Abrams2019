@@ -322,7 +322,6 @@ bool Console::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         return true;
     }
     case WindowsSystemMessage::Window_Size: {
-
     }
     default: {
         return false;
@@ -730,7 +729,7 @@ void Console::RegisterDefaultCommands() noexcept {
                 PrintMsg(std::string{found_iter->second.command_name + ": " + found_iter->second.help_text_short});
                 return;
             }
-            for(auto& [key,value] : _commands) {
+            for(auto& [key, value] : _commands) {
                 if(StringUtils::StartsWith(key, cur_arg)) {
                     PrintMsg(std::string{value.command_name + ": " + value.help_text_short});
                 }
@@ -761,7 +760,7 @@ void Console::RegisterDefaultCommands() noexcept {
     clear.command_name = "clear";
     clear.help_text_short = "Clears the output buffer.";
     clear.help_text_long = clear.help_text_short;
-    clear.command_function = [this](const std::string & /*args*/) -> void {
+    clear.command_function = [this](const std::string& /*args*/) -> void {
         _output_changed = true;
         _output_buffer.clear();
     };

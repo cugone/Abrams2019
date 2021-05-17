@@ -101,14 +101,14 @@ void RHIOutput::Present(bool vsync) noexcept {
         }
         default:
 #ifdef RENDER_DEBUG
-        const auto err_str = std::string{"Present call failed: "} + StringUtils::FormatWindowsMessage(hr_present);
-        this->GetWindow()->Hide();
-        GUARANTEE_OR_DIE(SUCCEEDED(hr_present), err_str.c_str());
+            const auto err_str = std::string{"Present call failed: "} + StringUtils::FormatWindowsMessage(hr_present);
+            this->GetWindow()->Hide();
+            GUARANTEE_OR_DIE(SUCCEEDED(hr_present), err_str.c_str());
 #else
-        this->GetWindow()->Hide();
-        GUARANTEE_OR_DIE(SUCCEEDED(hr_present), "Present call failed.");
+            this->GetWindow()->Hide();
+            GUARANTEE_OR_DIE(SUCCEEDED(hr_present), "Present call failed.");
 #endif
-        break;
+            break;
         }
     }
 }

@@ -5,10 +5,9 @@
 #include "Engine/Renderer/Window.hpp"
 #include "Engine/Rhi/RHIDevice.hpp"
 
-
 #if defined(_MSC_VER)
-#pragma warning (push)
-#pragma warning (disable : 26812) // The enum type 'xxx' is unscoped. Prefer 'enum class' over 'enum'.
+    #pragma warning(push)
+    #pragma warning(disable : 26812) // The enum type 'xxx' is unscoped. Prefer 'enum class' over 'enum'.
 #endif
 
 RHIFactory::RHIFactory() noexcept {
@@ -91,6 +90,5 @@ std::vector<AdapterInfo> RHIFactory::GetAdaptersByUnspecifiedPreference() const 
 }
 
 #if defined(_MSC_VER)
-#pragma warning (pop)
+    #pragma warning(pop)
 #endif
-

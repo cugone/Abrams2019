@@ -1,10 +1,8 @@
 #include "Engine/Physics/CableJoint.hpp"
 
 #include "Engine/Math/MathUtils.hpp"
-
 #include "Engine/Physics/PhysicsUtils.hpp"
 #include "Engine/Physics/RigidBody.hpp"
-
 #include "Engine/Renderer/Renderer.hpp"
 
 CableJoint::CableJoint(const CableJointDef& def) noexcept {
@@ -134,7 +132,7 @@ bool CableJoint::ConstraintViolated() const noexcept {
 }
 
 void CableJoint::SolvePositionConstraint() const noexcept {
-    auto* first_body =  GetBodyA();
+    auto* first_body = GetBodyA();
     auto* second_body = GetBodyB();
     if(first_body == nullptr && second_body == nullptr) {
         return;

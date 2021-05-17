@@ -17,8 +17,8 @@
 #include <vector>
 
 #if defined(_MSC_VER)
-#pragma warning (push)
-#pragma warning (disable : 26812) // The enum type 'xxx' is unscoped. Prefer 'enum class' over 'enum'.
+    #pragma warning(push)
+    #pragma warning(disable : 26812) // The enum type 'xxx' is unscoped. Prefer 'enum class' over 'enum'.
 #endif
 
 class RHIDeviceContext;
@@ -58,7 +58,7 @@ public:
     [[nodiscard]] std::unique_ptr<ShaderProgram> CreateShaderProgramFromHlslFile(std::filesystem::path filepath, const std::string& entryPoint, const PipelineStage& target) const noexcept;
     [[nodiscard]] std::unique_ptr<ShaderProgram> CreateShaderProgramFromCsoBinaryBuffer(std::vector<uint8_t>& compiledShader, const std::string& name, const PipelineStage& target) const noexcept;
     [[nodiscard]] std::unique_ptr<ShaderProgram> CreateShaderProgramFromCsoFile(std::filesystem::path filepath, const PipelineStage& target) const noexcept;
-    
+
     [[nodiscard]] std::unique_ptr<InputLayout> CreateInputLayoutFromByteCode(ID3DBlob* bytecode) const noexcept;
 
     [[nodiscard]] ID3DBlob* CompileShader(const std::string& name, const void* sourceCode, std::size_t sourceCodeSize, const std::string& entryPoint, const PipelineStage& target) const noexcept;
@@ -70,6 +70,7 @@ public:
     [[nodiscard]] Renderer& GetRenderer() const noexcept;
 
     void HandleDeviceLost() const noexcept;
+
 private:
     [[nodiscard]] std::pair<std::unique_ptr<RHIOutput>, std::unique_ptr<RHIDeviceContext>> CreateOutputAndContextFromWindow(std::unique_ptr<Window> window) noexcept;
 
@@ -99,6 +100,5 @@ private:
 };
 
 #if defined(_MSC_VER)
-#pragma warning (pop)
+    #pragma warning(pop)
 #endif
-

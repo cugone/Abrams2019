@@ -60,8 +60,7 @@ class VertexBuffer;
 struct screenshot_job_t {
 public:
     screenshot_job_t()
-        : saveLocation{FileUtils::GetKnownFolderPath(FileUtils::KnownPathID::EngineData) / std::filesystem::path{"Screenshots"}}
-    {
+    : saveLocation{FileUtils::GetKnownFolderPath(FileUtils::KnownPathID::EngineData) / std::filesystem::path{"Screenshots"}} {
         namespace FS = std::filesystem;
         FileUtils::CreateFolders(saveLocation);
         const auto folder = saveLocation;
@@ -70,13 +69,11 @@ public:
         saveLocation = filepath;
     }
     screenshot_job_t(std::filesystem::path location)
-        : saveLocation{location}
-    {
+    : saveLocation{location} {
         /* DO NOTHING */
     }
     screenshot_job_t(std::string location)
-        : saveLocation{location}
-    {
+    : saveLocation{location} {
         /* DO NOTHING */
     }
     operator bool() const noexcept {
@@ -91,9 +88,9 @@ public:
     void clear() noexcept {
         saveLocation.clear();
     }
+
 private:
     std::filesystem::path saveLocation{};
-
 };
 
 struct matrix_buffer_t {
@@ -423,7 +420,6 @@ public:
     [[nodiscard]] Vector2 ConvertScreenToNdcCoords(const Camera2D& camera, const Vector2& mouseCoords) const noexcept;
     [[nodiscard]] Vector3 ConvertScreenToNdcCoords(const Vector2& mouseCoords) const noexcept;
 
-
     void SetConstantBuffer(unsigned int index, ConstantBuffer* buffer) noexcept;
     void SetStructuredBuffer(unsigned int index, StructuredBuffer* buffer) noexcept;
     void SetComputeConstantBuffer(unsigned int index, ConstantBuffer* buffer) noexcept;
@@ -480,6 +476,7 @@ public:
     void RequestScreenShot(std::filesystem::path saveLocation);
     [[nodiscard]] Image GetBackbufferAsImage() const noexcept;
     [[nodiscard]] Image GetFullscreenTextureAsImage() const noexcept;
+
 protected:
 private:
     void UpdateSystemTime(TimeUtils::FPSeconds deltaSeconds) noexcept;

@@ -4,10 +4,9 @@
 #include "Engine/RHI/RHIDevice.hpp"
 #include "Engine/RHI/RHIDeviceContext.hpp"
 
-
 #if defined(_MSC_VER)
-#pragma warning (push)
-#pragma warning (disable : 26812) // The enum type 'xxx' is unscoped. Prefer 'enum class' over 'enum'.
+    #pragma warning(push)
+    #pragma warning(disable : 26812) // The enum type 'xxx' is unscoped. Prefer 'enum class' over 'enum'.
 #endif
 
 StructuredBuffer::StructuredBuffer(const RHIDevice& owner, const buffer_t& buffer, std::size_t element_size, std::size_t element_count, const BufferUsage& usage, const BufferBindUsage& bindUsage) noexcept
@@ -62,7 +61,6 @@ void StructuredBuffer::Update(RHIDeviceContext& context, const buffer_t& buffer)
     }
 }
 
-
 #if defined(_MSC_VER)
-#pragma warning (pop)
+    #pragma warning(pop)
 #endif

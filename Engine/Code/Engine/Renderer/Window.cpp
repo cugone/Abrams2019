@@ -47,7 +47,6 @@ Window::Window(const IntVector2& position, const IntVector2& dimensions) noexcep
     _oldclientHeight = _clientHeight;
     _clientWidth = dimensions.x;
     _clientHeight = dimensions.y;
-    
 }
 
 Window::Window(const WindowDesc& desc) noexcept
@@ -170,7 +169,7 @@ void Window::SetDimensionsAndPosition(const IntVector2& new_position, const IntV
     r.left = static_cast<long>(new_position.x);
     r.bottom = r.top + new_size.y;
     r.right = r.left + new_size.x;
-    
+
     _positionX = r.left;
     _positionY = r.top;
     _width = r.right - r.left;
@@ -319,16 +318,16 @@ bool Window::Unregister() noexcept {
 
 bool Window::Create() noexcept {
     _hWnd = ::CreateWindowEx(
-    _styleFlagsEx,                              // Optional window styles.
-    _wc.lpszClassName,                          // Window class
-    _title.c_str(),                             // Window text
-    _styleFlags,                                // Window style
-    _positionX, _positionY,                     //Position XY
-    _width, _height,                            //Size WH
-    nullptr,                                    // Parent window
-    nullptr,                                    // Menu
-    _hInstance,                                 // Instance handle
-    this                                        // Additional application data
+    _styleFlagsEx,          // Optional window styles.
+    _wc.lpszClassName,      // Window class
+    _title.c_str(),         // Window text
+    _styleFlags,            // Window style
+    _positionX, _positionY, //Position XY
+    _width, _height,        //Size WH
+    nullptr,                // Parent window
+    nullptr,                // Menu
+    _hInstance,             // Instance handle
+    this                    // Additional application data
     );
     _hdc = ::GetDCEx(_hWnd, nullptr, 0);
 

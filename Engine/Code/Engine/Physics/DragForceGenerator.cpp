@@ -1,13 +1,11 @@
 #include "Engine/Physics/DragForceGenerator.hpp"
 
 #include "Engine/Core/TimeUtils.hpp"
-
 #include "Engine/Physics/RigidBody.hpp"
 
 DragForceGenerator::DragForceGenerator(const Vector2& k1k2) noexcept
-    : ForceGenerator()
-    , _k1k2{k1k2}
-{
+: ForceGenerator()
+, _k1k2{k1k2} {
     /* DO NOTHING */
 }
 

@@ -4,10 +4,10 @@
 #include "Engine/Core/KerningFont.hpp"
 #include "Engine/Renderer/Camera2D.hpp"
 #include "Engine/Renderer/Renderer.hpp"
-#include "Engine/UI/Panel.hpp"
 #include "Engine/UI/Canvas.hpp"
-#include "Engine/UI/Widget.hpp"
+#include "Engine/UI/Panel.hpp"
 #include "Engine/UI/Types.hpp"
+#include "Engine/UI/Widget.hpp"
 
 namespace UI {
 
@@ -26,8 +26,7 @@ Label::Label(Panel* parent, KerningFont* font, const std::string& text /*= "Labe
 }
 
 Label::Label(const XMLElement& elem, Panel* parent /*= nullptr*/)
-: Element(parent)
-{
+: Element(parent) {
     GUARANTEE_OR_DIE(LoadFromXml(elem), "Label constructor failed to load.");
 }
 

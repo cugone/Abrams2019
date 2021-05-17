@@ -248,7 +248,7 @@ void Config::PrintConfig(std::string key, std::ostream& output) const noexcept {
 }
 
 void Config::PrintConfigs(std::ostream& output) const noexcept {
-    for(const auto& [key,value] : _config) {
+    for(const auto& [key, value] : _config) {
         PrintKeyValue(output, key, value);
     }
 }

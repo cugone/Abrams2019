@@ -375,7 +375,7 @@ bool Element::IsParent() const {
 }
 
 bool Element::IsChild() const {
-    return GetParent() != nullptr;;
+    return GetParent() != nullptr;
 }
 
 AABB2 Element::GetParentLocalBounds() const {

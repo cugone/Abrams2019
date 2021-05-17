@@ -8,9 +8,9 @@
 class RigidBody;
 
 struct PhysicsMaterial {
-    float friction = 0.0f;    //0.7f; //Range: [0.0,1.0]; How quickly an object comes to rest during a contact. Values closer to 1.0 cause resting contacts to lose velocity faster.
-    float restitution = 0.0f; //0.3f; //Range: [-1.0f, 1.0f]; The bouncyness of a material. Negative values cause an object to gain velocity after a collision.
-    float density = 1.0f; //Affect mass calculation for "bigger" objects.
+    float friction = 0.0f;      //0.7f; //Range: [0.0,1.0]; How quickly an object comes to rest during a contact. Values closer to 1.0 cause resting contacts to lose velocity faster.
+    float restitution = 0.0f;   //0.3f; //Range: [-1.0f, 1.0f]; The bouncyness of a material. Negative values cause an object to gain velocity after a collision.
+    float density = 1.0f;       //Affect mass calculation for "bigger" objects.
     float massExponent = 0.01f; //Raise final mass calculation to this exponent.
 };
 
@@ -20,7 +20,7 @@ struct PhysicsDesc {
     float linearDamping = 1.0f;
     float angularDamping = 1.0f;
     bool enableGravity = true; //Should gravity be applied.
-    bool enableDrag = true;   //Should drag be applied.
+    bool enableDrag = true;    //Should drag be applied.
     bool enablePhysics = true; //Should object be subject to physics calculations.
     bool startAwake = true;    //Should the object be awake on creation.
 };
@@ -38,10 +38,11 @@ struct Position {
     Position(Vector2 value) noexcept;
     explicit Position(Velocity) noexcept = delete;
     explicit Position(Acceleration) noexcept = delete;
-    operator Vector2 const ();
+    operator Vector2 const();
     operator Vector2();
     [[nodiscard]] Vector2 Get() const noexcept;
     void Set(Vector2 value) noexcept;
+
 private:
     Vector2 m_value{};
 };
@@ -60,6 +61,7 @@ struct Velocity {
     operator Vector2();
     [[nodiscard]] Vector2 Get() const noexcept;
     void Set(Vector2 value) noexcept;
+
 private:
     Vector2 m_value{};
 };
@@ -78,10 +80,10 @@ struct Acceleration {
     operator Vector2();
     [[nodiscard]] Vector2 Get() const noexcept;
     void Set(Vector2 value) noexcept;
+
 private:
     Vector2 m_value{};
 };
-
 
 struct GJKResult {
     bool collides{false};

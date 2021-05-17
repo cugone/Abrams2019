@@ -495,7 +495,8 @@ std::string ShiftCipher(int key, std::string_view text) noexcept {
     const auto shiftcipher = [key](unsigned char a) {
         const bool lower = 'a' <= a && a <= 'z';
         const bool upper = 'A' <= a && a <= 'Z';
-        const char base = lower ? 'a' : upper ? 'A' : 0;
+        const char base = lower ? 'a' : upper ? 'A'
+                                              : 0;
         if(!base) {
             return a;
         }

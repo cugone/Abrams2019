@@ -114,7 +114,7 @@ ShaderProgramDesc::ShaderProgramDesc(ShaderProgramDesc&& other) noexcept {
 
     input_layout = std::move(other.input_layout);
     other.input_layout = nullptr;
-    
+
     input_layout_instanced = std::move(other.input_layout_instanced);
     other.input_layout_instanced = nullptr;
 
@@ -157,7 +157,7 @@ ShaderProgramDesc& ShaderProgramDesc::operator=(ShaderProgramDesc&& other) noexc
 
     input_layout = std::move(other.input_layout);
     other.input_layout = nullptr;
-    
+
     input_layout_instanced = std::move(other.input_layout_instanced);
     other.input_layout_instanced = nullptr;
 

@@ -12,5 +12,4 @@ public:
 
 protected:
 private:
-    
 };

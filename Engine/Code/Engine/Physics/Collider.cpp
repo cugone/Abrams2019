@@ -1,8 +1,8 @@
 #include "Engine/Physics/Collider.hpp"
 
-#include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Core/Rgba.hpp"
 #include "Engine/Physics/PhysicsTypes.hpp"
+#include "Engine/Renderer/Renderer.hpp"
 
 ColliderPolygon::ColliderPolygon(int sides, const Vector2& position, const Vector2& half_extents, float orientationDegrees)
 : Collider()
@@ -108,8 +108,7 @@ ColliderPolygon* ColliderPolygon::Clone() const noexcept {
 }
 
 ColliderOBB::ColliderOBB(const Vector2& position, const Vector2& half_extents)
-: m_obb{position, half_extents, 0.0f}
-{
+: m_obb{position, half_extents, 0.0f} {
     /* DO NOTHING */
 }
 
@@ -178,7 +177,7 @@ Vector2 ColliderCircle::Support(const Vector2& d) const noexcept {
 }
 
 void ColliderCircle::DebugRender(Renderer& renderer) const noexcept {
-    renderer.DrawCircle2D(Vector2::ZERO, 0.5f, Rgba::Pink);// _polygon.GetPosition(), _polygon.GetHalfExtents().x, Rgba::Pink);
+    renderer.DrawCircle2D(Vector2::ZERO, 0.5f, Rgba::Pink); // _polygon.GetPosition(), _polygon.GetHalfExtents().x, Rgba::Pink);
 }
 
 void ColliderCircle::SetPosition(const Vector2& position) noexcept {
@@ -210,8 +209,7 @@ ColliderCircle* ColliderCircle::Clone() const noexcept {
 }
 
 ColliderAABB::ColliderAABB(const Vector2& position, const Vector2& half_extents)
-    : ColliderPolygon(4, position, half_extents, 45.0f)
-{
+: ColliderPolygon(4, position, half_extents, 45.0f) {
     /* DO NOTHING */
 }
 

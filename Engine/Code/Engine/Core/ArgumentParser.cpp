@@ -2,7 +2,6 @@
 
 #include "Engine/Core/Rgba.hpp"
 #include "Engine/Core/StringUtils.hpp"
-
 #include "Engine/Math/IntVector2.hpp"
 #include "Engine/Math/IntVector3.hpp"
 #include "Engine/Math/IntVector4.hpp"

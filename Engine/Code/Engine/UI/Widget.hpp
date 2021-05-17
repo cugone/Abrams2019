@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Engine/Core/DataUtils.hpp"
-
 #include "Engine/UI/Element.hpp"
 
 #include <filesystem>
@@ -25,11 +24,13 @@ public:
     void EndFrame();
 
     Renderer& GetRenderer() const;
+
 protected:
     [[nodiscard]] bool LoadFromXML(const std::filesystem::path& path);
     void LoadUI(const XMLElement& element);
 
     [[nodiscard]] std::shared_ptr<Element> CreateWigetTypeFromTypename(std::string nameString, const XMLElement& elem);
+
 private:
     [[nodiscard]] bool HasPanelChild(const XMLElement& elem);
 

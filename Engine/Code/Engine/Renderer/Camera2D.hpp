@@ -5,7 +5,6 @@
 #include "Engine/Math/Matrix4.hpp"
 #include "Engine/Math/Vector2.hpp"
 #include "Engine/Math/Vector3.hpp"
-
 #include "Engine/Renderer/RenderTargetStack.hpp"
 
 class Camera2D {

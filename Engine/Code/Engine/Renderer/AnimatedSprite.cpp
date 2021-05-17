@@ -117,7 +117,7 @@ void AnimatedSprite::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
 }
 
 AABB2 AnimatedSprite::GetCurrentTexCoords() const noexcept {
-    const auto [x,y] = GetCurrentSpriteCoords();
+    const auto [x, y] = GetCurrentSpriteCoords();
     if(!_sheet.expired()) {
         return _sheet.lock()->GetTexCoordsFromSpriteCoords(x, y);
     }

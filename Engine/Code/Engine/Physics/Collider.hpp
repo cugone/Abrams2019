@@ -60,7 +60,6 @@ protected:
 private:
 };
 
-
 class ColliderAABB : public ColliderPolygon {
 public:
     ColliderAABB(const Vector2& position, const Vector2& half_extents);
@@ -81,7 +80,6 @@ public:
 protected:
 private:
 };
-
 
 class ColliderOBB : public Collider {
 public:

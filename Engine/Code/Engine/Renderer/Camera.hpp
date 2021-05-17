@@ -11,13 +11,12 @@
 // clang-format off
 enum class ProjectionMode {
     Orthographic
-    ,Perspective
+    , Perspective
 };
 // clang-format on
 
 class Camera {
 public:
-
     void SetProjectionMode(ProjectionMode newProjectionMode) noexcept;
     [[nodiscard]] ProjectionMode GetProjectionMode() const noexcept;
 

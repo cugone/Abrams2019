@@ -2,8 +2,8 @@
 
 #include "Engine/Core/BuildConfig.hpp"
 
-#include <atomic>
 #include <array>
+#include <atomic>
 #include <shared_mutex>
 #include <string>
 #include <vector>

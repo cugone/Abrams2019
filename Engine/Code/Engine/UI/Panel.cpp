@@ -5,9 +5,8 @@
 namespace UI {
 
 Panel::Panel(Widget* owner)
-: _owner(owner)
-{
-     /* DO NOTHING */
+: _owner(owner) {
+    /* DO NOTHING */
 }
 
 void Panel::Update(TimeUtils::FPSeconds deltaSeconds) {
@@ -72,7 +71,8 @@ void Panel::DebugRenderChildren(Renderer& renderer) const {
     }
 }
 
-void Panel::SortChildren() {}
+void Panel::SortChildren() {
+}
 
 void Panel::CalcBoundsForChildren() noexcept {
     for(auto& slot : _slots) {
@@ -96,8 +96,10 @@ bool Panel::CanHaveManyChildren() const noexcept {
     return true;
 }
 
-void Panel::UpdateChildren(TimeUtils::FPSeconds) {}
+void Panel::UpdateChildren(TimeUtils::FPSeconds) {
+}
 
-void Panel::RenderChildren(Renderer&) const {}
+void Panel::RenderChildren(Renderer&) const {
+}
 
 } // namespace UI

@@ -2,24 +2,20 @@
 
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/StringUtils.hpp"
-
 #include "Engine/RHI/RHIOutput.hpp"
-
 #include "Engine/Renderer/DepthStencilState.hpp"
 #include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/Texture2D.hpp"
 
-#include <sstream>
 #include <memory>
+#include <sstream>
 
 namespace UI {
 
 Canvas::Canvas(Widget* owner, Renderer& renderer)
 : Panel(owner)
-, _renderer(renderer)
-{
-
+, _renderer(renderer) {
     const auto [dimensions, aspect_ratio] = CalcDimensionsAndAspectRatio();
     const auto desired_size = CalcDesiredSize();
     _bounds.mins = desired_size.GetXY();
@@ -31,11 +27,10 @@ Canvas::Canvas(Widget* owner, Renderer& renderer)
     _renderer.CreateAndRegisterDepthStencilStateFromDepthStencilDescription("UIDepthStencil", desc);
 }
 
- Canvas::Canvas(Widget* owner, Renderer& renderer, const XMLElement& elem)
+Canvas::Canvas(Widget* owner, Renderer& renderer, const XMLElement& elem)
 : Panel(owner)
-, _renderer(renderer)
-{
-     GUARANTEE_OR_DIE(LoadFromXml(elem), "Canvas constructor failed to load.");
+, _renderer(renderer) {
+    GUARANTEE_OR_DIE(LoadFromXml(elem), "Canvas constructor failed to load.");
 }
 
 void Canvas::Update(TimeUtils::FPSeconds deltaSeconds) {
@@ -275,7 +270,6 @@ std::pair<Vector2, float> Canvas::CalcDimensionsAndAspectRatio() const {
 }
 
 AABB2 Canvas::CalcAlignedAbsoluteBounds() const noexcept {
-
     AABB2 parent_bounds = GetParentLocalBounds();
     auto ratio = GetPosition().GetXY();
     AABB2 alignedBounds = AlignBoundsToContainer(CalcBoundsRelativeToParent(), parent_bounds, ratio);
@@ -292,22 +286,22 @@ AABB2 Canvas::CalcAlignedAbsoluteBounds() const noexcept {
 
 void Canvas::ReorderAllChildren() {
     std::sort(std::begin(_slots), std::end(_slots),
-    [](const std::shared_ptr<PanelSlot>& a, const std::shared_ptr<PanelSlot>& b) {
-        const auto aAsCs = std::dynamic_pointer_cast<CanvasSlot>(a);
-        const auto bAsCs = std::dynamic_pointer_cast<CanvasSlot>(b);
-        if(aAsCs && bAsCs) {
-            return aAsCs->zOrder < bAsCs->zOrder;
-        }
-        if(aAsCs || bAsCs) {
-            if(aAsCs) {
-                return aAsCs->zOrder < 0;
-            }
-            if(bAsCs) {
-                return bAsCs->zOrder < 0;
-            }
-        }
-        return false;
-    });
+              [](const std::shared_ptr<PanelSlot>& a, const std::shared_ptr<PanelSlot>& b) {
+                  const auto aAsCs = std::dynamic_pointer_cast<CanvasSlot>(a);
+                  const auto bAsCs = std::dynamic_pointer_cast<CanvasSlot>(b);
+                  if(aAsCs && bAsCs) {
+                      return aAsCs->zOrder < bAsCs->zOrder;
+                  }
+                  if(aAsCs || bAsCs) {
+                      if(aAsCs) {
+                          return aAsCs->zOrder < 0;
+                      }
+                      if(bAsCs) {
+                          return bAsCs->zOrder < 0;
+                      }
+                  }
+                  return false;
+              });
 }
 
 bool Canvas::LoadFromXml(const XMLElement& elem) noexcept {
@@ -317,14 +311,13 @@ bool Canvas::LoadFromXml(const XMLElement& elem) noexcept {
 }
 
 CanvasSlot::CanvasSlot(Element* content /*= nullptr*/, Panel* parent /*= nullptr*/)
-: PanelSlot(content, parent)
-{}
+: PanelSlot(content, parent) {
+}
 
 CanvasSlot::CanvasSlot(const XMLElement& elem,
                        Element* content /*= nullptr*/,
                        Panel* parent /*= nullptr*/)
-: PanelSlot(content, parent)
-{
+: PanelSlot(content, parent) {
     LoadFromXml(elem);
 }
 
@@ -351,4 +344,3 @@ Vector2 CanvasSlot::CalcPosition() const {
 }
 
 } // namespace UI
-

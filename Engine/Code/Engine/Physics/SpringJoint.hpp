@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Engine/Physics/Joint.hpp"
 #include "Engine/Math/Vector2.hpp"
+#include "Engine/Physics/Joint.hpp"
 
 class Renderer;
 
@@ -24,7 +24,7 @@ public:
 
     void Notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept override;
     void DebugRender(Renderer& renderer) const noexcept override;
-    
+
     [[nodiscard]] bool IsNotAttached() const noexcept override;
     void Attach(RigidBody* a, RigidBody* b, Vector2 localAnchorA = Vector2::ZERO, Vector2 localAnchorB = Vector2::ZERO) noexcept override;
     void Detach(const RigidBody* body) noexcept override;

@@ -17,12 +17,12 @@ class Matrix4;
 // clang-format off
 enum class ArgumentParserState : uint8_t {
     None
-    ,BadBit
-    ,FailBit
-    ,EndOfFileBit
-    ,Max
+    , BadBit
+    , FailBit
+    , EndOfFileBit
+    , Max
 };
-// clang-format off
+// clang-format on
 
 template<>
 struct TypeUtils::is_bitflag_enum_type<ArgumentParserState> : std::true_type {};
@@ -75,5 +75,5 @@ private:
 template<typename T>
 ArgumentParser& operator>>(ArgumentParser& parser, T&& arg) noexcept {
     (void)parser.GetNext(std::forward<T>(arg)); //GetNext sets the state of the parser.
-    return parser; //It is implicitly converted to bool, a bad state from the previous read is false.
+    return parser;                              //It is implicitly converted to bool, a bad state from the previous read is false.
 }

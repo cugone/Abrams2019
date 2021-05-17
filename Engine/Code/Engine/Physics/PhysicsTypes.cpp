@@ -4,15 +4,23 @@ CollisionData::CollisionData(RigidBody* const a, RigidBody* const b, float dista
 : a(a)
 , b(b)
 , distance(distance)
-, normal(normal)
-{}
+, normal(normal) {
+}
 
 bool CollisionData::operator<(const CollisionData& rhs) const noexcept {
-    if(this->a < rhs.a) return true;
-    if(rhs.a < this->a) return false;
+    if(this->a < rhs.a) {
+        return true;
+    }
+    if(rhs.a < this->a) {
+        return false;
+    }
 
-    if(this->b < rhs.b) return true;
-    if(rhs.b < this->b) return false;
+    if(this->b < rhs.b) {
+        return true;
+    }
+    if(rhs.b < this->b) {
+        return false;
+    }
 
     return false;
 }
@@ -25,9 +33,7 @@ bool CollisionData::operator!=(const CollisionData& rhs) const noexcept {
 }
 
 Position::Position(Vector2 value) noexcept
-: m_value{value}
-{
-
+: m_value{value} {
     /* DO NOTHING */
 }
 
@@ -36,7 +42,7 @@ Position::Position(float x, float y) noexcept
     /* DO NOTHING */
 }
 
-Position::operator Vector2 const () {
+Position::operator Vector2 const() {
     return m_value;
 }
 
@@ -53,14 +59,12 @@ void Position::Set(Vector2 value) noexcept {
 }
 
 Velocity::Velocity(Vector2 value) noexcept
-: m_value{value}
-{
+: m_value{value} {
     /* DO NOTHING */
 }
 
 Velocity::Velocity(float x, float y) noexcept
-: m_value{x, y}
-{
+: m_value{x, y} {
     /* DO NOTHING */
 }
 
@@ -81,14 +85,12 @@ void Velocity::Set(Vector2 value) noexcept {
 }
 
 Acceleration::Acceleration(Vector2 value) noexcept
-: m_value{value}
-{
+: m_value{value} {
     /* DO NOTHING */
 }
 
 Acceleration::Acceleration(float x, float y) noexcept
-: m_value{x, y}
-{
+: m_value{x, y} {
     /* DO NOTHING */
 }
 

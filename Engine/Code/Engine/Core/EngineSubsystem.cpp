@@ -1,7 +1,6 @@
 #include "Engine/Core/EngineSubsystem.hpp"
 
 #include "Engine/Core/ErrorWarningAssert.hpp"
-
 #include "Engine/Core/Win.hpp"
 
 EngineSubsystem::~EngineSubsystem() noexcept {

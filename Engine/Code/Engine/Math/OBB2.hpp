@@ -9,7 +9,7 @@ public:
     Vector2 half_extents{};
     Vector2 position{};
     float orientationDegrees = 0.0f;
-
+    // clang-format off
     OBB2() = default;
     OBB2(const OBB2& other) = default;
     OBB2(OBB2&& other) = default;
@@ -21,7 +21,7 @@ public:
     OBB2(const Vector2& center, float halfExtentX, float halfExtentY, float orientationDegrees) noexcept;
     explicit OBB2(const AABB2& aabb) noexcept;
     ~OBB2() = default;
-
+    // clang-format on
     [[nodiscard]] AABB2 AsAABB2() const;
 
     void SetOrientationDegrees(float newOrientationDegrees) noexcept;

@@ -10,6 +10,7 @@ public:
     static const AABB3 ZERO_TO_ONE;
     static const AABB3 NEG_ONE_TO_ONE;
 
+    // clang-format off
     AABB3() = default;
     AABB3(const AABB3& rhs) = default;
     AABB3(AABB3&& rhs) = default;
@@ -20,6 +21,7 @@ public:
     AABB3(float minX, float minY, float maxX, float maxY, float minZ, float maxZ) noexcept;
     AABB3(const Vector3& mins, const Vector3& maxs) noexcept;
     AABB3(const Vector3& center, float radiusX, float radiusY, float radiusZ) noexcept;
+    // clang-format on
 
     void StretchToIncludePoint(const Vector3& point) noexcept;
     void AddPaddingToSides(float paddingX, float paddingY, float paddingZ) noexcept;

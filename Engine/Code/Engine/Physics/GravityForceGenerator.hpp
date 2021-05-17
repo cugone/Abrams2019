@@ -1,8 +1,7 @@
 #pragma once
 
-#include "Engine/Physics/ForceGenerator.hpp"
-
 #include "Engine/Math/Vector2.hpp"
+#include "Engine/Physics/ForceGenerator.hpp"
 
 class GravityForceGenerator : public ForceGenerator {
 public:

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Engine/Core/DataUtils.hpp"
-
 #include "Engine/UI/Element.hpp"
 #include "Engine/UI/PanelSlot.hpp"
 #include "Engine/UI/Widget.hpp"
@@ -26,7 +25,7 @@ public:
     void Render(Renderer& renderer) const override;
     void DebugRender(Renderer& renderer) const override;
     void EndFrame() override;
-    virtual PanelSlot* AddChild(Element* child)=0;
+    virtual PanelSlot* AddChild(Element* child) = 0;
     virtual PanelSlot* AddChildAt(Element* child, std::size_t index) = 0;
     virtual PanelSlot* AddChildFromXml(const XMLElement& elem, Element* child) = 0;
     virtual PanelSlot* AddChildFromXml(const XMLElement& elem, Element* child, std::size_t index) = 0;
@@ -41,8 +40,8 @@ public:
     void DebugRenderBottomUp(Renderer& renderer) const;
     void DebugRenderTopDown(Renderer& renderer) const;
     void DebugRenderChildren(Renderer& renderer) const;
-protected:
 
+protected:
     [[nodiscard]] virtual AABB2 CalcChildrenDesiredBounds() const = 0;
     virtual void ArrangeChildren() noexcept = 0;
     [[nodiscard]] virtual bool LoadFromXml(const XMLElement& elem) noexcept = 0;

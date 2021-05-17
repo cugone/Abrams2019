@@ -2,7 +2,6 @@
 
 #include "Engine/Core/DataUtils.hpp"
 #include "Engine/Core/Rgba.hpp"
-
 #include "Engine/UI/Element.hpp"
 
 #include <string>

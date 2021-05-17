@@ -4,17 +4,13 @@
 #include "Engine/Core/FileUtils.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Core/Win.hpp"
-
 #include "Engine/Math/MathUtils.hpp"
-
+#include "Engine/Renderer/DirectX/DX11.hpp"
 #include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/Texture1D.hpp"
 #include "Engine/Renderer/Texture2D.hpp"
 #include "Engine/Renderer/Texture3D.hpp"
-
-#include "Engine/Renderer/DirectX/DX11.hpp"
-
 #include "ThirdParty/stb/stb_image.h"
 #include "ThirdParty/stb/stb_image_write.h"
 
@@ -107,8 +103,7 @@ Image::Image(Image&& img) noexcept
     m_texelBytes = std::move(img.m_texelBytes);
 }
 
-Image::Image(const Texture* tex, const Renderer* renderer) noexcept
-{
+Image::Image(const Texture* tex, const Renderer* renderer) noexcept {
     auto* tex2d = tex->GetDxResourceAs<ID3D11Texture2D>();
     D3D11_TEXTURE2D_DESC desc{};
     tex2d->GetDesc(&desc);
@@ -136,7 +131,6 @@ Image::Image(const Texture* tex, const Renderer* renderer) noexcept
         src += desc.Width;
     }
     dc_dx->Unmap(stage->GetDxResource(), 0u);
-
 }
 
 Image& Image::operator=(Image&& rhs) noexcept {

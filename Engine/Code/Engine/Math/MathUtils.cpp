@@ -15,7 +15,6 @@
 #include "Engine/Math/Polygon2.hpp"
 #include "Engine/Math/Quaternion.hpp"
 #include "Engine/Math/Sphere3.hpp"
-
 #include "Engine/Profiling/ProfileLogScope.hpp"
 
 #include <algorithm>
@@ -374,7 +373,6 @@ float CalcDistanceSquared(const Polygon2& poly2, const LineSegment2& line) noexc
 }
 
 float CalcDistanceSquared(const LineSegment2& lineA, const LineSegment2& lineB) noexcept {
-
     //https://stackoverflow.com/a/11427699/421178
 
     const auto a_len_sq = lineA.CalcLengthSquared();
@@ -404,7 +402,7 @@ float CalcDistanceSquared(const LineSegment2& lineA, const LineSegment2& lineB) 
     const auto a2 = lineA.end;
     const auto b1 = lineB.start;
     const auto b2 = lineB.end;
-    const auto distances = std::vector<float>{CalcDistanceSquared(a1, lineB),CalcDistanceSquared(a2, lineB),CalcDistanceSquared(b1, lineA),CalcDistanceSquared(b2, lineA)};
+    const auto distances = std::vector<float>{CalcDistanceSquared(a1, lineB), CalcDistanceSquared(a2, lineB), CalcDistanceSquared(b1, lineA), CalcDistanceSquared(b2, lineA)};
 
     return *std::min_element(std::cbegin(distances), std::cend(distances));
 }
@@ -740,8 +738,6 @@ bool IsPointInside(const Polygon2& poly2, const Vector2& point) noexcept {
     // liable for any real or imagined damage resulting from its use.
     // Users of this code must verify correctness for their application.
 
-
-
 #if 0
     //Crossing Number Test
     const auto crossing_inside = [&]()
@@ -763,25 +759,24 @@ bool IsPointInside(const Polygon2& poly2, const Vector2& point) noexcept {
     }();
 #endif
     //Winding Number Test
-    const auto winding_inside = [&]()
-    {
+    const auto winding_inside = [&]() {
         PROFILE_LOG_SCOPE("Winding Inside");
         int wn = 0; // the  winding number counter
         const auto isLeft = [&](const Vector2& P0, const Vector2& P1, const Vector2& P2) {
             return ((P1.x - P0.x) * (P2.y - P0.y)
-                - (P2.x - P0.x) * (P1.y - P0.y));
+                    - (P2.x - P0.x) * (P1.y - P0.y));
         };
         const auto n = pointCount;
         // loop through all edges of the polygon
-        for(std::size_t i = 0u; i < n - 1u; i++) {                  // edge from V[i] to  V[i+1]
-            if(verts[i].y <= point.y) {                       // start y <= point.y
-                if(verts[i + 1u].y > point.y)                  // an upward crossing
+        for(std::size_t i = 0u; i < n - 1u; i++) {                 // edge from V[i] to  V[i+1]
+            if(verts[i].y <= point.y) {                            // start y <= point.y
+                if(verts[i + 1u].y > point.y)                      // an upward crossing
                     if(isLeft(verts[i], verts[i + 1u], point) > 0) // P left of  edge
-                        ++wn;                         // have  a valid up intersect
-            } else {                                  // start y > point.y (no test needed)
-                if(verts[i + 1u].y <= point.y)                 // a downward crossing
+                        ++wn;                                      // have  a valid up intersect
+            } else {                                               // start y > point.y (no test needed)
+                if(verts[i + 1u].y <= point.y)                     // a downward crossing
                     if(isLeft(verts[i], verts[i + 1u], point) < 0) // P right of  edge
-                        --wn;                         // have  a valid down intersect
+                        --wn;                                      // have  a valid down intersect
             }
         }
         return wn != 0;
@@ -1137,8 +1132,7 @@ bool DoPolygonsOverlap(const Polygon2& a, const Polygon2& b) noexcept {
 }
 
 std::optional<Vector2> DoLineSegmentOverlap(const LineSegment2& a, const LineSegment2& b) noexcept {
-
-//https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
+    //https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
 
     const auto x1 = a.start.x;
     const auto y1 = a.start.y;

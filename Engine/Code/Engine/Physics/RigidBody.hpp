@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Engine/Math/Vector2.hpp"
-#include "Engine/Physics/PhysicsTypes.hpp"
-#include "Engine/Physics/Collider.hpp"
 #include "Engine/Core/TimeUtils.hpp"
+#include "Engine/Math/Vector2.hpp"
+#include "Engine/Physics/Collider.hpp"
+#include "Engine/Physics/PhysicsTypes.hpp"
 
 #include <memory>
 
@@ -18,22 +18,20 @@ struct RigidBodyDesc {
         /* DO NOTHING */
     }
     RigidBodyDesc(Position initialPos, Velocity initialVel, Acceleration initialAcc, Collider* coll, const PhysicsMaterial& physMat, const PhysicsDesc& physDesc) noexcept
-        : initialPosition{initialPos}
-        , initialVelocity{initialVel}
-        , initialAcceleration{initialAcc}
-        , collider{coll}
-        , physicsMaterial{physMat}
-        , physicsDesc{physDesc}
-    {
+    : initialPosition{initialPos}
+    , initialVelocity{initialVel}
+    , initialAcceleration{initialAcc}
+    , collider{coll}
+    , physicsMaterial{physMat}
+    , physicsDesc{physDesc} {
         /* DO NOTHING */
     }
     RigidBodyDesc(RigidBodyDesc&& other) noexcept
-        : initialPosition(std::move(other.initialPosition))
-        , initialVelocity(std::move(other.initialVelocity))
-        , initialAcceleration(std::move(other.initialAcceleration))
-        , physicsMaterial(std::move(other.physicsMaterial))
-        , physicsDesc(std::move(other.physicsDesc))
-    {
+    : initialPosition(std::move(other.initialPosition))
+    , initialVelocity(std::move(other.initialVelocity))
+    , initialAcceleration(std::move(other.initialAcceleration))
+    , physicsMaterial(std::move(other.physicsMaterial))
+    , physicsDesc(std::move(other.physicsDesc)) {
         collider = std::move(other.collider);
         other.collider = nullptr;
     }
@@ -50,11 +48,10 @@ struct RigidBodyDesc {
 
     RigidBodyDesc(const RigidBodyDesc& other) noexcept
     : initialPosition(other.initialPosition)
-    ,initialVelocity(other.initialVelocity)
-    ,initialAcceleration(other.initialAcceleration)
-    ,physicsMaterial(other.physicsMaterial)
-    ,physicsDesc(other.physicsDesc)
-    {
+    , initialVelocity(other.initialVelocity)
+    , initialAcceleration(other.initialAcceleration)
+    , physicsMaterial(other.physicsMaterial)
+    , physicsDesc(other.physicsDesc) {
         auto new_collider = other.collider->Clone();
         delete collider;
         collider = new_collider;
@@ -157,6 +154,7 @@ public:
     [[nodiscard]] const bool ShouldKill() const noexcept;
     [[nodiscard]] const bool IsRotationLocked() const noexcept;
     void LockRotation(bool shouldLockRotation) noexcept;
+
 protected:
 private:
     void SetAcceleration(const Vector2& newAccleration) noexcept;

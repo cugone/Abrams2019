@@ -579,7 +579,8 @@ bool InputSystem::WasAnyControllerJustUsed() const noexcept {
         result |= _xboxControllers[i].GetRightThumbPosition().CalcLengthSquared() > 0.0f;
         result |= _xboxControllers[i].GetLeftTriggerPosition() > 0.0f;
         result |= _xboxControllers[i].GetRightTriggerPosition() > 0.0f;
-        if(result) break;
+        if(result)
+            break;
     }
     return result;
 }
@@ -1319,7 +1320,7 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         if(!IsMouseLockedToViewport()) {
             return false;
         }
-        const auto should_unclip = [msg]()->const bool {
+        const auto should_unclip = [msg]() -> const bool {
             const auto result = EngineSubsystem::GetResizeTypeFromWmSize(msg);
             return result == WindowResizeType::MaxHide || result == WindowResizeType::Minimized;
         }();

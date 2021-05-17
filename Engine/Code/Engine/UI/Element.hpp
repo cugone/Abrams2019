@@ -5,8 +5,8 @@
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/Matrix4.hpp"
 #include "Engine/Math/Vector2.hpp"
-#include "Engine/UI/Types.hpp"
 #include "Engine/UI/PanelSlot.hpp"
+#include "Engine/UI/Types.hpp"
 
 class Renderer;
 
@@ -134,7 +134,7 @@ protected:
 private:
     Vector4 _position{};
     Vector2 _pivot{};
-    
+
     Rgba _pivot_color = Rgba::Red;
     PanelSlot* _slot = &s_NullPanelSlot;
     float _orientationRadians = 0.0f;

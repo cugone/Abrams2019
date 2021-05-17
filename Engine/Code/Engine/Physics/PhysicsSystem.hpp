@@ -1,22 +1,18 @@
 #pragma once
 
 #include "Engine/Core/TimeUtils.hpp"
-
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/Vector2.hpp"
-
-#include "Engine/Physics/PhysicsTypes.hpp"
-#include "Engine/Physics/RigidBody.hpp"
+#include "Engine/Physics/CableJoint.hpp"
+#include "Engine/Physics/DragForceGenerator.hpp"
 #include "Engine/Physics/ForceGenerator.hpp"
 #include "Engine/Physics/GravityForceGenerator.hpp"
-#include "Engine/Physics/DragForceGenerator.hpp"
 #include "Engine/Physics/Joint.hpp"
-#include "Engine/Physics/SpringJoint.hpp"
+#include "Engine/Physics/PhysicsTypes.hpp"
+#include "Engine/Physics/RigidBody.hpp"
 #include "Engine/Physics/RodJoint.hpp"
-#include "Engine/Physics/CableJoint.hpp"
-
+#include "Engine/Physics/SpringJoint.hpp"
 #include "Engine/Profiling/ProfileLogScope.hpp"
-
 #include "Engine/Renderer/Renderer.hpp"
 
 #include <atomic>
@@ -62,7 +58,7 @@ public:
     [[nodiscard]] Vector2 GetGravity() const noexcept;
     void SetDragCoefficients(const Vector2& k1k2);
     void SetDragCoefficients(float linearCoefficient, float squareCoefficient);
-    [[nodiscard]] std::pair<float,float> GetDragCoefficients() const noexcept;
+    [[nodiscard]] std::pair<float, float> GetDragCoefficients() const noexcept;
     [[nodiscard]] const PhysicsSystemDesc& GetWorldDescription() const noexcept;
     void SetWorldDescription(const PhysicsSystemDesc& new_desc);
     void EnableGravity(bool isGravityEnabled) noexcept;

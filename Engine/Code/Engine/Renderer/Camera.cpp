@@ -137,8 +137,8 @@ Vector3 Camera::GetEulerAnglesDegrees() const noexcept {
 
 void Camera::SetEulerAnglesDegrees(const Vector3& eulerAnglesDegrees) noexcept {
     SetEulerAngles(Vector3{MathUtils::ConvertDegreesToRadians(eulerAnglesDegrees.x),
-                    MathUtils::ConvertDegreesToRadians(eulerAnglesDegrees.y),
-                    MathUtils::ConvertDegreesToRadians(eulerAnglesDegrees.z)});
+                           MathUtils::ConvertDegreesToRadians(eulerAnglesDegrees.y),
+                           MathUtils::ConvertDegreesToRadians(eulerAnglesDegrees.z)});
 }
 
 void Camera::SetEulerAngles(const Vector3& eulerAngles) noexcept {
@@ -149,8 +149,7 @@ void Camera::SetEulerAngles(const Vector3& eulerAngles) noexcept {
 
 void Camera::SetForwardFromTarget(const Vector3& lookAtPosition) noexcept {
     switch(projection_mode) {
-    case ProjectionMode::Perspective:
-    {
+    case ProjectionMode::Perspective: {
         Vector3 forward = (lookAtPosition - position).GetNormalize();
         Vector3 right = MathUtils::CrossProduct(world_up.GetNormalize(), forward);
         Vector3 up = MathUtils::CrossProduct(forward, right);
@@ -165,8 +164,7 @@ void Camera::SetForwardFromTarget(const Vector3& lookAtPosition) noexcept {
         rotationRoll = eulerangles.z;
         break;
     }
-    case ProjectionMode::Orthographic:
-    {
+    case ProjectionMode::Orthographic: {
         /* DO NOTHING */
         break;
     }
@@ -175,13 +173,11 @@ void Camera::SetForwardFromTarget(const Vector3& lookAtPosition) noexcept {
 
 Vector3 Camera::GetRight() const noexcept {
     switch(projection_mode) {
-    case ProjectionMode::Perspective:
-    {
+    case ProjectionMode::Perspective: {
         const auto forward = GetForward();
         return MathUtils::CrossProduct(world_up, forward);
     }
-    case ProjectionMode::Orthographic:
-    {
+    case ProjectionMode::Orthographic: {
         Vector2 up = -Vector2::Y_AXIS;
         up.SetHeadingRadians(rotationRoll);
         return Vector3{up.GetRightHandNormal(), 0.0f};
@@ -193,14 +189,12 @@ Vector3 Camera::GetRight() const noexcept {
 
 Vector3 Camera::GetUp() const noexcept {
     switch(projection_mode) {
-    case ProjectionMode::Perspective:
-    {
+    case ProjectionMode::Perspective: {
         const auto forward = GetForward();
         const auto right = GetRight();
         return MathUtils::CrossProduct(forward, right);
     }
-    case ProjectionMode::Orthographic:
-    {
+    case ProjectionMode::Orthographic: {
         Vector2 up = -Vector2::Y_AXIS;
         up.SetHeadingRadians(rotationRoll);
         return Vector3{up, 0.0f};
@@ -212,16 +206,14 @@ Vector3 Camera::GetUp() const noexcept {
 
 Vector3 Camera::GetForward() const noexcept {
     switch(projection_mode) {
-    case ProjectionMode::Perspective:
-    {
+    case ProjectionMode::Perspective: {
         const auto cos_yaw = MathUtils::CosDegrees(rotationYaw);
         const auto cos_pitch = MathUtils::CosDegrees(rotationPitch);
         const auto sin_yaw = MathUtils::SinDegrees(rotationYaw);
         const auto sin_pitch = MathUtils::SinDegrees(rotationPitch);
         return Vector3(-sin_yaw * cos_pitch, sin_pitch, cos_yaw * cos_pitch);
     }
-    case ProjectionMode::Orthographic:
-    {
+    case ProjectionMode::Orthographic: {
         return Vector3::Z_AXIS;
     }
     default:

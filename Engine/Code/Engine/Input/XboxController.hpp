@@ -14,28 +14,28 @@ public:
     // clang-format off
     enum class Button : unsigned char {
         First_ /* Internal use only. */
-        ,A = First_
-        ,B
-        ,X
-        ,Y
-        ,Start
-        ,Back
-        ,Up
-        ,Down
-        ,Left
-        ,Right
-        ,LeftThumb
-        ,RightThumb
-        ,RightBumper
-        ,LeftBumper
-        ,Last_ /* Internal use only. */
-        ,Max = Last_ /* Internal use only. */
+        , A = First_
+        , B
+        , X
+        , Y
+        , Start
+        , Back
+        , Up
+        , Down
+        , Left
+        , Right
+        , LeftThumb
+        , RightThumb
+        , RightBumper
+        , LeftBumper
+        , Last_ /* Internal use only. */
+        , Max = Last_ /* Internal use only. */
     };
 
     enum class Motor {
         Left
-        ,Right
-        ,Both
+        , Right
+        , Both
     };
     // clang-format on
     [[nodiscard]] const Vector2& GetLeftThumbPosition() const noexcept;
@@ -94,9 +94,9 @@ private:
     // clang-format off
     enum class ActiveState {
         Connected
-        ,LMotor
-        ,RMotor
-        ,Max
+        , LMotor
+        , RMotor
+        , Max
     };
     // clang-format on
     Vector2 _leftThumbDistance = Vector2::ZERO;

@@ -1,9 +1,7 @@
 #pragma once
 
 #include "Engine/Core/TimeUtils.hpp"
-
 #include "Engine/Math/Vector2.hpp"
-
 #include "Engine/Physics/Joint.hpp"
 
 struct CableJointDef : public JointDef {

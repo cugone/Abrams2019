@@ -1,7 +1,6 @@
 #include "Engine/Physics/PhysicsUtils.hpp"
 
 #include "Engine/Core/ErrorWarningAssert.hpp"
-
 #include "Engine/Math/Vector2.hpp"
 #include "Engine/Physics/Collider.hpp"
 
@@ -89,8 +88,9 @@ GJKResult PhysicsUtils::GJK(const Collider& a, const Collider& b) {
                 return false;
             }
             simplex.insert(std::begin(simplex), Vector3{A});
-            const auto no_new_point = [&]()->bool {
-                if(simplex.size() < 2) return false;
+            const auto no_new_point = [&]() -> bool {
+                if(simplex.size() < 2)
+                    return false;
                 const auto previous1 = *simplex.rbegin();
                 const auto previous2 = *(simplex.rbegin() + 1);
                 return MathUtils::IsEquivalent(previous1, previous2);

@@ -39,9 +39,9 @@ private:
     // clang-format off
     enum class ChildID {
         BottomLeft
-        ,TopLeft
-        ,TopRight
-        ,BottomRight
+        , TopLeft
+        , TopRight
+        , BottomRight
     };
     // clang-format off
     void DebugRender_helper(Renderer& renderer) const;

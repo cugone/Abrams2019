@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Engine/Core/TimeUtils.hpp"
-
 #include "Engine/Math/Vector2.hpp"
 
 class RigidBody;
@@ -36,7 +35,7 @@ public:
     virtual void DetachAll() noexcept = 0;
     [[nodiscard]] virtual bool IsNotAttached() const noexcept = 0;
 
-    virtual void Notify([[maybe_unused]]TimeUtils::FPSeconds deltaSeconds) noexcept = 0;
+    virtual void Notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept = 0;
     virtual void DebugRender(Renderer& renderer) const noexcept = 0;
 
     [[nodiscard]] virtual RigidBody* GetBodyA() const noexcept = 0;

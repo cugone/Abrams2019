@@ -1,9 +1,7 @@
 #pragma once
 
 #include "Engine/Core/Win.hpp"
-
 #include "Engine/Math/IntVector2.hpp"
-
 #include "Engine/RHI/RHITypes.hpp"
 
 #include <functional>
@@ -11,7 +9,7 @@
 
 struct WindowDesc {
     IntVector2 position{};
-    IntVector2 dimensions{1600,900};
+    IntVector2 dimensions{1600, 900};
     RHIOutputMode mode = RHIOutputMode::Windowed;
 };
 
@@ -57,6 +55,7 @@ public:
 
     void SetTitle(const std::string& title) noexcept;
     [[nodiscard]] const std::string& GetTitle() const noexcept;
+
 protected:
     [[nodiscard]] bool Register() noexcept;
     [[nodiscard]] bool Unregister() noexcept;

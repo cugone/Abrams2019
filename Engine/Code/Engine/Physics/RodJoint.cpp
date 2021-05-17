@@ -1,11 +1,9 @@
 #include "Engine/Physics/RodJoint.hpp"
 
-#include "Engine/Physics/RigidBody.hpp"
-#include "Engine/Physics/PhysicsUtils.hpp"
-
-#include "Engine/Renderer/Renderer.hpp"
-
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Physics/PhysicsUtils.hpp"
+#include "Engine/Physics/RigidBody.hpp"
+#include "Engine/Renderer/Renderer.hpp"
 
 RodJoint::RodJoint(const RodJointDef& def) noexcept {
     _def.rigidBodyA = def.rigidBodyA;
@@ -133,7 +131,7 @@ float RodJoint::GetMassB() const noexcept {
 }
 
 bool RodJoint::ConstraintViolated() const noexcept {
-    const bool violated = [this]()->const bool {
+    const bool violated = [this]() -> const bool {
         const auto distance = MathUtils::CalcDistance(GetAnchorA(), GetAnchorB());
         return distance < _def.length || _def.length < distance;
     }();

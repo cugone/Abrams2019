@@ -72,7 +72,7 @@ public:
     void RotatePitchDegreesBy(float angleDegrees) noexcept;
     void RotateYawDegreesBy(float angleDegrees) noexcept;
     void RotateRollDegreesBy(float angleDegrees) noexcept;
-    
+
     void RotatePitchBy(float angleDegrees) noexcept;
     void RotateYawBy(float angleDegrees) noexcept;
     void RotateRollBy(float angleDegrees) noexcept;

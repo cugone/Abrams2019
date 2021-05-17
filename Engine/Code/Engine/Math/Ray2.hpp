@@ -1,8 +1,7 @@
 #pragma once
 
-#include "Engine/Math/Vector2.hpp"
-
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Math/Vector2.hpp"
 
 class Ray2 {
 public:

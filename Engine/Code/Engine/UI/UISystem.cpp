@@ -3,17 +3,12 @@
 #include "Engine/Core/FileLogger.hpp"
 #include "Engine/Core/FileUtils.hpp"
 #include "Engine/Core/KerningFont.hpp"
-
 #include "Engine/Input/InputSystem.hpp"
-
 #include "Engine/Profiling/ProfileLogScope.hpp"
-
 #include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/Window.hpp"
-
 #include "Engine/UI/Widget.hpp"
-
 #include "Thirdparty/Imgui/imgui_internal.h"
 
 #include <algorithm>
@@ -86,8 +81,7 @@ UISystem::UISystem(FileLogger& fileLogger, Renderer& renderer, InputSystem& inpu
 , _fileLogger(fileLogger)
 , _renderer(renderer)
 , _inputSystem(inputSystem)
-, _context(ImGui::CreateContext())
-{
+, _context(ImGui::CreateContext()) {
 #ifdef UI_DEBUG
     IMGUI_CHECKVERSION();
 #endif
@@ -100,7 +94,6 @@ UISystem::~UISystem() noexcept {
     ImGui::DestroyContext(_context);
     _context = nullptr;
     _widgets.clear();
-
 }
 
 void UISystem::Initialize() {
@@ -142,32 +135,31 @@ void UISystem::Update(TimeUtils::FPSeconds /*deltaSeconds*/) {
 }
 
 void UISystem::Render() const {
-        ImGui::Render();
-        ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+    ImGui::Render();
+    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
-        //2D View / HUD
-        const float ui_view_height = _renderer.GetCurrentViewport().height;
-        const float ui_view_width = ui_view_height * _ui_camera.GetAspectRatio();
-        const auto ui_view_extents = Vector2{ui_view_width, ui_view_height};
-        const auto ui_view_half_extents = ui_view_extents * 0.5f;
-        auto ui_leftBottom = Vector2{-ui_view_half_extents.x, ui_view_half_extents.y};
-        auto ui_rightTop = Vector2{ui_view_half_extents.x, -ui_view_half_extents.y};
-        auto ui_nearFar = Vector2{0.0f, 1.0f};
-        auto ui_cam_pos = ui_view_half_extents;
-        _ui_camera.position = ui_cam_pos;
-        _ui_camera.orientation_degrees = 0.0f;
-        _ui_camera.SetupView(ui_leftBottom, ui_rightTop, ui_nearFar, _renderer.GetCurrentViewportAspectRatio());
-        _renderer.SetCamera(_ui_camera);
+    //2D View / HUD
+    const float ui_view_height = _renderer.GetCurrentViewport().height;
+    const float ui_view_width = ui_view_height * _ui_camera.GetAspectRatio();
+    const auto ui_view_extents = Vector2{ui_view_width, ui_view_height};
+    const auto ui_view_half_extents = ui_view_extents * 0.5f;
+    auto ui_leftBottom = Vector2{-ui_view_half_extents.x, ui_view_half_extents.y};
+    auto ui_rightTop = Vector2{ui_view_half_extents.x, -ui_view_half_extents.y};
+    auto ui_nearFar = Vector2{0.0f, 1.0f};
+    auto ui_cam_pos = ui_view_half_extents;
+    _ui_camera.position = ui_cam_pos;
+    _ui_camera.orientation_degrees = 0.0f;
+    _ui_camera.SetupView(ui_leftBottom, ui_rightTop, ui_nearFar, _renderer.GetCurrentViewportAspectRatio());
+    _renderer.SetCamera(_ui_camera);
 
-        for(const auto* cur_widget : _active_widgets) {
-            cur_widget->Render();
-        }
+    for(const auto* cur_widget : _active_widgets) {
+        cur_widget->Render();
+    }
 #if defined(RENDER_DEBUG)
-        for(const auto* cur_widget : _active_widgets) {
-            cur_widget->DebugRender();
-        }
+    for(const auto* cur_widget : _active_widgets) {
+        cur_widget->DebugRender();
+    }
 #endif
-
 }
 
 void UISystem::EndFrame() {

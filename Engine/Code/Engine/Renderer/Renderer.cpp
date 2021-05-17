@@ -88,15 +88,14 @@ ComputeJob::~ComputeJob() noexcept {
 Renderer::Renderer(JobSystem& jobSystem, FileLogger& fileLogger, Config& theConfig) noexcept
 : _jobSystem(jobSystem)
 , _fileLogger(fileLogger)
-, _theConfig(theConfig)
-{
+, _theConfig(theConfig) {
     namespace FS = std::filesystem;
     if(FS::path path{"Engine/Config/options.config"}; FS::exists(path)) {
         if(!_theConfig.AppendFromFile(path)) {
             DebuggerPrintf("Could not load existing configuration from \"%s\"\n", path.c_str());
         }
     }
-    _current_outputMode = [this]()->RHIOutputMode {
+    _current_outputMode = [this]() -> RHIOutputMode {
         auto windowed = true;
         if(_theConfig.HasKey("windowed")) {
             _theConfig.GetValue("windowed", windowed);
@@ -108,8 +107,8 @@ Renderer::Renderer(JobSystem& jobSystem, FileLogger& fileLogger, Config& theConf
             return RHIOutputMode::Borderless_Fullscreen;
         }
     }(); //IIIL
-    _window_dimensions = [this]()->IntVector2 {
-        const auto width = [this]()->int {
+    _window_dimensions = [this]() -> IntVector2 {
+        const auto width = [this]() -> int {
             auto value = 0;
             if(_theConfig.HasKey("width")) {
                 _theConfig.GetValue("width", value);
@@ -119,7 +118,7 @@ Renderer::Renderer(JobSystem& jobSystem, FileLogger& fileLogger, Config& theConf
             }
             return value;
         }(); //IIIL
-        const auto height = [this]()->int {
+        const auto height = [this]() -> int {
             auto value = 0;
             if(_theConfig.HasKey("height")) {
                 _theConfig.GetValue("height", value);
@@ -243,10 +242,8 @@ bool Renderer::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         bool losing_focus = wp == FALSE;
         bool gaining_focus = wp == TRUE;
         if(losing_focus) {
-            
         }
         if(gaining_focus) {
-            
         }
         return false;
     }
@@ -254,11 +251,11 @@ bool Renderer::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         WPARAM wp = msg.wparam;
         auto active_type = LOWORD(wp);
         switch(active_type) {
-        case WA_ACTIVE: /* FALLTHROUGH */
+        case WA_ACTIVE:      /* FALLTHROUGH */
         case WA_CLICKACTIVE: //Gained Focus
-            return false; //App needs to respond
-        case WA_INACTIVE: //Lost focus
-            return false; //App needs to respond
+            return false;    //App needs to respond
+        case WA_INACTIVE:    //Lost focus
+            return false;    //App needs to respond
         default:
             return false; //App needs to respond
         }
@@ -359,7 +356,6 @@ void Renderer::Initialize() {
     SetSampler(GetSampler("__default"));
     SetRenderTarget(_current_target, _current_depthstencil);
     _current_material = nullptr; //User must explicitly set to avoid defaulting to full lighting material.
-
 }
 
 void Renderer::CreateDefaultConstantBuffers() noexcept {
@@ -1281,7 +1277,7 @@ void Renderer::DrawAABB2(const AABB2& bounds, const Rgba& edgeColor, const Rgba&
     Vertex3D(Vector3(lb_inner, 0.0f), fillColor),
     Vertex3D(Vector3(rb_inner, 0.0f), fillColor),
     };
-
+    // clang-format off
     const std::vector<unsigned int> ibo{
     8, 9, 10,
     8, 10, 11,
@@ -1294,6 +1290,7 @@ void Renderer::DrawAABB2(const AABB2& bounds, const Rgba& edgeColor, const Rgba&
     1, 6, 7,
     1, 7, 2,
     };
+    // clang-format on
 
     if(edgeHalfExtents == Vector2::ZERO) {
         DrawIndexed(PrimitiveType::Lines, vbo, ibo, ibo.size() - 6, 6);
@@ -1709,12 +1706,12 @@ void Renderer::FulfillScreenshotRequest() noexcept {
     if(_screenshot && !_last_screenshot_location.empty()) {
         //TODO: Make this a job so game doesn't lag
         //const auto cb = [this](void*) {
-            auto img = GetFullscreenTextureAsImage();
-            if(!img.Export(_screenshot)) {
-                const auto err = "Could not export to \"" + _screenshot.operator std::string() + "\".\n";
-                _fileLogger.LogAndFlush(err);
-            }
-            _screenshot.clear();
+        auto img = GetFullscreenTextureAsImage();
+        if(!img.Export(_screenshot)) {
+            const auto err = "Could not export to \"" + _screenshot.operator std::string() + "\".\n";
+            _fileLogger.LogAndFlush(err);
+        }
+        _screenshot.clear();
         //};
         //_jobSystem.Run(JobType::Generic, cb, nullptr);
     }
@@ -3020,7 +3017,6 @@ std::string Renderer::GetWindowTitle() const noexcept {
     return std::string{};
 }
 
-
 void Renderer::RegisterDepthStencilState(const std::string& name, std::unique_ptr<DepthStencilState> depthstencil) noexcept {
     if(depthstencil == nullptr) {
         return;
@@ -3615,7 +3611,7 @@ void Renderer::RegisterMaterialsFromFolder(std::filesystem::path folderpath, boo
 
 void Renderer::ReloadMaterials() noexcept {
     _textures.clear();
-    
+
     CreateAndRegisterDefaultTextures();
 
     _materials.clear();
@@ -3627,7 +3623,6 @@ void Renderer::ReloadMaterials() noexcept {
     CreateAndRegisterDefaultFonts();
     RegisterMaterialsFromFolder(FileUtils::GetKnownFolderPath(FileUtils::KnownPathID::EngineFonts));
     RegisterMaterialsFromFolder(FileUtils::GetKnownFolderPath(FileUtils::KnownPathID::GameFonts));
-
 }
 
 void Renderer::RegisterShaderProgram(const std::string& name, std::unique_ptr<ShaderProgram> sp) noexcept {
@@ -4092,7 +4087,7 @@ void Renderer::DrawCube(const Vector3& position /*= Vector3::ZERO*/, const Vecto
     const Vector3 v_rub = (position + right + up + back);
     const Vector3 v_rdf = (position + right + down + forward);
     const Vector3 v_rdb = (position + right + down + back);
-
+    // clang-format off
     std::vector<Vertex3D> vbo
     {
         {v_rdf, color}, {v_ldf, color}, {v_luf, color}, {v_ruf, color}, //Front
@@ -4110,6 +4105,7 @@ void Renderer::DrawCube(const Vector3& position /*= Vector3::ZERO*/, const Vecto
         16, 17, 18, 16, 18, 19, //Top
         20, 21, 22, 20, 22, 23, //Bottom
     };
+    // clang-format on
     DrawIndexed(PrimitiveType::Triangles, vbo, ibo);
 }
 
@@ -4604,7 +4600,6 @@ void Renderer::DisableDepthWrite() noexcept {
     GetDevice()->GetDxDevice()->CreateDepthStencilState(&desc, &state);
     dx_dc->OMSetDepthStencilState(state.Get(), stencil_value);
 }
-
 
 void Renderer::SetWireframeRaster(CullMode cullmode /* = CullMode::Back */) noexcept {
     switch(cullmode) {

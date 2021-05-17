@@ -21,7 +21,9 @@ public:
 
     [[nodiscard]] bool is_attached(const RigidBody* const body) const noexcept;
     void detach_all() noexcept;
+
 protected:
     std::vector<RigidBody*> _observers{};
+
 private:
 };

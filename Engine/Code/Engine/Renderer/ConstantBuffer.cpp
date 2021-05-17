@@ -6,10 +6,9 @@
 
 #include <sstream>
 
-
 #if defined(_MSC_VER)
-#pragma warning (push)
-#pragma warning (disable : 26812) // The enum type 'xxx' is unscoped. Prefer 'enum class' over 'enum'.
+    #pragma warning(push)
+    #pragma warning(disable : 26812) // The enum type 'xxx' is unscoped. Prefer 'enum class' over 'enum'.
 #endif
 
 ConstantBuffer::ConstantBuffer(const RHIDevice& owner, const buffer_t& buffer, const std::size_t& buffer_size, const BufferUsage& usage, const BufferBindUsage& bindUsage) noexcept
@@ -60,6 +59,5 @@ void ConstantBuffer::Update(RHIDeviceContext& context, const buffer_t& buffer) n
 }
 
 #if defined(_MSC_VER)
-#pragma warning (pop)
+    #pragma warning(pop)
 #endif
-

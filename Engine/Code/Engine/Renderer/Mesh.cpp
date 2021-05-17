@@ -5,8 +5,8 @@
 #include "Engine/Renderer/Shader.hpp"
 #include "Engine/Renderer/ShaderProgram.hpp"
 
-#include <vector>
 #include <type_traits>
+#include <vector>
 
 Mesh::Builder::Builder(const std::vector<Vertex3D>& verts, const std::vector<unsigned int>& indcs) noexcept
 : verticies{verts}
@@ -84,23 +84,20 @@ std::size_t Mesh::Builder::AddIndicies(const Primitive& type) noexcept {
     case Primitive::Point:
         indicies.push_back(static_cast<unsigned int>(verticies.size()) - 1u);
         break;
-    case Primitive::Line:
-    {
+    case Primitive::Line: {
         const auto v_s = verticies.size();
         indicies.push_back(static_cast<unsigned int>(v_s) - 2);
         indicies.push_back(static_cast<unsigned int>(v_s) - 1);
         break;
     }
-    case Primitive::Triangle:
-    {
+    case Primitive::Triangle: {
         const auto v_s = verticies.size();
         indicies.push_back(static_cast<unsigned int>(v_s) - 3u);
         indicies.push_back(static_cast<unsigned int>(v_s) - 2u);
         indicies.push_back(static_cast<unsigned int>(v_s) - 1u);
         break;
     }
-    case Primitive::TriangleStrip:
-    {
+    case Primitive::TriangleStrip: {
         const auto v_s = verticies.size();
         indicies.push_back(static_cast<unsigned int>(v_s) - 4u);
         indicies.push_back(static_cast<unsigned int>(v_s) - 3u);
@@ -108,8 +105,7 @@ std::size_t Mesh::Builder::AddIndicies(const Primitive& type) noexcept {
         indicies.push_back(static_cast<unsigned int>(v_s) - 1u);
         break;
     }
-    case Primitive::Quad:
-    {
+    case Primitive::Quad: {
         const auto v_s = verticies.size();
         indicies.push_back(static_cast<unsigned int>(v_s) - 4u);
         indicies.push_back(static_cast<unsigned int>(v_s) - 3u);

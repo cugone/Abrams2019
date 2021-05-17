@@ -3,10 +3,9 @@
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/StringUtils.hpp"
 
-
 #if defined(_MSC_VER)
-#pragma warning (push)
-#pragma warning (disable : 26812) // The enum type 'xxx' is unscoped. Prefer 'enum class' over 'enum'.
+    #pragma warning(push)
+    #pragma warning(disable : 26812) // The enum type 'xxx' is unscoped. Prefer 'enum class' over 'enum'.
 #endif
 
 constexpr const bitfield8_t MIP_MASK_BITS = 0b0000'0001;
@@ -895,7 +894,6 @@ PipelineStage PipelineStageFromString(std::string stage) noexcept {
         return PipelineStage::None;
 }
 
-
 #if defined(_MSC_VER)
-#pragma warning (pop)
+    #pragma warning(pop)
 #endif

@@ -8,8 +8,7 @@
 OrthographicCameraController::OrthographicCameraController(Renderer* renderer, InputSystem* inputSystem, float aspectRatio /*= 1.777778f*/) noexcept
 : m_renderer(renderer)
 , m_inputSystem(inputSystem)
-, m_aspectRatio(aspectRatio)
-{
+, m_aspectRatio(aspectRatio) {
     /* DO NOTHING */
 }
 

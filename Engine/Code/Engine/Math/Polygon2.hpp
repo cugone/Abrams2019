@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Engine/Core/ErrorWarningAssert.hpp"
-
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/LineSegment2.hpp"
 #include "Engine/Math/MathUtils.hpp"

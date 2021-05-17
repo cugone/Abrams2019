@@ -2,7 +2,6 @@
 
 #include "Engine/Core/Vertex3D.hpp"
 #include "Engine/RHI/RHITypes.hpp"
-
 #include "Engine/Renderer/Renderer.hpp"
 
 #include <vector>
@@ -21,10 +20,10 @@ public:
         // clang-format off
         enum class Primitive {
             Point
-            ,Line
-            ,Triangle
-            ,TriangleStrip
-            ,Quad
+            , Line
+            , Triangle
+            , TriangleStrip
+            , Quad
         };
         // clang-format on
         Builder() = default;
@@ -53,6 +52,7 @@ public:
         std::size_t AddVertex(const Vector3& position) noexcept;
         std::size_t AddVertex(const Vector2& position) noexcept;
         std::size_t AddIndicies(const Primitive& type) noexcept;
+
     private:
         Vertex3D _vertex_prototype{};
         Renderer::DrawInstruction _current_draw_instruction{};
@@ -63,5 +63,6 @@ public:
 
 protected:
     Mesh::Builder m_builder{};
+
 private:
 };

@@ -38,7 +38,8 @@ private:
 public:
     class EngineCallback : public IXAudio2EngineCallback {
     public:
-        virtual ~EngineCallback() {}
+        virtual ~EngineCallback() {
+        }
         virtual void STDMETHODCALLTYPE OnProcessingPassStart() override{};
         virtual void STDMETHODCALLTYPE OnProcessingPassEnd() override{};
         virtual void STDMETHODCALLTYPE OnCriticalError(HRESULT error) override;
@@ -68,12 +69,14 @@ public:
         TimeUtils::FPSeconds loopBegin{};
         TimeUtils::FPSeconds loopEnd{};
     };
+
 private:
     class Channel {
     public:
         class VoiceCallback : public IXAudio2VoiceCallback {
         public:
-            virtual ~VoiceCallback() {}
+            virtual ~VoiceCallback() {
+            }
             virtual void STDMETHODCALLTYPE OnVoiceProcessingPassStart(uint32_t /*bytesRequired*/) override{};
             virtual void STDMETHODCALLTYPE OnVoiceProcessingPassEnd() override{};
             virtual void STDMETHODCALLTYPE OnStreamEnd() override{};
@@ -103,19 +106,19 @@ private:
         ~Channel() noexcept;
         void Play(Sound& snd) noexcept;
         void Stop() noexcept;
-        
+
         void SetStopWhenFinishedLooping(bool value);
 
         void SetLoopCount(int count) noexcept;
         [[nodiscard]] uint32_t GetLoopCount() const noexcept;
-        
+
         void SetLoopBegin(TimeUtils::FPSeconds start);
         void SetLoopEnd(TimeUtils::FPSeconds end);
         void SetLoopRange(TimeUtils::FPSeconds start, TimeUtils::FPSeconds end);
-        
+
         [[nodiscard]] float GetVolume() const noexcept;
         void SetVolume(float newVolume) noexcept;
-        
+
         [[nodiscard]] float GetFrequency() const noexcept;
         void SetFrequency(float newFrequency) noexcept;
 

@@ -1,7 +1,6 @@
 #include "Engine/Core/Rgba.hpp"
 
 #include "Engine/Core/Argb.hpp"
-
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Math/MathUtils.hpp"
 
@@ -90,19 +89,17 @@ std::ostream& operator<<(std::ostream& os, const Rgba& rhs) noexcept {
 }
 
 Rgba::Rgba(const Argb& argb) noexcept
-    : r{argb.r}
-    , g{argb.g}
-    , b{argb.b}
-    , a{argb.a}
-{
+: r{argb.r}
+, g{argb.g}
+, b{argb.b}
+, a{argb.a} {
     /* DO NOTHING */
 }
 Rgba::Rgba(Argb&& argb) noexcept
 : r{argb.r}
 , g{argb.g}
 , b{argb.b}
-, a{argb.a}
-{
+, a{argb.a} {
     argb.SetFromRawValue(std::uint32_t{0u});
 }
 

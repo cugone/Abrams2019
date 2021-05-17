@@ -13,6 +13,7 @@ public:
     static const AABB2 ZERO_TO_ONE;
     static const AABB2 NEG_ONE_TO_ONE;
 
+    // clang-format off
     AABB2() = default;
     AABB2(const AABB2& rhs) = default;
     AABB2(AABB2&& rhs) = default;
@@ -25,6 +26,7 @@ public:
     explicit AABB2(const Vector4& minsMaxs) noexcept;
     AABB2(const Vector2& center, float radiusX, float radiusY) noexcept;
     explicit AABB2(const OBB2& obb) noexcept; //Implicit conversion from OBB2
+    // clang-format on
 
     void StretchToIncludePoint(const Vector2& point) noexcept;
     void ScalePadding(float scaleX, float scaleY) noexcept;
