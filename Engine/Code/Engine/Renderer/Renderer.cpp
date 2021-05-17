@@ -1230,15 +1230,15 @@ void Renderer::DrawFilledCircle2D(const Disc2& circle, const Rgba& color /*= Rgb
 }
 
 void Renderer::DrawFilledCircle2D(const Vector2& center, float radius, const Rgba& color /*= Rgba::WHITE*/) noexcept {
-    auto num_sides = std::size_t{65};
-    auto size = num_sides + 1u;
+    const auto num_sides = std::size_t{65};
+    const auto size = num_sides + 1u;
     std::vector<Vector3> verts{};
     verts.reserve(size);
-    float anglePerVertex = 360.0f / static_cast<float>(num_sides);
+    const auto anglePerVertex = 360.0f / static_cast<float>(num_sides);
     for(float degrees = 0.0f; degrees < 360.0f; degrees += anglePerVertex) {
-        float radians = MathUtils::ConvertDegreesToRadians(degrees);
-        float pX = radius * std::cos(radians) + center.x;
-        float pY = radius * std::sin(radians) + center.y;
+        const auto radians = MathUtils::ConvertDegreesToRadians(degrees);
+        const auto pX = radius * std::cos(radians) + center.x;
+        const auto pY = radius * std::sin(radians) + center.y;
         verts.emplace_back(Vector2(pX, pY), 0.0f);
     }
 
@@ -1249,7 +1249,7 @@ void Renderer::DrawFilledCircle2D(const Vector2& center, float radius, const Rgb
     }
 
     std::vector<unsigned int> ibo(num_sides * 3);
-    unsigned int j = 1;
+    unsigned int j = 1u;
     for(std::size_t i = 1; i < ibo.size(); i += 3) {
         ibo[i] = (j++);
         ibo[i + 1] = (j);
