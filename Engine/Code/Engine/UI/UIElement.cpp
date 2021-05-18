@@ -9,8 +9,6 @@
 
 #include <sstream>
 
-UINullPanelSlot UIElement::s_NullPanelSlot = UINullPanelSlot{};
-
 UIElement::UIElement(UIPanel* parent /*= nullptr*/) {
     if(parent) {
         _slot = parent->AddChild(this);

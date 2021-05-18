@@ -142,7 +142,7 @@ private:
     bool _hidden = false;
     bool _enabled = true;
 
-    static UINullPanelSlot s_NullPanelSlot;
+    static inline UINullPanelSlot s_NullPanelSlot{};
 
     friend class UIPanel;
     friend struct UIPanelSlot;
