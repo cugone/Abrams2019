@@ -123,8 +123,8 @@ protected:
     [[nodiscard]] Vector2 GetBottomRight() const noexcept;
 
     std::string _name{};
-    Rgba _fill_color = Rgba::NoAlpha;
-    Rgba _edge_color = Rgba::White;
+    Rgba _fill_color{Rgba::NoAlpha};
+    Rgba _edge_color{Rgba::White};
 
     AABB2 _bounds{};
 
@@ -137,12 +137,12 @@ private:
     Vector4 _position{};
     Vector2 _pivot{};
 
-    Rgba _pivot_color = Rgba::Red;
-    UIPanelSlot* _slot = &s_NullPanelSlot;
-    float _orientationRadians = 0.0f;
-    UIInvalidateElementReason _dirty_reason = UIInvalidateElementReason::None;
-    bool _hidden = false;
-    bool _enabled = true;
+    Rgba _pivot_color{Rgba::Red};
+    UIPanelSlot* _slot{&s_NullPanelSlot};
+    float _orientationRadians{0.0f};
+    UIInvalidateElementReason _dirty_reason{UIInvalidateElementReason::None};
+    bool _hidden{false};
+    bool _enabled{true};
 
     friend class UIPanel;
     friend struct UIPanelSlot;
