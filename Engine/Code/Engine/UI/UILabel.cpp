@@ -125,9 +125,10 @@ bool UILabel::LoadFromXml(const XMLElement& elem) noexcept {
     _text = DataUtils::ParseXmlAttribute(elem, "value", "TEXT");
 
     if(auto* xml_slot = elem.FirstChildElement("slot")) {
-        auto* parent = GetParent();
-        parent->RemoveChild(this);
-        parent->AddChildFromXml(*xml_slot, this);
+        if(auto* parent = GetParent()) {
+            parent->AddChildFromXml(*xml_slot, this);
+            parent->RemoveChild(this);
+        }
     }
     return true;
 }
