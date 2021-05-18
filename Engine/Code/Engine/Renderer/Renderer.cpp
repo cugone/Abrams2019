@@ -2659,7 +2659,7 @@ std::unique_ptr<Material> Renderer::CreateMaterialFromFont(KerningFont* font) no
         case 3: material_stream << "\t\t<specular src=" << fullpath << " />\n"; break;
         case 4: material_stream << "\t\t<occlusion src=" << fullpath << " />\n"; break;
         case 5: material_stream << "\t\t<emissive src=" << fullpath << " />\n"; break;
-        default: /* DO NOTHING */;
+        default: break;
         }
         if(i >= 6 && has_lots_of_textures) {
             material_stream << "\t\t<texture index=\"" << (i - 6) << "\" src=" << fullpath << " />\n";

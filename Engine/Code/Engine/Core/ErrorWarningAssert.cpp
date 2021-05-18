@@ -152,7 +152,7 @@ int SystemDialogue_YesNoCancel(const std::string& messageTitle, const std::strin
             errorMessage = "Unspecified fatal error";
     }
 
-    const char* fileName = std::filesystem::path(filePath ? filePath : "").filename().string().c_str();
+    std::string fileName = std::filesystem::path(filePath ? filePath : "").filename().string();
     std::string appName = "Unnamed Application";
     std::string fullMessageTitle = appName + " :: Error";
     std::string fullMessageText = errorMessage;
@@ -165,14 +165,14 @@ int SystemDialogue_YesNoCancel(const std::string& messageTitle, const std::strin
     fullMessageText += "\n---------- Debugging Details Follow ----------\n";
     if(conditionText) {
         fullMessageText += StringUtils::Stringf("\nThis error was triggered by a run-time condition check:\n  %s\n  from %s(), line %i in %s\n",
-                                                conditionText, functionName, lineNum, fileName);
+                                                conditionText, functionName, lineNum, fileName.c_str());
     } else {
         fullMessageText += StringUtils::Stringf("\nThis was an unconditional error triggered by reaching\n line %i of %s, in %s()\n",
-                                                lineNum, fileName, functionName);
+                                                lineNum, fileName.c_str(), functionName);
     }
 
     DebuggerPrintf("\n==============================================================================\n");
-    DebuggerPrintf("RUN-TIME FATAL ERROR on line %i of %s, in %s()\n", lineNum, fileName, functionName);
+    DebuggerPrintf("RUN-TIME FATAL ERROR on line %i of %s, in %s()\n", lineNum, fileName.c_str(), functionName);
     DebuggerPrintf("%s(%d): %s\n", filePath, lineNum, errorMessage.c_str()); // Use this specific format so Visual Studio users can double-click to jump to file-and-line of error
     DebuggerPrintf("==============================================================================\n\n");
 
@@ -201,7 +201,7 @@ void RecoverableWarning(const char* filePath, const char* functionName, int line
             errorMessage = "Unspecified warning";
     }
 
-    const char* fileName = std::filesystem::path(filePath ? filePath : "").filename().string().c_str();
+    std::string fileName = std::filesystem::path(filePath ? filePath : "").filename().string();
     std::string appName = "Unnamed Application";
     std::string fullMessageTitle = appName + " :: Warning";
     std::string fullMessageText = errorMessage;
@@ -216,14 +216,14 @@ void RecoverableWarning(const char* filePath, const char* functionName, int line
     fullMessageText += "\n---------- Debugging Details Follow ----------\n";
     if(conditionText) {
         fullMessageText += StringUtils::Stringf("\nThis warning was triggered by a run-time condition check:\n  %s\n  from %s(), line %i in %s\n",
-                                                conditionText, functionName, lineNum, fileName);
+                                                conditionText, functionName, lineNum, fileName.c_str());
     } else {
         fullMessageText += StringUtils::Stringf("\nThis was an unconditional warning triggered by reaching\n line %i of %s, in %s()\n",
-                                                lineNum, fileName, functionName);
+                                                lineNum, fileName.c_str(), functionName);
     }
 
     DebuggerPrintf("\n------------------------------------------------------------------------------\n");
-    DebuggerPrintf("RUN-TIME RECOVERABLE WARNING on line %i of %s, in %s()\n", lineNum, fileName, functionName);
+    DebuggerPrintf("RUN-TIME RECOVERABLE WARNING on line %i of %s, in %s()\n", lineNum, fileName.c_str(), functionName);
     DebuggerPrintf("%s(%d): %s\n", filePath, lineNum, errorMessage.c_str()); // Use this specific format so Visual Studio users can double-click to jump to file-and-line of error
     DebuggerPrintf("------------------------------------------------------------------------------\n\n");
 

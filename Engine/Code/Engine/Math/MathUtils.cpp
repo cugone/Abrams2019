@@ -181,7 +181,7 @@ bool IsPercentChance(double probability) noexcept {
 }
 
 double nCr(int n, int k) noexcept {
-    return 1 / ((n + 1) * std::beta(n - k + 1, k + 1));
+    return 1.0 / ((n + 1.0) * std::beta(static_cast<double>(n) - k + 1.0, k + 1.0));
 }
 
 double Combination(int n, int k) noexcept {
