@@ -132,6 +132,8 @@ private:
     [[nodiscard]] float GetParentOrientationRadians() const;
     [[nodiscard]] float GetParentOrientationDegrees() const;
 
+    static inline UINullPanelSlot s_NullPanelSlot{};
+
     Vector4 _position{};
     Vector2 _pivot{};
 
@@ -141,8 +143,6 @@ private:
     UIInvalidateElementReason _dirty_reason = UIInvalidateElementReason::None;
     bool _hidden = false;
     bool _enabled = true;
-
-    static inline UINullPanelSlot s_NullPanelSlot{};
 
     friend class UIPanel;
     friend struct UIPanelSlot;
