@@ -129,6 +129,9 @@ protected:
     AABB2 _bounds{};
 
 private:
+    [[nodiscard]] float GetParentOrientationRadians() const;
+    [[nodiscard]] float GetParentOrientationDegrees() const;
+
     Vector4 _position{};
     Vector2 _pivot{};
 
@@ -139,11 +142,9 @@ private:
     bool _hidden = false;
     bool _enabled = true;
 
-    [[nodiscard]] float GetParentOrientationRadians() const;
-    [[nodiscard]] float GetParentOrientationDegrees() const;
+    static UINullPanelSlot s_NullPanelSlot;
 
     friend class UIPanel;
     friend struct UIPanelSlot;
-    static UINullPanelSlot s_NullPanelSlot;
 };
 
