@@ -203,6 +203,9 @@ public:
     void Render() const override;
     void EndFrame() override;
 
+    void BeginRender(Texture* color_target = nullptr, Texture* depthstencil_target = nullptr) noexcept;
+    void BeginHUDRender(Camera2D& ui_camera, const Vector2& camera_position, float window_height) noexcept;
+
     [[nodiscard]] TimeUtils::FPSeconds GetGameFrameTime() const noexcept;
     [[nodiscard]] TimeUtils::FPSeconds GetSystemFrameTime() const noexcept;
     [[nodiscard]] TimeUtils::FPSeconds GetGameTime() const noexcept;

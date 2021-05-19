@@ -524,6 +524,28 @@ void Renderer::EndFrame() {
     FulfillScreenshotRequest();
 }
 
+void Renderer::BeginRender(Texture* color_target /*= nullptr*/, Texture* depthstencil_target /*= nullptr*/) noexcept {
+    ResetModelViewProjection();
+    SetRenderTarget(color_target, depthstencil_target);
+    ClearColor(Rgba::Black);
+    ClearDepthStencilBuffer();
+    
+    SetViewportAsPercent();
+}
+
+void Renderer::BeginHUDRender(Camera2D& ui_camera, const Vector2& camera_position, float window_height) noexcept {
+    const float ui_view_height = window_height;
+    const float ui_view_width = ui_view_height * ui_camera.GetAspectRatio();
+    const auto ui_view_extents = Vector2{ui_view_width, ui_view_height};
+    const auto ui_view_half_extents = ui_view_extents * 0.5f;
+    const auto ui_leftBottom = Vector2{-ui_view_half_extents.x, ui_view_half_extents.y};
+    const auto ui_rightTop = Vector2{ui_view_half_extents.x, -ui_view_half_extents.y};
+    const auto ui_nearFar = Vector2{0.0f, 1.0f};
+    ui_camera.SetPosition(camera_position);
+    ui_camera.SetupView(ui_leftBottom, ui_rightTop, ui_nearFar, MathUtils::M_16_BY_9_RATIO);
+    SetCamera(ui_camera);
+}
+
 TimeUtils::FPSeconds Renderer::GetGameFrameTime() const noexcept {
     return TimeUtils::FPSeconds{_time_data.game_frame_time};
 }
