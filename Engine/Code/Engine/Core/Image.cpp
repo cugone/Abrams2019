@@ -21,10 +21,12 @@
 Image::Image(std::filesystem::path filepath) noexcept
 : m_filepath(filepath) {
     namespace FS = std::filesystem;
-    if(!FS::exists(filepath)) {
-        const auto ss = std::string{"Failed to load image. Could not find file: "} + filepath.string() + ".\n";
-        ERROR_AND_DIE(ss.c_str());
+
+    {
+        const auto error_msg = std::string{"Failed to load image. Could not find file: "} + filepath.string() + ".\n";
+        GUARANTEE_OR_DIE(FS::exists(filepath), error_msg.c_str());
     }
+
     filepath = FS::canonical(filepath);
     filepath.make_preferred();
     if(const auto& buf = FileUtils::ReadBinaryBufferFromFile(filepath); buf.has_value()) {

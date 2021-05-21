@@ -109,9 +109,7 @@ bool Shader::LoadFromXml(const XMLElement& element) noexcept {
     FS::path p;
     {
         const std::string sp_src = DataUtils::ParseXmlAttribute(*xml_SP, "src", "");
-        if(sp_src.empty()) {
-            ERROR_AND_DIE("shaderprogram element has empty src attribute.");
-        }
+        GUARANTEE_OR_DIE(!sp_src.empty(), "shaderprogram element has empty src attribute.");
         p = FS::path(sp_src);
     }
     if(!StringUtils::StartsWith(p.string(), "__")) {
@@ -128,19 +126,16 @@ bool Shader::LoadFromXml(const XMLElement& element) noexcept {
         const bool is_cso = p.has_extension() && StringUtils::ToLowerCase(p.extension().string()) == ".cso";
         const bool is_valid_extension = is_hlsl || is_cso;
         GUARANTEE_OR_DIE(is_valid_extension, "ShaderProgram source path must be of type '.hlsl' or '.cso'");
-        if(StringUtils::StartsWith(p.string(), "__")) {
-            const auto ss = std::string{"Intrinsic ShaderProgram referenced in Shader file \""} + _name + "\" does not already exist.";
-            ERROR_AND_DIE(ss.c_str());
-        } else {
-            if(is_hlsl) {
-                const auto& children = DataUtils::GetChildElementNames(*xml_SP);
-                if(std::find(std::begin(children), std::end(children), "pipelinestages") == std::end(children)) {
-                    const auto ss = std::string{"User-defined ShaderProgram referenced in Shader file \""} + _name + "\" must declare pipelinestages in use.";
-                    ERROR_AND_DIE(ss.c_str());
-                }
-            }
+        {
+            const auto error_msg = std::string{"Intrinsic ShaderProgram referenced in Shader file \""} + _name + "\" does not already exist.";
+            GUARANTEE_OR_DIE(!StringUtils::StartsWith(p.string(), "__"), error_msg.c_str());
         }
         if(is_hlsl) {
+            const auto& children = DataUtils::GetChildElementNames(*xml_SP);
+            {
+                const auto error_msg = std::string{"User-defined ShaderProgram referenced in Shader file \""} + _name + "\" must declare pipelinestages in use.";
+                GUARANTEE_OR_DIE(std::find(std::begin(children), std::end(children), "pipelinestages") != std::end(children), error_msg.c_str());
+            }
             if(auto xml_pipelinestages = xml_SP->FirstChildElement("pipelinestages")) {
                 DataUtils::ValidateXmlElement(*xml_pipelinestages, "pipelinestages", "", "", "vertex,hull,domain,geometry,pixel,compute", "");
                 _renderer.CreateAndRegisterShaderProgramFromHlslFile(p.string(), ParseEntrypointList(*xml_pipelinestages), ParseTargets(*xml_pipelinestages));
@@ -315,9 +310,9 @@ void Shader::ValidatePipelineStages(const PipelineStage& targets) noexcept {
         bool valid_gs = has_gs;
         result = valid_cs || valid_gs || valid_vsps || valid_hsds;
     }
-    if(!result) {
-        const auto ss = std::string{"Error in shader file: \""} + _name + "\": Pipeline stages must include at least compute stage, geometry stage, or both vertex and pixel stages, or both hull and domain stages.";
-        ERROR_AND_DIE(ss.c_str());
+    {
+        const auto error_msg = std::string{"Error in shader file: \""} + _name + "\": Pipeline stages must include at least compute stage, geometry stage, or both vertex and pixel stages, or both hull and domain stages.";
+        GUARANTEE_OR_DIE(result, error_msg.c_str());
     }
 }
 

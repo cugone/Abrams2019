@@ -24,9 +24,7 @@ VertexBuffer::VertexBuffer(const RHIDevice& owner, const buffer_t& buffer, const
 
     _dx_buffer = nullptr;
     HRESULT hr = owner.GetDxDevice()->CreateBuffer(&buffer_desc, &init_data, _dx_buffer.GetAddressOf());
-    if(FAILED(hr)) {
-        ERROR_AND_DIE("VertexBuffer failed to create.");
-    }
+    GUARANTEE_OR_DIE(SUCCEEDED(hr), "VertexBuffer failed to create.");
 }
 
 VertexBuffer::~VertexBuffer() noexcept {

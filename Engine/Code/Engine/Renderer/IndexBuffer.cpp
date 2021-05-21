@@ -24,10 +24,7 @@ IndexBuffer::IndexBuffer(const RHIDevice& owner, const buffer_t& buffer, const B
 
     _dx_buffer = nullptr;
     HRESULT hr = owner.GetDxDevice()->CreateBuffer(&buffer_desc, &init_data, _dx_buffer.GetAddressOf());
-    bool succeeded = SUCCEEDED(hr);
-    if(!succeeded) {
-        ERROR_AND_DIE("IndexBuffer failed to create.");
-    }
+    GUARANTEE_OR_DIE(SUCCEEDED(hr), "IndexBuffer failed to create.");
 }
 
 IndexBuffer::~IndexBuffer() noexcept {

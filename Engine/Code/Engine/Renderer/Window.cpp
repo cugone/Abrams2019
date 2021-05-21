@@ -154,13 +154,12 @@ IntVector2 Window::GetPosition() const noexcept {
 IntVector2 Window::GetDesktopResolution() noexcept {
     const auto desktop = ::GetDesktopWindow();
     RECT desktop_rect{};
-    if(::GetClientRect(desktop, &desktop_rect)) {
-        return IntVector2{desktop_rect.right - desktop_rect.left, desktop_rect.bottom - desktop_rect.top};
-    } else {
+    const auto error_msg = []() {
         const auto err = ::GetLastError();
-        const auto err_str = StringUtils::FormatWindowsMessage(err);
-        ERROR_AND_DIE(err_str.c_str());
-    }
+        return StringUtils::FormatWindowsMessage(err);
+    };
+    GUARANTEE_OR_DIE(!::GetClientRect(desktop, &desktop_rect), error_msg().c_str());
+    return IntVector2{desktop_rect.right - desktop_rect.left, desktop_rect.bottom - desktop_rect.top};
 }
 
 void Window::SetDimensionsAndPosition(const IntVector2& new_position, const IntVector2& new_size) noexcept {

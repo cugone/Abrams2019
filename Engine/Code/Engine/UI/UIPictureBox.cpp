@@ -13,7 +13,7 @@ UIPictureBox::UIPictureBox(UIPanel* parent /*= nullptr*/)
 }
 UIPictureBox::UIPictureBox(const XMLElement& elem, UIPanel* parent /*= nullptr*/)
 : UIElement(parent) {
-    GUARANTEE_OR_DIE(!LoadFromXml(elem), "PictureBox constructor failed to load.");
+    GUARANTEE_OR_DIE(LoadFromXml(elem), "PictureBox constructor failed to load.");
 }
 
 void UIPictureBox::SetImage(std::unique_ptr<AnimatedSprite> sprite) noexcept {

@@ -538,9 +538,9 @@ std::unique_ptr<ShaderProgram> RHIDevice::CreateShaderProgramFromCsoBinaryBuffer
     if(uses_vs_stage) {
         ID3D11VertexShader* vs = nullptr;
         auto hr = _dx_device->CreateVertexShader(compiledShader.data(), compiledShader.size(), nullptr, &vs);
-        if(FAILED(hr) || !vs) {
-            const auto error = StringUtils::FormatWindowsMessage(hr);
-            ERROR_AND_DIE(error);
+        {
+            const auto error_msg = StringUtils::FormatWindowsMessage(hr);
+            GUARANTEE_OR_DIE(SUCCEEDED(hr) && vs, error_msg.c_str());
         }
         auto inputLayout = CreateInputLayoutFromByteCode(reinterpret_cast<ID3DBlob*>(compiledShader.data()));
         desc.vs = vs;
@@ -551,9 +551,9 @@ std::unique_ptr<ShaderProgram> RHIDevice::CreateShaderProgramFromCsoBinaryBuffer
     if(uses_ps_stage) {
         ID3D11PixelShader* ps = nullptr;
         auto hr = _dx_device->CreatePixelShader(compiledShader.data(), compiledShader.size(), nullptr, &ps);
-        if(FAILED(hr) || !ps) {
-            const auto error = StringUtils::FormatWindowsMessage(hr);
-            ERROR_AND_DIE(error);
+        {
+            const auto error_msg = StringUtils::FormatWindowsMessage(hr);
+            GUARANTEE_OR_DIE(SUCCEEDED(hr) && ps, error_msg.c_str());
         }
         desc.ps = ps;
         desc.ps_bytecode = reinterpret_cast<ID3DBlob*>(compiledShader.data());
@@ -562,9 +562,9 @@ std::unique_ptr<ShaderProgram> RHIDevice::CreateShaderProgramFromCsoBinaryBuffer
     if(uses_hs_stage) {
         ID3D11HullShader* hs = nullptr;
         auto hr = _dx_device->CreateHullShader(compiledShader.data(), compiledShader.size(), nullptr, &hs);
-        if(FAILED(hr) || !hs) {
-            const auto error = StringUtils::FormatWindowsMessage(hr);
-            ERROR_AND_DIE(error);
+        {
+            const auto error_msg = StringUtils::FormatWindowsMessage(hr);
+            GUARANTEE_OR_DIE(SUCCEEDED(hr) && hs, error_msg.c_str());
         }
         desc.hs = hs;
         desc.hs_bytecode = reinterpret_cast<ID3DBlob*>(compiledShader.data());
@@ -573,9 +573,9 @@ std::unique_ptr<ShaderProgram> RHIDevice::CreateShaderProgramFromCsoBinaryBuffer
     if(uses_ds_stage) {
         ID3D11DomainShader* ds = nullptr;
         auto hr = _dx_device->CreateDomainShader(compiledShader.data(), compiledShader.size(), nullptr, &ds);
-        if(FAILED(hr) || !ds) {
-            const auto error = StringUtils::FormatWindowsMessage(hr);
-            ERROR_AND_DIE(error);
+        {
+            const auto error_msg = StringUtils::FormatWindowsMessage(hr);
+            GUARANTEE_OR_DIE(SUCCEEDED(hr) && ds, error_msg.c_str());
         }
         desc.ds = ds;
         desc.ds_bytecode = reinterpret_cast<ID3DBlob*>(compiledShader.data());
@@ -584,9 +584,9 @@ std::unique_ptr<ShaderProgram> RHIDevice::CreateShaderProgramFromCsoBinaryBuffer
     if(uses_gs_stage) {
         ID3D11GeometryShader* gs = nullptr;
         auto hr = _dx_device->CreateGeometryShader(compiledShader.data(), compiledShader.size(), nullptr, &gs);
-        if(FAILED(hr) || !gs) {
-            const auto error = StringUtils::FormatWindowsMessage(hr);
-            ERROR_AND_DIE(error);
+        {
+            const auto error_msg = StringUtils::FormatWindowsMessage(hr);
+            GUARANTEE_OR_DIE(SUCCEEDED(hr) && gs, error_msg.c_str());
         }
         desc.gs = gs;
         desc.gs_bytecode = reinterpret_cast<ID3DBlob*>(compiledShader.data());
@@ -595,9 +595,9 @@ std::unique_ptr<ShaderProgram> RHIDevice::CreateShaderProgramFromCsoBinaryBuffer
     if(uses_cs_stage) {
         ID3D11ComputeShader* cs = nullptr;
         auto hr = _dx_device->CreateComputeShader(compiledShader.data(), compiledShader.size(), nullptr, &cs);
-        if(FAILED(hr) || !cs) {
-            const auto error = StringUtils::FormatWindowsMessage(hr);
-            ERROR_AND_DIE(error);
+        {
+            const auto error_msg = StringUtils::FormatWindowsMessage(hr);
+            GUARANTEE_OR_DIE(SUCCEEDED(hr) && cs, error_msg.c_str());
         }
         desc.cs = cs;
         desc.cs_bytecode = reinterpret_cast<ID3DBlob*>(compiledShader.data());
@@ -608,10 +608,8 @@ std::unique_ptr<ShaderProgram> RHIDevice::CreateShaderProgramFromCsoBinaryBuffer
 std::unique_ptr<ShaderProgram> RHIDevice::CreateShaderProgramFromCsoFile(std::filesystem::path filepath, const PipelineStage& target) const noexcept {
     if(auto compiled_source = FileUtils::ReadBinaryBufferFromFile(filepath); compiled_source.has_value()) {
         auto sp = CreateShaderProgramFromCsoBinaryBuffer(*compiled_source, filepath.string(), target);
-        if(sp) {
-            return sp;
-        }
-        ERROR_AND_DIE("Unrecoverable error. Cannot continue with malformed shader file.");
+        GUARANTEE_OR_DIE(sp, "Unrecoverable error. Cannot continue with malformed shader file.");
+        return sp;
     }
     return nullptr;
 }

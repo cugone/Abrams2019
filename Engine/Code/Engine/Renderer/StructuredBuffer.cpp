@@ -27,9 +27,7 @@ StructuredBuffer::StructuredBuffer(const RHIDevice& owner, const buffer_t& buffe
 
     _dx_buffer = nullptr;
     HRESULT hr = owner.GetDxDevice()->CreateBuffer(&buffer_desc, &init_data, _dx_buffer.GetAddressOf());
-    if(FAILED(hr)) {
-        ERROR_AND_DIE("StructuredBuffer failed to create.");
-    }
+    GUARANTEE_OR_DIE(SUCCEEDED(hr), "StructuredBuffer failed to create.");
 
     D3D11_SHADER_RESOURCE_VIEW_DESC srv_desc{};
     srv_desc.Format = DXGI_FORMAT_UNKNOWN;
@@ -38,9 +36,7 @@ StructuredBuffer::StructuredBuffer(const RHIDevice& owner, const buffer_t& buffe
     srv_desc.Buffer.NumElements = static_cast<unsigned int>(element_count);
 
     hr = owner.GetDxDevice()->CreateShaderResourceView(_dx_buffer.Get(), &srv_desc, dx_srv.GetAddressOf());
-    if(FAILED(hr)) {
-        ERROR_AND_DIE("Failed to create StructuredBuffer's SRV.");
-    }
+    GUARANTEE_OR_DIE(SUCCEEDED(hr), "Failed to create StructuredBuffer's SRV.");
 }
 
 StructuredBuffer::~StructuredBuffer() noexcept {

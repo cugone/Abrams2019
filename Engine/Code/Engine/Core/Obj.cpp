@@ -14,15 +14,15 @@ namespace FileUtils {
 //Run only as an asynchronous operation highly recommended.
 Obj::Obj(std::filesystem::path filepath) noexcept {
     namespace FS = std::filesystem;
-    if(!FS::exists(filepath)) {
-        const auto ss = std::string{"Obj: "} + filepath.string() + " failed to load.\nReason: It does not exist.\n";
-        ERROR_AND_DIE(ss.c_str());
+    {
+        const auto error_msg = std::string{"Obj: "} + filepath.string() + " failed to load.\nReason: It does not exist.\n";
+        GUARANTEE_OR_DIE(FS::exists(filepath), error_msg.c_str());
     }
     filepath = FS::canonical(filepath);
     filepath.make_preferred();
-    if(!Load(filepath)) {
-        const auto ss = std::string{"Obj: "} + filepath.string() + " failed to load.";
-        ERROR_AND_DIE(ss.c_str());
+    {
+        const auto error_msg = std::string{"Obj: "} + filepath.string() + " failed to load.";
+        GUARANTEE_OR_DIE(Load(filepath), error_msg.c_str());
     }
 }
 

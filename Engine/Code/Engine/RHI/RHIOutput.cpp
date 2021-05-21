@@ -149,10 +149,13 @@ std::unique_ptr<Texture> RHIOutput::CreateDepthStencil() noexcept {
     descDepth.CPUAccessFlags = 0;
     descDepth.MiscFlags = 0;
     auto hr_texture = _parent_device.GetDxDevice()->CreateTexture2D(&descDepth, nullptr, &depthstencil);
-    if(FAILED(hr_texture)) {
-        std::string error_str{"Fatal Error: Failed to create depthstencil for window. Reason:\n"};
-        error_str += StringUtils::FormatWindowsMessage(hr_texture);
-        ERROR_AND_DIE(error_str.c_str());
+    {
+        const auto error_msg = [&]() {
+            std::string msg{"Fatal Error: Failed to create depthstencil for window. Reason:\n"};
+            msg += StringUtils::FormatWindowsMessage(hr_texture);
+            return msg;
+        }(); //IIIL
+        GUARANTEE_OR_DIE(SUCCEEDED(hr_texture), error_msg.c_str());
     }
     return std::make_unique<Texture2D>(_parent_device, depthstencil);
 }
@@ -203,10 +206,13 @@ std::unique_ptr<Texture> RHIOutput::CreateFullscreenTexture() noexcept {
     const auto mustUseInitialData = isImmutable || isMultiSampled;
 
     auto hr = _parent_device.GetDxDevice()->CreateTexture2D(&tex_desc, (mustUseInitialData ? &subresource_data : nullptr), &dx_tex);
-    if(FAILED(hr)) {
-        std::string error_str{"Fatal Error: Failed to create fullscreen texture. Reason:\n"};
-        error_str += StringUtils::FormatWindowsMessage(hr);
-        ERROR_AND_DIE(error_str.c_str());
+    {
+        const auto error_msg = [&]() {
+            std::string msg{"Fatal Error: Failed to create fullscreen texture. Reason:\n"};
+            msg += StringUtils::FormatWindowsMessage(hr);
+            return msg;
+        }(); //IIIL
+        GUARANTEE_OR_DIE(SUCCEEDED(hr), error_msg.c_str());
     }
     return std::make_unique<Texture2D>(_parent_device, dx_tex);
 }

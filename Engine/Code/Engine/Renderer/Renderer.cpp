@@ -3756,18 +3756,18 @@ std::unique_ptr<ShaderProgram> Renderer::CreateShaderProgramFromDesc(ShaderProgr
 
 void Renderer::CreateAndRegisterShaderProgramFromHlslFile(std::filesystem::path filepath, const std::string& entryPointList, const PipelineStage& target) noexcept {
     auto sp = CreateShaderProgramFromHlslFile(filepath, entryPointList, target);
-    if(!sp) {
-        auto s = filepath.string() + " failed to compile.\n";
-        ERROR_AND_DIE(s.c_str());
+    {
+        const auto error_msg = filepath.string() + " failed to compile.\n";
+        GUARANTEE_OR_DIE(sp, error_msg.c_str());
     }
     RegisterShaderProgram(filepath.string(), std::move(sp));
 }
 
 void Renderer::CreateAndRegisterShaderProgramFromCsoFile(std::filesystem::path filepath, const PipelineStage& target) noexcept {
     auto sp = CreateShaderProgramFromCsoFile(filepath, target);
-    if(!sp) {
-        auto s = filepath.string() + " is not a valid compiled shader program.\n";
-        ERROR_AND_DIE(s.c_str());
+    {
+        const auto error_msg = filepath.string() + " is not a valid compiled shader program.\n";
+        GUARANTEE_OR_DIE(sp, error_msg.c_str());
     }
     RegisterShaderProgram(filepath.string(), std::move(sp));
 }

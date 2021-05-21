@@ -5,9 +5,7 @@ Polygon2::Polygon2(int sides /*= 3*/, const Vector2& position /*= Vector2::ZERO*
 , _orientationDegrees(orientationDegrees)
 , _half_extents(half_extents)
 , _position(position) {
-    if(_sides < 3) {
-        ERROR_AND_DIE("A Polygon cannot have less than 3 sides!");
-    }
+    GUARANTEE_OR_DIE(!(_sides < 3), "A Polygon cannot have less than 3 sides!");
     CalcVerts();
     CalcNormals();
 }

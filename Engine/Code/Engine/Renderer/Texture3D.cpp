@@ -57,9 +57,7 @@ void Texture3D::SetTexture() {
         }
     }
 
-    if(t_desc.BindFlags & D3D11_BIND_DEPTH_STENCIL) {
-        ERROR_AND_DIE("Cannot bind Texture3D as Depth Stencil!");
-    }
+    GUARANTEE_OR_DIE(!(t_desc.BindFlags & D3D11_BIND_DEPTH_STENCIL), "Cannot bind Texture3D as Depth Stencil!");
 
     if(t_desc.BindFlags & D3D11_BIND_UNORDERED_ACCESS) {
         D3D11_UNORDERED_ACCESS_VIEW_DESC uav_desc{};

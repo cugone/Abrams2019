@@ -81,10 +81,7 @@ StackTrace::~StackTrace() noexcept {
 void StackTrace::Initialize() noexcept {
 #ifdef PROFILE_BUILD
     debugHelpModule = ::LoadLibraryA("DbgHelp.dll");
-    if(!debugHelpModule) {
-        ERROR_AND_DIE("Could not initialize StackTrace. Missing required DLL!\n");
-        return;
-    }
+    GUARANTEE_OR_DIE(debugHelpModule, "Could not initialize StackTrace. Missing required DLL!\n");
 
     LSymSetOptions = reinterpret_cast<SymSetOptions_t>(::GetProcAddress(debugHelpModule, "SymSetOptions"));
     LSymInitialize = reinterpret_cast<SymInitialize_t>(::GetProcAddress(debugHelpModule, "SymInitialize"));

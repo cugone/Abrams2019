@@ -14,12 +14,10 @@
 ConstantBuffer::ConstantBuffer(const RHIDevice& owner, const buffer_t& buffer, const std::size_t& buffer_size, const BufferUsage& usage, const BufferBindUsage& bindUsage) noexcept
 : Buffer<void*>()
 , _buffer_size(buffer_size) {
-    if(_buffer_size % 16) {
-        ERROR_AND_DIE("Constant Buffer size not a multiple of 16.")
-    }
-    if(D3D11_REQ_CONSTANT_BUFFER_ELEMENT_COUNT < _buffer_size) {
-        const auto ss = std::string{"Constant Buffer of size "} + std::to_string(_buffer_size) + " exceeds maximum of " + std::to_string(D3D11_REQ_CONSTANT_BUFFER_ELEMENT_COUNT) + "\n";
-        ERROR_AND_DIE(ss.c_str());
+    GUARANTEE_OR_DIE((_buffer_size % 16) == 0, "Constant Buffer size not a multiple of 16.");
+    {
+        const auto error_msg = std::string{"Constant Buffer of size "} + std::to_string(_buffer_size) + " exceeds maximum of " + std::to_string(D3D11_REQ_CONSTANT_BUFFER_ELEMENT_COUNT) + "\n";
+        GUARANTEE_OR_DIE(!(D3D11_REQ_CONSTANT_BUFFER_ELEMENT_COUNT < _buffer_size), error_msg.c_str());
     }
 
     D3D11_BUFFER_DESC buffer_desc{};
@@ -35,9 +33,7 @@ ConstantBuffer::ConstantBuffer(const RHIDevice& owner, const buffer_t& buffer, c
 
     _dx_buffer = nullptr;
     HRESULT hr = owner.GetDxDevice()->CreateBuffer(&buffer_desc, &init_data, _dx_buffer.GetAddressOf());
-    if(FAILED(hr)) {
-        ERROR_AND_DIE("ConstantBuffer failed to create.");
-    }
+    GUARANTEE_OR_DIE(SUCCEEDED(hr), "ConstantBuffer failed to create.");
 }
 
 ConstantBuffer::~ConstantBuffer() noexcept {
