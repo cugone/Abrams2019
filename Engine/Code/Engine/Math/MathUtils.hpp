@@ -367,7 +367,7 @@ template<typename T>
 
 template<typename T>
 [[nodiscard]] T Wrap(const T& valueToWrap, const T& minValue, const T& maxValue) {
-    T result = valueToWrap;
+    auto result = T{valueToWrap};
     while(result < minValue) {
         result += maxValue;
     }
