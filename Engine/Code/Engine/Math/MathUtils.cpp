@@ -192,6 +192,14 @@ double Combination_multiset(int n, int k) noexcept {
     return Combination(n + k - 1, k);
 }
 
+float SineWave(float t, float period /*= 1.0f*/, float phase /*= 0.0f*/) noexcept {
+    return (0.5f + std::sin(MathUtils::M_2PI * t * (1.0f / period) + phase) * 0.5f);
+}
+
+float SineWaveDegrees(float t, float period /*= 1.0f*/, float phaseDegrees /*= 0.0f*/) noexcept {
+    return SineWave(t, period, MathUtils::ConvertDegreesToRadians(phaseDegrees));
+}
+
 float CosDegrees(float degrees) noexcept {
     const auto radians = MathUtils::ConvertDegreesToRadians(degrees);
     return std::cos(radians);

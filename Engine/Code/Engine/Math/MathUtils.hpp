@@ -130,6 +130,8 @@ template<size_t N, size_t K>
     return Permutation<N>() / Permutation<(N - K)>();
 }
 
+[[nodiscard]] float SineWave(float t, float period = 1.0f, float phase = 0.0f) noexcept;
+[[nodiscard]] float SineWaveDegrees(float t, float period = 1.0f, float phaseDegrees = 0.0f) noexcept;
 [[nodiscard]] float CosDegrees(float degrees) noexcept;
 [[nodiscard]] float SinDegrees(float degrees) noexcept;
 [[nodiscard]] float Atan2Degrees(float y, float x) noexcept;
