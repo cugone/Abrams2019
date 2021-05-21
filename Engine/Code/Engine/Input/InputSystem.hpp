@@ -125,13 +125,13 @@ enum class KeyCode : int {
     , NumPad7
     , NumPad8
     , NumPad9
-    , Multiply
-    , Add
+    , Multiply /* NumPad * */
+    , Add /* NumPad + */
     , Separator /* Also NumPadEnter */
     , NumPadEnter = Separator /* Also Separator */
-    , Subtract
-    , Decimal
-    , Divide
+    , Subtract /* NumPad - */
+    , Decimal /* NumPad . */
+    , Divide /* NumPad / */
     , F1
     , F2
     , F3
