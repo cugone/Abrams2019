@@ -236,3 +236,9 @@ void IntVector3::SetXYZ(int newX, int newY, int newZ) noexcept {
 std::tuple<int, int, int> IntVector3::GetXYZ() const noexcept {
     return std::make_tuple(x, y, z);
 }
+
+std::string StringUtils::to_string(const IntVector3& v) noexcept {
+    std::ostringstream ss;
+    ss << '[' << v.x << ',' << v.y << ',' << v.z << ']';
+    return ss.str();
+}

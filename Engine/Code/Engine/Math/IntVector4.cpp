@@ -150,3 +150,9 @@ bool IntVector4::operator!=(const IntVector4& rhs) noexcept {
 bool IntVector4::operator==(const IntVector4& rhs) noexcept {
     return x == rhs.x && y == rhs.y && z == rhs.z && w == rhs.w;
 }
+
+std::string StringUtils::to_string(const IntVector4& v) noexcept {
+    std::ostringstream ss;
+    ss << '[' << v.x << ',' << v.y << ',' << v.z << ',' << v.w << ']';
+    return ss.str();
+}

@@ -201,3 +201,9 @@ bool IntVector2::operator>(const IntVector2& rhs) const noexcept {
 bool IntVector2::operator<=(const IntVector2& rhs) const noexcept {
     return !(*this > rhs);
 }
+
+std::string StringUtils::to_string(const IntVector2& v) noexcept {
+    std::ostringstream ss;
+    ss << '[' << v.x << ',' << v.y << ']';
+    return ss.str();
+}

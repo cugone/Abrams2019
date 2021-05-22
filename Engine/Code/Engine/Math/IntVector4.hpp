@@ -74,3 +74,7 @@ public:
 protected:
 private:
 };
+
+namespace StringUtils {
+[[nodiscard]] std::string to_string(const IntVector4& v) noexcept;
+}
