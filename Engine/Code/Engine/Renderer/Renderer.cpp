@@ -524,7 +524,7 @@ void Renderer::EndFrame() {
     FulfillScreenshotRequest();
 }
 
-void Renderer::BeginRender(const Rgba& clear_color /*= Rgba::Black*/, Texture* color_target /*= nullptr*/, Texture* depthstencil_target /*= nullptr*/) noexcept {
+void Renderer::BeginRender(Texture* color_target /*= nullptr*/, const Rgba& clear_color /*= Rgba::Black*/, Texture* depthstencil_target /*= nullptr*/) noexcept {
     ResetModelViewProjection();
     SetRenderTarget(color_target, depthstencil_target);
     ClearColor(clear_color);
