@@ -32,7 +32,8 @@ void RHIDeviceContext::Flush() noexcept {
 }
 
 void RHIDeviceContext::ClearColorTarget(Texture* output, const Rgba& color) noexcept {
-    _dx_context->ClearRenderTargetView(output->GetRenderTargetView(), color.GetRgbaAsFloats().GetAsFloatArray());
+    const auto [r, g, b, a] = color.GetAsFloats();
+    _dx_context->ClearRenderTargetView(output->GetRenderTargetView(), Vector4{r, g, b, a}.GetAsFloatArray());
 }
 
 void RHIDeviceContext::ClearDepthStencilTarget(Texture* output, bool depth /*= true */, bool stencil /*= true */, float depthValue /*= 1.0f */, unsigned char stencilValue /*= 0*/) noexcept {

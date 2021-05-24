@@ -1,10 +1,9 @@
 #pragma once
 
-#include "Engine/Math/Vector3.hpp"
-#include "Engine/Math/Vector4.hpp"
-
+#include <initializer_list>
 #include <ostream>
 #include <string>
+#include <tuple>
 #include <vector>
 
 class Argb;
@@ -60,16 +59,15 @@ public:
 
     explicit Rgba(const Argb& argb) noexcept;
     explicit Rgba(Argb&& argb) noexcept;
-    explicit Rgba(const Vector4& fromFloats) noexcept;
+    explicit Rgba(std::initializer_list<float> fromFloats) noexcept;
+    explicit Rgba(std::initializer_list<unsigned char> fromUChar) noexcept;
     explicit Rgba(std::string name) noexcept;
     explicit Rgba(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha = 0xFF) noexcept;
     explicit Rgba(uint32_t rawValue);
 
     void SetAsBytes(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha) noexcept;
     void SetAsFloats(float normalized_red, float normalized_green, float normalized_blue, float normalized_alpha) noexcept;
-    void GetAsFloats(float& out_normalized_red, float& out_normalized_green, float& out_normalized_blue, float& out_normalized_alpha) const noexcept;
-    [[nodiscard]] Vector4 GetRgbaAsFloats() const noexcept;
-    [[nodiscard]] Vector3 GetRgbAsFloats() const noexcept;
+    [[nodiscard]] std::tuple<float, float, float, float> GetAsFloats() const noexcept;
     void ScaleRGB(float scale) noexcept;
     void ScaleAlpha(float scale) noexcept;
 
@@ -77,8 +75,7 @@ public:
     void SetFromRawValue(uint32_t value) noexcept;
     void SetRGBAFromRawValue(uint32_t value) noexcept;
     void SetRGBFromRawValue(uint32_t value) noexcept;
-    void SetRgbFromFloats(const Vector3& value) noexcept;
-    void SetRgbaFromFloats(const Vector4& value) noexcept;
+    void SetFromFloats(std::initializer_list<float> ilist) noexcept;
     [[nodiscard]] bool IsRgbEqual(const Rgba& rhs) const noexcept;
     [[nodiscard]] bool operator==(const Rgba& rhs) const noexcept;
     [[nodiscard]] bool operator!=(const Rgba& rhs) const noexcept;

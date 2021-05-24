@@ -869,7 +869,8 @@ void Renderer::DrawDebugSphere(const Rgba& color) noexcept {
     vbo.resize(verts.size());
     for(std::size_t i = 0; i < vbo.size(); ++i) {
         vbo[i].position = verts[i];
-        vbo[i].color = color.GetRgbaAsFloats();
+        const auto [r, g, b, a] = color.GetAsFloats();
+        vbo[i].color = Vector4{r, g, b, a};
     }
 
     std::vector<unsigned int> ibo;
@@ -919,7 +920,8 @@ void Renderer::SetAmbientLight(const Rgba& ambient) noexcept {
 }
 
 void Renderer::SetAmbientLight(const Rgba& color, float intensity) noexcept {
-    _lighting_data.ambient = Vector4(color.GetRgbAsFloats(), intensity);
+    const auto [r, g, b, _] = color.GetAsFloats();
+    _lighting_data.ambient = Vector4{r, g, b, intensity};
     _lighting_cb->Update(*_rhi_context, &_lighting_data);
     SetConstantBuffer(LIGHTING_BUFFER_INDEX, _lighting_cb.get());
 }
@@ -952,7 +954,8 @@ void Renderer::SetPointLight(unsigned int index, const PointLightDesc& desc) noe
     l.attenuation = Vector4(desc.attenuation, 0.0f);
     l.specAttenuation = l.attenuation;
     l.position = Vector4(desc.position, 1.0f);
-    l.color = Vector4(desc.color.GetRgbAsFloats(), desc.intensity);
+    const auto [r, g, b, _] = desc.color.GetAsFloats();
+    l.color = Vector4{r, g, b, desc.intensity};
     SetPointLight(index, l);
 }
 
@@ -961,7 +964,8 @@ void Renderer::SetDirectionalLight(unsigned int index, const DirectionalLightDes
     l.direction = Vector4(desc.direction, 0.0f);
     l.attenuation = Vector4(desc.attenuation, 1.0f);
     l.specAttenuation = l.attenuation;
-    l.color = Vector4(desc.color.GetRgbAsFloats(), desc.intensity);
+    const auto [r, g, b, _] = desc.color.GetAsFloats();
+    l.color = Vector4{r, g, b, desc.intensity};
     SetDirectionalLight(index, l);
 }
 
@@ -970,7 +974,8 @@ void Renderer::SetSpotlight(unsigned int index, const SpotLightDesc& desc) noexc
     l.attenuation = Vector4(desc.attenuation, 0.0f);
     l.specAttenuation = l.attenuation;
     l.position = Vector4(desc.position, 1.0f);
-    l.color = Vector4(desc.color.GetRgbAsFloats(), desc.intensity);
+    const auto [r, g, b, _] = desc.color.GetAsFloats();
+    l.color = Vector4{r, g, b, desc.intensity};
     l.direction = Vector4(desc.direction, 0.0f);
 
     float inner_degrees = desc.inner_outer_anglesDegrees.x;

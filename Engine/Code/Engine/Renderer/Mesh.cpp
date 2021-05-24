@@ -58,7 +58,8 @@ void Mesh::Builder::SetNormal(const Vector3& normal) noexcept {
 }
 
 void Mesh::Builder::SetColor(const Rgba& color) noexcept {
-    SetColor(color.GetRgbaAsFloats());
+    auto [r, g, b, a] = color.GetAsFloats();
+    SetColor(Vector4{r, g, b, a});
 }
 
 void Mesh::Builder::SetColor(const Vector4& color) noexcept {

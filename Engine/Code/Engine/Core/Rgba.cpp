@@ -6,6 +6,7 @@
 
 #include <iomanip>
 #include <sstream>
+#include <utility>
 
 const Rgba Rgba::White(255, 255, 255, 255);
 const Rgba Rgba::Black(0, 0, 0, 255);
@@ -104,8 +105,46 @@ Rgba::Rgba(Argb&& argb) noexcept
     argb.SetFromRawValue(std::uint32_t{0u});
 }
 
-Rgba::Rgba(const Vector4& fromFloats) noexcept {
-    SetRgbaFromFloats(fromFloats);
+Rgba::Rgba(std::initializer_list<float> fromFloats) noexcept {
+    SetFromFloats(fromFloats);
+}
+
+Rgba::Rgba(std::initializer_list<unsigned char> ilist) noexcept {
+    const auto length = ilist.size();
+    constexpr auto convertToUChar = [](auto&& v) -> unsigned char {
+        const auto clamped_v = std::clamp(std::forward<decltype(v)>(std::remove_pointer_t<decltype(v)>(std::decay_t<decltype(v)>(v))), unsigned char{0u}, unsigned char{255u});
+        return static_cast<unsigned char>(clamped_v);
+    };
+    switch(length) {
+    case 1: {
+        r = convertToUChar(*std::begin(ilist));
+        g = convertToUChar(*std::begin(ilist));
+        b = convertToUChar(*std::begin(ilist));
+        a = convertToUChar(*std::begin(ilist));
+        break;
+    }
+    case 2: {
+        r = convertToUChar(*std::begin(ilist));
+        g = convertToUChar(*(std::next(std::begin(ilist))));
+        break;
+    }
+    case 3: {
+        r = convertToUChar(*std::begin(ilist));
+        g = convertToUChar(*(std::next(std::begin(ilist))));
+        b = convertToUChar(*(std::next(std::next(std::begin(ilist)))));
+        break;
+    }
+    default: {
+        /* DO NOTHING */
+        break;
+    }
+    }
+    if(length >= 4) {
+        r = convertToUChar(*std::begin(ilist));
+        g = convertToUChar(*(std::next(std::begin(ilist))));
+        b = convertToUChar(*(std::next(std::next(std::begin(ilist)))));
+        a = convertToUChar(*(std::next(std::next(std::next(std::begin(ilist))))));
+    }
 }
 
 Rgba::Rgba(std::string name) noexcept {
@@ -167,19 +206,8 @@ void Rgba::SetAsFloats(float normalized_red, float normalized_green, float norma
     a = static_cast<unsigned char>(normalized_alpha * 255.0f);
 }
 
-void Rgba::GetAsFloats(float& out_normalized_red, float& out_normalized_green, float& out_normalized_blue, float& out_normalized_alpha) const noexcept {
-    out_normalized_red = r / 255.0f;
-    out_normalized_green = g / 255.0f;
-    out_normalized_blue = b / 255.0f;
-    out_normalized_alpha = a / 255.0f;
-}
-
-Vector4 Rgba::GetRgbaAsFloats() const noexcept {
-    return Vector4{r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f};
-}
-
-Vector3 Rgba::GetRgbAsFloats() const noexcept {
-    return Vector3{r / 255.0f, g / 255.0f, b / 255.0f};
+std::tuple<float, float, float, float> Rgba::GetAsFloats() const noexcept {
+    return {r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f};
 }
 
 void Rgba::ScaleRGB(float scale) noexcept {
@@ -220,17 +248,42 @@ void Rgba::SetRGBFromRawValue(uint32_t value) noexcept {
     b = static_cast<uint8_t>((value & 0x0000ffu) >> 0);
 }
 
-void Rgba::SetRgbFromFloats(const Vector3& value) noexcept {
-    r = static_cast<unsigned char>(value.x * 255.0f);
-    g = static_cast<unsigned char>(value.y * 255.0f);
-    b = static_cast<unsigned char>(value.z * 255.0f);
-}
-
-void Rgba::SetRgbaFromFloats(const Vector4& value) noexcept {
-    r = static_cast<unsigned char>(value.x * 255.0f);
-    g = static_cast<unsigned char>(value.y * 255.0f);
-    b = static_cast<unsigned char>(value.z * 255.0f);
-    a = static_cast<unsigned char>(value.w * 255.0f);
+void Rgba::SetFromFloats(std::initializer_list<float> ilist) noexcept {
+    const auto length = ilist.size();
+    constexpr auto convertToUChar = [](auto&& v) -> unsigned char {
+        const auto clamped_v = std::clamp(std::forward<decltype(v)>(std::remove_pointer_t<decltype(v)>(std::decay_t<decltype(v)>(v))), 0.0f, 1.0f);
+        return static_cast<unsigned char>(clamped_v * 255.0f);
+    };
+    switch(length) {
+    case 1: {
+        r = convertToUChar(*std::begin(ilist));
+        g = convertToUChar(*std::begin(ilist));
+        b = convertToUChar(*std::begin(ilist));
+        a = convertToUChar(*std::begin(ilist));
+        break;
+    }
+    case 2: {
+        r = convertToUChar(*std::begin(ilist));
+        g = convertToUChar(*(std::next(std::begin(ilist))));
+        break;
+    }
+    case 3: {
+        r = convertToUChar(*std::begin(ilist));
+        g = convertToUChar(*(std::next(std::begin(ilist))));
+        b = convertToUChar(*(std::next(std::next(std::begin(ilist)))));
+        break;
+    }
+    default: {
+        /* DO NOTHING */
+        break;
+    }
+    }
+    if(length >= 4) {
+        r = convertToUChar(*std::begin(ilist));
+        g = convertToUChar(*(std::next(std::begin(ilist))));
+        b = convertToUChar(*(std::next(std::next(std::begin(ilist)))));
+        a = convertToUChar(*(std::next(std::next(std::next(std::begin(ilist))))));
+    }
 }
 
 void Rgba::SetValueFromName(std::string name) noexcept {

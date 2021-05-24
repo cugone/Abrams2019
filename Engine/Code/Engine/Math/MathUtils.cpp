@@ -1409,18 +1409,16 @@ Quaternion Interpolate(const Quaternion& a, const Quaternion& b, float t) {
 }
 
 Rgba Interpolate(const Rgba& a, const Rgba& b, float t) {
-    float a_color[4];
-    a.GetAsFloats(a_color[0], a_color[1], a_color[2], a_color[3]);
-    float b_color[4];
-    b.GetAsFloats(b_color[0], b_color[1], b_color[2], b_color[3]);
+    auto [ar, ag, ab, aa] = a.GetAsFloats();
+    auto [br, bg, bb, ba] = b.GetAsFloats();
 
-    const auto red = Interpolate(a_color[0], b_color[0], t);
-    const auto green = Interpolate(a_color[1], b_color[1], t);
-    const auto blue = Interpolate(a_color[2], b_color[2], t);
-    const auto alpha = Interpolate(a_color[3], b_color[3], t);
+    const auto red = Interpolate(ar, br, t);
+    const auto green = Interpolate(ag, bg, t);
+    const auto blue = Interpolate(ab, bb, t);
+    const auto alpha = Interpolate(aa, aa, t);
 
-    Rgba result;
-    result.SetAsFloats(red, green, blue, alpha);
+    Rgba result{};
+    result.SetFromFloats({red, green, blue, alpha});
     return result;
 }
 
