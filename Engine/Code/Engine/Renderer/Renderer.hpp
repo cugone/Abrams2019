@@ -204,6 +204,7 @@ public:
     void EndFrame() override;
 
     void BeginRender(Texture* color_target = nullptr, const Rgba& clear_color = Rgba::Black, Texture* depthstencil_target = nullptr) noexcept;
+    void BeginRenderToBackbuffer(const Rgba& clear_color = Rgba::Black);
     void BeginHUDRender(Camera2D& ui_camera, const Vector2& camera_position, float window_height) noexcept;
 
     [[nodiscard]] TimeUtils::FPSeconds GetGameFrameTime() const noexcept;

@@ -533,6 +533,10 @@ void Renderer::BeginRender(Texture* color_target /*= nullptr*/, const Rgba& clea
     SetViewportAsPercent();
 }
 
+void Renderer::BeginRenderToBackbuffer(const Rgba& clear_color /*= Rgba::Black*/) {
+    BeginRender(nullptr, clear_color);
+}
+
 void Renderer::BeginHUDRender(Camera2D& ui_camera, const Vector2& camera_position, float window_height) noexcept {
     const float ui_view_height = window_height;
     const float ui_view_width = ui_view_height * ui_camera.GetAspectRatio();
