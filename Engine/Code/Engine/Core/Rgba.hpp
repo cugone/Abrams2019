@@ -19,6 +19,7 @@ public:
     static const Rgba ForestGreen;
     static const Rgba Blue;
     static const Rgba NavyBlue;
+    static const Rgba MidnightBlue;
     static const Rgba Cyan;
     static const Rgba Yellow;
     static const Rgba Magenta;

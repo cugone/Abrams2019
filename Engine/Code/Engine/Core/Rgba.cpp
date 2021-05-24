@@ -15,6 +15,7 @@ const Rgba Rgba::Green(0, 255, 0, 255);
 const Rgba Rgba::ForestGreen(34, 139, 34, 255);
 const Rgba Rgba::Blue(0, 0, 255, 255);
 const Rgba Rgba::NavyBlue(0, 0, 128, 255);
+const Rgba Rgba::MidnightBlue(25, 25, 112, 255);
 const Rgba Rgba::Cyan(0, 255, 255, 255);
 const Rgba Rgba::Yellow(255, 255, 0, 255);
 const Rgba Rgba::Magenta(255, 0, 255, 255);
@@ -270,6 +271,8 @@ void Rgba::SetValueFromName(std::string name) noexcept {
         SetFromRawValue(Rgba::Olive.GetAsRawValue());
     } else if(name == "SKYBLUE") {
         SetFromRawValue(Rgba::SkyBlue.GetAsRawValue());
+    } else if(name == "MIDNIGHTBLUE") {
+        SetFromRawValue(Rgba::MidnightBlue.GetAsRawValue());
     } else if(name == "LIME") {
         SetFromRawValue(Rgba::Lime.GetAsRawValue());
     } else if(name == "TEAL") {
