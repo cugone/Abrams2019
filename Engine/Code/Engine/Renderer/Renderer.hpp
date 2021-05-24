@@ -203,7 +203,7 @@ public:
     void Render() const override;
     void EndFrame() override;
 
-    void BeginRender(Texture* color_target = nullptr, Texture* depthstencil_target = nullptr) noexcept;
+    void BeginRender(const Rgba& clear_color = Rgba::Black, Texture* color_target = nullptr, Texture* depthstencil_target = nullptr) noexcept;
     void BeginHUDRender(Camera2D& ui_camera, const Vector2& camera_position, float window_height) noexcept;
 
     [[nodiscard]] TimeUtils::FPSeconds GetGameFrameTime() const noexcept;
