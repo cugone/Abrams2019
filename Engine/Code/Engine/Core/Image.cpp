@@ -11,8 +11,9 @@
 #include "Engine/Renderer/Texture1D.hpp"
 #include "Engine/Renderer/Texture2D.hpp"
 #include "Engine/Renderer/Texture3D.hpp"
-#include "ThirdParty/stb/stb_image.h"
-#include "ThirdParty/stb/stb_image_write.h"
+
+#include <Thirdparty/stb/stb_image.h>
+#include <Thirdparty/stb/stb_image_write.h>
 
 #include <algorithm>
 #include <sstream>

@@ -9,7 +9,8 @@
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/Window.hpp"
 #include "Engine/UI/UIWidget.hpp"
-#include "Thirdparty/Imgui/imgui_internal.h"
+
+#include <Thirdparty/Imgui/imgui_internal.h>
 
 #include <algorithm>
 

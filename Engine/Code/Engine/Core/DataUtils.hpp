@@ -10,7 +10,8 @@
 #include "Engine/Math/Vector2.hpp"
 #include "Engine/Math/Vector3.hpp"
 #include "Engine/Math/Vector4.hpp"
-#include "ThirdParty/TinyXML2/tinyxml2.h"
+
+#include <Thirdparty/TinyXML2/tinyxml2.h>
 
 #include <functional>
 #include <intrin.h>

@@ -47,8 +47,9 @@
 #include "Engine/Renderer/Texture3D.hpp"
 #include "Engine/Renderer/TextureArray2D.hpp"
 #include "Engine/Renderer/Window.hpp"
-#include "Thirdparty/TinyXML2/tinyxml2.h"
-#include "Thirdparty/stb/stb_image.h"
+
+#include <Thirdparty/TinyXML2/tinyxml2.h>
+#include <Thirdparty/stb/stb_image.h>
 
 #include <algorithm>
 #include <cstddef>
