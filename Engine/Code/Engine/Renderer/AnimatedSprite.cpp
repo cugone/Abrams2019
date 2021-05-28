@@ -192,6 +192,10 @@ IntVector2 AnimatedSprite::GetFrameDimensions() const noexcept {
     return {};
 }
 
+int AnimatedSprite::GetFrameCount() const noexcept {
+    return _end_index - _start_index;
+}
+
 void AnimatedSprite::TogglePause() noexcept {
     _is_playing = !_is_playing;
 }

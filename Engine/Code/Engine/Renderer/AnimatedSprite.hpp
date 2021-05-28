@@ -35,6 +35,7 @@ public:
     [[nodiscard]] const Texture* const GetTexture() const noexcept;
     [[nodiscard]] int GetNumSprites() const noexcept;
     [[nodiscard]] IntVector2 GetFrameDimensions() const noexcept;
+    [[nodiscard]] int GetFrameCount() const noexcept;
     void TogglePause() noexcept;
     void Pause() noexcept;                                                  // Starts unpaused (playing) by default
     void Resume() noexcept;                                                 // Resume after pausing
