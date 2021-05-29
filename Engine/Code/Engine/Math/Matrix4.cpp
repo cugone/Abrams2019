@@ -1127,10 +1127,6 @@ Vector2 operator*(const Vector2& lhs, const Matrix4& rhs) noexcept {
 Matrix4& Matrix4::operator*=(const Matrix4& rhs) noexcept {
     using namespace MathUtils;
 
-    const auto myI = GetIBasis();
-    const auto myJ = GetJBasis();
-    const auto myK = GetKBasis();
-    const auto myT = GetTBasis();
     const auto myX = GetXComponents();
     const auto myY = GetYComponents();
     const auto myZ = GetZComponents();
@@ -1140,10 +1136,6 @@ Matrix4& Matrix4::operator*=(const Matrix4& rhs) noexcept {
     const auto rhsJ = rhs.GetJBasis();
     const auto rhsK = rhs.GetKBasis();
     const auto rhsT = rhs.GetTBasis();
-    const auto rhsX = rhs.GetXComponents();
-    const auto rhsY = rhs.GetYComponents();
-    const auto rhsZ = rhs.GetZComponents();
-    const auto rhsW = rhs.GetWComponents();
 
     m_indicies[0] = DotProduct(myX, rhsI);
     m_indicies[1] = DotProduct(myX, rhsJ);
@@ -1299,7 +1291,7 @@ std::ostream& operator<<(std::ostream& out_stream, const Matrix4& m) noexcept {
 }
 
 std::istream& operator>>(std::istream& in_stream, Matrix4& m) noexcept {
-    std::array<float, 16> indicies;
+    std::array<float, 16> indicies{};
 
     in_stream.ignore(); //[
     in_stream >> indicies[0];
