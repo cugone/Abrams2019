@@ -79,10 +79,10 @@ Matrix4::Matrix4(const float* arrayOfFloats) noexcept {
 Matrix4::Matrix4(const Quaternion& q) noexcept {
     const auto q_norm = q.GetNormalize();
 
-    const auto x = q.axis.x;
-    const auto y = q.axis.y;
-    const auto z = q.axis.z;
-    const auto w = q.w;
+    const auto x = q_norm.axis.x;
+    const auto y = q_norm.axis.y;
+    const auto z = q_norm.axis.z;
+    const auto w = q_norm.w;
 
     Matrix4 left;
     left.m_indicies[0] = w;
@@ -1026,10 +1026,6 @@ Vector3 Matrix4::CalcEulerAngles() const noexcept {
 Matrix4 Matrix4::operator*(const Matrix4& rhs) const noexcept {
     using namespace MathUtils;
 
-    const auto myI = GetIBasis();
-    const auto myJ = GetJBasis();
-    const auto myK = GetKBasis();
-    const auto myT = GetTBasis();
     const auto myX = GetXComponents();
     const auto myY = GetYComponents();
     const auto myZ = GetZComponents();
@@ -1039,10 +1035,6 @@ Matrix4 Matrix4::operator*(const Matrix4& rhs) const noexcept {
     const auto rhsJ = rhs.GetJBasis();
     const auto rhsK = rhs.GetKBasis();
     const auto rhsT = rhs.GetTBasis();
-    const auto rhsX = rhs.GetXComponents();
-    const auto rhsY = rhs.GetYComponents();
-    const auto rhsZ = rhs.GetZComponents();
-    const auto rhsW = rhs.GetWComponents();
 
     const auto m00 = DotProduct(myX, rhsI);
     const auto m01 = DotProduct(myX, rhsJ);
