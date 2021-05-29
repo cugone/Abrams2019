@@ -20,7 +20,7 @@ bool operator!=(const ViewportDesc& a, const ViewportDesc& b) noexcept {
 }
 
 std::ostream& operator<<(std::ostream& out_stream, const GraphicsCardDesc& graphicsCardDesc) noexcept {
-    auto name = graphicsCardDesc.Description;
+    std::string name = graphicsCardDesc.Description;
     out_stream << std::left << std::setw(22) << "Name:" << std::right << std::setw(30) << name << '\n';
     auto vid = graphicsCardDesc.VendorId;
     out_stream << std::hex << std::uppercase;
