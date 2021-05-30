@@ -183,7 +183,6 @@ void CableJoint::SolveVelocityConstraint() const noexcept {
     const auto posA = GetAnchorA();
     const auto posB = GetAnchorB();
 
-    const auto distance = MathUtils::CalcDistance(posA, posB);
     const auto displacement_towards_first = posA - posB;
     const auto displacement_towards_second = posB - posA;
     const auto direction_to_first = displacement_towards_first.GetNormalize();
@@ -197,7 +196,6 @@ void CableJoint::SolveVelocityConstraint() const noexcept {
     auto v2 = second_body ? second_body->GetVelocity() : Vector2::ZERO;
     auto newVelocity1 = v1;
     auto newVelocity2 = v2;
-    const auto length = _def.length;
     newVelocity1 = mass1_ratio * MathUtils::Reject(v1, direction_to_second);
     newVelocity2 = mass2_ratio * MathUtils::Reject(v2, direction_to_first);
     if(first_body) {
