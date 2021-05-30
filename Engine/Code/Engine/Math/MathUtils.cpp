@@ -1084,14 +1084,6 @@ bool DoOBBsOverlap(const OBB2& a, const OBB2& b) noexcept {
 
 bool DoPolygonsOverlap(const Polygon2& a, const Polygon2& b) noexcept {
     //Separating Axis Theorem
-    const auto Pa = a.GetPosition();
-    const auto Oa = a.GetOrientationDegrees();
-    const auto Hea = a.GetHalfExtents();
-
-    const auto Pb = b.GetPosition();
-    const auto Ob = b.GetOrientationDegrees();
-    const auto Heb = b.GetHalfExtents();
-
     for(const auto& an : a.GetNormals()) {
         auto min_a = std::numeric_limits<float>::infinity();
         auto max_a = std::numeric_limits<float>::lowest();
