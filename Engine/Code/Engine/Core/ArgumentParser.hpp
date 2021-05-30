@@ -1,9 +1,12 @@
 #pragma once
 
+#include "Engine/Core/StringUtils.hpp"
 #include "Engine/Core/TypeUtils.hpp"
 
 #include <bitset>
 #include <string>
+#include <stdexcept>
+#include <type_traits>
 
 class Rgba;
 class Vector2;
@@ -39,6 +42,7 @@ public:
     [[nodiscard]] bool eof() const noexcept;
     [[nodiscard]] operator bool() const noexcept;
     [[nodiscard]] bool operator!() const noexcept;
+
     bool GetNext(Rgba& value) const noexcept;
     bool GetNext(Vector2& value) const noexcept;
     bool GetNext(Vector3& value) const noexcept;
@@ -47,6 +51,7 @@ public:
     bool GetNext(IntVector3& value) const noexcept;
     bool GetNext(IntVector4& value) const noexcept;
     bool GetNext(Matrix4& value) const noexcept;
+
     [[nodiscard]] bool GetNext(std::string& value) const noexcept;
     bool GetNext(bool& value) const noexcept;
     bool GetNext(unsigned char& value) const noexcept;
@@ -70,6 +75,60 @@ private:
     bool GetNextValueFromBuffer(std::string& value) const noexcept;
     mutable std::string _current{};
     mutable std::bitset<static_cast<std::size_t>(ArgumentParserState::Max)> _state_bits{};
+
+    template<typename T>
+    bool GetNext_udt_helper(T& value) const noexcept {
+        std::string value_str{};
+        if(GetNext(value_str)) {
+            value = T(value_str);
+            return true;
+        }
+        SetState(ArgumentParserState::BadBit, true);
+        return false;
+    }
+
+    template<typename T>
+    bool GetNext_builtin_helper(T& value) const noexcept {
+        std::string value_str{};
+        if(GetNext(value_str)) {
+            try {
+                if constexpr(std::is_integral_v<T> && std::is_same_v<std::remove_cv_t<T>, bool>) {
+                    //Is bool integral type
+                    try {
+                        value = static_cast<T>(std::stoul(value_str));
+                    } catch([[maybe_unused]] std::invalid_argument& e) {
+                        value_str = StringUtils::ToLowerCase(value_str);
+                        if(value_str == "true") {
+                            value = true;
+                            return true;
+                        }
+                        if(value_str == "false") {
+                            value = false;
+                            return true;
+                        }
+                        SetState(ArgumentParserState::BadBit, true);
+                        return false;
+                    }
+                    return true;
+                } else if constexpr(std::is_integral_v<T> && !std::is_same_v<std::remove_cv_t<T>, bool>) {
+                    //Is nonbool signed integral type
+                    value = static_cast<T>(std::stoll(value_str));
+                } else if constexpr(std::is_unsigned_v<T> && std::is_integral_v<T> && !std::is_same_v<std::remove_cv_t<T>, bool>) {
+                    //Is nonbool unsigned integral type
+                    value = static_cast<T>(std::stoull(value_str));
+                } else if constexpr(std::is_floating_point_v<T>) {
+                    value = static_cast<T>(std::stold(value_str));
+                }
+            } catch([[maybe_unused]] std::invalid_argument& e) {
+                SetState(ArgumentParserState::BadBit, true);
+                return false;
+            }
+            return true;
+        }
+        SetState(ArgumentParserState::BadBit, true);
+        return false;
+    }
+
 };
 
 template<typename T>
