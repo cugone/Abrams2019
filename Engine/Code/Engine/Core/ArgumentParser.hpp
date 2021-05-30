@@ -110,12 +110,12 @@ private:
                         return false;
                     }
                     return true;
-                } else if constexpr(std::is_integral_v<T> && !std::is_same_v<std::remove_cv_t<T>, bool>) {
-                    //Is nonbool signed integral type
-                    value = static_cast<T>(std::stoll(value_str));
                 } else if constexpr(std::is_unsigned_v<T> && std::is_integral_v<T> && !std::is_same_v<std::remove_cv_t<T>, bool>) {
                     //Is nonbool unsigned integral type
                     value = static_cast<T>(std::stoull(value_str));
+                } else if constexpr(std::is_integral_v<T> && !std::is_same_v<std::remove_cv_t<T>, bool>) {
+                    //Is nonbool signed integral type
+                    value = static_cast<T>(std::stoll(value_str));
                 } else if constexpr(std::is_floating_point_v<T>) {
                     value = static_cast<T>(std::stold(value_str));
                 }
