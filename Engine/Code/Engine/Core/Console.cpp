@@ -310,14 +310,6 @@ bool Console::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         if(IsClosed()) {
             return false;
         }
-        constexpr uint16_t wheeldelta_mask = 0b1111'1111'0000'0000;    //FF00
-        constexpr uint16_t lbutton_mask = 0b0000'0000'0000'0001;       //0x0001
-        constexpr uint16_t rbutton_mask = 0b0000'0000'0000'0010;       //0x0002
-        constexpr uint16_t shift_mask = 0b0000'0000'0000'0100;         //0x0004
-        constexpr uint16_t ctrl_mask = 0b0000'0000'0000'1000;          //0x0008
-        constexpr uint16_t mbutton_mask = 0b0000'0000'0001'0000;       //0x0010
-        constexpr uint16_t xbutton1_down_mask = 0b0000'0000'0010'0000; //0x0020
-        constexpr uint16_t xbutton2_down_mask = 0b0000'0000'0100'0000; //0x0040
         _mouseWheelPosition = GET_WHEEL_DELTA_WPARAM(wp);
         return true;
     }
