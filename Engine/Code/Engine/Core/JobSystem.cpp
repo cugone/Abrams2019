@@ -52,7 +52,7 @@ bool JobConsumer::ConsumeJob() noexcept {
         }
         const auto job = queue.front();
         queue.pop();
-        job->work_cb(job->user_data);
+        std::invoke(job->work_cb, job->user_data);
         job->OnFinish();
         job->state = JobState::Finished;
         delete job;
