@@ -328,7 +328,6 @@ AABB2 UIElement::CalcRelativeBounds() const noexcept {
 
 AABB2 UIElement::CalcAbsoluteBounds() const noexcept {
     const auto size = CalcDesiredSize();
-    const auto parent_bounds = GetParentBounds();
     AABB2 bounds;
     bounds.StretchToIncludePoint(Vector2::ZERO);
     bounds.StretchToIncludePoint(size.GetZW());

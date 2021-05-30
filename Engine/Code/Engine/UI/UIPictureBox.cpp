@@ -18,7 +18,6 @@ UIPictureBox::UIPictureBox(const XMLElement& elem, UIPanel* parent /*= nullptr*/
 
 void UIPictureBox::SetImage(std::unique_ptr<AnimatedSprite> sprite) noexcept {
     _sprite.reset(sprite.release());
-    const auto dims = _sprite->GetFrameDimensions();
     GetSlot()->CalcPivot();
 }
 
