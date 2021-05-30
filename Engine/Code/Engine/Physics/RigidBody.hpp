@@ -57,6 +57,9 @@ struct RigidBodyDesc {
         collider = new_collider;
     }
     RigidBodyDesc& operator=(const RigidBodyDesc& other) noexcept {
+        if(&other == this) {
+            return *this;
+        }
         initialPosition = other.initialPosition;
         initialVelocity = other.initialVelocity;
         initialAcceleration = other.initialAcceleration;
