@@ -222,22 +222,22 @@ bool Shader::LoadFromXml(const XMLElement& element) noexcept {
 
 PipelineStage Shader::ParseTargets(const XMLElement& element) noexcept {
     auto targets = PipelineStage::None;
-    if(auto xml_vertex = element.FirstChildElement("vertex")) {
+    if(DataUtils::HasChild(element, "vertex")) {
         targets |= PipelineStage::Vs;
     }
-    if(auto xml_hull = element.FirstChildElement("hull")) {
+    if(DataUtils::HasChild(element, "hull")) {
         targets |= PipelineStage::Hs;
     }
-    if(auto xml_domain = element.FirstChildElement("domain")) {
+    if(DataUtils::HasChild(element, "domain")) {
         targets |= PipelineStage::Ds;
     }
-    if(auto xml_geometry = element.FirstChildElement("geometry")) {
+    if(DataUtils::HasChild(element, "geometry")) {
         targets |= PipelineStage::Gs;
     }
-    if(auto xml_pixel = element.FirstChildElement("pixel")) {
+    if(DataUtils::HasChild(element, "pixel")) {
         targets |= PipelineStage::Ps;
     }
-    if(auto xml_compute = element.FirstChildElement("compute")) {
+    if(DataUtils::HasChild(element, "compute")) {
         targets |= PipelineStage::Cs;
     }
     ValidatePipelineStages(targets);
@@ -246,42 +246,42 @@ PipelineStage Shader::ParseTargets(const XMLElement& element) noexcept {
 
 std::string Shader::ParseEntrypointList(const XMLElement& element) noexcept {
     std::string entrypointList{};
-    if(auto xml_vertex = element.FirstChildElement("vertex")) {
+    if(auto* xml_vertex = element.FirstChildElement("vertex")) {
         auto entrypoint = DataUtils::ParseXmlAttribute(*xml_vertex, "entrypoint", "");
         entrypoint += ",";
         entrypointList += entrypoint;
     } else {
         entrypointList += ",";
     }
-    if(auto xml_hull = element.FirstChildElement("hull")) {
+    if(auto* xml_hull = element.FirstChildElement("hull")) {
         auto entrypoint = DataUtils::ParseXmlAttribute(*xml_hull, "entrypoint", "");
         entrypoint += ",";
         entrypointList += entrypoint;
     } else {
         entrypointList += ",";
     }
-    if(auto xml_domain = element.FirstChildElement("domain")) {
+    if(auto* xml_domain = element.FirstChildElement("domain")) {
         auto entrypoint = DataUtils::ParseXmlAttribute(*xml_domain, "entrypoint", "");
         entrypoint += ",";
         entrypointList += entrypoint;
     } else {
         entrypointList += ",";
     }
-    if(auto xml_geometry = element.FirstChildElement("geometry")) {
+    if(auto* xml_geometry = element.FirstChildElement("geometry")) {
         auto entrypoint = DataUtils::ParseXmlAttribute(*xml_geometry, "entrypoint", "");
         entrypoint += ",";
         entrypointList += entrypoint;
     } else {
         entrypointList += ",";
     }
-    if(auto xml_pixel = element.FirstChildElement("pixel")) {
+    if(auto* xml_pixel = element.FirstChildElement("pixel")) {
         auto entrypoint = DataUtils::ParseXmlAttribute(*xml_pixel, "entrypoint", "");
         entrypoint += ",";
         entrypointList += entrypoint;
     } else {
         entrypointList += ",";
     }
-    if(auto xml_compute = element.FirstChildElement("compute")) {
+    if(auto* xml_compute = element.FirstChildElement("compute")) {
         auto entrypoint = DataUtils::ParseXmlAttribute(*xml_compute, "entrypoint", "");
         entrypoint += ",";
         entrypointList += entrypoint;
