@@ -9,18 +9,21 @@
 
     #ifdef _DEBUG
         #define TRACK_MEMORY TRACK_MEMORY_VERBOSE
+        #define DEBUG_BUILD
         #define AUDIO_DEBUG
         #define RENDER_DEBUG
         #define PROFILE_BUILD
         #define UI_DEBUG
     #elif defined(FINAL_BUILD)
-        #undef UI_DEBUG
+        #undef TRACK_MEMORY
+        #undef DEBUG_BUILD
         #undef AUDIO_DEBUG
         #undef RENDER_DEBUG
-        #undef TRACK_MEMORY
         #undef PROFILE_BUILD
+        #undef UI_DEBUG
     #else
         #define TRACK_MEMORY TRACK_MEMORY_BASIC
+        #define DEBUG_BUILD
         #define AUDIO_DEBUG
         #define RENDER_DEBUG
         #define PROFILE_BUILD
