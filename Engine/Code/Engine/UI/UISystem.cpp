@@ -281,6 +281,7 @@ void UISystem::AddUiWidgetToViewport(UIWidget& widget) {
     if(!IsWidgetLoaded(widget)) {
         LoadUiWidget(widget.name);
     }
+
 }
 
 void UISystem::RemoveUiWidgetFromViewport(UIWidget& widget) {

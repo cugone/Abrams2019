@@ -126,7 +126,6 @@ Image::Image(const Texture* tex, const Renderer* renderer) noexcept {
 
     auto* src = reinterpret_cast<unsigned int*>(resource.pData);
     auto* dst = reinterpret_cast<unsigned int*>(m_texelBytes.data());
-    const auto row_pitch = resource.RowPitch;
     const auto stride = static_cast<std::size_t>(desc.Width) * m_bytesPerTexel;
     for(std::size_t i = 0u; i < desc.Height; ++i) {
         std::memcpy(dst, src, stride);
