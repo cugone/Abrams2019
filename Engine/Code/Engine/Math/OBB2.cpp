@@ -60,7 +60,6 @@ void OBB2::Rotate(float rotationRadians) noexcept {
 
 void OBB2::StretchToIncludePoint(const Vector2& point) noexcept {
     const auto disp_to_point = point - position;
-    const auto dir_to_point = disp_to_point.GetNormalize();
     Translate(-point);
     AddPaddingToSides(disp_to_point);
 }
