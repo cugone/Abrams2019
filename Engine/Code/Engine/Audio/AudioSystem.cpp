@@ -309,28 +309,30 @@ void AudioSystem::RegisterWavFile(std::filesystem::path filepath) noexcept {
         return;
     }
 
-    const auto wav_result = [&]() {
-        auto&& wav = std::make_unique<FileUtils::Wav>();
-        if(const auto result = wav->Load(filepath); result == FileUtils::Wav::WAV_SUCCESS) {
-            _wave_files.insert_or_assign(filepath, std::move(wav));
-            return result;
-        } else {
-            return result;
+    if(const auto wav_result = [&]() {
+           auto&& wav = std::make_unique<FileUtils::Wav>();
+           if(const auto result = wav->Load(filepath); result == FileUtils::Wav::WAV_SUCCESS) {
+               _wave_files.insert_or_assign(filepath, std::move(wav));
+               return result;
+           } else {
+               return result;
+           }
+       }(); //IIIL
+       wav_result != FileUtils::Wav::WAV_SUCCESS) {
+        switch(wav_result) {
+        case FileUtils::Wav::WAV_ERROR_NOT_A_WAV: {
+            DebuggerPrintf("%s is not a .wav file.\n", filepath.string().c_str());
+            break;
         }
-    }(); //IIIL
-    switch(wav_result) {
-    case FileUtils::Wav::WAV_ERROR_NOT_A_WAV: {
-        DebuggerPrintf("%s is not a .wav file.\n", filepath.string().c_str());
-        break;
-    }
-    case FileUtils::Wav::WAV_ERROR_BAD_FILE: {
-        DebuggerPrintf("%s is improperly formatted.\n", filepath.string().c_str());
-        break;
-    }
-    default: {
-        DebuggerPrintf("Unknown error attempting to load %s\n", filepath.string().c_str());
-        break;
-    }
+        case FileUtils::Wav::WAV_ERROR_BAD_FILE: {
+            DebuggerPrintf("%s is improperly formatted.\n", filepath.string().c_str());
+            break;
+        }
+        default: {
+            DebuggerPrintf("Unknown error attempting to load %s\n", filepath.string().c_str());
+            break;
+        }
+        }
     }
 }
 
