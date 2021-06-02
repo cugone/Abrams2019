@@ -309,15 +309,15 @@ void AudioSystem::RegisterWavFile(std::filesystem::path filepath) noexcept {
         return;
     }
 
-    unsigned int wav_result = FileUtils::Wav::WAV_SUCCESS;
-    {
-        auto wav = std::make_unique<FileUtils::Wav>();
-        wav_result = wav->Load(filepath);
-        if(wav_result == FileUtils::Wav::WAV_SUCCESS) {
+    const auto wav_result = [&]() {
+        auto&& wav = std::make_unique<FileUtils::Wav>();
+        if(const auto result = wav->Load(filepath); result == FileUtils::Wav::WAV_SUCCESS) {
             _wave_files.insert_or_assign(filepath, std::move(wav));
-            return;
+            return result;
+        } else {
+            return result;
         }
-    }
+    }(); //IIIL
     switch(wav_result) {
     case FileUtils::Wav::WAV_ERROR_NOT_A_WAV: {
         DebuggerPrintf("%s is not a .wav file.\n", filepath.string().c_str());
