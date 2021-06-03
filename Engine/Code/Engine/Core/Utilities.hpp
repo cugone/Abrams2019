@@ -25,11 +25,6 @@ bool FlipFlop(CallableT&& f_true, CallableF&& f_false) noexcept {
     return is_true;
 }
 
-bool FlipFlop() noexcept {
-    static bool value = true;
-    bool is_true = value;
-    value = !value;
-    return is_true;
-}
+bool FlipFlop() noexcept;
 
 } // namespace Utils
