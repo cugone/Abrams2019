@@ -212,6 +212,18 @@ bool AudioSystem::ProcessSystemMessage(const EngineMessage& /*msg*/) noexcept {
     return false;
 }
 
+void AudioSystem::SuspendAudio() noexcept {
+    if(_xaudio2) {
+        _xaudio2->StopEngine();
+    }
+}
+
+void AudioSystem::ResumeAudio() noexcept {
+    if(_xaudio2) {
+        _xaudio2->StartEngine();
+    }
+}
+
 void AudioSystem::SetFormat(const WAVEFORMATEXTENSIBLE& format) noexcept {
     _audio_format_ex = format;
 }

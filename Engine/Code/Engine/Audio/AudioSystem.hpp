@@ -157,6 +157,9 @@ public:
     virtual void EndFrame() override;
     [[nodiscard]] virtual bool ProcessSystemMessage(const EngineMessage& msg) noexcept override;
 
+    void SuspendAudio() noexcept;
+    void ResumeAudio() noexcept;
+
     void SetFormat(const WAVEFORMATEXTENSIBLE& format) noexcept;
     void SetFormat(const FileUtils::Wav::WavFormatChunk& format) noexcept;
 
