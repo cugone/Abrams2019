@@ -20,14 +20,17 @@ void Mesh::Builder::Begin(const PrimitiveType& type) noexcept {
     _current_draw_instruction.indexStart = indicies.size();
 }
 
-void Mesh::Builder::End(Material* mat /* = nullptr */) noexcept {
-    _current_draw_instruction.material = mat;
+void Mesh::Builder::End(const Material* const mat /* = nullptr */) noexcept {
     _current_draw_instruction.indexCount = indicies.size() - _current_draw_instruction.indexStart;
     if(!draw_instructions.empty()) {
         auto& last_inst = draw_instructions.back();
-        if(!mat) {
-            _current_draw_instruction.material = last_inst.material;
-        }
+        _current_draw_instruction.material = [&]() {
+            if(!mat) {
+                return last_inst.material;
+            } else {
+                return const_cast<Material* const>(mat);
+            }
+        }(); //IIIL
         if(last_inst == _current_draw_instruction) {
             ++last_inst.count;
             last_inst.indexCount += _current_draw_instruction.indexCount;
@@ -125,15 +128,17 @@ std::size_t Mesh::Builder::AddIndicies(const Primitive& type) noexcept {
 void Mesh::Render(Renderer& renderer, const Mesh::Builder& builder) noexcept {
     for(const auto& draw_inst : builder.draw_instructions) {
         renderer.SetMaterial(draw_inst.material);
-        auto cbs = draw_inst.material->GetShader()->GetConstantBuffers();
-        auto ccbs = draw_inst.material->GetShader()->GetComputeConstantBuffers();
-        const auto cb_size = cbs.size();
-        for(int i = 0; i < cb_size; ++i) {
-            renderer.SetConstantBuffer(renderer.CONSTANT_BUFFER_START_INDEX + i, &(cbs.begin() + i)->get());
-        }
-        renderer.DrawIndexed(draw_inst.type, builder.verticies, builder.indicies, draw_inst.indexCount, draw_inst.vertexStart, draw_inst.baseVertexLocation);
-        for(int i = 0; i < cb_size; ++i) {
-            renderer.SetConstantBuffer(renderer.CONSTANT_BUFFER_START_INDEX + i, nullptr);
+        if(draw_inst.material) {
+            auto cbs = draw_inst.material->GetShader()->GetConstantBuffers();
+            auto ccbs = draw_inst.material->GetShader()->GetComputeConstantBuffers();
+            const auto cb_size = cbs.size();
+            for(int i = 0; i < cb_size; ++i) {
+                renderer.SetConstantBuffer(renderer.CONSTANT_BUFFER_START_INDEX + i, &(cbs.begin() + i)->get());
+            }
+            renderer.DrawIndexed(draw_inst.type, builder.verticies, builder.indicies, draw_inst.indexCount, draw_inst.vertexStart, draw_inst.baseVertexLocation);
+            for(int i = 0; i < cb_size; ++i) {
+                renderer.SetConstantBuffer(renderer.CONSTANT_BUFFER_START_INDEX + i, nullptr);
+            }
         }
     }
 }
