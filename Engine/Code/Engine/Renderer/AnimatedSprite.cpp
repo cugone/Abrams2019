@@ -272,7 +272,11 @@ void AnimatedSprite::SetMaterial(Material* mat) noexcept {
     _material = mat;
 }
 
-Material* AnimatedSprite::GetMaterial() const noexcept {
+const Material* const AnimatedSprite::GetMaterial() const noexcept {
+    return _material;
+}
+
+Material* AnimatedSprite::GetMaterial() noexcept {
     return _material;
 }
 

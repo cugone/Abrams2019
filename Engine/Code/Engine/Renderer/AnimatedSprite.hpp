@@ -51,7 +51,8 @@ public:
     void SetFractionElapsed(float fractionElapsed) noexcept;              // e.g. 0.33f for one-third in
     void SetDuration(TimeUtils::FPSeconds durationSeconds) noexcept;
     void SetMaterial(Material* mat) noexcept;
-    [[nodiscard]] Material* GetMaterial() const noexcept;
+    [[nodiscard]] const Material* const GetMaterial() const noexcept;
+    [[nodiscard]] Material* GetMaterial() noexcept;
 
 protected:
 private:
