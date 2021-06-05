@@ -9,6 +9,10 @@ class Renderer;
 class Shader;
 class Texture;
 
+namespace FileUtils {
+    class MtlReader;
+}
+
 class Material {
 public:
     // clang-format off
@@ -113,4 +117,6 @@ private:
     Renderer& _renderer;
     std::vector<Texture*> _textures = {};
     Shader* _shader = nullptr;
+
+    friend class FileUtils::MtlReader;
 };
