@@ -35,6 +35,7 @@
     <ClCompile Include="Core\ArgumentParser.cpp" />
     <ClCompile Include="Core\Base64.cpp" />
     <ClCompile Include="Core\BuildConfig.hpp" />
+    <ClCompile Include="Core\MtlReader.cpp" />
     <ClCompile Include="Core\OrthographicCameraController.cpp" />
     <ClCompile Include="Core\Clipboard.cpp" />
     <ClCompile Include="Core\Config.cpp" />
@@ -173,6 +174,7 @@
     <ClInclude Include="Core\Argb.hpp" />
     <ClInclude Include="Core\ArgumentParser.hpp" />
     <ClInclude Include="Core\Base64.hpp" />
+    <ClInclude Include="Core\MtlReader.hpp" />
     <ClInclude Include="Core\OrthographicCameraController.hpp" />
     <ClInclude Include="Core\Clipboard.hpp" />
     <ClInclude Include="Core\Config.hpp" />
