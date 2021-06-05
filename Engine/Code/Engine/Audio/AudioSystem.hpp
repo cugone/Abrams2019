@@ -33,7 +33,7 @@ class FileLogger;
 class AudioSystem : public EngineSubsystem {
 private:
     class Channel;
-    struct ChannelGroup;
+    class ChannelGroup;
 
 public:
     class EngineCallback : public IXAudio2EngineCallback {
@@ -52,14 +52,14 @@ public:
         [[nodiscard]] const std::size_t GetId() const noexcept;
         [[nodiscard]] static const std::size_t GetCount() noexcept;
         [[nodiscard]] const FileUtils::Wav* const GetWav() const noexcept;
-
+        const std::vector<Channel*>& GetChannels() const noexcept;
     private:
         inline static std::size_t _id{0u};
         AudioSystem* _audio_system{};
         std::size_t _my_id{0u};
         FileUtils::Wav* _wave_file{};
         std::vector<Channel*> _channels{};
-        std::mutex _cs{};
+        mutable std::mutex _cs{};
     };
     struct SoundDesc {
         float volume{1.0f};
@@ -68,6 +68,7 @@ public:
         bool stopWhenFinishedLooping{false};
         TimeUtils::FPSeconds loopBegin{};
         TimeUtils::FPSeconds loopEnd{};
+        std::string groupName{};
     };
 
 private:
@@ -101,6 +102,7 @@ private:
             uint32_t loop_beginSamples{0};
             uint32_t loop_endSamples{0};
             bool stopWhenFinishedLooping{false};
+            std::string groupName{};
         };
         explicit Channel(AudioSystem& audioSystem, const ChannelDesc& desc) noexcept;
         ~Channel() noexcept;
@@ -128,19 +130,29 @@ private:
         Sound* _sound = nullptr;
         AudioSystem* _audio_system = nullptr;
         ChannelDesc _desc{};
-        std::mutex _cs{};
+        mutable std::mutex _cs{};
 
         friend class VoiceCallback;
+        friend class ChannelGroup;
     };
-    struct ChannelGroup {
-        Channel* channel = nullptr;
-        std::vector<Sound*> sounds{};
-        void SetVolume(float newVolume) noexcept;
-        void SetFrequency(float newFrequency) noexcept;
+    class ChannelGroup {
+    public:
+        ChannelGroup() = delete;
+        ChannelGroup(AudioSystem& parentAudioSystem) noexcept;
+        explicit ChannelGroup(AudioSystem& parentAudioSystem, std::string name) noexcept;
 
-        [[nodiscard]] constexpr std::pair<float, float> GetVolumeAndFrequency() const noexcept;
-        [[nodiscard]] float GetFrequency() const noexcept;
+        std::vector<Channel*> channels{};
+
+        void AddChannel(Channel* channel) noexcept;
+        void RemoveChannel(Channel* channel) noexcept;
+        void SetVolume(float newVolume) noexcept;
         [[nodiscard]] float GetVolume() const noexcept;
+
+    private:
+        AudioSystem& _audio_system;
+        std::string _name{"UNNAMED CHANNEL GROUP"};
+        IXAudio2SubmixVoice* _groupVoice{};
+        mutable std::mutex _cs{};
     };
 
 public:
@@ -171,7 +183,7 @@ public:
     [[nodiscard]] Sound* CreateSound(std::filesystem::path filepath) noexcept;
 
     [[nodiscard]] ChannelGroup* GetChannelGroup(const std::string& name) const noexcept;
-    [[nodiscard]] ChannelGroup* GetChannelGroup(Sound* snd) const noexcept;
+
     void AddChannelGroup(const std::string& name) noexcept;
     void RemoveChannelGroup(const std::string& name) noexcept;
     void AddSoundToChannelGroup(const std::string& channelGroupName, Sound* snd) noexcept;
@@ -186,7 +198,6 @@ public:
 protected:
 private:
     void DeactivateChannel(Channel& channel) noexcept;
-
     FileLogger* _fileLogger = nullptr;
     WAVEFORMATEXTENSIBLE _audio_format_ex{};
     std::size_t _sound_count{};
