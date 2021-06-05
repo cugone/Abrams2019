@@ -20,17 +20,14 @@ void Mesh::Builder::Begin(const PrimitiveType& type) noexcept {
     _current_draw_instruction.indexStart = indicies.size();
 }
 
-void Mesh::Builder::End(const Material* const mat /* = nullptr */) noexcept {
+void Mesh::Builder::End(Material* mat /* = nullptr */) noexcept {
+    _current_draw_instruction.material = mat;
     _current_draw_instruction.indexCount = indicies.size() - _current_draw_instruction.indexStart;
     if(!draw_instructions.empty()) {
         auto& last_inst = draw_instructions.back();
-        _current_draw_instruction.material = [&]() {
-            if(!mat) {
-                return last_inst.material;
-            } else {
-                return const_cast<Material* const>(mat);
-            }
-        }(); //IIIL
+        if(!mat) {
+            _current_draw_instruction.material = last_inst.material;
+        }
         if(last_inst == _current_draw_instruction) {
             ++last_inst.count;
             last_inst.indexCount += _current_draw_instruction.indexCount;

@@ -39,7 +39,7 @@ public:
         std::vector<Renderer::DrawInstruction> draw_instructions{};
 
         void Begin(const PrimitiveType& type) noexcept;
-        void End(const Material* const mat = nullptr) noexcept;
+        void End(Material* mat = nullptr) noexcept;
         void Clear() noexcept;
 
         void SetTangent(const Vector3& tangent) noexcept;
