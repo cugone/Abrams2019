@@ -138,7 +138,7 @@ private:
     class ChannelGroup {
     public:
         ChannelGroup() = delete;
-        ChannelGroup(AudioSystem& parentAudioSystem) noexcept;
+        explicit ChannelGroup(AudioSystem& parentAudioSystem) noexcept;
         explicit ChannelGroup(AudioSystem& parentAudioSystem, std::string name) noexcept;
 
         std::vector<Channel*> channels{};
