@@ -564,7 +564,6 @@ void AudioSystem::ChannelGroup::AddChannel(Channel* channel) noexcept {
         std::scoped_lock lock(_cs);
         auto SFXSend = XAUDIO2_SEND_DESCRIPTOR{0, _groupVoice};
         auto SFXSendList = XAUDIO2_VOICE_SENDS{1, &SFXSend};
-        auto details = XAUDIO2_VOICE_DETAILS{};
         channel->_voice->SetOutputVoices(&SFXSendList);
     }
     channels.push_back(channel);
