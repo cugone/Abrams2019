@@ -3,7 +3,6 @@
 #include "Engine/Core/Rgba.hpp"
 
 #include <filesystem>
-#include <memory>
 #include <vector>
 
 class Renderer;
@@ -28,10 +27,17 @@ public:
 
     [[nodiscard]] std::vector<Material*> GetMaterials() noexcept;
 
+    Rgba m_ambientColor{};
+    Rgba m_diffuseColor{};
+    Rgba m_specularColor{};
+    Rgba m_emissiveColor{};
+    Rgba m_transmissionFilterColor{};
+    float m_specularExponent{};
+    float m_transparencyWeight{};
+    float m_indexOfRefraction{1.0f};
+    int m_sharpness{60};
 protected:
 private:
-    void PrintErrorToDebugger(std::filesystem::path filepath, const std::string& elementType, unsigned long long line_index) const noexcept;
-
     enum class IlluminationModel : uint8_t {
         ColorNoAmbient,
         ColorAmbient,
@@ -57,17 +63,10 @@ private:
         uint8_t fresnel : 1;
         uint8_t castOnInvisible : 1;
     };
-    Rgba m_ambientColor{};
-    Rgba m_diffuseColor{};
-    Rgba m_specularColor{};
-    Rgba m_transmissionFilterColor{};
-    float m_specularExponent{};
-    float m_transparencyWeight{};
-    float m_indexOfRefraction{};
-
     Renderer& _renderer;
     std::vector<Material*> m_materials{};
     IlluminationOptions m_lightOptions{};
+    IlluminationModel m_illuminationModel{IlluminationModel::ColorNoAmbient};
 };
 
 } // namespace FileUtils
