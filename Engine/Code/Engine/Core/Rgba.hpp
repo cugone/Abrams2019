@@ -70,6 +70,9 @@ public:
     [[nodiscard]] std::tuple<float, float, float, float> GetAsFloats() const noexcept;
     void ScaleRGB(float scale) noexcept;
     void ScaleAlpha(float scale) noexcept;
+    void Invert() noexcept;
+    void InvertRGB() noexcept;
+    void InvertAlpha() noexcept;
 
     [[nodiscard]] uint32_t GetAsRawValue() const noexcept;
     void SetFromRawValue(uint32_t value) noexcept;

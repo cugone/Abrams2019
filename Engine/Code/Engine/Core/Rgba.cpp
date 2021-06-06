@@ -224,6 +224,21 @@ void Rgba::ScaleAlpha(float scale) noexcept {
     a = static_cast<unsigned char>(std::clamp(scaled_alpha, 0.0f, 255.0f));
 }
 
+void Rgba::Invert() noexcept {
+    InvertRGB();
+    InvertAlpha();
+}
+
+void Rgba::InvertRGB() noexcept {
+    r = 255 - r;
+    g = 255 - g;
+    b = 255 - b;
+}
+
+void Rgba::InvertAlpha() noexcept {
+    a = 255 - a;
+}
+
 uint32_t Rgba::GetAsRawValue() const noexcept {
     return static_cast<uint32_t>(((static_cast<uint32_t>(r) << 24) & 0xFF000000u)
                                  | ((static_cast<uint32_t>(g) << 16) & 0x00FF0000u)
