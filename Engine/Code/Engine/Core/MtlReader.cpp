@@ -74,6 +74,7 @@ namespace FileUtils {
     }
 
     bool MtlReader::Parse(std::filesystem::path filepath) noexcept {
+        PROFILE_LOG_SCOPE_FUNCTION();
         if(auto buffer = FileUtils::ReadBinaryBufferFromFile(filepath); buffer.has_value()) {
             if(std::stringstream ss{}; ss.write(reinterpret_cast<const char*>(buffer->data()), buffer->size())) {
                 buffer->clear();
