@@ -194,7 +194,7 @@ bool Obj::Parse(const std::filesystem::path& filepath) noexcept {
     _is_saving = false;
     _is_saved = false;
     _is_loading = true;
-    MtlReader mtl{_renderer};
+    MtlReader mtl;
     if(auto buffer = FileUtils::ReadBinaryBufferFromFile(filepath)) {
         if(std::stringstream ss{}; ss.write(reinterpret_cast<const char*>(buffer->data()), buffer->size())) {
             buffer->clear();

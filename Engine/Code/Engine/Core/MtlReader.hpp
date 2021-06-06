@@ -12,13 +12,11 @@ namespace FileUtils {
 
 class MtlReader {
 public:
-    MtlReader() noexcept = delete;
-    explicit MtlReader(Renderer& renderer) noexcept;
+    MtlReader() noexcept = default;
     MtlReader(const MtlReader& other) = default;
     MtlReader(MtlReader&& other) = default;
     MtlReader& operator=(const MtlReader& rhs) = default;
     MtlReader& operator=(MtlReader&& rhs) = default;
-    explicit MtlReader(Renderer& renderer, std::filesystem::path filepath) noexcept;
     ~MtlReader() = default;
 
     [[nodiscard]] bool Load(std::filesystem::path filepath) noexcept;
@@ -27,13 +25,23 @@ public:
 
     [[nodiscard]] std::vector<Material*> GetMaterials() noexcept;
 
-    Rgba m_ambientColor{};
-    Rgba m_diffuseColor{};
-    Rgba m_specularColor{};
-    Rgba m_emissiveColor{};
-    Rgba m_transmissionFilterColor{};
-    float m_specularExponent{};
-    float m_transparencyWeight{};
+    [[nodiscard]] std::unique_ptr<Material> Export(Renderer& renderer) const noexcept;
+
+    std::string m_materialName{"UNNAMED_MATERIAL"};
+    std::string m_diffuseTexture{"__diffuse"};
+    std::string m_ambientTexture{"__ambient"};
+    std::string m_specularTexture{"__specular"};
+    std::string m_emissiveTexture{"__emissive"};
+    std::string m_normalTexture{"__normal"};
+
+    Rgba m_ambientColor{Rgba::Black};
+    Rgba m_diffuseColor{Rgba::White};
+    Rgba m_specularColor{Rgba::Black};
+    Rgba m_emissiveColor{Rgba::Black};
+    Rgba m_transmissionFilterColor{Rgba::White};
+    float m_specularPower{2.0f};
+    float m_specularExponent{8.0f};
+    float m_transparencyWeight{1.0f};
     float m_indexOfRefraction{1.0f};
     int m_sharpness{60};
 protected:
@@ -63,8 +71,6 @@ private:
         uint8_t fresnel : 1;
         uint8_t castOnInvisible : 1;
     };
-    Renderer& _renderer;
-    std::vector<Material*> m_materials{};
     IlluminationOptions m_lightOptions{};
     IlluminationModel m_illuminationModel{IlluminationModel::ColorNoAmbient};
 };
