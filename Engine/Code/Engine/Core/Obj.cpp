@@ -278,58 +278,10 @@ bool Obj::Parse(const std::filesystem::path& filepath) noexcept {
                     }
                     auto tris = StringUtils::Split(std::string{std::begin(cur_line) + 2, std::end(cur_line)}, ' ');
                     if(tris.size() != 3) {
-                        DebuggerPrintf("OBJ implementation does not support non-triangle faces!\n");
+                        DebuggerPrintf("WARNING: Performance will be reduced when loading non-triangle polygons!\n");
                         PrintErrorToDebugger(filepath, "face triplet", line_index);
-                        return false;
                     }
-
-void Obj::PrintErrorToDebugger(std::filesystem::path filepath, const std::string& elementType, unsigned long long line_index) const noexcept {
-    namespace FS = std::filesystem;
-    filepath = FS::canonical(filepath);
-    filepath.make_preferred();
-    DebuggerPrintf("%s(%lld): Invalid %s\n", filepath.string().c_str(), line_index, elementType.c_str());
-}
-
-                        decltype(_face_idxs)::value_type face{};
-                        auto elem_count = elems.size();
-                        std::size_t cur_vbo_index = 0;
-                        for(auto i = 0u; i < elem_count; ++i) {
-                            switch(i) {
-                            case 0:
-                                if(!elems[0].empty()) {
-                                    std::size_t cur_v = std::stoul(elems[0]);
-                                    cur_vbo_index = cur_v - 1;
-                                    face.a = cur_vbo_index;
-                                    vertex.position = _verts[cur_vbo_index];
-                                    _ibo.push_back(static_cast<unsigned int>(cur_vbo_index));
-                                } else {
-                                    face.a = static_cast<std::size_t>(-1);
-                                }
-                                break;
-                            case 1:
-                                if(!elems[1].empty()) {
-                                    std::size_t cur_vt = std::stoul(elems[1]);
-                                    face.b = cur_vt;
-                                    vertex.texcoords = Vector2{_tex_coords[cur_vt - 1]};
-                                } else {
-                                    face.b = static_cast<std::size_t>(-1);
-                                }
-                                break;
-                            case 2:
-                                if(!elems[2].empty()) {
-                                    std::size_t cur_vn = std::stoul(elems[2]);
-                                    face.c = cur_vn - 1;
-                                    vertex.normal = _normals[cur_vn - 1];
-                                } else {
-                                    face.c = static_cast<std::size_t>(-1);
-                                }
-                                break;
-                            default: break;
-                            }
-                        }
-                        _vbo[cur_vbo_index] = vertex;
-                        _face_idxs.emplace_back(face);
-                    }
+                    TriangulatePolygon(tris);
                 } else {
                     /* DO NOTHING */
                 }
@@ -350,5 +302,93 @@ void Obj::PrintErrorToDebugger(std::filesystem::path filepath, const std::string
     filepath.make_preferred();
     DebuggerPrintf("%s(%lld): Invalid %s\n", filepath.string().c_str(), line_index, elementType.c_str());
 }
+
+Vertex3D Obj::FaceTriToVertex(const std::string& t) const noexcept {
+    auto elems = StringUtils::Split(t, '/', false);
+    Vertex3D vertex{};
+    auto elem_count = elems.size();
+    for(auto i = 0u; i < elem_count; ++i) {
+        switch(i) {
+        case 0:
+            if(!elems[0].empty()) {
+                std::size_t cur_v = std::stoul(elems[0]);
+                vertex.position = _verts[cur_v - 1];
+            }
+            break;
+        case 1:
+            if(!elems[1].empty()) {
+                std::size_t cur_vt = std::stoul(elems[1]);
+                vertex.texcoords = Vector2{_tex_coords[cur_vt - 1]};
+            }
+            break;
+        case 2:
+            if(!elems[2].empty()) {
+                std::size_t cur_vn = std::stoul(elems[2]);
+                vertex.normal = _normals[cur_vn - 1];
+            }
+            break;
+        default: break;
+        }
+    }
+    return vertex;
+}
+
+Obj::FaceIdxs Obj::FaceTriToFaceIdx(const std::string& t) const noexcept {
+    auto elems = StringUtils::Split(t, '/', false);
+    decltype(_face_idxs)::value_type face{};
+    auto elem_count = elems.size();
+    for(auto i = 0u; i < elem_count; ++i) {
+        switch(i) {
+        case 0:
+            if(!elems[0].empty()) {
+                face.a = std::stoul(elems[0]);
+            } else {
+                face.a = static_cast<std::size_t>(-1);
+            }
+            break;
+        case 1:
+            if(!elems[1].empty()) {
+                face.b = std::stoul(elems[1]);
+            } else {
+                face.b = static_cast<std::size_t>(-1);
+            }
+            break;
+        case 2:
+            if(!elems[2].empty()) {
+                face.c = std::stoul(elems[2]);
+            } else {
+                face.c = static_cast<std::size_t>(-1);
+            }
+            break;
+        default: break;
+        }
+    }
+    return face;
+}
+
+void Obj::TriangulatePolygon(const std::vector<std::string>& tris) noexcept {
+    std::vector<std::size_t> vbo_idxs{};
+    const auto tri_count = tris.size();
+    vbo_idxs.resize(tri_count);
+    auto ai = std::size_t{0u};
+    for(const auto& t : tris) {
+        auto elems = StringUtils::Split(t, '/', false);
+        std::size_t cur_v = std::stoul(elems[0]);
+        std::size_t vbo_index = cur_v - std::size_t{1u};
+        vbo_idxs[ai++] = vbo_index;
+    }
+    for(auto i = std::size_t{0u}; i != tri_count; ++i) {
+        _vbo[vbo_idxs[i]] = FaceTriToVertex(tris[i]);
+    }
+    for(auto i = std::size_t{0u}; i != tri_count - 2; ++i) {
+        _ibo.push_back(static_cast<unsigned int>(vbo_idxs[0]));
+        _ibo.push_back(static_cast<unsigned int>(vbo_idxs[(i + 1) % tri_count]));
+        _ibo.push_back(static_cast<unsigned int>(vbo_idxs[(i + 2) % tri_count]));
+        _face_idxs.emplace_back(FaceTriToFaceIdx(tris[0]));
+        _face_idxs.emplace_back(FaceTriToFaceIdx(tris[(i + 1) % tri_count]));
+        _face_idxs.emplace_back(FaceTriToFaceIdx(tris[(i + 2) % tri_count]));
+    }
+}
+
 
 } // namespace FileUtils

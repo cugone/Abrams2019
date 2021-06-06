@@ -43,11 +43,16 @@ private:
 
     void PrintErrorToDebugger(std::filesystem::path filepath, const std::string& elementType, unsigned long long line_index) const noexcept;
 
+    Vertex3D FaceTriToVertex(const std::string& t) const noexcept;
+
     struct FaceIdxs {
         std::size_t a;
         std::size_t b;
         std::size_t c;
     };
+    FaceIdxs FaceTriToFaceIdx(const std::string& t) const noexcept;
+
+    void TriangulatePolygon(const std::vector<std::string>& tris) noexcept;
 
     Renderer& _renderer;
     std::string _materialName{};
