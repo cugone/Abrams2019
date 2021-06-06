@@ -11,16 +11,19 @@
 #include <tuple>
 #include <vector>
 
+class Renderer;
+
 namespace FileUtils {
 
 class Obj {
 public:
-    Obj() = default;
+    Obj() = delete;
+    explicit Obj(Renderer& renderer) noexcept;
     Obj(const Obj& other) = default;
     Obj(Obj&& other) = default;
     Obj& operator=(const Obj& rhs) = default;
     Obj& operator=(Obj&& rhs) = default;
-    explicit Obj(std::filesystem::path filepath) noexcept;
+    explicit Obj(Renderer& renderer, std::filesystem::path filepath) noexcept;
     ~Obj() = default;
 
     [[nodiscard]] const std::vector<Vertex3D>& GetVbo() const noexcept;
@@ -46,6 +49,8 @@ private:
         std::size_t c;
     };
 
+    Renderer& _renderer;
+    std::string _materialName{};
     std::vector<Vertex3D> _vbo{};
     std::vector<unsigned int> _ibo{};
     std::vector<Vector3> _verts{};

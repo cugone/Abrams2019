@@ -2,8 +2,12 @@
 
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/FileUtils.hpp"
+#include "Engine/Core/MtlReader.hpp"
 #include "Engine/Core/StringUtils.hpp"
+
 #include "Engine/Profiling/ProfileLogScope.hpp"
+
+#include "Engine/Renderer/Renderer.hpp"
 
 #include <numeric>
 #include <sstream>
@@ -11,8 +15,13 @@
 
 namespace FileUtils {
 
+Obj::Obj(Renderer& renderer) noexcept
+: _renderer(renderer) { /* DO NOTHING */
+}
+
 //Run only as an asynchronous operation highly recommended.
-Obj::Obj(std::filesystem::path filepath) noexcept {
+Obj::Obj(Renderer& renderer, std::filesystem::path filepath) noexcept
+: _renderer(renderer) {
     namespace FS = std::filesystem;
     {
         const auto error_msg = std::string{"Obj: "} + filepath.string() + " failed to load.\nReason: It does not exist.\n";
@@ -183,6 +192,7 @@ bool Obj::Parse(const std::filesystem::path& filepath) noexcept {
     _is_saving = false;
     _is_saved = false;
     _is_loading = true;
+    MtlReader mtl{_renderer};
     if(auto buffer = FileUtils::ReadBinaryBufferFromFile(filepath)) {
         if(std::stringstream ss{}; ss.write(reinterpret_cast<const char*>(buffer->data()), buffer->size())) {
             buffer->clear();
@@ -211,8 +221,17 @@ bool Obj::Parse(const std::filesystem::path& filepath) noexcept {
                 }
                 cur_line = StringUtils::TrimWhitespace(cur_line);
                 if(StringUtils::StartsWith(cur_line, "mtllib ")) {
+                    auto folder = filepath.parent_path();
+                    auto mtlname = cur_line.substr(7);
+                    auto mtlpath = folder / mtlname;
+                    if(!mtl.Parse(mtlpath)) {
+                        DebuggerPrintf("Ill-formed material library in OBJ!\n");
+                        PrintErrorToDebugger(filepath, "mtllib", line_index);
+                        return false;
+                    }
                     continue;
                 } else if(StringUtils::StartsWith(cur_line, "usemtl ")) {
+                    _materialName = cur_line.substr(7);
                     continue;
                 } else if(StringUtils::StartsWith(cur_line, "v ")) {
                     auto elems = StringUtils::Split(std::string{std::begin(cur_line) + 2, std::end(cur_line)}, ' ');
@@ -263,9 +282,14 @@ bool Obj::Parse(const std::filesystem::path& filepath) noexcept {
                         PrintErrorToDebugger(filepath, "face triplet", line_index);
                         return false;
                     }
-                    for(auto& t : tris) {
-                        auto elems = StringUtils::Split(t, '/', false);
-                        Vertex3D vertex{};
+
+void Obj::PrintErrorToDebugger(std::filesystem::path filepath, const std::string& elementType, unsigned long long line_index) const noexcept {
+    namespace FS = std::filesystem;
+    filepath = FS::canonical(filepath);
+    filepath.make_preferred();
+    DebuggerPrintf("%s(%lld): Invalid %s\n", filepath.string().c_str(), line_index, elementType.c_str());
+}
+
                         decltype(_face_idxs)::value_type face{};
                         auto elem_count = elems.size();
                         std::size_t cur_vbo_index = 0;
