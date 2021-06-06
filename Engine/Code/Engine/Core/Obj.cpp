@@ -161,22 +161,24 @@ const std::vector<unsigned int>& Obj::GetIbo() const noexcept {
 }
 
 void Obj::Unload() noexcept {
-    _vbo.clear();
-    _vbo.shrink_to_fit();
-    _ibo.clear();
-    _ibo.shrink_to_fit();
-    _is_loaded = false;
-    _is_loading = false;
     _is_saved = false;
     _is_saving = false;
-    _verts.clear();
-    _verts.shrink_to_fit();
-    _tex_coords.clear();
-    _tex_coords.shrink_to_fit();
-    _normals.clear();
-    _normals.shrink_to_fit();
+    _is_loading = false;
+    _is_loaded = false;
     _face_idxs.clear();
     _face_idxs.shrink_to_fit();
+    _normals.clear();
+    _normals.shrink_to_fit();
+    _tex_coords.clear();
+    _tex_coords.shrink_to_fit();
+    _verts.clear();
+    _verts.shrink_to_fit();
+    _ibo.clear();
+    _ibo.shrink_to_fit();
+    _vbo.clear();
+    _vbo.shrink_to_fit();
+    _materialName.clear();
+    _materialName.shrink_to_fit();
 }
 
 bool Obj::Parse(const std::filesystem::path& filepath) noexcept {
