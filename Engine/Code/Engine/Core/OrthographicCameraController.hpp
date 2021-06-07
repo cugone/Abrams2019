@@ -45,7 +45,7 @@ public:
 
     template<typename F>
     void DoCameraShake(F&& f) {
-        m_Camera.trauma = f();
+        m_Camera.trauma = std::invoke(std::forward<F>(f));
     }
 
 protected:
