@@ -172,7 +172,6 @@ class Renderer : public EngineSubsystem {
 public:
     struct DrawInstruction {
         PrimitiveType type{PrimitiveType::None};
-        std::size_t vertexStart{0u};
         std::size_t indexStart{0u};
         std::size_t indexCount{0u};
         std::size_t baseVertexLocation{0u};

@@ -16,7 +16,6 @@ Mesh::Builder::Builder(const std::vector<Vertex3D>& verts, const std::vector<uns
 
 void Mesh::Builder::Begin(const PrimitiveType& type) noexcept {
     _current_draw_instruction.type = type;
-    _current_draw_instruction.vertexStart = verticies.size();
     _current_draw_instruction.indexStart = indicies.size();
 }
 
@@ -132,7 +131,7 @@ void Mesh::Render(Renderer& renderer, const Mesh::Builder& builder) noexcept {
             for(int i = 0; i < cb_size; ++i) {
                 renderer.SetConstantBuffer(renderer.CONSTANT_BUFFER_START_INDEX + i, &(cbs.begin() + i)->get());
             }
-            renderer.DrawIndexed(draw_inst.type, builder.verticies, builder.indicies, draw_inst.indexCount, draw_inst.vertexStart, draw_inst.baseVertexLocation);
+            renderer.DrawIndexed(draw_inst.type, builder.verticies, builder.indicies, draw_inst.indexCount, draw_inst.indexStart, draw_inst.baseVertexLocation);
             for(int i = 0; i < cb_size; ++i) {
                 renderer.SetConstantBuffer(renderer.CONSTANT_BUFFER_START_INDEX + i, nullptr);
             }
