@@ -216,10 +216,10 @@ bool Obj::Parse(const std::filesystem::path& filepath) noexcept {
                     continue;
                 }
                 cur_line = StringUtils::TrimWhitespace(cur_line);
-                if(StringUtils::StartsWith(cur_line, "mtllib ")) {
+                const auto&& [key, value] = StringUtils::SplitOnFirst(cur_line, ' ');
+                if(key == "mtllib") {
                     auto folder = filepath.parent_path();
-                    auto mtlname = cur_line.substr(7);
-                    auto mtlpath = folder / mtlname;
+                    auto mtlpath = folder / value;
                     MtlReader mtl{};
                     if(!mtl.Parse(mtlpath)) {
                         DebuggerPrintf("Ill-formed material library in OBJ!\n");
@@ -227,11 +227,11 @@ bool Obj::Parse(const std::filesystem::path& filepath) noexcept {
                         return false;
                     }
                     continue;
-                } else if(StringUtils::StartsWith(cur_line, "usemtl ")) {
-                    _materialName = cur_line.substr(7);
+                } else if(key == "usemtl") {
+                    _materialName = value;
                     continue;
-                } else if(StringUtils::StartsWith(cur_line, "v ")) {
-                    auto elems = StringUtils::Split(std::string{std::begin(cur_line) + 2, std::end(cur_line)}, ' ');
+                } else if(key == "v") {
+                    auto elems = StringUtils::Split(value, ' ');
                     std::string v_str = {"["};
                     v_str += StringUtils::Join(elems, ',');
                     switch(elems.size()) {
@@ -245,8 +245,9 @@ bool Obj::Parse(const std::filesystem::path& filepath) noexcept {
                     Vector4 v(v_str);
                     v.CalcHomogeneous();
                     _verts.emplace_back(v);
-                } else if(StringUtils::StartsWith(cur_line, "vt ")) {
-                    auto elems = StringUtils::Split(std::string{std::begin(cur_line) + 3, std::end(cur_line)}, ' ');
+                    continue;
+                } else if(key == "vt") {
+                    auto elems = StringUtils::Split(value, ' ');
                     std::string v_str = {"["};
                     v_str += StringUtils::Join(elems, ',');
                     switch(elems.size()) {
@@ -257,8 +258,9 @@ bool Obj::Parse(const std::filesystem::path& filepath) noexcept {
                     }
                     v_str += "]";
                     _tex_coords.emplace_back(v_str);
-                } else if(StringUtils::StartsWith(cur_line, "vn ")) {
-                    auto elems = StringUtils::Split(std::string{std::begin(cur_line) + 3, std::end(cur_line)}, ' ');
+                    continue;
+                } else if(key == "vn") {
+                    auto elems = StringUtils::Split(value, ' ');
                     std::string v_str = {"["};
                     v_str += StringUtils::Join(elems, ',');
                     if(elems.size() != 3) {
@@ -267,20 +269,20 @@ bool Obj::Parse(const std::filesystem::path& filepath) noexcept {
                     }
                     v_str += "]";
                     _normals.emplace_back(v_str);
-                } else if(StringUtils::StartsWith(cur_line, "f ")) {
-                    if(cur_line.find('-') != std::string::npos) {
+                    continue;
+                } else if(key == "f") {
+                    if(value.find('-') != std::string::npos) {
                         DebuggerPrintf("OBJ implementation does not support relative reference numbers!\n");
                         PrintErrorToDebugger(filepath, "face index", line_index);
                         return false;
                     }
-                    auto tris = StringUtils::Split(std::string{std::begin(cur_line) + 2, std::end(cur_line)}, ' ');
+                    auto tris = StringUtils::Split(value, ' ');
                     if(tris.size() != 3) {
                         DebuggerPrintf("WARNING: Performance will be reduced when loading non-triangle polygons!\n");
                         PrintErrorToDebugger(filepath, "face triplet", line_index);
                     }
                     TriangulatePolygon(tris);
-                } else {
-                    /* DO NOTHING */
+                    continue;
                 }
             }
             _ibo.shrink_to_fit();
