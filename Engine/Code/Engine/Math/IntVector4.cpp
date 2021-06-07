@@ -106,19 +106,15 @@ IntVector4::IntVector4(const std::string& value) noexcept
 , y(0)
 , z(0)
 , w(0) {
-    if(value[0] == '[') {
-        if(value.back() == ']') {
-            std::string contents_str = value.substr(1, value.size() - 1);
-            const auto values = StringUtils::Split(contents_str);
-            const auto s = values.size();
-            for(std::size_t i = 0; i < s; ++i) {
-                switch(i) {
-                case 0: x = std::stoi(values[i]); break;
-                case 1: y = std::stoi(values[i]); break;
-                case 2: z = std::stoi(values[i]); break;
-                case 3: w = std::stoi(values[i]); break;
-                default: break;
-                }
+    if(!value.empty()) {
+        if(value.front() == '[') {
+            if(value.back() == ']') {
+                const auto contents_str = std::string{std::begin(value) + 1, std::end(value) - 1};
+                const auto&& values = StringUtils::Split(contents_str);
+                x = std::stoi(values[0]);
+                y = std::stoi(values[1]);
+                z = std::stoi(values[2]);
+                w = std::stoi(values[3]);
             }
         }
     }
