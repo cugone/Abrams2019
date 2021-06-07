@@ -189,7 +189,6 @@ bool Obj::Parse(const std::filesystem::path& filepath) noexcept {
     _is_saving = false;
     _is_saved = false;
     _is_loading = true;
-    MtlReader mtl;
     if(auto buffer = FileUtils::ReadBinaryBufferFromFile(filepath)) {
         if(std::stringstream ss{}; ss.write(reinterpret_cast<const char*>(buffer->data()), buffer->size())) {
             buffer->clear();
@@ -221,6 +220,7 @@ bool Obj::Parse(const std::filesystem::path& filepath) noexcept {
                     auto folder = filepath.parent_path();
                     auto mtlname = cur_line.substr(7);
                     auto mtlpath = folder / mtlname;
+                    MtlReader mtl{};
                     if(!mtl.Parse(mtlpath)) {
                         DebuggerPrintf("Ill-formed material library in OBJ!\n");
                         PrintErrorToDebugger(filepath, "mtllib", line_index);
