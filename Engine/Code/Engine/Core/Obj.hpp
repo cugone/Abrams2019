@@ -17,13 +17,12 @@ namespace FileUtils {
 
 class Obj {
 public:
-    Obj() = delete;
-    explicit Obj(Renderer& renderer) noexcept;
+    Obj() = default;
     Obj(const Obj& other) = default;
     Obj(Obj&& other) = default;
     Obj& operator=(const Obj& rhs) = default;
     Obj& operator=(Obj&& rhs) = default;
-    explicit Obj(Renderer& renderer, std::filesystem::path filepath) noexcept;
+    explicit Obj(std::filesystem::path filepath) noexcept;
     ~Obj() = default;
 
     [[nodiscard]] const std::vector<Vertex3D>& GetVbo() const noexcept;
@@ -54,7 +53,6 @@ private:
 
     void TriangulatePolygon(const std::vector<std::string>& tris) noexcept;
 
-    Renderer& _renderer;
     std::string _materialName{};
     std::vector<Vertex3D> _vbo{};
     std::vector<unsigned int> _ibo{};

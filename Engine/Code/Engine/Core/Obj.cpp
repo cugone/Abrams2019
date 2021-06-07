@@ -15,13 +15,8 @@
 
 namespace FileUtils {
 
-Obj::Obj(Renderer& renderer) noexcept
-: _renderer(renderer) { /* DO NOTHING */
-}
-
 //Run only as an asynchronous operation highly recommended.
-Obj::Obj(Renderer& renderer, std::filesystem::path filepath) noexcept
-: _renderer(renderer) {
+Obj::Obj(std::filesystem::path filepath) noexcept {
     namespace FS = std::filesystem;
     {
         const auto error_msg = std::string{"Obj: "} + filepath.string() + " failed to load.\nReason: It does not exist.\n";
