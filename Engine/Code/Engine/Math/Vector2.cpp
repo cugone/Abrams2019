@@ -29,17 +29,13 @@ Vector2::Vector2(const Vector3& rhs) noexcept
 Vector2::Vector2(const std::string& value) noexcept
 : x(0.0f)
 , y(0.0f) {
-    if(value[0] == '[') {
-        if(value.back() == ']') {
-            std::string contents_str = value.substr(1, value.size() - 1);
-            const auto values = StringUtils::Split(contents_str);
-            const auto s = values.size();
-            for(std::size_t i = 0; i < s; ++i) {
-                switch(i) {
-                case 0: x = std::stof(values[i]); break;
-                case 1: y = std::stof(values[i]); break;
-                default: break;
-                }
+    if(!value.empty()) {
+        if(value.front() == '[') {
+            if(value.back() == ']') {
+                const auto contents_str = std::string{std::begin(value) + 1, std::end(value) - 1};
+                const auto&& values = StringUtils::Split(contents_str);
+                x = std::stof(values[0]);
+                y = std::stof(values[1]);
             }
         }
     }

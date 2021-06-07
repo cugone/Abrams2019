@@ -70,19 +70,15 @@ Vector4::Vector4(const std::string& value) noexcept
 , y(0.0f)
 , z(0.0f)
 , w(0.0f) {
-    if(value[0] == '[') {
-        if(value.back() == ']') {
-            std::string contents_str = std::string{std::begin(value) + 1, std::end(value) - 1};
-            const auto values = StringUtils::Split(contents_str);
-            const auto s = values.size();
-            for(std::size_t i = 0; i < s; ++i) {
-                switch(i) {
-                case 0: x = std::stof(values[i]); break;
-                case 1: y = std::stof(values[i]); break;
-                case 2: z = std::stof(values[i]); break;
-                case 3: w = std::stof(values[i]); break;
-                default: break;
-                }
+    if(!value.empty()) {
+        if(value.front() == '[') {
+            if(value.back() == ']') {
+                const auto contents_str = std::string{std::begin(value) + 1, std::end(value) - 1};
+                const auto&& values = StringUtils::Split(contents_str);
+                x = std::stof(values[0]);
+                y = std::stof(values[1]);
+                z = std::stof(values[2]);
+                w = std::stof(values[3]);
             }
         }
     }
