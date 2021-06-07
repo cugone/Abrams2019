@@ -19,6 +19,11 @@ void Mesh::Builder::Begin(const PrimitiveType& type) noexcept {
     _current_draw_instruction.indexStart = indicies.size();
 }
 
+void Mesh::Builder::Begin(const PrimitiveType& type, std::size_t indexStart) noexcept {
+    _current_draw_instruction.type = type;
+    _current_draw_instruction.indexStart = indexStart;
+}
+
 void Mesh::Builder::End(Material* mat /* = nullptr */) noexcept {
     _current_draw_instruction.material = mat;
     _current_draw_instruction.indexCount = indicies.size() - _current_draw_instruction.indexStart;

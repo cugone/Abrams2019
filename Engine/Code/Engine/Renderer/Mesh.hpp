@@ -39,6 +39,7 @@ public:
         std::vector<Renderer::DrawInstruction> draw_instructions{};
 
         void Begin(const PrimitiveType& type) noexcept;
+        void Begin(const PrimitiveType& type, std::size_t indexStart) noexcept;
         void End(Material* mat = nullptr) noexcept;
         void Clear() noexcept;
 
