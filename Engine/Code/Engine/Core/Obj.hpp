@@ -54,6 +54,7 @@ private:
     void TriangulatePolygon(const std::vector<std::string>& tris) noexcept;
 
     std::string _materialName{};
+    std::string _objectName{};
     std::vector<Vertex3D> _vbo{};
     std::vector<unsigned int> _ibo{};
     std::vector<Vector3> _verts{};

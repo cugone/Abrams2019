@@ -227,6 +227,9 @@ bool Obj::Parse(const std::filesystem::path& filepath) noexcept {
                         return false;
                     }
                     continue;
+                } else if(key == "o") {
+                    _objectName = value;
+                    continue;
                 } else if(key == "usemtl") {
                     _materialName = value;
                     continue;
