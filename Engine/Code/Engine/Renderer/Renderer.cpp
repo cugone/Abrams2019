@@ -35,6 +35,7 @@
 #include "Engine/Renderer/InputLayout.hpp"
 #include "Engine/Renderer/InputLayoutInstanced.hpp"
 #include "Engine/Renderer/Material.hpp"
+#include "Engine/Renderer/Mesh.hpp"
 #include "Engine/Renderer/RasterState.hpp"
 #include "Engine/Renderer/RenderTargetStack.hpp"
 #include "Engine/Renderer/Sampler.hpp"
@@ -659,114 +660,107 @@ void Renderer::DrawFrustum(const Frustum& frustum, const Rgba& color /*= Rgba::Y
 }
 
 void Renderer::DrawWorldGridXZ(float radius /*= 500.0f*/, float major_gridsize /*= 20.0f*/, float minor_gridsize /*= 5.0f*/, const Rgba& major_color /*= Rgba::WHITE*/, const Rgba& minor_color /*= Rgba::DARK_GRAY*/) noexcept {
-    static std::vector<Vertex3D> vbo{};
-    float half_length = radius;
-    float length = radius * 2.0f;
-    float space_between_majors = length * (major_gridsize / length);
-    float space_between_minors = length * (minor_gridsize / length);
-    vbo.clear();
-    vbo.reserve(4 * static_cast<std::size_t>(std::ceil(length / minor_gridsize)) - static_cast<std::size_t>(major_gridsize));
+    const float half_length = radius;
+    const float length = radius * 2.0f;
+    const float space_between_majors = std::floor(length * (major_gridsize / length));
+    const float space_between_minors = std::floor(length * (minor_gridsize / length));
+
+    Mesh::Builder mesh_builder{};
     //MAJOR LINES
+    mesh_builder.Begin(PrimitiveType::Lines);
+    mesh_builder.SetColor(major_color);
     for(float x = -half_length; x < half_length + 1.0f; x += space_between_majors) {
-        vbo.emplace_back(Vector3(x, 0.0f, -half_length), major_color);
-        vbo.emplace_back(Vector3(x, 0.0f, half_length), major_color);
+        mesh_builder.AddVertex(Vector3(x, 0.0f, -half_length));
+        mesh_builder.AddVertex(Vector3(x, 0.0f, half_length));
+        mesh_builder.AddIndicies(Mesh::Builder::Primitive::Line);
     }
+
     for(float z = -half_length; z < half_length + 1.0f; z += space_between_majors) {
-        vbo.emplace_back(Vector3(-half_length, 0.0f, z), major_color);
-        vbo.emplace_back(Vector3(half_length, 0.0f, z), major_color);
-    }
-    //MINOR LINES
-    for(float x = -half_length; x < half_length; x += space_between_minors) {
-        if(MathUtils::IsEquivalent(std::fmod(x, space_between_majors), 0.0f)) {
-            continue;
-        }
-        vbo.emplace_back(Vector3(x, 0.0f, -half_length), minor_color);
-        vbo.emplace_back(Vector3(x, 0.0f, half_length), minor_color);
-    }
-    for(float z = -half_length; z < half_length; z += space_between_minors) {
-        if(MathUtils::IsEquivalent(std::fmod(z, space_between_majors), 0.0f)) {
-            continue;
-        }
-        vbo.emplace_back(Vector3(-half_length, 0.0f, z), minor_color);
-        vbo.emplace_back(Vector3(half_length, 0.0f, z), minor_color);
+        mesh_builder.AddVertex(Vector3(-half_length, 0.0f, z));
+        mesh_builder.AddVertex(Vector3(half_length, 0.0f, z));
+        mesh_builder.AddIndicies(Mesh::Builder::Primitive::Line);
     }
 
-    static std::vector<unsigned int> ibo{};
-    ibo.resize(vbo.size());
-    std::iota(std::begin(ibo), std::end(ibo), 0);
-
-    SetModelMatrix(Matrix4::I);
-    SetMaterial(GetMaterial("__unlit"));
-    std::size_t major_count = ibo.empty() ? 0 : static_cast<std::size_t>(major_gridsize);
-    std::size_t major_start = 0;
-    std::size_t minor_count = ibo.empty() ? 0 : (ibo.size() - major_count);
-    std::size_t minor_start = ibo.empty() ? 0 : major_count;
-    DrawIndexed(PrimitiveType::Lines, vbo, ibo, major_count, major_start);
-    DrawIndexed(PrimitiveType::Lines, vbo, ibo, minor_count, minor_start);
-}
-
-void Renderer::DrawWorldGridXY(float radius /*= 500.0f*/, float major_gridsize /*= 20.0f*/, float minor_gridsize /*= 5.0f*/, const Rgba& major_color /*= Rgba::WHITE*/, const Rgba& minor_color /*= Rgba::DARK_GRAY*/) noexcept {
-    float half_length = radius;
-    float length = radius * 2.0f;
-    float space_between_majors = std::floor(length * (major_gridsize / length));
-    float space_between_minors = std::floor(length * (minor_gridsize / length));
-    std::vector<Vertex3D> major_vbo{};
-    //MAJOR LINES
-    for(float x = -half_length; x < half_length + 1.0f; x += space_between_majors) {
-        major_vbo.emplace_back(Vector3(x, -half_length, 0.0f), major_color);
-        major_vbo.emplace_back(Vector3(x, half_length, 0.0f), major_color);
-    }
-    for(float y = -half_length; y < half_length + 1.0f; y += space_between_majors) {
-        major_vbo.emplace_back(Vector3(-half_length, y, 0.0f), major_color);
-        major_vbo.emplace_back(Vector3(half_length, y, 0.0f), major_color);
-    }
-    bool major_minor_are_same_size = MathUtils::IsEquivalent(major_gridsize, minor_gridsize);
-    bool has_minors = !major_minor_are_same_size;
-    std::vector<Vertex3D> minor_vbo{};
+    const bool major_minor_are_same_size = MathUtils::IsEquivalent(major_gridsize, minor_gridsize);
+    const bool has_minors = !major_minor_are_same_size;
     if(has_minors) {
+        mesh_builder.SetColor(minor_color);
         //MINOR LINES
         for(float x = -half_length; x < half_length; x += space_between_minors) {
             if(MathUtils::IsEquivalent(std::fmod(x, space_between_majors), 0.0f)) {
                 continue;
             }
-            minor_vbo.emplace_back(Vector3(x, -half_length, 0.0f), minor_color);
-            minor_vbo.emplace_back(Vector3(x, half_length, 0.0f), minor_color);
+            mesh_builder.AddVertex(Vector3(x, 0.0f, -half_length));
+            mesh_builder.AddVertex(Vector3(x, 0.0f, half_length));
+            mesh_builder.AddIndicies(Mesh::Builder::Primitive::Line);
+        }
+        for(float z = -half_length; z < half_length; z += space_between_minors) {
+            if(MathUtils::IsEquivalent(std::fmod(z, space_between_majors), 0.0f)) {
+                continue;
+            }
+            mesh_builder.AddVertex(Vector3(-half_length, 0.0f, z));
+            mesh_builder.AddVertex(Vector3(half_length,  0.0f, z));
+            mesh_builder.AddIndicies(Mesh::Builder::Primitive::Line);
+        }
+    }
+    mesh_builder.End(GetMaterial("__unlit"));
+
+    SetModelMatrix(Matrix4::I);
+    Mesh::Render(*this, mesh_builder);
+}
+
+void Renderer::DrawWorldGridXY(float radius /*= 500.0f*/, float major_gridsize /*= 20.0f*/, float minor_gridsize /*= 5.0f*/, const Rgba& major_color /*= Rgba::WHITE*/, const Rgba& minor_color /*= Rgba::DARK_GRAY*/) noexcept {
+    const float half_length = radius;
+    const float length = radius * 2.0f;
+    const float space_between_majors = std::floor(length * (major_gridsize / length));
+    const float space_between_minors = std::floor(length * (minor_gridsize / length));
+
+    static Mesh::Builder mesh_builder{};
+    mesh_builder.Clear();
+    //MAJOR LINES
+    mesh_builder.Begin(PrimitiveType::Lines);
+    mesh_builder.SetColor(major_color);
+    for(float x = -half_length; x < half_length + 1.0f; x += space_between_majors) {
+        mesh_builder.AddVertex(Vector3(x, -half_length, 0.0f));
+        mesh_builder.AddVertex(Vector3(x, half_length, 0.0f));
+        mesh_builder.AddIndicies(Mesh::Builder::Primitive::Line);
+    }
+
+    for(float y = -half_length; y < half_length + 1.0f; y += space_between_majors) {
+        mesh_builder.AddVertex(Vector3(-half_length, y, 0.0f));
+        mesh_builder.AddVertex(Vector3(half_length, y, 0.0f));
+        mesh_builder.AddIndicies(Mesh::Builder::Primitive::Line);
+    }
+
+    const bool major_minor_are_same_size = MathUtils::IsEquivalent(major_gridsize, minor_gridsize);
+    const bool has_minors = !major_minor_are_same_size;
+    if(has_minors) {
+        mesh_builder.SetColor(minor_color);
+        //MINOR LINES
+        for(float x = -half_length; x < half_length; x += space_between_minors) {
+            if(MathUtils::IsEquivalent(std::fmod(x, space_between_majors), 0.0f)) {
+                continue;
+            }
+            mesh_builder.AddVertex(Vector3(x, -half_length, 0.0f));
+            mesh_builder.AddVertex(Vector3(x, half_length, 0.0f));
+            mesh_builder.AddIndicies(Mesh::Builder::Primitive::Line);
         }
         for(float y = -half_length; y < half_length; y += space_between_minors) {
             if(MathUtils::IsEquivalent(std::fmod(y, space_between_majors), 0.0f)) {
                 continue;
             }
-            minor_vbo.emplace_back(Vector3(-half_length, y, 0.0f), minor_color);
-            minor_vbo.emplace_back(Vector3(half_length, y, 0.0f), minor_color);
+            mesh_builder.AddVertex(Vector3(-half_length, y, 0.0f));
+            mesh_builder.AddVertex(Vector3(half_length, y, 0.0f));
+            mesh_builder.AddIndicies(Mesh::Builder::Primitive::Line);
         }
     }
-
-    std::vector<unsigned int> ibo{};
-    ibo.resize(major_vbo.size() + minor_vbo.size());
-    std::iota(std::begin(ibo), std::begin(ibo) + major_vbo.size(), 0u);
-    std::iota(std::begin(ibo) + major_vbo.size(), std::begin(ibo) + major_vbo.size() + minor_vbo.size(), static_cast<unsigned int>(major_vbo.size()));
+    mesh_builder.End(GetMaterial("__unlit"));
 
     SetModelMatrix(Matrix4::I);
-    SetMaterial(GetMaterial("__unlit"));
-    std::size_t major_start = 0;
-    std::size_t major_count = major_vbo.size();
-    std::size_t minor_start = major_vbo.size();
-    std::size_t minor_count = minor_vbo.size();
-    static std::vector<Vertex3D> vbo;
-    vbo.clear();
-    auto new_capacity = static_cast<std::size_t>(std::ceil(length / minor_gridsize));
-    vbo.reserve(4 * new_capacity);
-    vbo.insert(std::end(vbo), std::begin(major_vbo), std::end(major_vbo));
-    vbo.insert(std::end(vbo), std::begin(minor_vbo), std::end(minor_vbo));
-    DrawIndexed(PrimitiveType::Lines, vbo, ibo, major_count, major_start);
-    DrawIndexed(PrimitiveType::Lines, vbo, ibo, minor_count, minor_start);
+    Mesh::Render(*this, mesh_builder);
 }
 
 void Renderer::DrawWorldGrid2D(int width, int height, const Rgba& color /*= Rgba::White*/) noexcept {
-    static std::vector<Vertex3D> vbo{};
-    vbo.clear();
-    static std::vector<unsigned int> ibo{};
-    ibo.clear();
     const auto y_start = 0;
     const auto y_end = height;
     const auto x_start = 0;
@@ -776,19 +770,23 @@ void Renderer::DrawWorldGrid2D(int width, int height, const Rgba& color /*= Rgba
     const auto x_first = 0;
     const auto x_last = width + 1;
     const auto size = static_cast<std::size_t>(2) + width + height;
-    vbo.reserve(size);
+
+    static Mesh::Builder mesh_builder{};
+    mesh_builder.Clear();
+    mesh_builder.Begin(PrimitiveType::Lines);
+    mesh_builder.SetColor(color);
     for(int x = x_first; x < x_last; ++x) {
-        vbo.push_back(Vertex3D{Vector3{static_cast<float>(x), static_cast<float>(y_start), 0.0f}, color});
-        vbo.push_back(Vertex3D{Vector3{static_cast<float>(x), static_cast<float>(y_end), 0.0f}, color});
+        mesh_builder.AddVertex(Vector3{static_cast<float>(x), static_cast<float>(y_start), 0.0f});
+        mesh_builder.AddVertex(Vector3{static_cast<float>(x), static_cast<float>(y_end), 0.0f});
+        mesh_builder.AddIndicies(Mesh::Builder::Primitive::Line);
     }
     for(int y = y_first; y < y_last; ++y) {
-        vbo.push_back(Vertex3D{Vector3{static_cast<float>(x_start), static_cast<float>(y), 0.0f}, color});
-        vbo.push_back(Vertex3D{Vector3{static_cast<float>(x_end), static_cast<float>(y), 0.0f}, color});
+        mesh_builder.AddVertex(Vector3{static_cast<float>(x_start), static_cast<float>(y), 0.0f});
+        mesh_builder.AddVertex(Vector3{static_cast<float>(x_end), static_cast<float>(y), 0.0f});
+        mesh_builder.AddIndicies(Mesh::Builder::Primitive::Line);
     }
-    ibo.resize(vbo.size());
-    std::iota(std::begin(ibo), std::end(ibo), 0);
-    SetMaterial(GetMaterial("__2D"));
-    DrawIndexed(PrimitiveType::Lines, vbo, ibo);
+    mesh_builder.End(GetMaterial("__2D"));
+    Mesh::Render(*this, mesh_builder);
 }
 
 void Renderer::DrawWorldGrid2D(const IntVector2& dimensions, const Rgba& color /*= Rgba::White*/) noexcept {
