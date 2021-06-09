@@ -11,7 +11,7 @@ AABB3::AABB3(float initialX, float initialY, float initialZ) noexcept
     /* DO NOTHING */
 }
 
-AABB3::AABB3(float minX, float minY, float maxX, float maxY, float minZ, float maxZ) noexcept
+AABB3::AABB3(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) noexcept
 : mins(minX, minY, minZ)
 , maxs(maxX, maxY, maxZ) {
     /* DO NOTHING */

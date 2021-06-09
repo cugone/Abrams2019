@@ -18,7 +18,7 @@ public:
     AABB3& operator=(AABB3&& rhs) = default;
     ~AABB3() = default;
     AABB3(float initialX, float initialY, float initialZ) noexcept;
-    AABB3(float minX, float minY, float maxX, float maxY, float minZ, float maxZ) noexcept;
+    AABB3(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) noexcept;
     AABB3(const Vector3& mins, const Vector3& maxs) noexcept;
     AABB3(const Vector3& center, float radiusX, float radiusY, float radiusZ) noexcept;
     // clang-format on
