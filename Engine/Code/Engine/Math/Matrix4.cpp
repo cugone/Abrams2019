@@ -608,7 +608,10 @@ Matrix4 Matrix4::CreateDXPerspectiveProjection(float vfovDegrees, float aspect, 
     const auto sy = inv_tan;
     const auto sz = fz * inv_depth;
     const auto tz = -nzfz * inv_depth;
-    Matrix4 mat(sx, 0.0f, 0.0f, 0.0f, 0.0f, sy, 0.0f, 0.0f, 0.0f, 0.0f, sz, tz, 0.0f, 0.0f, 1.0f, 0.0f);
+    Matrix4 mat(sx,   0.0f, 0.0f, 0.0f,
+                0.0f, sy,   0.0f, 0.0f,
+                0.0f, 0.0f, sz,   tz,
+                0.0f, 0.0f, 1.0f, 0.0f);
     return mat;
 }
 
