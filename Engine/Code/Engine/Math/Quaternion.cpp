@@ -466,8 +466,7 @@ Quaternion Conjugate(const Quaternion& q) noexcept {
 Quaternion Inverse(const Quaternion& q) noexcept {
     const auto lengthSq = q.CalcLengthSquared();
     if(!MathUtils::IsEquivalent(lengthSq, 0.0f)) {
-        auto q_conj = q;
-        q_conj.Conjugate();
+        const auto q_conj = q.GetConjugate();
         const auto invLengthSq = 1.0f / lengthSq;
         const auto result = q_conj * invLengthSq;
         return result;
