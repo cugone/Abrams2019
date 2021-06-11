@@ -207,9 +207,9 @@ Matrix4 Matrix4::CreateRotationRollYawPitchMatrixDegrees(float pitchDegrees, flo
 }
 
 Matrix4 Matrix4::CreateZXYRotationMatrix(const Vector3& pitchYawRollRadians) noexcept {
-    const auto S = Create3DZRotationMatrix(pitchYawRollRadians.z);
-    const auto R = Create3DYRotationMatrix(pitchYawRollRadians.x);
-    const auto T = Create3DXRotationMatrix(pitchYawRollRadians.y);
+    const auto S = Create3DZRotationMatrix(pitchYawRollRadians.x);
+    const auto R = Create3DYRotationMatrix(pitchYawRollRadians.y);
+    const auto T = Create3DXRotationMatrix(pitchYawRollRadians.z);
     return Matrix4::MakeSRT(S, R, T);
 }
 
@@ -248,9 +248,9 @@ Matrix4 Matrix4::CreateRotationRollPitchYawMatrixDegrees(float pitchDegrees, flo
 }
 
 Matrix4 Matrix4::CreateYZXRotationMatrix(const Vector3& pitchYawRollRadians) noexcept {
-    const auto S = Matrix4::Create3DYRotationMatrix(pitchYawRollRadians.y);
-    const auto R = Matrix4::Create3DZRotationMatrix(pitchYawRollRadians.z);
-    const auto T = Matrix4::Create3DXRotationMatrix(pitchYawRollRadians.x);
+    const auto S = Matrix4::Create3DYRotationMatrix(pitchYawRollRadians.x);
+    const auto R = Matrix4::Create3DZRotationMatrix(pitchYawRollRadians.y);
+    const auto T = Matrix4::Create3DXRotationMatrix(pitchYawRollRadians.z);
     return Matrix4::MakeSRT(S, R, T);
 }
 
