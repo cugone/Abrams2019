@@ -63,7 +63,7 @@ public:
     : saveLocation{FileUtils::GetKnownFolderPath(FileUtils::KnownPathID::EngineData) / std::filesystem::path{"Screenshots"}} {
         namespace FS = std::filesystem;
         FileUtils::CreateFolders(saveLocation);
-        const auto folder = saveLocation;
+        const std::filesystem::path folder = saveLocation;
         const auto screenshot_count = FileUtils::CountFilesInFolders(folder);
         const auto filepath = folder / FS::path{"Screenshot_" + std::to_string(screenshot_count + 1) + ".png"};
         saveLocation = filepath;
