@@ -90,7 +90,6 @@ Matrix4::Matrix4(const Quaternion& q) noexcept {
     const auto forward_sq = forward * forward;
     const auto right_sq = right * right;
     const auto up_sq = up * up;
-    const auto angle_sq = angle * angle;
 
     Matrix4 result{};
     Matrix4 leading_diagonal{};
