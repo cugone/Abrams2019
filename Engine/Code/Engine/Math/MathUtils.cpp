@@ -292,7 +292,9 @@ bool IsEquivalentToZero(const Vector4& a, float epsilon /*= 0.0001f*/) noexcept 
 }
 
 bool IsEquivalentToZero(const Quaternion& a, float epsilon /*= 0.0001f*/) noexcept {
-    return IsEquivalent(a, Quaternion::GetIdentity(), epsilon);
+    return IsEquivalent(a, Quaternion::I, epsilon);
+}
+
 }
 
 float CalcDistance(const Vector2& a, const Vector2& b) noexcept {

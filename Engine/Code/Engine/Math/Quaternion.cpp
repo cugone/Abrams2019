@@ -459,9 +459,6 @@ Quaternion Quaternion::CreateFromEulerAngles(float pitch, float yaw, float roll,
     return result;
 }
 
-Quaternion Quaternion::GetIdentity() noexcept {
-    return Quaternion(1.0f, Vector3::ZERO);
-}
 Quaternion Conjugate(const Quaternion& q) noexcept {
     return Quaternion(q.w, -q.axis);
 }

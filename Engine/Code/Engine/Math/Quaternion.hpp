@@ -12,7 +12,6 @@ public:
     float w = 1.0f;
     Vector3 axis = Vector3::ZERO;
 
-    [[nodiscard]] static Quaternion GetIdentity() noexcept;
     [[nodiscard]] static Quaternion CreateRealQuaternion(float scalar) noexcept;
     [[nodiscard]] static Quaternion CreatePureQuaternion(const Vector3& v) noexcept;
     [[nodiscard]] static Quaternion CreateFromAxisAngle(const Vector3& axis, float degreesAngle) noexcept;
