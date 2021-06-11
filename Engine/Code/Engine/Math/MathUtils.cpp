@@ -1498,4 +1498,26 @@ IntVector2 Wrap(const IntVector2& valuesToWrap, const IntVector2& minValues, con
     return IntVector2(x, y);
 }
 
+void TurnToward(float& currentDegrees, float goalDegrees, float maxTurnDegrees) {
+    float signedAngularDistance = CalcShortestAngularDistance(currentDegrees, goalDegrees);
+    if(std::fabs(signedAngularDistance) <= maxTurnDegrees) {
+        currentDegrees = goalDegrees;
+    } else if(signedAngularDistance > 0.0f) {
+        currentDegrees += maxTurnDegrees;
+    } else {
+        currentDegrees -= maxTurnDegrees;
+    }
+}
+
+float CalcShortestAngularDistance(float startDegrees, float endDegrees) {
+    float signedAngularDistance = endDegrees - startDegrees;
+    while(signedAngularDistance > 180.0f) {
+        signedAngularDistance -= 360.0f;
+    }
+    while(signedAngularDistance < -180.0f) {
+        signedAngularDistance += 360.0f;
+    }
+    return signedAngularDistance;
+}
+
 } // namespace MathUtils

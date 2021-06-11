@@ -384,6 +384,9 @@ template<typename T>
 [[nodiscard]] IntVector3 Wrap(const IntVector3& valuesToWrap, const IntVector3& minValues, const IntVector3& maxValues);
 [[nodiscard]] IntVector2 Wrap(const IntVector2& valuesToWrap, const IntVector2& minValues, const IntVector2& maxValues);
 
+void TurnToward(float& currentDegrees, float goalDegrees, float maxTurnDegrees);
+[[nodiscard]] float CalcShortestAngularDistance(float startDegrees, float endDegrees);
+
 namespace EasingFunctions {
 
 namespace detail {
