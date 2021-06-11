@@ -75,6 +75,8 @@ Rotator Rotator::GetClamped(const Rotator& rotator) noexcept {
     return rotator.GetClamped();
 }
 
-void Rotator::ClampAxis(float value) noexcept {
-    value = std::clamp(value, 0.0f, 360.0f);
+float Rotator::ClampAxis(float value) noexcept {
+    return std::clamp(value, 0.0f, 360.0f);
+}
+
 }

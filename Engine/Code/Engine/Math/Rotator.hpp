@@ -32,7 +32,8 @@ public:
     static Rotator GetClamped(const Rotator& rotator) noexcept;
     void Clamp() noexcept;
     Rotator GetClamped() const noexcept;
-    static void ClampAxis(float value) noexcept;
+    static float ClampAxis(float value) noexcept;
+
 
 protected:
 private:
