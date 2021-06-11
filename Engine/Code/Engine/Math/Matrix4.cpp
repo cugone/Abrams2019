@@ -330,7 +330,7 @@ Matrix4 Matrix4::CreateScaleMatrix(float scale) noexcept {
     return CreateScaleMatrix(Vector3(scale, scale, scale));
 }
 
-Matrix4 Matrix4::CalculateChangeOfBasisMatrix(const Matrix4& output_basis, const Matrix4& input_basis /*= Matrix4::GetIdentity()*/) noexcept {
+Matrix4 Matrix4::CalculateChangeOfBasisMatrix(const Matrix4& output_basis, const Matrix4& input_basis /*= Matrix4::I*/) noexcept {
     return Matrix4::CalculateInverse(output_basis) * input_basis;
 }
 
