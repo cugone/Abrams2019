@@ -201,6 +201,22 @@ float SineWaveDegrees(float t, float period /*= 1.0f*/, float phaseDegrees /*= 0
     return SineWave(t, period, MathUtils::ConvertDegreesToRadians(phaseDegrees));
 }
 
+float SinCos(float sin, float cos) {
+    return std::sin(sin) * std::cos(cos);
+}
+
+float CosSin(float cos, float sin) {
+    return std::cos(cos) * std::sin(sin);
+}
+
+float SinCosDegrees(float sinDegrees, float cosDegrees) {
+    return SinDegrees(sinDegrees) * CosDegrees(cosDegrees);
+}
+
+float CosSinDegrees(float cosDegrees, float sinDegrees) {
+    return CosDegrees(cosDegrees) * SinDegrees(sinDegrees);
+}
+
 float CosDegrees(float degrees) noexcept {
     const auto radians = MathUtils::ConvertDegreesToRadians(degrees);
     return std::cos(radians);

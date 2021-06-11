@@ -133,6 +133,10 @@ template<size_t N, size_t K>
 
 [[nodiscard]] float SineWave(float t, float period = 1.0f, float phase = 0.0f) noexcept;
 [[nodiscard]] float SineWaveDegrees(float t, float period = 1.0f, float phaseDegrees = 0.0f) noexcept;
+[[nodiscard]] float SinCos(float sin, float cos);
+[[nodiscard]] float CosSin(float cos, float sin);
+[[nodiscard]] float SinCosDegrees(float sinDegrees, float cosDegrees);
+[[nodiscard]] float CosSinDegrees(float cosDegrees, float sinDegrees);
 [[nodiscard]] float CosDegrees(float degrees) noexcept;
 [[nodiscard]] float SinDegrees(float degrees) noexcept;
 [[nodiscard]] float Atan2Degrees(float y, float x) noexcept;
