@@ -65,7 +65,7 @@ public:
     [[nodiscard]] static Matrix4 CreateDXOrthographicProjection(const AABB3& extents) noexcept;
     [[nodiscard]] static Matrix4 CreateDXPerspectiveProjection(float vfovDegrees, float aspect, float nz, float fz) noexcept;
     [[nodiscard]] static Matrix4 CreateOrthographicProjectionMatrix(float top, float bottom, float right, float left, float nearZ, float farZ) noexcept;
-    [[nodiscard]] static Matrix4 CreateLookAtMatrix(const Vector3& cameraPosition, const Vector3& lookAt, const Vector3& worldUp) noexcept;
+    [[nodiscard]] static Matrix4 CreateLookAtMatrix(const Vector3& cameraPosition, const Vector3& lookAt, const Vector3& up) noexcept;
     [[nodiscard]] static Matrix4 CalculateChangeOfBasisMatrix(const Matrix4& output_basis, const Matrix4& input_basis = Matrix4::I) noexcept;
 
     [[nodiscard]] static Matrix4 MakeSRT(const Matrix4& S, const Matrix4& R, const Matrix4& T) noexcept;
