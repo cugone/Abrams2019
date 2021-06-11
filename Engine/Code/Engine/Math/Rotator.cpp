@@ -79,4 +79,7 @@ float Rotator::ClampAxis(float value) noexcept {
     return std::clamp(value, 0.0f, 360.0f);
 }
 
+Vector3 Rotator::GetEulerAngles() const noexcept {
+    return Vector3{ClampAxis(roll), ClampAxis(pitch), ClampAxis(yaw)};
 }
+

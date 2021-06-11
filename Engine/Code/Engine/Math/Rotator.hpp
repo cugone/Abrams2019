@@ -34,6 +34,7 @@ public:
     Rotator GetClamped() const noexcept;
     static float ClampAxis(float value) noexcept;
 
+    Vector3 GetEulerAngles() const noexcept;
 
 protected:
 private:
