@@ -27,6 +27,7 @@ class Plane3;
 class Polygon2;
 class Quaternion;
 class Rgba;
+class Rotator;
 
 namespace MathUtils {
 //TODO: Consider <numbers> header when it becomes available
@@ -143,6 +144,7 @@ template<size_t N, size_t K>
 [[nodiscard]] bool IsEquivalent(const Vector3& a, const Vector3& b, float epsilon = 0.0001f) noexcept;
 [[nodiscard]] bool IsEquivalent(const Vector4& a, const Vector4& b, float epsilon = 0.0001f) noexcept;
 [[nodiscard]] bool IsEquivalent(const Quaternion& a, const Quaternion& b, float epsilon = 0.0001f) noexcept;
+[[nodiscard]] bool IsEquivalent(const Rotator& a, const Rotator& b, float epsilon = 0.0001f) noexcept;
 
 [[nodiscard]] bool IsEquivalentOrLessThan(float a, float b, float epsilon = 0.00001f) noexcept;
 [[nodiscard]] bool IsEquivalentOrLessThan(double a, double b, double epsilon = 0.0001) noexcept;
@@ -159,6 +161,7 @@ template<size_t N, size_t K>
 [[nodiscard]] bool IsEquivalentToZero(const Vector3& a, float epsilon = 0.0001f) noexcept;
 [[nodiscard]] bool IsEquivalentToZero(const Vector4& a, float epsilon = 0.0001f) noexcept;
 [[nodiscard]] bool IsEquivalentToZero(const Quaternion& a, float epsilon = 0.0001f) noexcept;
+[[nodiscard]] bool IsEquivalentToZero(const Rotator& a, float epsilon = 0.0001f) noexcept;
 
 [[nodiscard]] float CalcDistance(const Vector2& a, const Vector2& b) noexcept;
 [[nodiscard]] float CalcDistance(const Vector3& a, const Vector3& b) noexcept;

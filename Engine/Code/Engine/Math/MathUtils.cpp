@@ -13,6 +13,7 @@
 #include "Engine/Math/Plane2.hpp"
 #include "Engine/Math/Plane3.hpp"
 #include "Engine/Math/Polygon2.hpp"
+#include "Engine/Math/Rotator.hpp"
 #include "Engine/Math/Quaternion.hpp"
 #include "Engine/Math/Sphere3.hpp"
 #include "Engine/Profiling/ProfileLogScope.hpp"
@@ -243,6 +244,10 @@ bool IsEquivalent(const Quaternion& a, const Quaternion& b, float epsilon /*= 0.
     return IsEquivalent(a.w, b.w, epsilon) && IsEquivalent(a.axis, b.axis, epsilon);
 }
 
+bool IsEquivalent(const Rotator& a, const Rotator& b, float epsilon /*= 0.0001f*/) noexcept {
+    return IsEquivalent(a.pitch, b.pitch, epsilon) && IsEquivalent(a.yaw, b.yaw, epsilon) && IsEquivalent(a.roll, b.roll, epsilon);
+}
+
 bool IsEquivalentOrLessThan(float a, float b, float epsilon /*= 0.00001f*/) noexcept {
     return a < b || IsEquivalent(a, b, epsilon);
 }
@@ -295,6 +300,8 @@ bool IsEquivalentToZero(const Quaternion& a, float epsilon /*= 0.0001f*/) noexce
     return IsEquivalent(a, Quaternion::I, epsilon);
 }
 
+bool IsEquivalentToZero(const Rotator& a, float epsilon /*= 0.0001f*/) noexcept {
+    return IsEquivalent(a, Rotator::Zero, epsilon);
 }
 
 float CalcDistance(const Vector2& a, const Vector2& b) noexcept {

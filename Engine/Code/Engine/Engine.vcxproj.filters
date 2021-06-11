@@ -469,6 +469,9 @@
     <ClCompile Include="Core\MtlReader.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Math\Rotator.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vector2.hpp">
@@ -905,6 +908,9 @@
     </ClInclude>
     <ClInclude Include="Core\MtlReader.hpp">
       <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Rotator.hpp">
+      <Filter>Math</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
