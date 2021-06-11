@@ -77,51 +77,36 @@ Matrix4::Matrix4(const float* arrayOfFloats) noexcept {
 }
 
 Matrix4::Matrix4(const Quaternion& q) noexcept {
+    //See: https://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToMatrix/index.htm
+    //Section "Alternative Method 2 - Sum of three 3x3 matrices".
+
     const auto q_norm = q.GetNormalize();
 
-    const auto x = q_norm.axis.x;
-    const auto y = q_norm.axis.y;
-    const auto z = q_norm.axis.z;
-    const auto w = q_norm.w;
+    const auto forward = q_norm.axis.x;
+    const auto right = q_norm.axis.y;
+    const auto up = q_norm.axis.z;
+    const auto angle = q_norm.w;
 
-    Matrix4 left;
-    left.m_indicies[0] = w;
-    left.m_indicies[1] = -z;
-    left.m_indicies[2] = y;
-    left.m_indicies[3] = -x;
-    left.m_indicies[4] = z;
-    left.m_indicies[5] = w;
-    left.m_indicies[6] = -x;
-    left.m_indicies[7] = -y;
-    left.m_indicies[8] = -y;
-    left.m_indicies[9] = x;
-    left.m_indicies[10] = w;
-    left.m_indicies[11] = -z;
-    left.m_indicies[12] = x;
-    left.m_indicies[13] = y;
-    left.m_indicies[14] = z;
-    left.m_indicies[15] = w;
+    const auto forward_sq = forward * forward;
+    const auto right_sq = right * right;
+    const auto up_sq = up * up;
+    const auto angle_sq = angle * angle;
 
-    Matrix4 right;
-    right.m_indicies[0] = w;
-    right.m_indicies[1] = -z;
-    right.m_indicies[2] = y;
-    right.m_indicies[3] = x;
-    right.m_indicies[4] = z;
-    right.m_indicies[5] = w;
-    right.m_indicies[6] = -x;
-    right.m_indicies[7] = y;
-    right.m_indicies[8] = -y;
-    right.m_indicies[9] = x;
-    right.m_indicies[10] = w;
-    right.m_indicies[11] = z;
-    right.m_indicies[12] = -x;
-    right.m_indicies[13] = -y;
-    right.m_indicies[14] = -z;
-    right.m_indicies[15] = w;
+    Matrix4 result{};
+    Matrix4 leading_diagonal{};
+    leading_diagonal.SetIBasis(Vector4{-right_sq - up_sq, forward * right, forward * up, 0.0f});
+    leading_diagonal.SetJBasis(Vector4{forward * right, -forward_sq - up_sq, right * up, 0.0f});
+    leading_diagonal.SetKBasis(Vector4{forward * up, right * up, -forward_sq - right_sq, 0.0f});
 
-    m_indicies = Matrix4::MakeRT(left, right).m_indicies;
+    Matrix4 antileading_diagonal{};
+    antileading_diagonal.SetIBasis(Vector4{0.0f, -up, right, 0.0f});
+    antileading_diagonal.SetJBasis(Vector4{up, 0.0f, -forward, 0.0f});
+    antileading_diagonal.SetKBasis(Vector4{-right, forward, 0.0, 0.0f});
+
+    result += (2.0f * leading_diagonal) + (2.0f * angle * antileading_diagonal);
+    this->m_indicies = result.m_indicies;
 }
+
 Matrix4::Matrix4(const Vector2& iBasis, const Vector2& jBasis, const Vector2& translation /*= Vector2::ZERO*/) noexcept
 : m_indicies{iBasis.x, jBasis.x, 0.0f, translation.x,
              iBasis.y, jBasis.y, 0.0f, translation.y,
