@@ -11,9 +11,9 @@ public:
     Rotator() noexcept = default;
     Rotator(const Rotator& other) noexcept = default;
     Rotator(Rotator&& other) noexcept = default;
-    Rotator(float scalar) noexcept;
+    explicit Rotator(float scalar) noexcept;
+    explicit Rotator(const Quaternion& q) noexcept;
     Rotator(float pitch, float yaw, float roll) noexcept;
-    Rotator(const Quaternion& q) noexcept;
     Rotator& operator=(const Rotator& rhs) = default;
     Rotator& operator=(Rotator&& rhs) = default;
 
