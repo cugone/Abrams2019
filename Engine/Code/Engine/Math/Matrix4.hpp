@@ -14,7 +14,6 @@ class Camera3D;
 class Matrix4 {
 public:
     static const Matrix4 I;
-    [[deprecated("Use Matrix::I instead.")]] static Matrix4 GetIdentity() noexcept;
 
     [[nodiscard]] static Matrix4 CreateTranslationMatrix(const Vector2& position) noexcept;
     [[nodiscard]] static Matrix4 CreateTranslationMatrix(const Vector3& position) noexcept;

@@ -137,13 +137,6 @@ Matrix4::Matrix4(const Vector3& iBasis, const Vector3& jBasis, const Vector3& kB
     /* DO NOTHING */
 }
 
-Matrix4 Matrix4::GetIdentity() noexcept {
-    return Matrix4(1.0f, 0.0f, 0.0f, 0.0f,
-                   0.0f, 1.0f, 0.0f, 0.0f,
-                   0.0f, 0.0f, 1.0f, 0.0f,
-                   0.0f, 0.0f, 0.0f, 1.0f);
-}
-
 Matrix4 Matrix4::CreateTranslationMatrix(float x, float y, float z) noexcept {
     return Matrix4(1.0f, 0.0f, 0.0f, x,
                    0.0f, 1.0f, 0.0f, y,
