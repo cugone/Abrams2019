@@ -115,8 +115,8 @@ struct EngineMessage64 {
     WindowsSystemMessage wmMessageCode = WindowsSystemMessage::Message_Not_Supported;
     unsigned int nativeMessage = 0U;
     void* hWnd = nullptr;
-    unsigned __int64 wparam = 0ULL;
-    __int64 lparam = 0ULL;
+    uint64_t wparam = 0ULL;
+    int64_t lparam = 0ULL;
 };
 struct EngineMessage32 {
     WindowsSystemMessage wmMessageCode = WindowsSystemMessage::Message_Not_Supported;
