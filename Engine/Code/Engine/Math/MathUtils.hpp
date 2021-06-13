@@ -431,6 +431,11 @@ template<std::size_t N, typename T>
     return Interpolate(SmoothStart<N>(t), SmoothStop<N>(t), 0.5f);
 }
 
+template<std::size_t N, typename T>
+[[nodiscard]] T Arc(const T& t) {
+    return SmoothStart<N>(t) + SmoothStop<N>(t);
+}
+
 } // namespace EasingFunctions
 
 } // namespace MathUtils
