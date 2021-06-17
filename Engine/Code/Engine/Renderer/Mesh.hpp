@@ -46,6 +46,8 @@ public:
         void SetTangent(const Vector3& tangent) noexcept;
         void SetBitangent(const Vector3& bitangent) noexcept;
         void SetNormal(const Vector3& normal) noexcept;
+        void SetAlpha(unsigned char value) noexcept;
+        void SetAlpha(float value) noexcept;
         void SetColor(const Rgba& color) noexcept;
         void SetColor(const Vector4& color) noexcept;
         void SetUV(const Vector2& uv) noexcept;

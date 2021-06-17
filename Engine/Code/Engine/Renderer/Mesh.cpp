@@ -61,6 +61,15 @@ void Mesh::Builder::SetNormal(const Vector3& normal) noexcept {
     _vertex_prototype.normal = normal;
 }
 
+void Mesh::Builder::SetAlpha(unsigned char value) noexcept {
+    SetAlpha(value / 255.0f);
+}
+
+void Mesh::Builder::SetAlpha(float value) noexcept {
+    _vertex_prototype.color.w = value;
+}
+
+
 void Mesh::Builder::SetColor(const Rgba& color) noexcept {
     auto [r, g, b, a] = color.GetAsFloats();
     SetColor(Vector4{r, g, b, a});
