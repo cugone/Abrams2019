@@ -5,6 +5,7 @@
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/FileLogger.hpp"
 #include "Engine/Core/FileUtils.hpp"
+#include "Engine/Math/MathUtils.hpp"
 #include "Engine/Input/InputSystem.hpp"
 
 #include <algorithm>
@@ -262,6 +263,9 @@ void AudioSystem::Play(Sound& snd, SoundDesc desc /* = SoundDesc{}*/) noexcept {
         if(desc.volume == 1.0f) {
             desc.volume = groupvolume;
         }
+    }
+    if(MathUtils::IsEquivalentToZero(desc.volume)) {
+        return;
     }
     auto channelDesc = AudioSystem::Channel::ChannelDesc{this};
     channelDesc = desc;
