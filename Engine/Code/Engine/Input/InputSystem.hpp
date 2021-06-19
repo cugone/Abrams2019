@@ -388,8 +388,8 @@ private:
     Vector2 _mouseCoords = Vector2::ZERO;
     Vector2 _mousePrevCoords = Vector2::ZERO;
     Vector2 _mouseDelta = Vector2::ZERO;
-    mutable RECT _initialClippingArea{};
-    mutable RECT _currentClippingArea{};
+    mutable AABB2 _initialClippingArea{};
+    mutable AABB2 _currentClippingArea{};
     Stopwatch _connection_poll = Stopwatch(TimeUtils::FPSeconds{1.0f});
     int _mouseWheelPosition = 0;
     int _mouseWheelHPosition = 0;

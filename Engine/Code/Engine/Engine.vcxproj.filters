@@ -472,6 +472,9 @@
     <ClCompile Include="Math\Rotator.cpp">
       <Filter>Math</Filter>
     </ClCompile>
+    <ClCompile Include="Core\Win.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vector2.hpp">

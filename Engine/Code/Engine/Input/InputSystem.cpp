@@ -670,10 +670,7 @@ void InputSystem::LockMouseToViewport(const Window& window) const noexcept {
     RECT temp{top, left, right, bottom};
     if(::ClipCursor(&temp)) {
         _should_clip_cursor = true;
-        _currentClippingArea.left = temp.left;
-        _currentClippingArea.top = temp.top;
-        _currentClippingArea.right = temp.right;
-        _currentClippingArea.bottom = temp.bottom;
+        _currentClippingArea = RectToAABB2(temp);
     }
 }
 
@@ -1305,15 +1302,16 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
             return false;
         }
         LPARAM lp = msg.lparam;
-        const auto width = _currentClippingArea.right - _currentClippingArea.left;
-        const auto height = _currentClippingArea.bottom - _currentClippingArea.top;
-        const auto x = LOWORD(lp);
-        const auto y = HIWORD(lp);
-        _currentClippingArea.top = y;
-        _currentClippingArea.left = x;
-        _currentClippingArea.bottom = _currentClippingArea.top + height;
-        _currentClippingArea.right = _currentClippingArea.left + width;
-        ::ClipCursor(&_currentClippingArea);
+        const auto width = _currentClippingArea.CalcDimensions().x;
+        const auto height = _currentClippingArea.CalcDimensions().y;
+        const auto x = static_cast<float>(LOWORD(lp));
+        const auto y = static_cast<float>(HIWORD(lp));
+        _currentClippingArea.mins.y = y;
+        _currentClippingArea.mins.x = x;
+        _currentClippingArea.maxs.y = y + height;
+        _currentClippingArea.maxs.x = x + width;
+        RECT result = AABB2ToRect(_currentClippingArea);
+        ::ClipCursor(&result);
         return true;
     }
     case WindowsSystemMessage::Window_Size: {
@@ -1329,15 +1327,16 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
             return false; //App needs to respond.
         }
         LPARAM lp = msg.lparam;
-        const auto w = LOWORD(lp);
-        const auto h = HIWORD(lp);
-        const auto x = _currentClippingArea.left;
-        const auto y = _currentClippingArea.top;
-        _currentClippingArea.left = x;
-        _currentClippingArea.top = y;
-        _currentClippingArea.right = x + w;
-        _currentClippingArea.bottom = y + h;
-        ::ClipCursor(&_currentClippingArea);
+        const auto w = static_cast<float>(LOWORD(lp));
+        const auto h = static_cast<float>(HIWORD(lp));
+        const auto x = _currentClippingArea.mins.x;
+        const auto y = _currentClippingArea.mins.y;
+        _currentClippingArea.mins.x   = x;
+        _currentClippingArea.mins.y   = y;
+        _currentClippingArea.maxs.x = x + w;
+        _currentClippingArea.maxs.y = y + h;
+        RECT result = AABB2ToRect(_currentClippingArea);
+        ::ClipCursor(&result);
         return false; //App needs to respond
     }
     case WindowsSystemMessage::Window_ActivateApp: {
@@ -1351,7 +1350,8 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
             ::ClipCursor(nullptr);
         }
         if(gaining_focus) {
-            ::ClipCursor(&_currentClippingArea);
+            RECT result = AABB2ToRect(_currentClippingArea);
+            ::ClipCursor(&result);
         }
         return false; //App needs to respond
     }
@@ -1364,7 +1364,10 @@ bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         switch(active_type) {
         case WA_ACTIVE: /** FALLTHROUGH **/
         case WA_CLICKACTIVE:
-            ::ClipCursor(&_currentClippingArea);
+            {
+                RECT result = AABB2ToRect(_currentClippingArea);
+                ::ClipCursor(&result);
+            }
             return false; //App needs to respond
         case WA_INACTIVE:
             ::ClipCursor(nullptr);
@@ -1381,11 +1384,14 @@ InputSystem::InputSystem(FileLogger& fileLogger, Renderer& renderer) noexcept
 : EngineSubsystem()
 , _fileLogger(&fileLogger)
 , _renderer(&renderer) {
-    ::GetClipCursor(&_initialClippingArea);
+    RECT result{};
+    ::GetClipCursor(&result);
+    _initialClippingArea = RectToAABB2(result);
 }
 
 InputSystem::~InputSystem() noexcept {
-    ::ClipCursor(&_initialClippingArea);
+    RECT result = AABB2ToRect(_initialClippingArea);
+    ::ClipCursor(&result);
 }
 
 void InputSystem::Initialize() {

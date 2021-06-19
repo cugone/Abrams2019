@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine/Core/BuildConfig.hpp"
+#include "Engine/Math/AABB2.hpp"
 
 #if defined(PLATFORM_WINDOWS)
 
@@ -15,5 +16,8 @@
 
         #pragma comment(lib, "ws2_32.lib")
     #endif
+
+AABB2 RectToAABB2(const RECT& rect) noexcept;
+RECT AABB2ToRect(const AABB2& aabb2) noexcept;
 
 #endif
