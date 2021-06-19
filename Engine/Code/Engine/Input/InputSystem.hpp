@@ -211,9 +211,13 @@ enum class KeyCode : int {
     , Tilde = Oem_3 /* Key `~, Also Backquote */
     , Gamepad_First_ /* Internal use only. */
     , Gamepad_A = Gamepad_First_
+    , Gamepad_FaceButton_Bottom = Gamepad_A /* Also Gamepad_A */
     , Gamepad_B
+    , Gamepad_FaceButton_Right = Gamepad_B /* Also Gamepad_B */
     , Gamepad_X
+    , Gamepad_FaceButton_Left = Gamepad_X /* Also Gamepad_X */
     , Gamepad_Y
+    , Gamepad_FaceButton_Top = Gamepad_Y /* Also Gamepad_Y */
     , Gamepad_Right_Shoulder
     , Gamepad_Left_Shoulder
     , Gamepad_Left_Trigger
