@@ -7,6 +7,8 @@
 /************************************************/
 
 #include "Engine/Audio/Wav.hpp"
+#include "Engine/Audio/IAudioService.hpp"
+
 #include "Engine/Core/EngineSubsystem.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/Win.hpp"
@@ -30,7 +32,7 @@ class Wav;
 
 class FileLogger;
 
-class AudioSystem : public EngineSubsystem {
+class AudioSystem : public EngineSubsystem, public IAudioService {
 private:
     class Channel;
     class ChannelGroup;
@@ -70,6 +72,14 @@ public:
         TimeUtils::FPSeconds loopEnd{};
         std::string groupName{};
     };
+
+    void Play(const std::filesystem::path& filepath) noexcept override;
+    void Play(const std::size_t id) noexcept override;
+    void Play(const std::filesystem::path& filepath, const bool looping) noexcept override;
+    void Play(const std::size_t id, const bool looping) noexcept override;
+    void Stop(const std::filesystem::path& filepath) noexcept override;
+    void Stop(const std::size_t id) noexcept override;
+    void StopAll() noexcept override;
 
 private:
     class Channel {
@@ -184,6 +194,8 @@ public:
 
     void Play(Sound& snd, SoundDesc desc = SoundDesc{}) noexcept;
     void Play(std::filesystem::path filepath, SoundDesc desc = SoundDesc{}) noexcept;
+
+
     [[nodiscard]] Sound* CreateSound(std::filesystem::path filepath) noexcept;
     [[nodiscard]] Sound* CreateSoundInstance(std::filesystem::path filepath) noexcept;
 

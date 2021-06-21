@@ -300,6 +300,51 @@ void AudioSystem::Play(std::filesystem::path filepath, SoundDesc desc /*= SoundD
     Play(*snd, desc);
 }
 
+void AudioSystem::Play(const std::filesystem::path& filepath) noexcept {
+    Play(filepath, SoundDesc{});
+}
+
+void AudioSystem::Play(const std::size_t id) noexcept {
+    Play(_sounds[id].first, SoundDesc{});
+}
+
+void AudioSystem::Play(const std::filesystem::path& filepath, const bool looping) noexcept {
+    SoundDesc desc{};
+    desc.loopCount = looping ? -1 : 0;
+    Play(filepath, desc);
+}
+
+void AudioSystem::Play(const std::size_t id, const bool looping) noexcept {
+    SoundDesc desc{};
+    desc.loopCount = looping ? -1 : 0;
+    Play(_sounds[id].first, desc);
+}
+
+void AudioSystem::Stop(const std::filesystem::path& filepath) noexcept {
+    const auto& found = std::find_if(std::cbegin(_sounds), std::cend(_sounds), [&filepath](const auto& snd) { return snd.first == filepath; });
+    if(found != std::cend(_sounds)) {
+        for(auto& channel : found->second->GetChannels()) {
+            channel->Stop();
+            DeactivateChannel(*channel);
+        }
+    }
+}
+
+void AudioSystem::Stop(const std::size_t id) noexcept {
+    auto& channel = _active_channels[id];
+    channel->Stop();
+    DeactivateChannel(*channel);
+}
+
+void AudioSystem::StopAll() noexcept {
+    const auto& op_id = IncrementAndGetOperationSetId();
+    for(auto& active_sound : _active_channels) {
+        active_sound->Stop(op_id);
+        DeactivateChannel(*active_sound);
+    }
+    SubmitDeferredOperation(op_id);
+}
+
 AudioSystem::Sound* AudioSystem::CreateSound(std::filesystem::path filepath) noexcept {
     namespace FS = std::filesystem;
     if(!FS::exists(filepath)) {
