@@ -915,5 +915,8 @@
     <ClInclude Include="Math\Rotator.hpp">
       <Filter>Math</Filter>
     </ClInclude>
+    <ClInclude Include="Audio\IAudioService.hpp">
+      <Filter>Audio</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
