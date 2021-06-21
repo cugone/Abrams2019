@@ -419,6 +419,29 @@ void AudioSystem::Channel::Play(Sound& snd) noexcept {
     }
 }
 
+void AudioSystem::Channel::Play(Sound& snd, uint32_t operationSetId) noexcept {
+    snd.AddChannel(this);
+    _sound = &snd;
+    if(const auto* wav = snd.GetWav()) {
+        _buffer.pAudioData = wav->GetDataBuffer();
+        _buffer.AudioBytes = wav->GetDataBufferSize();
+        _buffer.LoopCount = _desc.loop_count;
+        _buffer.LoopBegin = 0;
+        _buffer.LoopLength = 0;
+        if(_desc.loop_count) {
+            _buffer.LoopBegin = _desc.loop_beginSamples;
+            _buffer.LoopLength = _desc.loop_endSamples - _desc.loop_beginSamples;
+        }
+        {
+            std::scoped_lock<std::mutex> lock(_cs);
+            _voice->SubmitSourceBuffer(&_buffer, nullptr);
+            _voice->SetVolume(_desc.volume, operationSetId);
+            _voice->SetFrequencyRatio(_desc.frequency, operationSetId);
+            _voice->Start(0, operationSetId);
+        }
+    }
+}
+
 void AudioSystem::Channel::Stop() noexcept {
     if(_voice && _sound) {
         std::scoped_lock<std::mutex> lock(_cs);
@@ -427,10 +450,25 @@ void AudioSystem::Channel::Stop() noexcept {
     }
 }
 
+void AudioSystem::Channel::Stop(uint32_t operationSetId) noexcept {
+    if(_voice) {
+        std::scoped_lock<std::mutex> lock(_cs);
+        _voice->Stop(0, operationSetId);
+        _voice->FlushSourceBuffers();
+    }
+}
+
 void AudioSystem::Channel::Pause() noexcept {
     if(_voice) {
         std::scoped_lock<std::mutex> lock(_cs);
         _voice->Stop();
+    }
+}
+
+void AudioSystem::Channel::Pause(uint32_t operationSetId) noexcept {
+    if(_voice) {
+        std::scoped_lock<std::mutex> lock(_cs);
+        _voice->Stop(0, operationSetId);
     }
 }
 

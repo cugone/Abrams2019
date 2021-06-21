@@ -109,8 +109,11 @@ private:
         void Play(Sound& snd) noexcept;
         void Stop() noexcept;
         void Pause() noexcept;
-
         void SetStopWhenFinishedLooping(bool value);
+
+        void Play(Sound& snd, uint32_t operationSetId) noexcept;
+        void Stop(uint32_t operationSetId) noexcept;
+        void Pause(uint32_t operationSetId) noexcept;
 
         void SetLoopCount(int count) noexcept;
         [[nodiscard]] uint32_t GetLoopCount() const noexcept;
