@@ -108,6 +108,7 @@ private:
         ~Channel() noexcept;
         void Play(Sound& snd) noexcept;
         void Stop() noexcept;
+        void Pause() noexcept;
 
         void SetStopWhenFinishedLooping(bool value);
 

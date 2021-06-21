@@ -427,6 +427,13 @@ void AudioSystem::Channel::Stop() noexcept {
     }
 }
 
+void AudioSystem::Channel::Pause() noexcept {
+    if(_voice) {
+        std::scoped_lock<std::mutex> lock(_cs);
+        _voice->Stop();
+    }
+}
+
 AudioSystem::Channel::ChannelDesc::ChannelDesc(AudioSystem* audioSystem)
 : audio_system{audioSystem} {
     /* DO NOTHING */
