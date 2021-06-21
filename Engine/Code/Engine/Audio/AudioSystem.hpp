@@ -148,7 +148,7 @@ private:
         void RemoveChannel(Channel* channel) noexcept;
         void SetVolume(float newVolume) noexcept;
         [[nodiscard]] float GetVolume() const noexcept;
-
+        void Stop() noexcept;
     private:
         AudioSystem& _audio_system;
         std::string _name{"UNNAMED CHANNEL GROUP"};

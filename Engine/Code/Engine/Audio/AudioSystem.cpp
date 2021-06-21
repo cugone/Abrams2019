@@ -619,3 +619,11 @@ float AudioSystem::ChannelGroup::GetVolume() const noexcept {
     _groupVoice->GetVolume(&v);
     return v;
 }
+
+void AudioSystem::ChannelGroup::Stop() noexcept {
+    const auto& opId = _audio_system.IncrementAndGetOperationSetId();
+    for(auto* channel : channels) {
+        channel->Stop(opId);
+    }
+    _audio_system.SubmitDeferredOperation(opId);
+}
