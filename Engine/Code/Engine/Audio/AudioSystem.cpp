@@ -318,6 +318,18 @@ AudioSystem::Sound* AudioSystem::CreateSound(std::filesystem::path filepath) noe
     return found_iter->second.get();
 }
 
+AudioSystem::Sound* AudioSystem::CreateSoundInstance(std::filesystem::path filepath) noexcept {
+    namespace FS = std::filesystem;
+    if(!FS::exists(filepath)) {
+        DebuggerPrintf("Could not find file: %s\n", filepath.string().c_str());
+        return nullptr;
+    }
+    filepath = FS::canonical(filepath);
+    filepath.make_preferred();
+    _sounds.emplace_back(std::make_pair(filepath, std::move(std::make_unique<Sound>(*this, filepath))));
+    return _sounds.back().second.get();
+}
+
 void AudioSystem::RegisterWavFile(std::filesystem::path filepath) noexcept {
     namespace FS = std::filesystem;
     if(!FS::exists(filepath)) {

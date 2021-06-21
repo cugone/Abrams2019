@@ -185,6 +185,7 @@ public:
     void Play(Sound& snd, SoundDesc desc = SoundDesc{}) noexcept;
     void Play(std::filesystem::path filepath, SoundDesc desc = SoundDesc{}) noexcept;
     [[nodiscard]] Sound* CreateSound(std::filesystem::path filepath) noexcept;
+    [[nodiscard]] Sound* CreateSoundInstance(std::filesystem::path filepath) noexcept;
 
     [[nodiscard]] ChannelGroup* GetChannelGroup(const std::string& name) const noexcept;
 
