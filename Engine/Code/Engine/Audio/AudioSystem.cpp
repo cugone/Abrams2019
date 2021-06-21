@@ -12,6 +12,7 @@
 
 AudioSystem::AudioSystem(FileLogger& fileLogger, std::size_t max_channels /*= 1024*/)
 : EngineSubsystem()
+, IAudioService()
 , _fileLogger(&fileLogger)
 , _max_channels(max_channels) {
     bool co_init_succeeded = SUCCEEDED(::CoInitializeEx(nullptr, COINIT_MULTITHREADED));
