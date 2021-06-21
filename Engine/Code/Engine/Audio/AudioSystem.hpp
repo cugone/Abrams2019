@@ -184,6 +184,11 @@ public:
 
     [[nodiscard]] ChannelGroup* GetChannelGroup(const std::string& name) const noexcept;
 
+    void SubmitDeferredOperation(uint32_t operationSetId) noexcept;
+    const std::atomic_uint32_t& GetOperationSetId() const noexcept;
+    const std::atomic_uint32_t& IncrementAndGetOperationSetId() noexcept;
+    void IncrementOperationSetId() noexcept;
+
     void AddChannelGroup(const std::string& name) noexcept;
     void RemoveChannelGroup(const std::string& name) noexcept;
     void AddSoundToChannelGroup(const std::string& channelGroupName, Sound* snd) noexcept;
@@ -207,6 +212,7 @@ private:
     std::map<std::string, std::unique_ptr<ChannelGroup>> _channel_groups{};
     std::vector<std::unique_ptr<Channel>> _active_channels{};
     std::vector<std::unique_ptr<Channel>> _idle_channels{};
+    std::atomic_uint32_t _operationID{};
     IXAudio2* _xaudio2 = nullptr;
     X3DAUDIO_HANDLE _x3daudio;
     IXAudio2MasteringVoice* _master_voice = nullptr;

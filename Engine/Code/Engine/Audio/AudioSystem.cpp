@@ -95,6 +95,22 @@ AudioSystem::ChannelGroup* AudioSystem::GetChannelGroup(const std::string& name)
     return nullptr;
 }
 
+const std::atomic_uint32_t& AudioSystem::GetOperationSetId() const noexcept {
+    return _operationID;
+}
+const std::atomic_uint32_t& AudioSystem::IncrementAndGetOperationSetId() noexcept {
+    IncrementOperationSetId();
+    return GetOperationSetId();
+}
+
+void AudioSystem::IncrementOperationSetId() noexcept {
+    _operationID++;
+}
+
+void AudioSystem::SubmitDeferredOperation(uint32_t operationSetId) noexcept {
+    _xaudio2->CommitChanges(operationSetId);
+}
+
 void AudioSystem::AddChannelGroup(const std::string& name) noexcept {
     if(auto found = _channel_groups.find(name); found != std::end(_channel_groups)) {
         return;
