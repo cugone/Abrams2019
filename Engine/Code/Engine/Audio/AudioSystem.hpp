@@ -15,10 +15,10 @@
 #include <filesystem>
 #include <functional>
 #include <iomanip>
-#include <map>
 #include <memory>
 #include <mutex>
 #include <sstream>
+#include <utility>
 #include <vector>
 #include <x3daudio.h>
 
@@ -212,9 +212,9 @@ private:
     WAVEFORMATEXTENSIBLE _audio_format_ex{};
     std::size_t _sound_count{};
     std::size_t _max_channels{};
-    std::map<std::filesystem::path, std::unique_ptr<FileUtils::Wav>> _wave_files{};
+    std::vector<std::pair<std::filesystem::path, std::unique_ptr<FileUtils::Wav>>> _wave_files{};
     std::vector<std::pair<std::filesystem::path, std::unique_ptr<Sound>>> _sounds{};
-    std::map<std::string, std::unique_ptr<ChannelGroup>> _channel_groups{};
+    std::vector<std::pair<std::filesystem::path, std::unique_ptr<ChannelGroup>>> _channel_groups{};
     std::vector<std::unique_ptr<Channel>> _active_channels{};
     std::vector<std::unique_ptr<Channel>> _idle_channels{};
     std::atomic_uint32_t _operationID{};
