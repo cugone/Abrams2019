@@ -154,7 +154,7 @@ void AudioSystem::RemoveSoundFromChannelGroup(const std::string& channelGroupNam
 
 void AudioSystem::RemoveSoundFromChannelGroup(const std::string& channelGroupName, const std::filesystem::path& filepath) noexcept {
     if(const auto group = GetChannelGroup(channelGroupName); group != nullptr) {
-        if(const auto found_iter = _sounds.find(filepath); found_iter != std::end(_sounds)) {
+        if(const auto found_iter = std::find_if(std::begin(_sounds), std::end(_sounds), [&filepath](const auto& a) { return a.first == filepath;  }); found_iter != std::end(_sounds)) {
             auto* snd = found_iter->second.get();
             RemoveSoundFromChannelGroup(channelGroupName, snd);
         }
@@ -293,11 +293,11 @@ AudioSystem::Sound* AudioSystem::CreateSound(std::filesystem::path filepath) noe
 
     filepath = FS::canonical(filepath);
     filepath.make_preferred();
-    auto filepathAsString = filepath.string();
-    auto found_iter = _sounds.find(filepathAsString);
+    const auto finder = [&filepath](const auto& a) { return a.first == filepath; };
+    auto found_iter = std::find_if(std::begin(_sounds), std::end(_sounds), finder);
     if(found_iter == _sounds.end()) {
-        _sounds.insert_or_assign(filepathAsString, std::move(std::make_unique<Sound>(*this, filepathAsString)));
-        found_iter = _sounds.find(filepathAsString);
+        _sounds.emplace_back(std::make_pair(filepath, std::move(std::make_unique<Sound>(*this, filepath))));
+        found_iter = std::find_if(std::begin(_sounds), std::end(_sounds), finder);
     }
     return found_iter->second.get();
 }
