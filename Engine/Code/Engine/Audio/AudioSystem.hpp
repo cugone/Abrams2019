@@ -7,11 +7,13 @@
 /************************************************/
 
 #include "Engine/Audio/Wav.hpp"
-#include "Engine/Audio/IAudioService.hpp"
 
 #include "Engine/Core/EngineSubsystem.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/Win.hpp"
+
+#include "Engine/Services/IAudioService.hpp"
+#include "Engine/Services/ServiceLocator.hpp"
 
 #include <Xaudio2.h>
 #include <filesystem>

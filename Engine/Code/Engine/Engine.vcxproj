@@ -53,7 +53,6 @@
     <ClCompile Include="Core\Obj.cpp" />
     <ClCompile Include="Core\Rgba.cpp" />
     <ClCompile Include="Core\Riff.cpp" />
-    <ClCompile Include="Core\ServiceLocator.cpp" />
     <ClCompile Include="Core\Stopwatch.cpp" />
     <ClCompile Include="Core\StringUtils.cpp" />
     <ClCompile Include="Core\ThreadUtils.cpp" />
@@ -142,6 +141,7 @@
     <ClCompile Include="RHI\RHIInstance.cpp" />
     <ClCompile Include="RHI\RHIOutput.cpp" />
     <ClCompile Include="RHI\RHITypes.cpp" />
+    <ClCompile Include="Services\ServiceLocator.cpp" />
     <ClCompile Include="System\Cpu.cpp" />
     <ClCompile Include="System\OS.cpp" />
     <ClCompile Include="System\Ram.cpp" />
@@ -173,7 +173,6 @@
     <ClInclude Include="..\Thirdparty\stb\stb_image_write.h" />
     <ClInclude Include="..\Thirdparty\TinyXML2\tinyxml2.h" />
     <ClInclude Include="Audio\AudioSystem.hpp" />
-    <ClInclude Include="Audio\IAudioService.hpp" />
     <ClInclude Include="Audio\Wav.hpp" />
     <ClInclude Include="Core\Argb.hpp" />
     <ClInclude Include="Core\ArgumentParser.hpp" />
@@ -197,7 +196,6 @@
     <ClInclude Include="Core\Obj.hpp" />
     <ClInclude Include="Core\Rgba.hpp" />
     <ClInclude Include="Core\Riff.hpp" />
-    <ClInclude Include="Core\ServiceLocator.hpp" />
     <ClInclude Include="Core\Stopwatch.hpp" />
     <ClInclude Include="Core\StringUtils.hpp" />
     <ClInclude Include="Core\ThreadUtils.hpp" />
@@ -292,6 +290,9 @@
     <ClInclude Include="RHI\RHIInstance.hpp" />
     <ClInclude Include="RHI\RHIOutput.hpp" />
     <ClInclude Include="RHI\RHITypes.hpp" />
+    <ClInclude Include="Services\IAudioService.hpp" />
+    <ClInclude Include="Services\IService.hpp" />
+    <ClInclude Include="Services\ServiceLocator.hpp" />
     <ClInclude Include="System\Cpu.hpp" />
     <ClInclude Include="System\OS.hpp" />
     <ClInclude Include="System\Ram.hpp" />

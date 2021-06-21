@@ -65,6 +65,9 @@
     <Filter Include="Thirdparty\EnTT">
       <UniqueIdentifier>{13d0dc8d-6f17-4a5e-a8f5-67b6463b9929}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Services">
+      <UniqueIdentifier>{a63707d4-a79f-44ee-bfa3-69b443c8472c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Math\Vector2.cpp">
@@ -475,8 +478,8 @@
     <ClCompile Include="Core\Win.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="Core\ServiceLocator.cpp">
-      <Filter>Core</Filter>
+    <ClCompile Include="Services\ServiceLocator.cpp">
+      <Filter>Services</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -918,11 +921,14 @@
     <ClInclude Include="Math\Rotator.hpp">
       <Filter>Math</Filter>
     </ClInclude>
-    <ClInclude Include="Audio\IAudioService.hpp">
-      <Filter>Audio</Filter>
+    <ClInclude Include="Services\IAudioService.hpp">
+      <Filter>Services</Filter>
     </ClInclude>
-    <ClInclude Include="Core\ServiceLocator.hpp">
-      <Filter>Core</Filter>
+    <ClInclude Include="Services\ServiceLocator.hpp">
+      <Filter>Services</Filter>
+    </ClInclude>
+    <ClInclude Include="Services\IService.hpp">
+      <Filter>Services</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
