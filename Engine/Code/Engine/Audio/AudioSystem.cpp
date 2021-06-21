@@ -455,7 +455,7 @@ void AudioSystem::Channel::Play(Sound& snd, uint32_t operationSetId) noexcept {
 }
 
 void AudioSystem::Channel::Stop() noexcept {
-    if(_voice && _sound) {
+    if(_voice) {
         std::scoped_lock<std::mutex> lock(_cs);
         _voice->Stop();
         _voice->FlushSourceBuffers();
