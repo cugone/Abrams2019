@@ -222,7 +222,7 @@ public:
 protected:
 private:
     void DeactivateChannel(Channel& channel) noexcept;
-    FileLogger* _fileLogger = nullptr;
+    static inline FileLogger& _fileLogger = ServiceLocator::get<FileLogger>();
     WAVEFORMATEXTENSIBLE _audio_format_ex{};
     std::size_t _sound_count{};
     std::size_t _max_channels{};
