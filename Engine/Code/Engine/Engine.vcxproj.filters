@@ -475,6 +475,9 @@
     <ClCompile Include="Core\Win.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Core\ServiceLocator.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vector2.hpp">
@@ -917,6 +920,9 @@
     </ClInclude>
     <ClInclude Include="Audio\IAudioService.hpp">
       <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\ServiceLocator.hpp">
+      <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

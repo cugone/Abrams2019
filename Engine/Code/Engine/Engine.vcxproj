@@ -53,6 +53,7 @@
     <ClCompile Include="Core\Obj.cpp" />
     <ClCompile Include="Core\Rgba.cpp" />
     <ClCompile Include="Core\Riff.cpp" />
+    <ClCompile Include="Core\ServiceLocator.cpp" />
     <ClCompile Include="Core\Stopwatch.cpp" />
     <ClCompile Include="Core\StringUtils.cpp" />
     <ClCompile Include="Core\ThreadUtils.cpp" />
@@ -196,6 +197,7 @@
     <ClInclude Include="Core\Obj.hpp" />
     <ClInclude Include="Core\Rgba.hpp" />
     <ClInclude Include="Core\Riff.hpp" />
+    <ClInclude Include="Core\ServiceLocator.hpp" />
     <ClInclude Include="Core\Stopwatch.hpp" />
     <ClInclude Include="Core\StringUtils.hpp" />
     <ClInclude Include="Core\ThreadUtils.hpp" />
