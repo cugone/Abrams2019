@@ -9,8 +9,8 @@ class InputSystem;
 
 class OrthographicCameraController {
 public:
-    OrthographicCameraController() noexcept = default;
-    explicit OrthographicCameraController(Renderer* renderer, InputSystem* inputSystem, float aspectRatio = 1.777778f) noexcept;
+    OrthographicCameraController() noexcept;
+    explicit OrthographicCameraController(float aspectRatio) noexcept;
 
     void Update([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept;
 
@@ -50,8 +50,6 @@ public:
 
 protected:
 private:
-    Renderer* m_renderer{};
-    InputSystem* m_inputSystem{};
     float m_aspectRatio = MathUtils::M_16_BY_9_RATIO;
     float m_zoomLevel = 8.0f;
     float m_defaultMinZoomLevel = 8.0f;

@@ -1,36 +1,43 @@
 #include "Engine/Core/OrthographicCameraController.hpp"
 
-#include "Engine/Input/InputSystem.hpp"
-#include "Engine/Renderer/Renderer.hpp"
+#include "Engine/Input/KeyCode.hpp"
+
+#include "Engine/Services/ServiceLocator.hpp"
+#include "Engine/Services/IInputService.hpp"
+#include "Engine/Services/IRendererService.hpp"
 
 #include <algorithm>
 
-OrthographicCameraController::OrthographicCameraController(Renderer* renderer, InputSystem* inputSystem, float aspectRatio /*= 1.777778f*/) noexcept
-: m_renderer(renderer)
-, m_inputSystem(inputSystem)
-, m_aspectRatio(aspectRatio) {
+
+OrthographicCameraController::OrthographicCameraController() noexcept
+    : OrthographicCameraController(1.777778f)
+{}
+
+OrthographicCameraController::OrthographicCameraController(float aspectRatio) noexcept
+: m_aspectRatio(aspectRatio) {
     /* DO NOTHING */
 }
 
 void OrthographicCameraController::Update([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept {
-    if(m_inputSystem->IsKeyDown(KeyCode::RButton)) {
+    auto& input = ServiceLocator::get<IInputService>();
+    if(input.IsKeyDown(KeyCode::RButton)) {
         const auto up = -Vector2::Y_AXIS * m_translationSpeed * deltaSeconds.count();
         const auto down = -up;
         const auto left = -Vector2::X_AXIS * m_translationSpeed * deltaSeconds.count();
         const auto right = -left;
-        if(m_inputSystem->IsKeyDown(KeyCode::W)) {
+        if(input.IsKeyDown(KeyCode::W)) {
             Translate(up);
-        } else if(m_inputSystem->IsKeyDown(KeyCode::S)) {
+        } else if(input.IsKeyDown(KeyCode::S)) {
             Translate(down);
         }
-        if(m_inputSystem->IsKeyDown(KeyCode::A)) {
+        if(input.IsKeyDown(KeyCode::A)) {
             Translate(left);
-        } else if(m_inputSystem->IsKeyDown(KeyCode::D)) {
+        } else if(input.IsKeyDown(KeyCode::D)) {
             Translate(right);
         }
-        if(m_inputSystem->WasMouseWheelJustScrolledUp()) {
+        if(input.WasMouseWheelJustScrolledUp()) {
             ZoomIn();
-        } else if(m_inputSystem->WasMouseWheelJustScrolledDown()) {
+        } else if(input.WasMouseWheelJustScrolledDown()) {
             ZoomOut();
         }
     }
@@ -42,7 +49,7 @@ void OrthographicCameraController::Update([[maybe_unused]] TimeUtils::FPSeconds 
     m_ShakyCamera.orientation_degrees += m_Camera.GetShake() * m_maxShakeAngle * MathUtils::GetRandomFloatNegOneToOne();
     m_Camera.SetupView(Vector2{-m_aspectRatio * m_zoomLevel, m_zoomLevel}, Vector2{m_aspectRatio * m_zoomLevel, -m_zoomLevel}, Vector2{0.0f, 1.0f}, m_aspectRatio);
     m_ShakyCamera.SetupView(Vector2{-m_aspectRatio * m_zoomLevel, m_zoomLevel}, Vector2{m_aspectRatio * m_zoomLevel, -m_zoomLevel}, Vector2{0.0f, 1.0f}, m_aspectRatio);
-    m_renderer->SetCamera(m_ShakyCamera);
+    ServiceLocator::get<IRendererService>().SetCamera(m_ShakyCamera);
 }
 
 void OrthographicCameraController::SetupCameraShake(float maxShakeOffsetHorizontal, float maxShakeOffsetVertical, float maxShakeAngleDegrees) {
