@@ -10,7 +10,7 @@
 #include "Engine/Core/KerningFont.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Core/Win.hpp"
-#include "Engine/Input/InputSystem.hpp"
+#include "Engine/Input/KeyCode.hpp"
 #include "Engine/Math/IntVector2.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Matrix4.hpp"
@@ -21,6 +21,9 @@
 #include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/Window.hpp"
+
+#include "Engine/Services/ServiceLocator.hpp"
+#include "Engine/Services/IRendererService.hpp"
 
 #include <iterator>
 #include <sstream>
@@ -37,10 +40,8 @@ void* Console::GetAcceleratorTable() const noexcept {
     return static_cast<void*>(hAcceleratorTable);
 }
 
-Console::Console(FileLogger& fileLogger, Renderer& renderer) noexcept
+Console::Console() noexcept
 : EngineSubsystem()
-, _fileLogger(fileLogger)
-, _renderer(renderer)
 , _show_cursor(false)
 , _is_open(false)
 , _highlight_mode(false)
@@ -53,22 +54,22 @@ Console::Console(FileLogger& fileLogger, Renderer& renderer) noexcept
 {
     ACCEL copy{};
     copy.fVirt = FCONTROL | FVIRTKEY;
-    copy.key = InputSystem::ConvertKeyCodeToWinVK(KeyCode::C);
+    copy.key = ConvertKeyCodeToWinVK(KeyCode::C);
     copy.cmd = IDM_COPY;
 
     ACCEL paste{};
     paste.fVirt = FCONTROL | FVIRTKEY;
-    paste.key = InputSystem::ConvertKeyCodeToWinVK(KeyCode::V);
+    paste.key = ConvertKeyCodeToWinVK(KeyCode::V);
     paste.cmd = IDM_PASTE;
 
     ACCEL cut{};
     cut.fVirt = FCONTROL | FVIRTKEY;
-    cut.key = InputSystem::ConvertKeyCodeToWinVK(KeyCode::X);
+    cut.key = ConvertKeyCodeToWinVK(KeyCode::X);
     cut.cmd = IDM_CUT;
 
     ACCEL select_all{};
     select_all.fVirt = FCONTROL | FVIRTKEY;
-    select_all.key = InputSystem::ConvertKeyCodeToWinVK(KeyCode::A);
+    select_all.key = ConvertKeyCodeToWinVK(KeyCode::A);
     select_all.cmd = IDM_SELECTALL;
 
     std::vector<ACCEL> accelerators = {copy, paste, cut, select_all};
@@ -134,7 +135,7 @@ bool Console::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         if(key < 32 || key == 127) { //Control and Del chars
             _non_rendering_char = true;
         }
-        auto my_key = InputSystem::ConvertWinVKToKeyCode(key);
+        auto my_key = ConvertWinVKToKeyCode(key);
         if(is_extended_key) {
             if(IsClosed()) {
                 return false;
@@ -174,7 +175,7 @@ bool Console::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         if(key < 32 || key == 127) { //Control and Del chars
             _non_rendering_char = true;
         }
-        auto my_key = InputSystem::ConvertWinVKToKeyCode(key);
+        auto my_key = ConvertWinVKToKeyCode(key);
         if(is_extended_key) {
             if(IsClosed()) {
                 return false;
@@ -260,7 +261,7 @@ bool Console::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         //constexpr uint32_t transition_state_mask = 0b1000'0000'0000'0000'0000'0000'0000'0000; //0x80000000;
         //bool is_extended_key = (lpBits & extended_key_mask) != 0;
         //bool is_alt_down = (lpBits & context_code_mask) != 0;
-        //auto my_key = InputSystem::ConvertWinVKToKeyCode(char_code);
+        //auto my_key = ConvertWinVKToKeyCode(char_code);
         InsertCharInEntryLine(char_code);
         return true;
     }
@@ -289,7 +290,7 @@ bool Console::ProcessSystemMessage(const EngineMessage& msg) noexcept {
         constexpr uint32_t transition_state_mask = 0b1000'0000'0000'0000'0000'0000'0000'0000; //0x80000000;
         bool is_extended_key = (lpBits & extended_key_mask) != 0;
         //bool is_alt_down = (lpBits & context_code_mask) != 0;
-        auto my_key = InputSystem::ConvertWinVKToKeyCode(char_code);
+        auto my_key = ConvertWinVKToKeyCode(char_code);
         if(is_extended_key) {
             switch(my_key) {
             case KeyCode::Ctrl: SetSkipNonWhitespaceMode(false); return true;
@@ -324,7 +325,7 @@ bool Console::ProcessSystemMessage(const EngineMessage& msg) noexcept {
 bool Console::HandleClipboardCopy() const noexcept {
     bool did_copy = false;
     if(Clipboard::HasText()) {
-        auto hwnd = static_cast<HWND>(_renderer.GetOutput()->GetWindow()->GetWindowHandle());
+        auto hwnd = static_cast<HWND>(ServiceLocator::get<IRendererService>().GetOutput()->GetWindow()->GetWindowHandle());
         Clipboard c{hwnd};
         if(_cursor_position != _selection_position) {
             std::string copied_text = CopyText(_cursor_position, _selection_position);
@@ -338,7 +339,7 @@ bool Console::HandleClipboardCopy() const noexcept {
 
 void Console::HandleClipboardPaste() noexcept {
     if(Clipboard::HasText()) {
-        auto hwnd = static_cast<HWND>(_renderer.GetOutput()->GetWindow()->GetWindowHandle());
+        auto hwnd = static_cast<HWND>(ServiceLocator::get<IRendererService>().GetOutput()->GetWindow()->GetWindowHandle());
         Clipboard c{hwnd};
         auto string_to_paste = c.Paste();
         PasteText(string_to_paste, _cursor_position);
@@ -773,10 +774,10 @@ void Console::Render() const {
     if(IsClosed()) {
         return;
     }
-
-    _renderer.ResetModelViewProjection();
-    _renderer.SetRenderTarget();
-    _renderer.SetViewportAsPercent(0.0f, 0.0f, 1.0f, 0.957f);
+    auto&& renderer = ServiceLocator::get<IRendererService>();
+    renderer.ResetModelViewProjection();
+    renderer.SetRenderTarget();
+    renderer.SetViewportAsPercent(0.0f, 0.0f, 1.0f, 0.957f);
 
     const auto view_half_extents = SetupViewFromCamera();
     DrawBackground(view_half_extents);
@@ -789,18 +790,19 @@ void Console::DrawCursor(const Vector2& view_half_extents) const noexcept {
     if(!_show_cursor) {
         return;
     }
+    auto&& renderer = ServiceLocator::get<IRendererService>();
     const auto textline_bottom = view_half_extents.y * 0.99f;
     const auto textline_left = -view_half_extents.x * 0.99f;
-    const auto font = _renderer.GetFont("System32");
+    const auto font = renderer.GetFont("System32");
     const auto first = _entryline.begin();
     const auto has_text = !_entryline.empty();
     const auto text_left_of_cursor = has_text ? std::string(first, _cursor_position) : std::string("");
     const auto xPosOffsetToCaret = font->CalculateTextWidth(text_left_of_cursor);
     const auto cursor_t = Matrix4::CreateTranslationMatrix(Vector3(textline_left + xPosOffsetToCaret, textline_bottom, 0.0f));
     const auto model_cursor_mat = cursor_t;
-    _renderer.SetModelMatrix(model_cursor_mat);
-    _renderer.SetMaterial(font->GetMaterial());
-    _renderer.DrawTextLine(font, "|", Rgba::White);
+    renderer.SetModelMatrix(model_cursor_mat);
+    renderer.SetMaterial(font->GetMaterial());
+    renderer.DrawTextLine(font, "|", Rgba::White);
 }
 
 void Console::DrawOutput(const Vector2& view_half_extents) const noexcept {
@@ -809,7 +811,8 @@ void Console::DrawOutput(const Vector2& view_half_extents) const noexcept {
     }
     std::vector<Vertex3D> vbo{};
     std::vector<unsigned int> ibo{};
-    auto font = _renderer.GetFont("System32");
+    auto&& renderer = ServiceLocator::get<IRendererService>();
+    auto font = renderer.GetFont("System32");
     const auto max_vertical_start_position = (_output_buffer.size() * (1 + font->GetLineHeight()) - view_half_extents.y * 2.0f);
     if(_outputStartPosition.y <= max_vertical_start_position && WasMouseWheelJustScrolledUp()) {
         _outputStartPosition.y += font->GetLineHeight();
@@ -823,16 +826,16 @@ void Console::DrawOutput(const Vector2& view_half_extents) const noexcept {
         auto draw_loc = _outputStartPosition + Vector2(draw_x * 0.99f, draw_y * 0.99f);
         for(auto iter = _output_buffer.cbegin(); iter != _output_buffer.cend(); ++iter) {
             draw_loc.y -= font->CalculateTextHeight(iter->str);
-            _renderer.AppendMultiLineTextBuffer(font, iter->str, draw_loc, iter->color, vbo, ibo);
+            renderer.AppendMultiLineTextBuffer(font, iter->str, draw_loc, iter->color, vbo, ibo);
         }
     }
-    _renderer.SetMaterial(font->GetMaterial());
-    _renderer.EnableScissorTest();
-    _renderer.SetScissorAsPercent(0.0f, 0.0f, 1.0f, 0.921f);
-    _renderer.SetModelMatrix(Matrix4::I);
-    _renderer.DrawIndexed(PrimitiveType::Triangles, vbo, ibo);
-    _renderer.DisableScissorTest();
-    _renderer.SetScissorAsPercent();
+    renderer.SetMaterial(font->GetMaterial());
+    renderer.EnableScissorTest();
+    renderer.SetScissorAsPercent(0.0f, 0.0f, 1.0f, 0.921f);
+    renderer.SetModelMatrix(Matrix4::I);
+    renderer.DrawIndexed(PrimitiveType::Triangles, vbo, ibo);
+    renderer.DisableScissorTest();
+    renderer.SetScissorAsPercent();
 }
 
 void Console::OutputMsg(const std::string& msg, const Rgba& color) noexcept {
@@ -894,13 +897,15 @@ void Console::ErrorMsg(const std::string& msg) noexcept {
 }
 
 void Console::DrawBackground(const Vector2& view_half_extents) const noexcept {
-    _renderer.SetModelMatrix(Matrix4::CreateScaleMatrix(view_half_extents * 2.0f));
-    _renderer.SetMaterial(_renderer.GetMaterial("__2D"));
-    _renderer.DrawQuad2D(Rgba(0, 0, 0, 128));
+    auto&& renderer = ServiceLocator::get<IRendererService>();
+    renderer.SetModelMatrix(Matrix4::CreateScaleMatrix(view_half_extents * 2.0f));
+    renderer.SetMaterial(renderer.GetMaterial("__2D"));
+    renderer.DrawQuad2D(Rgba(0, 0, 0, 128));
 }
 
 void Console::DrawEntryLine(const Vector2& view_half_extents) const noexcept {
-    const auto font = _renderer.GetFont("System32");
+    auto&& renderer = ServiceLocator::get<IRendererService>();
+    const auto font = renderer.GetFont("System32");
     const float textline_bottom = view_half_extents.y * 0.99f;
     const float textline_left = -view_half_extents.x * 0.99f;
 
@@ -917,34 +922,35 @@ void Console::DrawEntryLine(const Vector2& view_half_extents) const noexcept {
             std::swap(xPosOffsetToCaret, xPosOffsetToSelect);
         }
 
-        _renderer.SetModelMatrix(Matrix4::CreateScaleMatrix(Vector2(500.0f, 500.0f)));
-        _renderer.SetMaterial(_renderer.GetMaterial("__2D"));
-        _renderer.DrawQuad2D();
+        renderer.SetModelMatrix(Matrix4::CreateScaleMatrix(Vector2(500.0f, 500.0f)));
+        renderer.SetMaterial(renderer.GetMaterial("__2D"));
+        renderer.DrawQuad2D();
 
-        _renderer.SetModelMatrix(model_entryline_mat);
-        _renderer.SetMaterial(font->GetMaterial());
+        renderer.SetModelMatrix(model_entryline_mat);
+        renderer.SetMaterial(font->GetMaterial());
 
-        _renderer.DrawTextLine(font, std::string(_entryline, 0, std::distance(std::cbegin(_entryline), rangeStart)), Rgba::White);
+        renderer.DrawTextLine(font, std::string(_entryline, 0, std::distance(std::cbegin(_entryline), rangeStart)), Rgba::White);
         auto rightside_t = Matrix4::CreateTranslationMatrix(Vector3(xPosOffsetToSelect, 0.0f, 0.0f));
         rightside_t = Matrix4::MakeRT(model_entryline_mat, rightside_t);
-        _renderer.SetModelMatrix(rightside_t);
-        _renderer.DrawTextLine(font, std::string(_entryline, std::distance(std::cbegin(_entryline), rangeEnd), std::distance(rangeEnd, std::cend(_entryline))), Rgba::White);
+        renderer.SetModelMatrix(rightside_t);
+        renderer.DrawTextLine(font, std::string(_entryline, std::distance(std::cbegin(_entryline), rangeEnd), std::distance(rangeEnd, std::cend(_entryline))), Rgba::White);
 
         const auto xPosOffsetToStart = font->CalculateTextWidth(std::string(std::begin(_entryline), rangeStart));
         const auto blacktext_t = Matrix4::CreateTranslationMatrix(Vector3(xPosOffsetToStart, 0.0f, 0.0f));
         auto model_mat_blacktext = Matrix4::MakeRT(model_entryline_mat, blacktext_t);
-        _renderer.SetModelMatrix(model_mat_blacktext);
-        _renderer.DrawTextLine(font, std::string(rangeStart, rangeEnd), Rgba::Black);
+        renderer.SetModelMatrix(model_mat_blacktext);
+        renderer.DrawTextLine(font, std::string(rangeStart, rangeEnd), Rgba::Black);
 
     } else {
-        _renderer.SetModelMatrix(model_entryline_mat);
-        _renderer.SetMaterial(font->GetMaterial());
-        _renderer.DrawTextLine(font, _entryline, Rgba::White);
+        renderer.SetModelMatrix(model_entryline_mat);
+        renderer.SetMaterial(font->GetMaterial());
+        renderer.DrawTextLine(font, _entryline, Rgba::White);
     }
 }
 
 Vector2 Console::SetupViewFromCamera() const noexcept {
-    const auto& window = _renderer.GetOutput();
+    auto&& renderer = ServiceLocator::get<IRendererService>();
+    const auto& window = renderer.GetOutput();
     const auto& window_dimensions = window->GetDimensions();
     const auto& aspect = window->GetAspectRatio();
     const auto window_width = static_cast<float>(window_dimensions.x);
@@ -956,8 +962,8 @@ Vector2 Console::SetupViewFromCamera() const noexcept {
     const auto nearFar = Vector2(0.0f, 1.0f);
     _camera->SetupView(leftBottom, rightTop, nearFar, aspect);
 
-    _renderer.SetViewMatrix(_camera->GetViewMatrix());
-    _renderer.SetProjectionMatrix(_camera->GetProjectionMatrix());
+    renderer.SetViewMatrix(_camera->GetViewMatrix());
+    renderer.SetProjectionMatrix(_camera->GetProjectionMatrix());
 
     return Vector2(view_half_width, view_half_height);
 }

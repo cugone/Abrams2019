@@ -13,17 +13,15 @@
 #include "Engine/Renderer/DepthStencilState.hpp"
 #include "Engine/Renderer/InputLayout.hpp"
 #include "Engine/Renderer/InputLayoutInstanced.hpp"
-#include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Renderer/ShaderProgram.hpp"
 #include "Engine/Renderer/Window.hpp"
 
+#include "Engine/Services/ServiceLocator.hpp"
+#include "Engine/Services/IRendererService.hpp"
+
 #include <array>
 #include <sstream>
-
-RHIDevice::RHIDevice(Renderer& parent_renderer) noexcept
-: _parent_renderer(parent_renderer) {
-    /* DO NOTHING */
-}
+#include <numeric>
 
 std::pair<std::unique_ptr<RHIOutput>, std::unique_ptr<RHIDeviceContext>> RHIDevice::CreateOutputAndContext(const IntVector2& clientSize, const IntVector2& clientPosition /*= IntVector2::ZERO*/) noexcept {
     auto window = std::make_unique<Window>(clientPosition, clientSize);
@@ -59,8 +57,16 @@ std::unique_ptr<IndexBuffer> RHIDevice::CreateIndexBuffer(const IndexBuffer::buf
     return std::make_unique<IndexBuffer>(*this, ibo, usage, bindusage);
 }
 
-std::unique_ptr<InputLayout> RHIDevice::CreateInputLayout() const noexcept {
-    return std::make_unique<InputLayout>(*this);
+void RHIDevice::CreateInputLayout(InputLayout& layout, RHIDevice& device, void* byte_code, std::size_t byte_code_length) noexcept {
+    layout._elements.shrink_to_fit();
+    if(layout._dx_input_layout) {
+        layout._dx_input_layout->Release();
+        layout._dx_input_layout = nullptr;
+    }
+    auto dx_device = device.GetDxDevice();
+    HRESULT hr = dx_device->CreateInputLayout(layout._elements.data(), static_cast<unsigned int>(layout._elements.size()), byte_code, byte_code_length, layout._dx_input_layout.GetAddressOf());
+    bool succeeded = SUCCEEDED(hr);
+    GUARANTEE_OR_DIE(succeeded, "Create Input Layout failed.");
 }
 
 std::unique_ptr<StructuredBuffer> RHIDevice::CreateStructuredBuffer(const StructuredBuffer::buffer_t& buffer, std::size_t element_size, std::size_t element_count, const BufferUsage& usage, const BufferBindUsage& bindUsage) const noexcept {
@@ -69,6 +75,30 @@ std::unique_ptr<StructuredBuffer> RHIDevice::CreateStructuredBuffer(const Struct
 
 std::unique_ptr<ConstantBuffer> RHIDevice::CreateConstantBuffer(const ConstantBuffer::buffer_t& buffer, std::size_t buffer_size, const BufferUsage& usage, const BufferBindUsage& bindUsage) const noexcept {
     return std::make_unique<ConstantBuffer>(*this, buffer, buffer_size, usage, bindUsage);
+}
+
+void RHIDevice::CreateVertexShader(ShaderProgramDesc& desc) const noexcept {
+    GetDxDevice()->CreateVertexShader(desc.vs_bytecode->GetBufferPointer(), desc.vs_bytecode->GetBufferSize(), nullptr, &desc.vs);
+}
+
+void RHIDevice::CreateHullShader(ShaderProgramDesc& desc) const noexcept {
+    GetDxDevice()->CreateHullShader(desc.hs_bytecode->GetBufferPointer(), desc.hs_bytecode->GetBufferSize(), nullptr, &desc.hs);
+}
+
+void RHIDevice::CreateDomainShader(ShaderProgramDesc& desc) const noexcept {
+    GetDxDevice()->CreateDomainShader(desc.ds_bytecode->GetBufferPointer(), desc.ds_bytecode->GetBufferSize(), nullptr, &desc.ds);
+}
+
+void RHIDevice::CreateGeometryShader(ShaderProgramDesc& desc) const noexcept {
+    GetDxDevice()->CreateGeometryShader(desc.gs_bytecode->GetBufferPointer(), desc.gs_bytecode->GetBufferSize(), nullptr, &desc.gs);
+}
+
+void RHIDevice::CreatePixelShader(ShaderProgramDesc& desc) const noexcept {
+    GetDxDevice()->CreatePixelShader(desc.ps_bytecode->GetBufferPointer(), desc.ps_bytecode->GetBufferSize(), nullptr, &desc.ps);
+}
+
+void RHIDevice::CreateComputeShader(ShaderProgramDesc& desc) const noexcept {
+    GetDxDevice()->CreateComputeShader(desc.cs_bytecode->GetBufferPointer(), desc.cs_bytecode->GetBufferSize(), nullptr, &desc.cs);
 }
 
 std::pair<std::unique_ptr<RHIOutput>, std::unique_ptr<RHIDeviceContext>> RHIDevice::CreateOutputAndContextFromWindow(std::unique_ptr<Window> window) noexcept {
@@ -296,7 +326,44 @@ void RHIDevice::HandleDeviceLost() const noexcept {
     /* DO NOTHING */
 }
 
-std::vector<std::unique_ptr<ConstantBuffer>> RHIDevice::CreateConstantBuffersFromByteCode(ID3DBlob* bytecode) const noexcept {
+std::vector<std::unique_ptr<ConstantBuffer>> RHIDevice::CreateConstantBuffersFromShaderProgram(RHIDevice& device, const ShaderProgram* shaderProgram) noexcept {
+    auto vs_cbuffers = RHIDevice::CreateConstantBuffersFromByteCode(device, shaderProgram->GetVSByteCode());
+    auto hs_cbuffers = RHIDevice::CreateConstantBuffersFromByteCode(device, shaderProgram->GetHSByteCode());
+    auto ds_cbuffers = RHIDevice::CreateConstantBuffersFromByteCode(device, shaderProgram->GetDSByteCode());
+    auto gs_cbuffers = RHIDevice::CreateConstantBuffersFromByteCode(device, shaderProgram->GetGSByteCode());
+    auto ps_cbuffers = RHIDevice::CreateConstantBuffersFromByteCode(device, shaderProgram->GetPSByteCode());
+    const auto sizes = std::vector<std::size_t>{
+    vs_cbuffers.size(),
+    hs_cbuffers.size(),
+    ds_cbuffers.size(),
+    gs_cbuffers.size(),
+    ps_cbuffers.size()};
+    auto cbuffer_count = std::accumulate(std::begin(sizes), std::end(sizes), static_cast<std::size_t>(0u));
+    if(!cbuffer_count) {
+        return {};
+    }
+    auto&& cbuffers = std::move(vs_cbuffers);
+    std::move(std::begin(hs_cbuffers), std::end(hs_cbuffers), std::back_inserter(cbuffers));
+    std::move(std::begin(ds_cbuffers), std::end(ds_cbuffers), std::back_inserter(cbuffers));
+    std::move(std::begin(gs_cbuffers), std::end(gs_cbuffers), std::back_inserter(cbuffers));
+    std::move(std::begin(ps_cbuffers), std::end(ps_cbuffers), std::back_inserter(cbuffers));
+    cbuffers.shrink_to_fit();
+    return cbuffers;
+}
+
+std::vector<std::unique_ptr<ConstantBuffer>> RHIDevice::CreateComputeConstantBuffersFromShaderProgram(RHIDevice& device, const ShaderProgram* shaderProgram) noexcept {
+    auto&& cs_cbuffers = std::move(RHIDevice::CreateConstantBuffersFromByteCode(device, shaderProgram->GetCSByteCode()));
+    const auto sizes = std::vector<std::size_t>{cs_cbuffers.size()};
+    auto cbuffer_count = std::accumulate(std::begin(sizes), std::end(sizes), static_cast<std::size_t>(0u));
+    if(!cbuffer_count) {
+        return {};
+    }
+    auto&& ccbuffers = std::move(cs_cbuffers);
+    ccbuffers.shrink_to_fit();
+    return ccbuffers;
+}
+
+std::vector<std::unique_ptr<ConstantBuffer>> RHIDevice::CreateConstantBuffersFromByteCode(RHIDevice& device, ID3DBlob* bytecode) noexcept {
     if(!bytecode) {
         return {};
     }
@@ -304,7 +371,7 @@ std::vector<std::unique_ptr<ConstantBuffer>> RHIDevice::CreateConstantBuffersFro
     if(FAILED(::D3DReflect(bytecode->GetBufferPointer(), bytecode->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&cbufferReflection))) {
         return {};
     }
-    return CreateConstantBuffersUsingReflection(*cbufferReflection);
+    return CreateConstantBuffersUsingReflection(device, *cbufferReflection);
 }
 
 void RHIDevice::ResetSwapChainForHWnd() const noexcept {
@@ -312,11 +379,7 @@ void RHIDevice::ResetSwapChainForHWnd() const noexcept {
     GUARANTEE_OR_DIE(SUCCEEDED(hr), StringUtils::FormatWindowsMessage(hr).c_str());
 }
 
-Renderer& RHIDevice::GetRenderer() const noexcept {
-    return _parent_renderer;
-}
-
-std::vector<std::unique_ptr<ConstantBuffer>> RHIDevice::CreateConstantBuffersUsingReflection(ID3D11ShaderReflection& cbufferReflection) const noexcept {
+std::vector<std::unique_ptr<ConstantBuffer>> RHIDevice::CreateConstantBuffersUsingReflection(RHIDevice& device, ID3D11ShaderReflection& cbufferReflection) noexcept {
     D3D11_SHADER_DESC shader_desc{};
     if(FAILED(cbufferReflection.GetDesc(&shader_desc))) {
         return {};
@@ -327,6 +390,7 @@ std::vector<std::unique_ptr<ConstantBuffer>> RHIDevice::CreateConstantBuffersUsi
 
     std::vector<std::unique_ptr<ConstantBuffer>> result{};
     result.reserve(shader_desc.ConstantBuffers);
+    const auto& rs = ServiceLocator::get<IRendererService>();
     for(auto resource_idx = 0u; resource_idx < shader_desc.BoundResources; ++resource_idx) {
         D3D11_SHADER_INPUT_BIND_DESC input_desc{};
         if(FAILED(cbufferReflection.GetResourceBindingDesc(resource_idx, &input_desc))) {
@@ -335,7 +399,7 @@ std::vector<std::unique_ptr<ConstantBuffer>> RHIDevice::CreateConstantBuffersUsi
         if(input_desc.Type != D3D_SHADER_INPUT_TYPE::D3D_SIT_CBUFFER) {
             continue;
         }
-        if(input_desc.BindPoint < Renderer::CONSTANT_BUFFER_START_INDEX) {
+        if(input_desc.BindPoint < rs.GetConstantBufferStartIndex()) {
             continue;
         }
         for(auto cbuffer_idx = 0u; cbuffer_idx < shader_desc.ConstantBuffers; ++cbuffer_idx) {
@@ -379,152 +443,35 @@ std::vector<std::unique_ptr<ConstantBuffer>> RHIDevice::CreateConstantBuffersUsi
             }
             std::vector<std::byte> cbuffer_memory{};
             cbuffer_memory.resize(cbuffer_size);
-            result.push_back(CreateConstantBuffer(cbuffer_memory.data(), cbuffer_memory.size(), BufferUsage::Dynamic, BufferBindUsage::Constant_Buffer));
+            result.push_back(device.CreateConstantBuffer(cbuffer_memory.data(), cbuffer_memory.size(), BufferUsage::Dynamic, BufferBindUsage::Constant_Buffer));
         }
     }
     return result;
 }
 
-std::unique_ptr<InputLayout> RHIDevice::CreateInputLayoutFromByteCode(ID3DBlob* bytecode) const noexcept {
+std::unique_ptr<InputLayout> RHIDevice::CreateInputLayoutFromByteCode(RHIDevice& device, ID3DBlob* bytecode) noexcept {
     ID3D11ShaderReflection* vertexReflection = nullptr;
     if(FAILED(::D3DReflect(bytecode->GetBufferPointer(), bytecode->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&vertexReflection))) {
         return nullptr;
     }
-    auto il = std::make_unique<InputLayout>(*this);
+    auto il = std::make_unique<InputLayout>();
     il->PopulateInputLayoutUsingReflection(*vertexReflection);
-    il->CreateInputLayout(bytecode->GetBufferPointer(), bytecode->GetBufferSize());
+    RHIDevice::CreateInputLayout(*il, device, bytecode->GetBufferPointer(), bytecode->GetBufferSize());
     return il;
 }
 
-std::unique_ptr<InputLayoutInstanced> RHIDevice::CreateInputLayoutInstancedFromByteCode(ID3DBlob* vs_bytecode) const noexcept {
+std::unique_ptr<InputLayoutInstanced> RHIDevice::CreateInputLayoutInstancedFromByteCode(RHIDevice& device, ID3DBlob* vs_bytecode) noexcept {
     ID3D11ShaderReflection* vertexReflection = nullptr;
     if(FAILED(::D3DReflect(vs_bytecode->GetBufferPointer(), vs_bytecode->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&vertexReflection))) {
         return nullptr;
     }
-    auto il = std::make_unique<InputLayoutInstanced>(*this);
+    auto il = std::make_unique<InputLayoutInstanced>(device);
     il->PopulateInputLayoutUsingReflection(*vertexReflection);
     il->CreateInputLayout(vs_bytecode->GetBufferPointer(), vs_bytecode->GetBufferSize());
     return il;
 }
 
-std::unique_ptr<ShaderProgram> RHIDevice::CreateShaderProgramFromHlslString(const std::string& name, const std::string& hlslString, const std::string& entryPointList, std::unique_ptr<InputLayout> inputLayout, const PipelineStage& target) const noexcept {
-    const auto uses_vs_stage = static_cast<unsigned char>(target & PipelineStage::Vs) != 0;
-    const auto uses_hs_stage = static_cast<unsigned char>(target & PipelineStage::Hs) != 0;
-    const auto uses_ds_stage = static_cast<unsigned char>(target & PipelineStage::Ds) != 0;
-    const auto uses_gs_stage = static_cast<unsigned char>(target & PipelineStage::Gs) != 0;
-    const auto uses_ps_stage = static_cast<unsigned char>(target & PipelineStage::Ps) != 0;
-    const auto uses_cs_stage = static_cast<unsigned char>(target & PipelineStage::Cs) != 0;
-
-    const auto& entrypoints = StringUtils::Split(entryPointList, ',', false);
-
-    enum class EntrypointIndexes : unsigned char {
-        Vs,
-        Hs,
-        Ds,
-        Gs,
-        Ps,
-        Cs,
-    };
-
-    ShaderProgramDesc desc{};
-    desc.device = this;
-    desc.name = name;
-    if(uses_vs_stage) {
-        std::string stage = ":VS";
-        ID3DBlob* vs_bytecode = CompileShader(name + stage, hlslString.data(), hlslString.size(), entrypoints[static_cast<std::size_t>(EntrypointIndexes::Vs)], PipelineStage::Vs);
-        if(!vs_bytecode) {
-            return nullptr;
-        }
-        ID3D11VertexShader* vs = nullptr;
-        _dx_device->CreateVertexShader(vs_bytecode->GetBufferPointer(), vs_bytecode->GetBufferSize(), nullptr, &vs);
-        if(inputLayout) {
-            inputLayout->CreateInputLayout(vs_bytecode->GetBufferPointer(), vs_bytecode->GetBufferSize());
-        } else {
-            inputLayout = CreateInputLayoutFromByteCode(vs_bytecode);
-        }
-        desc.vs = vs;
-        desc.vs_bytecode = vs_bytecode;
-        desc.input_layout = std::move(inputLayout);
-    }
-
-    if(uses_ps_stage) {
-        std::string stage = ":PS";
-        ID3DBlob* ps_bytecode = CompileShader(name + stage, hlslString.data(), hlslString.size(), entrypoints[static_cast<std::size_t>(EntrypointIndexes::Ps)], PipelineStage::Ps);
-        if(!ps_bytecode) {
-            return nullptr;
-        }
-        ID3D11PixelShader* ps = nullptr;
-        _dx_device->CreatePixelShader(ps_bytecode->GetBufferPointer(), ps_bytecode->GetBufferSize(), nullptr, &ps);
-        desc.ps = ps;
-        desc.ps_bytecode = ps_bytecode;
-    }
-
-    if(uses_hs_stage) {
-        std::string stage = ":HS";
-        ID3DBlob* hs_bytecode = CompileShader(name + stage, hlslString.data(), hlslString.size(), entrypoints[static_cast<std::size_t>(EntrypointIndexes::Hs)], PipelineStage::Hs);
-        if(!hs_bytecode) {
-            return nullptr;
-        }
-        ID3D11HullShader* hs = nullptr;
-        _dx_device->CreateHullShader(hs_bytecode->GetBufferPointer(), hs_bytecode->GetBufferSize(), nullptr, &hs);
-        desc.hs = hs;
-        desc.hs_bytecode = hs_bytecode;
-    }
-
-    if(uses_ds_stage) {
-        std::string stage = ":DS";
-        ID3DBlob* ds_bytecode = CompileShader(name + stage, hlslString.data(), hlslString.size(), entrypoints[static_cast<std::size_t>(EntrypointIndexes::Ds)], PipelineStage::Ds);
-        if(!ds_bytecode) {
-            return nullptr;
-        }
-        ID3D11DomainShader* ds = nullptr;
-        _dx_device->CreateDomainShader(ds_bytecode->GetBufferPointer(), ds_bytecode->GetBufferSize(), nullptr, &ds);
-        desc.ds = ds;
-        desc.ds_bytecode = ds_bytecode;
-    }
-
-    if(uses_gs_stage) {
-        std::string stage = ":GS";
-        ID3DBlob* gs_bytecode = CompileShader(name + stage, hlslString.data(), hlslString.size(), entrypoints[static_cast<std::size_t>(EntrypointIndexes::Gs)], PipelineStage::Gs);
-        if(!gs_bytecode) {
-            return nullptr;
-        }
-        ID3D11GeometryShader* gs = nullptr;
-        _dx_device->CreateGeometryShader(gs_bytecode->GetBufferPointer(), gs_bytecode->GetBufferSize(), nullptr, &gs);
-        desc.gs = gs;
-        desc.gs_bytecode = gs_bytecode;
-    }
-
-    if(uses_cs_stage) {
-        std::string stage = ":CS";
-        ID3DBlob* cs_bytecode = CompileShader(name + stage, hlslString.data(), hlslString.size(), entrypoints[static_cast<std::size_t>(EntrypointIndexes::Cs)], PipelineStage::Cs);
-        if(!cs_bytecode) {
-            return nullptr;
-        }
-        ID3D11ComputeShader* cs = nullptr;
-        _dx_device->CreateComputeShader(cs_bytecode->GetBufferPointer(), cs_bytecode->GetBufferSize(), nullptr, &cs);
-        desc.cs = cs;
-        desc.cs_bytecode = cs_bytecode;
-    }
-    return std::make_unique<ShaderProgram>(std::move(desc));
-}
-
-std::unique_ptr<ShaderProgram> RHIDevice::CreateShaderProgramFromHlslFile(std::filesystem::path filepath, const std::string& entryPoint, const PipelineStage& target) const noexcept {
-    auto retry_requested = false;
-    do {
-        if(auto source = FileUtils::ReadStringBufferFromFile(filepath)) {
-            auto sp = CreateShaderProgramFromHlslString(filepath.string(), source.value(), entryPoint, nullptr, target);
-            if(sp) {
-                return sp;
-            }
-            const auto ss = std::string{"Shader program "} + filepath.string() + " failed to compile.\nSee Output window for errors.\nPress Retry to recompile.";
-            retry_requested = IDRETRY == ::MessageBoxA(nullptr, ss.c_str(), "ShaderProgram Compiler Error", MB_ICONERROR | MB_RETRYCANCEL);
-        }
-    } while(retry_requested);
-    ERROR_AND_DIE("Unrecoverable error. Cannot continue with malformed shader file.");
-}
-
-std::unique_ptr<ShaderProgram> RHIDevice::CreateShaderProgramFromCsoBinaryBuffer(std::vector<uint8_t>& compiledShader, const std::string& name, const PipelineStage& target) const noexcept {
+std::unique_ptr<ShaderProgram> RHIDevice::CreateShaderProgramFromCsoBinaryBuffer(RHIDevice& device, std::vector<uint8_t>& compiledShader, const std::string& name, const PipelineStage& target) noexcept {
     const auto uses_vs_stage = static_cast<unsigned char>(target & PipelineStage::Vs) != 0;
     const auto uses_hs_stage = static_cast<unsigned char>(target & PipelineStage::Hs) != 0;
     const auto uses_ds_stage = static_cast<unsigned char>(target & PipelineStage::Ds) != 0;
@@ -533,16 +480,15 @@ std::unique_ptr<ShaderProgram> RHIDevice::CreateShaderProgramFromCsoBinaryBuffer
     const auto uses_cs_stage = static_cast<unsigned char>(target & PipelineStage::Cs) != 0;
 
     ShaderProgramDesc desc{};
-    desc.device = this;
     desc.name = name;
     if(uses_vs_stage) {
         ID3D11VertexShader* vs = nullptr;
-        auto hr = _dx_device->CreateVertexShader(compiledShader.data(), compiledShader.size(), nullptr, &vs);
+        auto hr = device._dx_device->CreateVertexShader(compiledShader.data(), compiledShader.size(), nullptr, &vs);
         {
             const auto error_msg = StringUtils::FormatWindowsMessage(hr);
             GUARANTEE_OR_DIE(SUCCEEDED(hr) && vs, error_msg.c_str());
         }
-        auto inputLayout = CreateInputLayoutFromByteCode(reinterpret_cast<ID3DBlob*>(compiledShader.data()));
+        auto inputLayout = CreateInputLayoutFromByteCode(device, reinterpret_cast<ID3DBlob*>(compiledShader.data()));
         desc.vs = vs;
         desc.vs_bytecode = reinterpret_cast<ID3DBlob*>(compiledShader.data());
         desc.input_layout = std::move(inputLayout);
@@ -550,7 +496,7 @@ std::unique_ptr<ShaderProgram> RHIDevice::CreateShaderProgramFromCsoBinaryBuffer
 
     if(uses_ps_stage) {
         ID3D11PixelShader* ps = nullptr;
-        auto hr = _dx_device->CreatePixelShader(compiledShader.data(), compiledShader.size(), nullptr, &ps);
+        auto hr = device._dx_device->CreatePixelShader(compiledShader.data(), compiledShader.size(), nullptr, &ps);
         {
             const auto error_msg = StringUtils::FormatWindowsMessage(hr);
             GUARANTEE_OR_DIE(SUCCEEDED(hr) && ps, error_msg.c_str());
@@ -561,7 +507,7 @@ std::unique_ptr<ShaderProgram> RHIDevice::CreateShaderProgramFromCsoBinaryBuffer
 
     if(uses_hs_stage) {
         ID3D11HullShader* hs = nullptr;
-        auto hr = _dx_device->CreateHullShader(compiledShader.data(), compiledShader.size(), nullptr, &hs);
+        auto hr = device._dx_device->CreateHullShader(compiledShader.data(), compiledShader.size(), nullptr, &hs);
         {
             const auto error_msg = StringUtils::FormatWindowsMessage(hr);
             GUARANTEE_OR_DIE(SUCCEEDED(hr) && hs, error_msg.c_str());
@@ -572,7 +518,7 @@ std::unique_ptr<ShaderProgram> RHIDevice::CreateShaderProgramFromCsoBinaryBuffer
 
     if(uses_ds_stage) {
         ID3D11DomainShader* ds = nullptr;
-        auto hr = _dx_device->CreateDomainShader(compiledShader.data(), compiledShader.size(), nullptr, &ds);
+        auto hr = device._dx_device->CreateDomainShader(compiledShader.data(), compiledShader.size(), nullptr, &ds);
         {
             const auto error_msg = StringUtils::FormatWindowsMessage(hr);
             GUARANTEE_OR_DIE(SUCCEEDED(hr) && ds, error_msg.c_str());
@@ -583,7 +529,7 @@ std::unique_ptr<ShaderProgram> RHIDevice::CreateShaderProgramFromCsoBinaryBuffer
 
     if(uses_gs_stage) {
         ID3D11GeometryShader* gs = nullptr;
-        auto hr = _dx_device->CreateGeometryShader(compiledShader.data(), compiledShader.size(), nullptr, &gs);
+        auto hr = device._dx_device->CreateGeometryShader(compiledShader.data(), compiledShader.size(), nullptr, &gs);
         {
             const auto error_msg = StringUtils::FormatWindowsMessage(hr);
             GUARANTEE_OR_DIE(SUCCEEDED(hr) && gs, error_msg.c_str());
@@ -594,7 +540,7 @@ std::unique_ptr<ShaderProgram> RHIDevice::CreateShaderProgramFromCsoBinaryBuffer
 
     if(uses_cs_stage) {
         ID3D11ComputeShader* cs = nullptr;
-        auto hr = _dx_device->CreateComputeShader(compiledShader.data(), compiledShader.size(), nullptr, &cs);
+        auto hr = device._dx_device->CreateComputeShader(compiledShader.data(), compiledShader.size(), nullptr, &cs);
         {
             const auto error_msg = StringUtils::FormatWindowsMessage(hr);
             GUARANTEE_OR_DIE(SUCCEEDED(hr) && cs, error_msg.c_str());
@@ -605,16 +551,16 @@ std::unique_ptr<ShaderProgram> RHIDevice::CreateShaderProgramFromCsoBinaryBuffer
     return std::make_unique<ShaderProgram>(std::move(desc));
 }
 
-std::unique_ptr<ShaderProgram> RHIDevice::CreateShaderProgramFromCsoFile(std::filesystem::path filepath, const PipelineStage& target) const noexcept {
+std::unique_ptr<ShaderProgram> RHIDevice::CreateShaderProgramFromCsoFile(RHIDevice& device, std::filesystem::path filepath, const PipelineStage& target) noexcept {
     if(auto compiled_source = FileUtils::ReadBinaryBufferFromFile(filepath); compiled_source.has_value()) {
-        auto sp = CreateShaderProgramFromCsoBinaryBuffer(*compiled_source, filepath.string(), target);
+        auto sp = CreateShaderProgramFromCsoBinaryBuffer(device, *compiled_source, filepath.string(), target);
         GUARANTEE_OR_DIE(sp, "Unrecoverable error. Cannot continue with malformed shader file.");
         return sp;
     }
     return nullptr;
 }
 
-ID3DBlob* RHIDevice::CompileShader(const std::string& name, const void* sourceCode, std::size_t sourceCodeSize, const std::string& entryPoint, const PipelineStage& target) const noexcept {
+ID3DBlob* RHIDevice::CompileShader(const std::string& name, const void* sourceCode, std::size_t sourceCodeSize, const std::string& entryPoint, const PipelineStage& target) noexcept {
     unsigned int compile_options = 0;
 #ifdef RENDER_DEBUG
     compile_options |= D3DCOMPILE_DEBUG;

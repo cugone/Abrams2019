@@ -65,6 +65,9 @@
     <Filter Include="Thirdparty\EnTT">
       <UniqueIdentifier>{13d0dc8d-6f17-4a5e-a8f5-67b6463b9929}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Services">
+      <UniqueIdentifier>{a63707d4-a79f-44ee-bfa3-69b443c8472c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Math\Vector2.cpp">
@@ -474,6 +477,18 @@
     </ClCompile>
     <ClCompile Include="Core\Win.cpp">
       <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Services\ServiceLocator.cpp">
+      <Filter>Services</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\JobTypes.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Input\KeyCode.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\DrawInstruction.cpp">
+      <Filter>Renderer\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -914,6 +929,39 @@
     </ClInclude>
     <ClInclude Include="Math\Rotator.hpp">
       <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Services\IAudioService.hpp">
+      <Filter>Services</Filter>
+    </ClInclude>
+    <ClInclude Include="Services\ServiceLocator.hpp">
+      <Filter>Services</Filter>
+    </ClInclude>
+    <ClInclude Include="Services\IService.hpp">
+      <Filter>Services</Filter>
+    </ClInclude>
+    <ClInclude Include="Services\IFileLoggerService.hpp">
+      <Filter>Services</Filter>
+    </ClInclude>
+    <ClInclude Include="Services\IJobSystemService.hpp">
+      <Filter>Services</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\JobTypes.hpp">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Services\IConfigService.hpp">
+      <Filter>Services</Filter>
+    </ClInclude>
+    <ClInclude Include="Services\IInputService.hpp">
+      <Filter>Services</Filter>
+    </ClInclude>
+    <ClInclude Include="Input\KeyCode.hpp">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Services\IRendererService.hpp">
+      <Filter>Services</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\DrawInstruction.hpp">
+      <Filter>Renderer\Core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

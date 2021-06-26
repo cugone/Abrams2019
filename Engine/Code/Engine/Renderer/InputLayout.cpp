@@ -4,16 +4,6 @@
 #include "Engine/RHI/RHIDevice.hpp"
 #include "Engine/Renderer/DirectX/DX11.hpp"
 
-#if defined(_MSC_VER)
-    #pragma warning(push)
-    #pragma warning(disable : 26812) // The enum type 'xxx' is unscoped. Prefer 'enum class' over 'enum'.
-#endif
-
-InputLayout::InputLayout(const RHIDevice& parent_device) noexcept
-: _parent_device(parent_device) {
-    /* DO NOTHING */
-}
-
 void InputLayout::AddElement(std::size_t memberByteOffset, const ImageFormat& format, const char* semantic, unsigned int inputSlot /*= 0*/, bool isVertexData /*= true*/, unsigned int instanceDataStepRate /*= 0*/) noexcept {
     D3D11_INPUT_ELEMENT_DESC e_desc{};
     e_desc.Format = ImageFormatToDxgiFormat(format);
@@ -28,18 +18,6 @@ void InputLayout::AddElement(std::size_t memberByteOffset, const ImageFormat& fo
 
 void InputLayout::AddElement(const D3D11_INPUT_ELEMENT_DESC& desc) noexcept {
     _elements.push_back(desc);
-}
-
-void InputLayout::CreateInputLayout(void* byte_code, std::size_t byte_code_length) noexcept {
-    _elements.shrink_to_fit();
-    if(_dx_input_layout) {
-        _dx_input_layout->Release();
-        _dx_input_layout = nullptr;
-    }
-    auto dx_device = _parent_device.GetDxDevice();
-    HRESULT hr = dx_device->CreateInputLayout(_elements.data(), static_cast<unsigned int>(_elements.size()), byte_code, byte_code_length, _dx_input_layout.GetAddressOf());
-    bool succeeded = SUCCEEDED(hr);
-    GUARANTEE_OR_DIE(succeeded, "Create Input Layout failed.");
 }
 
 ID3D11InputLayout* InputLayout::GetDxInputLayout() const noexcept {
@@ -113,7 +91,3 @@ D3D11_INPUT_ELEMENT_DESC InputLayout::CreateInputElementFromSignature(D3D11_SIGN
     }
     return elem;
 }
-
-#if defined(_MSC_VER)
-    #pragma warning(pop)
-#endif

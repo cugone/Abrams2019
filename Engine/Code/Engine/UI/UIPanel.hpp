@@ -20,8 +20,8 @@ public:
     virtual ~UIPanel() = default;
 
     void Update(TimeUtils::FPSeconds deltaSeconds) override;
-    void Render(Renderer& renderer) const override;
-    void DebugRender(Renderer& renderer) const override;
+    void Render() const override;
+    void DebugRender() const override;
     void EndFrame() override;
     virtual UIPanelSlot* AddChild(UIElement* child) = 0;
     virtual UIPanelSlot* AddChildAt(UIElement* child, std::size_t index) = 0;
@@ -35,16 +35,16 @@ public:
 
     [[nodiscard]] Vector4 CalcDesiredSize() const noexcept override;
 
-    void DebugRenderBottomUp(Renderer& renderer) const;
-    void DebugRenderTopDown(Renderer& renderer) const;
-    void DebugRenderChildren(Renderer& renderer) const;
+    void DebugRenderBottomUp() const;
+    void DebugRenderTopDown() const;
+    void DebugRenderChildren() const;
 
 protected:
     [[nodiscard]] virtual AABB2 CalcChildrenDesiredBounds() const = 0;
     virtual void ArrangeChildren() noexcept = 0;
     [[nodiscard]] virtual bool LoadFromXml(const XMLElement& elem) noexcept = 0;
     virtual void UpdateChildren(TimeUtils::FPSeconds);
-    virtual void RenderChildren(Renderer&) const;
+    virtual void RenderChildren() const;
     virtual void SortChildren();
 
     void CalcBoundsForChildren() noexcept;

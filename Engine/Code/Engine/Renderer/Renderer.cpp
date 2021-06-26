@@ -6,10 +6,8 @@
 #include "Engine/Core/Console.hpp"
 #include "Engine/Core/DataUtils.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
-#include "Engine/Core/FileLogger.hpp"
 #include "Engine/Core/FileUtils.hpp"
 #include "Engine/Core/Image.hpp"
-#include "Engine/Core/JobSystem.hpp"
 #include "Engine/Core/KerningFont.hpp"
 #include "Engine/Core/Obj.hpp"
 #include "Engine/Core/StringUtils.hpp"
@@ -49,6 +47,10 @@
 #include "Engine/Renderer/TextureArray2D.hpp"
 #include "Engine/Renderer/Window.hpp"
 
+#include "Engine/Services/ServiceLocator.hpp"
+#include "Engine/Services/IConfigService.hpp"
+#include "Engine/Services/IFileLoggerService.hpp"
+
 #include <Thirdparty/TinyXML2/tinyxml2.h>
 #include <Thirdparty/stb/stb_image.h>
 
@@ -87,55 +89,53 @@ ComputeJob::~ComputeJob() noexcept {
     renderer.SetComputeShader(nullptr);
 }
 
-Renderer::Renderer(JobSystem& jobSystem, FileLogger& fileLogger, Config& theConfig) noexcept
-: _jobSystem(jobSystem)
-, _fileLogger(fileLogger)
-, _theConfig(theConfig) {
+Renderer::Renderer() noexcept {
     namespace FS = std::filesystem;
+    auto& config = ServiceLocator::get<IConfigService>();
     if(FS::path path{"Engine/Config/options.config"}; FS::exists(path)) {
-        if(!_theConfig.AppendFromFile(path)) {
+        if(!config.AppendFromFile(path)) {
             DebuggerPrintf("Could not load existing configuration from \"%s\"\n", path.c_str());
         }
     }
-    _current_outputMode = [this]() -> RHIOutputMode {
+    _current_outputMode = [this, &config]() -> RHIOutputMode {
         auto windowed = true;
-        if(_theConfig.HasKey("windowed")) {
-            _theConfig.GetValue("windowed", windowed);
+        if(config.HasKey("windowed")) {
+            config.GetValue("windowed", windowed);
         }
-        _theConfig.SetValue("windowed", windowed);
+        config.SetValue("windowed", windowed);
         if(windowed) {
             return RHIOutputMode::Windowed;
         } else {
             return RHIOutputMode::Borderless_Fullscreen;
         }
     }(); //IIIL
-    _window_dimensions = [this]() -> IntVector2 {
-        const auto width = [this]() -> int {
+    _window_dimensions = [this, &config]() -> IntVector2 {
+        const auto width = [this, &config]() -> int {
             auto value = 0;
-            if(_theConfig.HasKey("width")) {
-                _theConfig.GetValue("width", value);
+            if(config.HasKey("width")) {
+                config.GetValue("width", value);
             }
             if(value <= 0) {
                 value = 1600;
             }
             return value;
         }(); //IIIL
-        const auto height = [this]() -> int {
+        const auto height = [this, &config]() -> int {
             auto value = 0;
-            if(_theConfig.HasKey("height")) {
-                _theConfig.GetValue("height", value);
+            if(config.HasKey("height")) {
+                config.GetValue("height", value);
             }
             if(value <= 0) {
                 value = 900;
             }
             return value;
         }(); //IIIL
-        _theConfig.SetValue("width", width);
-        _theConfig.SetValue("height", height);
+        config.SetValue("width", width);
+        config.SetValue("height", height);
         return IntVector2{width, height};
     }(); //IIIL
     if(FS::path path{"Engine/Config/options.config"}; !FS::exists(path)) {
-        if(!_theConfig.SaveToFile(path)) {
+        if(!config.SaveToFile(path)) {
             DebuggerPrintf("Could not save configuration to \"%s\"\n", path.c_str());
         }
     }
@@ -152,7 +152,6 @@ Renderer::~Renderer() noexcept {
     _matrix_cb.reset();
     _time_cb.reset();
     _lighting_cb.reset();
-    _target_stack.reset();
 
     _textures.clear();
     _textures.shrink_to_fit();
@@ -184,14 +183,6 @@ Renderer::~Renderer() noexcept {
     _rhi_device.reset();
     RHIInstance::DestroyInstance();
     _rhi_instance = nullptr;
-}
-
-FileLogger& Renderer::GetFileLogger() noexcept {
-    return _fileLogger;
-}
-
-JobSystem& Renderer::GetJobSystem() noexcept {
-    return _jobSystem;
 }
 
 bool Renderer::ProcessSystemMessage(const EngineMessage& msg) noexcept {
@@ -310,21 +301,22 @@ bool Renderer::ProcessSystemMessage(const EngineMessage& msg) noexcept {
 
 void Renderer::Initialize() {
     _rhi_instance = RHIInstance::CreateInstance();
-    _rhi_device = _rhi_instance->CreateDevice(*this);
+    _rhi_device = _rhi_instance->CreateDevice();
 
     WindowDesc windowDesc{};
-    if(_theConfig.HasKey("windowed")) {
+    auto& config = ServiceLocator::get<IConfigService>();
+    if(config.HasKey("windowed")) {
         auto windowed = windowDesc.mode == RHIOutputMode::Windowed;
-        _theConfig.GetValue("windowed", windowed);
+        config.GetValue("windowed", windowed);
         windowDesc.mode = windowed ? RHIOutputMode::Windowed : RHIOutputMode::Borderless_Fullscreen;
     }
-    if(_theConfig.HasKey("width")) {
+    if(config.HasKey("width")) {
         auto& width = windowDesc.dimensions.x;
-        _theConfig.GetValue("width", width);
+        config.GetValue("width", width);
     }
-    if(_theConfig.HasKey("height")) {
+    if(config.HasKey("height")) {
         auto& height = windowDesc.dimensions.y;
-        _theConfig.GetValue("height", height);
+        config.GetValue("height", height);
     }
     std::tie(_rhi_output, _rhi_context) = _rhi_device->CreateOutputAndContext(windowDesc);
 
@@ -340,16 +332,6 @@ void Renderer::Initialize() {
     CreateAndRegisterDefaultShaders();
     CreateAndRegisterDefaultMaterials();
     CreateAndRegisterDefaultFonts();
-
-    _target_stack = std::make_unique<RenderTargetStack>(*this);
-    ViewportDesc view_desc{};
-    view_desc.x = 0.0f;
-    view_desc.y = 0.0f;
-    view_desc.width = static_cast<float>(_rhi_output->GetDimensions().x);
-    view_desc.height = static_cast<float>(_rhi_output->GetDimensions().y);
-    view_desc.minDepth = 0.0f;
-    view_desc.maxDepth = 1.0f;
-    PushRenderTarget(RenderTargetStack::Node{_rhi_output->GetBackBuffer(), _default_depthstencil, view_desc});
 
     SetDepthStencilState(GetDepthStencilState("__default"));
     SetRasterState(GetRasterState("__solid"));
@@ -383,7 +365,7 @@ void Renderer::LogAvailableDisplays() noexcept {
         ss << display.width << 'x' << display.height << 'x' << display.refreshRateHz << '\n';
     }
     ss << std::setw(60) << std::setfill('-') << '\n';
-    _fileLogger.LogLineAndFlush(ss.str());
+    ServiceLocator::get<IFileLoggerService>().LogLineAndFlush(ss.str());
 }
 
 Vector2 Renderer::GetScreenCenter() const noexcept {
@@ -507,14 +489,14 @@ void Renderer::UpdateGameTime(TimeUtils::FPSeconds deltaSeconds) noexcept {
     _time_data.game_time += deltaSeconds.count();
     _time_data.game_frame_time = deltaSeconds.count();
     _time_cb->Update(*_rhi_context, &_time_data);
-    SetConstantBuffer(TIME_BUFFER_INDEX, _time_cb.get());
+    SetConstantBuffer(GetTimeBufferIndex(), _time_cb.get());
 }
 
 void Renderer::UpdateSystemTime(TimeUtils::FPSeconds deltaSeconds) noexcept {
     _time_data.system_time += deltaSeconds.count();
     _time_data.system_frame_time = deltaSeconds.count();
     _time_cb->Update(*_rhi_context, &_time_data);
-    SetConstantBuffer(TIME_BUFFER_INDEX, _time_cb.get());
+    SetConstantBuffer(GetTimeBufferIndex(), _time_cb.get());
 }
 
 void Renderer::Render() const {
@@ -706,7 +688,7 @@ void Renderer::DrawWorldGridXZ(float radius /*= 500.0f*/, float major_gridsize /
     mesh_builder.End(GetMaterial("__unlit"));
 
     SetModelMatrix(Matrix4::I);
-    Mesh::Render(*this, mesh_builder);
+    Mesh::Render(mesh_builder);
 }
 
 void Renderer::DrawWorldGridXY(float radius /*= 500.0f*/, float major_gridsize /*= 20.0f*/, float minor_gridsize /*= 5.0f*/, const Rgba& major_color /*= Rgba::WHITE*/, const Rgba& minor_color /*= Rgba::DARK_GRAY*/) noexcept {
@@ -757,7 +739,7 @@ void Renderer::DrawWorldGridXY(float radius /*= 500.0f*/, float major_gridsize /
     mesh_builder.End(GetMaterial("__unlit"));
 
     SetModelMatrix(Matrix4::I);
-    Mesh::Render(*this, mesh_builder);
+    Mesh::Render(mesh_builder);
 }
 
 void Renderer::DrawWorldGrid2D(int width, int height, const Rgba& color /*= Rgba::White*/) noexcept {
@@ -786,7 +768,7 @@ void Renderer::DrawWorldGrid2D(int width, int height, const Rgba& color /*= Rgba
         mesh_builder.AddIndicies(Mesh::Builder::Primitive::Line);
     }
     mesh_builder.End(GetMaterial("__2D"));
-    Mesh::Render(*this, mesh_builder);
+    Mesh::Render(mesh_builder);
 }
 
 void Renderer::DrawWorldGrid2D(const IntVector2& dimensions, const Rgba& color /*= Rgba::White*/) noexcept {
@@ -914,7 +896,7 @@ void Renderer::DrawIndexed(const PrimitiveType& topology, const std::vector<Vert
 void Renderer::SetLightingEyePosition(const Vector3& position) noexcept {
     _lighting_data.eye_position = Vector4(position, 1.0f);
     _lighting_cb->Update(*_rhi_context, &_lighting_data);
-    SetConstantBuffer(Renderer::LIGHTING_BUFFER_INDEX, _lighting_cb.get());
+    SetConstantBuffer(GetLightingBufferIndex(), _lighting_cb.get());
 }
 
 void Renderer::SetAmbientLight(const Rgba& ambient) noexcept {
@@ -926,7 +908,7 @@ void Renderer::SetAmbientLight(const Rgba& color, float intensity) noexcept {
     const auto [r, g, b, _] = color.GetAsFloats();
     _lighting_data.ambient = Vector4{r, g, b, intensity};
     _lighting_cb->Update(*_rhi_context, &_lighting_data);
-    SetConstantBuffer(LIGHTING_BUFFER_INDEX, _lighting_cb.get());
+    SetConstantBuffer(GetLightingBufferIndex(), _lighting_cb.get());
 }
 
 void Renderer::SetSpecGlossEmitFactors(Material* mat) noexcept {
@@ -935,7 +917,7 @@ void Renderer::SetSpecGlossEmitFactors(Material* mat) noexcept {
     float emit = mat ? mat->GetEmissiveFactor() : 0.0f;
     _lighting_data.specular_glossy_emissive_factors = Vector4(spec, gloss, emit, 1.0f);
     _lighting_cb->Update(*_rhi_context, &_lighting_data);
-    SetConstantBuffer(LIGHTING_BUFFER_INDEX, _lighting_cb.get());
+    SetConstantBuffer(GetLightingBufferIndex(), _lighting_cb.get());
 }
 
 void Renderer::SetUseVertexNormalsForLighting(bool value) noexcept {
@@ -945,7 +927,7 @@ void Renderer::SetUseVertexNormalsForLighting(bool value) noexcept {
         _lighting_data.useVertexNormals = 0;
     }
     _lighting_cb->Update(*_rhi_context, &_lighting_data);
-    SetConstantBuffer(LIGHTING_BUFFER_INDEX, _lighting_cb.get());
+    SetConstantBuffer(GetLightingBufferIndex(), _lighting_cb.get());
 }
 
 const light_t& Renderer::GetLight(unsigned int index) const noexcept {
@@ -999,7 +981,7 @@ void Renderer::SetSpotlight(unsigned int index, const SpotLightDesc& desc) noexc
 void Renderer::SetLightAtIndex(unsigned int index, const light_t& light) noexcept {
     _lighting_data.lights[index] = light;
     _lighting_cb->Update(*_rhi_context, &_lighting_data);
-    SetConstantBuffer(LIGHTING_BUFFER_INDEX, _lighting_cb.get());
+    SetConstantBuffer(GetLightingBufferIndex(), _lighting_cb.get());
 }
 
 void Renderer::SetPointLight(unsigned int index, const light_t& light) noexcept {
@@ -1022,50 +1004,33 @@ std::unique_ptr<AnimatedSprite> Renderer::CreateAnimatedSprite(std::filesystem::
     auto xml_result = doc.LoadFile(filepath.string().c_str());
     if(xml_result == tinyxml2::XML_SUCCESS) {
         auto xml_root = doc.RootElement();
-        return std::make_unique<AnimatedSprite>(*this, *xml_root);
-    }
-    if(filepath.has_extension() && StringUtils::ToLowerCase(filepath.extension().string()) == ".gif") {
-        return CreateAnimatedSpriteFromGif(filepath);
+        return std::make_unique<AnimatedSprite>(*xml_root);
     }
     return nullptr;
 }
 
 std::unique_ptr<AnimatedSprite> Renderer::CreateAnimatedSprite(std::weak_ptr<SpriteSheet> sheet, const XMLElement& elem) noexcept {
-    return std::make_unique<AnimatedSprite>(*this, sheet, elem);
+    return std::make_unique<AnimatedSprite>(sheet, elem);
 }
 
 std::unique_ptr<AnimatedSprite> Renderer::CreateAnimatedSprite(const XMLElement& elem) noexcept {
-    return std::make_unique<AnimatedSprite>(*this, elem);
+    return std::make_unique<AnimatedSprite>(elem);
 }
 
 std::unique_ptr<AnimatedSprite> Renderer::CreateAnimatedSprite(std::weak_ptr<SpriteSheet> sheet, const IntVector2& startSpriteCoords /* = IntVector2::ZERO*/) noexcept {
-    return std::make_unique<AnimatedSprite>(*this, sheet, startSpriteCoords);
+    return std::make_unique<AnimatedSprite>(sheet, startSpriteCoords);
 }
 
 std::unique_ptr<AnimatedSprite> Renderer::CreateAnimatedSprite(const AnimatedSpriteDesc& desc) noexcept {
-    return std::make_unique<AnimatedSprite>(*this, desc);
-}
-
-const RenderTargetStack& Renderer::GetRenderTargetStack() const noexcept {
-    return *_target_stack;
-}
-
-void Renderer::PushRenderTarget(const RenderTargetStack::Node& newRenderTarget /*= RenderTargetStack::Node{}*/) noexcept {
-    _target_stack->push(newRenderTarget);
-}
-
-void Renderer::PopRenderTarget() noexcept {
-    _target_stack->pop();
+    return std::make_unique<AnimatedSprite>(desc);
 }
 
 std::shared_ptr<SpriteSheet> Renderer::CreateSpriteSheet(const XMLElement& elem) noexcept {
-    return std::make_shared<SpriteSheet>(*this, elem);
+    return std::make_shared<SpriteSheet>(elem);
 }
 
 std::shared_ptr<SpriteSheet> Renderer::CreateSpriteSheet(Texture* texture, int tilesWide, int tilesHigh) noexcept {
-    std::shared_ptr<SpriteSheet> spr{};
-    spr.reset(new SpriteSheet(texture, tilesWide, tilesHigh));
-    return spr;
+    return std::shared_ptr<SpriteSheet>(new SpriteSheet(texture, tilesWide, tilesHigh));
 }
 
 std::shared_ptr<SpriteSheet> Renderer::CreateSpriteSheet(const std::filesystem::path& filepath, unsigned int width /*= 1*/, unsigned int height /*= 1*/) noexcept {
@@ -1077,56 +1042,13 @@ std::shared_ptr<SpriteSheet> Renderer::CreateSpriteSheet(const std::filesystem::
         DebuggerPrintf((p.string() + " not found.\n").c_str());
         return nullptr;
     }
-    if(StringUtils::ToLowerCase(p.extension().string()) == ".gif") {
-        return CreateSpriteSheetFromGif(p);
-    }
     tinyxml2::XMLDocument doc;
     auto xml_load = doc.LoadFile(p.string().c_str());
     if(xml_load == tinyxml2::XML_SUCCESS) {
         auto xml_root = doc.RootElement();
         return CreateSpriteSheet(*xml_root);
     }
-    std::shared_ptr<SpriteSheet> spr{};
-    spr.reset(new SpriteSheet(*this, p, width, height));
-    return spr;
-}
-
-std::shared_ptr<SpriteSheet> Renderer::CreateSpriteSheetFromGif(std::filesystem::path filepath) noexcept {
-    namespace FS = std::filesystem;
-    filepath = FS::canonical(filepath);
-    filepath.make_preferred();
-    if(StringUtils::ToLowerCase(filepath.extension().string()) != ".gif") {
-        return nullptr;
-    }
-    Image img(filepath.string());
-    const auto& delays = img.GetDelaysIfGif();
-    auto tex = GetTexture(filepath.string());
-    return CreateSpriteSheet(tex, 1, static_cast<int>(delays.size()));
-}
-
-std::unique_ptr<AnimatedSprite> Renderer::CreateAnimatedSpriteFromGif(std::filesystem::path filepath) noexcept {
-    namespace FS = std::filesystem;
-    filepath = FS::canonical(filepath);
-    filepath.make_preferred();
-    if(StringUtils::ToLowerCase(filepath.extension().string()) != ".gif") {
-        return nullptr;
-    }
-    Image img(filepath);
-    const auto& delays = img.GetDelaysIfGif();
-    auto tex = GetTexture(filepath.string());
-    std::weak_ptr<SpriteSheet> spr = CreateSpriteSheet(tex, 1, static_cast<int>(delays.size()));
-    int duration_sum = std::accumulate(std::cbegin(delays), std::cend(delays), 0);
-    std::unique_ptr<AnimatedSprite> anim{};
-    anim.reset(new AnimatedSprite(*this, spr, TimeUtils::FPMilliseconds{duration_sum}, 0, static_cast<int>(delays.size())));
-    tinyxml2::XMLDocument doc;
-    std::ostringstream ss;
-    ss << R"("<material name="__Gif_)" << filepath.stem().string() << R"("><shader src="__2D" /><textures><diffuse src=")" << filepath.string() << R"(" /></textures></material>)";
-    doc.Parse(ss.str().c_str());
-    auto anim_mat = std::make_unique<Material>(*this, *doc.RootElement());
-    anim->SetMaterial(anim_mat.get());
-    RegisterMaterial(std::move(anim_mat));
-    tex = nullptr;
-    return anim;
+    return std::shared_ptr<SpriteSheet>(new SpriteSheet(p, width, height));
 }
 
 void Renderer::Draw(const PrimitiveType& topology, VertexBuffer* vbo, std::size_t vertex_count) noexcept {
@@ -1623,12 +1545,12 @@ void Renderer::AppendMultiLineTextBuffer(KerningFont* font, const std::string& t
     }
 }
 
-std::vector<std::unique_ptr<ConstantBuffer>> Renderer::CreateConstantBuffersFromShaderProgram(const ShaderProgram* _shader_program) const noexcept {
-    auto vs_cbuffers = _rhi_device->CreateConstantBuffersFromByteCode(_shader_program->GetVSByteCode());
-    auto hs_cbuffers = _rhi_device->CreateConstantBuffersFromByteCode(_shader_program->GetHSByteCode());
-    auto ds_cbuffers = _rhi_device->CreateConstantBuffersFromByteCode(_shader_program->GetDSByteCode());
-    auto gs_cbuffers = _rhi_device->CreateConstantBuffersFromByteCode(_shader_program->GetGSByteCode());
-    auto ps_cbuffers = _rhi_device->CreateConstantBuffersFromByteCode(_shader_program->GetPSByteCode());
+std::vector<std::unique_ptr<ConstantBuffer>> Renderer::CreateConstantBuffersFromShaderProgram(RHIDevice& device, const ShaderProgram* _shader_program) noexcept {
+    auto vs_cbuffers = RHIDevice::CreateConstantBuffersFromByteCode(device, _shader_program->GetVSByteCode());
+    auto hs_cbuffers = RHIDevice::CreateConstantBuffersFromByteCode(device, _shader_program->GetHSByteCode());
+    auto ds_cbuffers = RHIDevice::CreateConstantBuffersFromByteCode(device, _shader_program->GetDSByteCode());
+    auto gs_cbuffers = RHIDevice::CreateConstantBuffersFromByteCode(device, _shader_program->GetGSByteCode());
+    auto ps_cbuffers = RHIDevice::CreateConstantBuffersFromByteCode(device, _shader_program->GetPSByteCode());
     const auto sizes = std::vector<std::size_t>{
     vs_cbuffers.size(),
     hs_cbuffers.size(),
@@ -1648,8 +1570,8 @@ std::vector<std::unique_ptr<ConstantBuffer>> Renderer::CreateConstantBuffersFrom
     return cbuffers;
 }
 
-std::vector<std::unique_ptr<ConstantBuffer>> Renderer::CreateComputeConstantBuffersFromShaderProgram(const ShaderProgram* _shader_program) const noexcept {
-    auto&& cs_cbuffers = std::move(_rhi_device->CreateConstantBuffersFromByteCode(_shader_program->GetCSByteCode()));
+std::vector<std::unique_ptr<ConstantBuffer>> Renderer::CreateComputeConstantBuffersFromShaderProgram(RHIDevice& device, const ShaderProgram* shaderProgram) noexcept {
+    auto&& cs_cbuffers = std::move(RHIDevice::CreateConstantBuffersFromByteCode(device, shaderProgram->GetCSByteCode()));
     const auto sizes = std::vector<std::size_t>{cs_cbuffers.size()};
     auto cbuffer_count = std::accumulate(std::begin(sizes), std::end(sizes), static_cast<std::size_t>(0u));
     if(!cbuffer_count) {
@@ -1718,7 +1640,55 @@ void Renderer::RequestScreenShot() {
     }
     RequestScreenShot(_last_screenshot_location);
 }
+#if __cplusplus > 201703L
+constexpr unsigned int Renderer::GetMatrixBufferIndex() const noexcept override {
+    return 0;
+}
 
+constexpr unsigned int Renderer::GetTimeBufferIndex() const noexcept override {
+    return 1;
+}
+
+constexpr unsigned int Renderer::GetLightingBufferIndex() const noexcept override {
+    return 2;
+}
+
+constexpr unsigned int Renderer::GetConstantBufferStartIndex() const noexcept override {
+    return 3;
+}
+
+constexpr unsigned int Renderer::GetStructuredBufferStartIndex() const noexcept override {
+    return 64;
+}
+
+constexpr unsigned int Renderer::GetMaxLightCount() const noexcept override {
+    return max_light_count;
+}
+#else
+unsigned int Renderer::GetMatrixBufferIndex() const noexcept {
+    return 0;
+}
+
+unsigned int Renderer::GetTimeBufferIndex() const noexcept {
+    return 1;
+}
+
+unsigned int Renderer::GetLightingBufferIndex() const noexcept {
+    return 2;
+}
+
+unsigned int Renderer::GetConstantBufferStartIndex() const noexcept {
+    return 3;
+}
+
+unsigned int Renderer::GetStructuredBufferStartIndex() const noexcept {
+    return 64;
+}
+
+unsigned int Renderer::GetMaxLightCount() const noexcept {
+    return max_light_count;
+}
+#endif
 Image Renderer::GetBackbufferAsImage() const noexcept {
     std::vector<Rgba> data{};
     const auto* bb = GetOutput()->GetBackBuffer();
@@ -1739,7 +1709,7 @@ void Renderer::FulfillScreenshotRequest() noexcept {
         auto img = GetFullscreenTextureAsImage();
         if(!img.Export(_screenshot)) {
             const auto err = "Could not export to \"" + _screenshot.operator std::string() + "\".\n";
-            _fileLogger.LogAndFlush(err);
+            ServiceLocator::get<IFileLoggerService>().LogAndFlush(err);
         }
         _screenshot.clear();
         //};
@@ -2004,7 +1974,6 @@ float4 PixelFunction(ps_in_t input_pixel) : SV_Target0 {
 
     ShaderProgramDesc desc{};
     desc.name = "__default";
-    desc.device = _rhi_device.get();
     {
         ID3D11VertexShader* vs = nullptr;
         _rhi_device->GetDxDevice()->CreateVertexShader(g_VertexFunction.data(), g_VertexFunction.size(), nullptr, &vs);
@@ -2015,7 +1984,7 @@ float4 PixelFunction(ps_in_t input_pixel) : SV_Target0 {
         g_VertexFunction.shrink_to_fit();
         desc.vs = vs;
         desc.vs_bytecode = blob;
-        desc.input_layout = _rhi_device->CreateInputLayoutFromByteCode(blob);
+        desc.input_layout = RHIDevice::CreateInputLayoutFromByteCode(*GetDevice(), blob);
     }
     {
         ID3D11PixelShader* ps = nullptr;
@@ -2105,7 +2074,6 @@ float4 PixelFunction(ps_in_t input_pixel) : SV_Target0 {
 
     ShaderProgramDesc desc{};
     desc.name = "__unlit";
-    desc.device = _rhi_device.get();
     {
         ID3D11VertexShader* vs = nullptr;
         _rhi_device->GetDxDevice()->CreateVertexShader(g_VertexFunction.data(), g_VertexFunction.size(), nullptr, &vs);
@@ -2116,7 +2084,7 @@ float4 PixelFunction(ps_in_t input_pixel) : SV_Target0 {
         g_VertexFunction.shrink_to_fit();
         desc.vs = vs;
         desc.vs_bytecode = blob;
-        desc.input_layout = _rhi_device->CreateInputLayoutFromByteCode(blob);
+        desc.input_layout = _rhi_device->CreateInputLayoutFromByteCode(*GetDevice(), blob);
     }
     {
         ID3D11PixelShader* ps = nullptr;
@@ -2249,7 +2217,6 @@ float4 PixelFunction(ps_in_t input_pixel) : SV_Target0 {
 
     ShaderProgramDesc desc{};
     desc.name = "__normal";
-    desc.device = _rhi_device.get();
     {
         ID3D11VertexShader* vs = nullptr;
         _rhi_device->GetDxDevice()->CreateVertexShader(g_VertexFunction.data(), g_VertexFunction.size(), nullptr, &vs);
@@ -2260,7 +2227,7 @@ float4 PixelFunction(ps_in_t input_pixel) : SV_Target0 {
         g_VertexFunction.shrink_to_fit();
         desc.vs = vs;
         desc.vs_bytecode = blob;
-        desc.input_layout = _rhi_device->CreateInputLayoutFromByteCode(blob);
+        desc.input_layout = _rhi_device->CreateInputLayoutFromByteCode(*GetDevice(), blob);
     }
     {
         ID3D11PixelShader* ps = nullptr;
@@ -2393,7 +2360,6 @@ float4 PixelFunction(ps_in_t input_pixel) : SV_Target0 {
 
     ShaderProgramDesc desc{};
     desc.name = "__normalmap";
-    desc.device = _rhi_device.get();
     {
         ID3D11VertexShader* vs = nullptr;
         _rhi_device->GetDxDevice()->CreateVertexShader(g_VertexFunction.data(), g_VertexFunction.size(), nullptr, &vs);
@@ -2404,7 +2370,7 @@ float4 PixelFunction(ps_in_t input_pixel) : SV_Target0 {
         g_VertexFunction.shrink_to_fit();
         desc.vs = vs;
         desc.vs_bytecode = blob;
-        desc.input_layout = _rhi_device->CreateInputLayoutFromByteCode(blob);
+        desc.input_layout = _rhi_device->CreateInputLayoutFromByteCode(*GetDevice(), blob);
     }
     {
         ID3D11PixelShader* ps = nullptr;
@@ -2507,7 +2473,6 @@ float4 PixelFunction(ps_in_t input_pixel) : SV_Target0 {
 
     ShaderProgramDesc desc{};
     desc.name = "__font";
-    desc.device = _rhi_device.get();
     {
         ID3D11VertexShader* vs = nullptr;
         _rhi_device->GetDxDevice()->CreateVertexShader(g_VertexFunction.data(), g_VertexFunction.size(), nullptr, &vs);
@@ -2518,7 +2483,7 @@ float4 PixelFunction(ps_in_t input_pixel) : SV_Target0 {
         g_VertexFunction.shrink_to_fit();
         desc.vs = vs;
         desc.vs_bytecode = blob;
-        desc.input_layout = _rhi_device->CreateInputLayoutFromByteCode(blob);
+        desc.input_layout = _rhi_device->CreateInputLayoutFromByteCode(*GetDevice(), blob);
     }
     {
         ID3D11PixelShader* ps = nullptr;
@@ -2573,7 +2538,7 @@ std::unique_ptr<Material> Renderer::CreateDefaultMaterial() noexcept {
     if(parse_result != tinyxml2::XML_SUCCESS) {
         return nullptr;
     }
-    return std::make_unique<Material>(*this, *doc.RootElement());
+    return std::make_unique<Material>(*doc.RootElement());
 }
 
 std::unique_ptr<Material> Renderer::CreateDefaultUnlitMaterial() noexcept {
@@ -2589,7 +2554,7 @@ std::unique_ptr<Material> Renderer::CreateDefaultUnlitMaterial() noexcept {
     if(parse_result != tinyxml2::XML_SUCCESS) {
         return nullptr;
     }
-    return std::make_unique<Material>(*this, *doc.RootElement());
+    return std::make_unique<Material>(*doc.RootElement());
 }
 
 std::unique_ptr<Material> Renderer::CreateDefault2DMaterial() noexcept {
@@ -2605,7 +2570,7 @@ std::unique_ptr<Material> Renderer::CreateDefault2DMaterial() noexcept {
     if(parse_result != tinyxml2::XML_SUCCESS) {
         return nullptr;
     }
-    return std::make_unique<Material>(*this, *doc.RootElement());
+    return std::make_unique<Material>(*doc.RootElement());
 }
 
 std::unique_ptr<Material> Renderer::CreateDefaultNormalMaterial() noexcept {
@@ -2621,7 +2586,7 @@ std::unique_ptr<Material> Renderer::CreateDefaultNormalMaterial() noexcept {
     if(parse_result != tinyxml2::XML_SUCCESS) {
         return nullptr;
     }
-    return std::make_unique<Material>(*this, *doc.RootElement());
+    return std::make_unique<Material>(*doc.RootElement());
 }
 
 std::unique_ptr<Material> Renderer::CreateDefaultNormalMapMaterial() noexcept {
@@ -2637,7 +2602,7 @@ std::unique_ptr<Material> Renderer::CreateDefaultNormalMapMaterial() noexcept {
     if(parse_result != tinyxml2::XML_SUCCESS) {
         return nullptr;
     }
-    return std::make_unique<Material>(*this, *doc.RootElement());
+    return std::make_unique<Material>(*doc.RootElement());
 }
 
 std::unique_ptr<Material> Renderer::CreateDefaultInvalidMaterial() noexcept {
@@ -2656,7 +2621,7 @@ std::unique_ptr<Material> Renderer::CreateDefaultInvalidMaterial() noexcept {
     if(parse_result != tinyxml2::XML_SUCCESS) {
         return nullptr;
     }
-    return std::make_unique<Material>(*this, *doc.RootElement());
+    return std::make_unique<Material>(*doc.RootElement());
 }
 
 std::unique_ptr<Material> Renderer::CreateMaterialFromFont(KerningFont* font) noexcept {
@@ -2705,7 +2670,7 @@ std::unique_ptr<Material> Renderer::CreateMaterialFromFont(KerningFont* font) no
     if(result != tinyxml2::XML_SUCCESS) {
         return nullptr;
     }
-    return std::make_unique<Material>(*this, *doc.RootElement());
+    return std::make_unique<Material>(*doc.RootElement());
 }
 
 void Renderer::CreateAndRegisterDefaultSamplers() noexcept {
@@ -2980,7 +2945,7 @@ std::unique_ptr<KerningFont> Renderer::CreateDefaultSystem32Font() noexcept {
         const auto result = doc.Parse(material_string.c_str(), material_string.size());
         GUARANTEE_OR_DIE(result == tinyxml2::XML_SUCCESS, "Failed to create default system32 font: Invalid XML file.\n");
         const auto xml_root = doc.RootElement();
-        auto mat = std::make_unique<Material>(*this, *xml_root);
+        auto mat = std::make_unique<Material>(*xml_root);
         font_system32->SetMaterial(mat.get());
         this->RegisterMaterial(std::move(mat));
         return font_system32;
@@ -3143,7 +3108,7 @@ bool Renderer::RegisterShader(std::filesystem::path filepath) noexcept {
     }
     filepath.make_preferred();
     if(doc.LoadFile(filepath.string().c_str()) == tinyxml2::XML_SUCCESS) {
-        auto s = std::make_unique<Shader>(*this, *doc.RootElement());
+        auto s = std::make_unique<Shader>(*doc.RootElement());
         const std::string name = s->GetName();
         RegisterShader(name, std::move(s));
         return true;
@@ -3410,7 +3375,7 @@ std::unique_ptr<Shader> Renderer::CreateDefaultShader() noexcept {
         return nullptr;
     }
 
-    return std::make_unique<Shader>(*this, *doc.RootElement());
+    return std::make_unique<Shader>(*doc.RootElement());
 }
 
 std::unique_ptr<Shader> Renderer::CreateDefaultUnlitShader() noexcept {
@@ -3433,7 +3398,7 @@ std::unique_ptr<Shader> Renderer::CreateDefaultUnlitShader() noexcept {
         return nullptr;
     }
 
-    return std::make_unique<Shader>(*this, *doc.RootElement());
+    return std::make_unique<Shader>(*doc.RootElement());
 }
 
 std::unique_ptr<Shader> Renderer::CreateDefault2DShader() noexcept {
@@ -3461,7 +3426,7 @@ std::unique_ptr<Shader> Renderer::CreateDefault2DShader() noexcept {
         return nullptr;
     }
 
-    return std::make_unique<Shader>(*this, *doc.RootElement());
+    return std::make_unique<Shader>(*doc.RootElement());
 }
 
 std::unique_ptr<Shader> Renderer::CreateDefaultNormalShader() noexcept {
@@ -3484,7 +3449,7 @@ std::unique_ptr<Shader> Renderer::CreateDefaultNormalShader() noexcept {
         return nullptr;
     }
 
-    return std::make_unique<Shader>(*this, *doc.RootElement());
+    return std::make_unique<Shader>(*doc.RootElement());
 }
 
 std::unique_ptr<Shader> Renderer::CreateDefaultNormalMapShader() noexcept {
@@ -3506,7 +3471,7 @@ std::unique_ptr<Shader> Renderer::CreateDefaultNormalMapShader() noexcept {
     if(parse_result != tinyxml2::XML_SUCCESS) {
         return nullptr;
     }
-    return std::make_unique<Shader>(*this, *doc.RootElement());
+    return std::make_unique<Shader>(*doc.RootElement());
 }
 
 std::unique_ptr<Shader> Renderer::CreateDefaultInvalidShader() noexcept {
@@ -3529,7 +3494,7 @@ std::unique_ptr<Shader> Renderer::CreateDefaultInvalidShader() noexcept {
         return nullptr;
     }
 
-    return std::make_unique<Shader>(*this, *doc.RootElement());
+    return std::make_unique<Shader>(*doc.RootElement());
 }
 
 std::unique_ptr<Shader> Renderer::CreateDefaultFontShader() noexcept {
@@ -3557,7 +3522,7 @@ std::unique_ptr<Shader> Renderer::CreateDefaultFontShader() noexcept {
         return nullptr;
     }
 
-    return std::make_unique<Shader>(*this, *doc.RootElement());
+    return std::make_unique<Shader>(*doc.RootElement());
 }
 
 std::unique_ptr<Shader> Renderer::CreateShaderFromFile(std::filesystem::path filepath) noexcept {
@@ -3567,13 +3532,9 @@ std::unique_ptr<Shader> Renderer::CreateShaderFromFile(std::filesystem::path fil
         if(parse_result != tinyxml2::XML_SUCCESS) {
             return nullptr;
         }
-        return std::make_unique<Shader>(*this, *doc.RootElement());
+        return std::make_unique<Shader>(*doc.RootElement());
     }
     return nullptr;
-}
-
-std::size_t Renderer::GetMaterialCount() noexcept {
-    return _materials.size();
 }
 
 void Renderer::RegisterMaterial(const std::string& name, std::unique_ptr<Material> mat) noexcept {
@@ -3611,7 +3572,7 @@ bool Renderer::RegisterMaterial(std::filesystem::path filepath) noexcept {
         filepath.make_preferred();
         const auto p_str = filepath.string();
         if(doc.LoadFile(p_str.c_str()) == tinyxml2::XML_SUCCESS) {
-            auto mat = std::make_unique<Material>(*this, *doc.RootElement());
+            auto mat = std::make_unique<Material>(*doc.RootElement());
             mat->SetFilepath(filepath);
             auto name = mat->GetName();
             RegisterMaterial(name, std::move(mat));
@@ -3688,7 +3649,7 @@ RHIDeviceContext* Renderer::GetDeviceContext() const noexcept {
     return _rhi_context.get();
 }
 
-const RHIDevice* Renderer::GetDevice() const noexcept {
+RHIDevice* Renderer::GetDevice() const noexcept {
     return _rhi_device.get();
 }
 
@@ -3714,34 +3675,12 @@ ShaderProgram* Renderer::GetShaderProgram(const std::string& nameOrFile) noexcep
     return found_iter->second.get();
 }
 
-std::unique_ptr<ShaderProgram> Renderer::CreateShaderProgramFromHlslFile(std::filesystem::path filepath, const std::string& entryPointList, const PipelineStage& target) const noexcept {
-    bool requested_retry = false;
-    std::unique_ptr<ShaderProgram> sp = nullptr;
-    do {
-        if(auto contents = FileUtils::ReadStringBufferFromFile(filepath)) {
-            sp = std::move(_rhi_device->CreateShaderProgramFromHlslString(filepath.string(), contents.value(), entryPointList, nullptr, target));
-            requested_retry = false;
-#ifdef RENDER_DEBUG
-            if(sp == nullptr) {
-                std::ostringstream error_msg{};
-                error_msg << "Shader \"" << filepath << "\" failed to compile.\n";
-                error_msg << "See Output window for details.\n";
-                error_msg << "Press Retry to re-compile.";
-                auto button_id = ::MessageBoxA(nullptr, error_msg.str().c_str(), "Shader compilation error.", MB_RETRYCANCEL | MB_ICONERROR);
-                requested_retry = button_id == IDRETRY;
-            }
-#endif
-        }
-    } while(requested_retry);
-    return sp;
-}
-
 std::unique_ptr<ShaderProgram> Renderer::CreateShaderProgramFromCsoFile(std::filesystem::path filepath, const PipelineStage& target) const noexcept {
     bool requested_retry = false;
     std::unique_ptr<ShaderProgram> sp = nullptr;
     do {
         if(auto contents = FileUtils::ReadBinaryBufferFromFile(filepath); contents.has_value()) {
-            sp = std::move(_rhi_device->CreateShaderProgramFromCsoBinaryBuffer(*contents, filepath.string(), target));
+            sp = std::move(RHIDevice::CreateShaderProgramFromCsoBinaryBuffer(*GetDevice(), *contents, filepath.string(), target));
             requested_retry = false;
 #ifdef RENDER_DEBUG
             if(sp == nullptr) {
@@ -3762,15 +3701,6 @@ std::unique_ptr<ShaderProgram> Renderer::CreateShaderProgramFromDesc(ShaderProgr
     return std::make_unique<ShaderProgram>(std::move(desc));
 }
 
-void Renderer::CreateAndRegisterShaderProgramFromHlslFile(std::filesystem::path filepath, const std::string& entryPointList, const PipelineStage& target) noexcept {
-    auto sp = CreateShaderProgramFromHlslFile(filepath, entryPointList, target);
-    {
-        const auto error_msg = filepath.string() + " failed to compile.\n";
-        GUARANTEE_OR_DIE(sp, error_msg.c_str());
-    }
-    RegisterShaderProgram(filepath.string(), std::move(sp));
-}
-
 void Renderer::CreateAndRegisterShaderProgramFromCsoFile(std::filesystem::path filepath, const PipelineStage& target) noexcept {
     auto sp = CreateShaderProgramFromCsoFile(filepath, target);
     {
@@ -3778,21 +3708,6 @@ void Renderer::CreateAndRegisterShaderProgramFromCsoFile(std::filesystem::path f
         GUARANTEE_OR_DIE(sp, error_msg.c_str());
     }
     RegisterShaderProgram(filepath.string(), std::move(sp));
-}
-
-void Renderer::RegisterShaderProgramsFromFolder(std::filesystem::path folderpath, const std::string& entrypoint, const PipelineStage& target, bool recursive /*= false*/) noexcept {
-    namespace FS = std::filesystem;
-    if(!FS::exists(folderpath)) {
-        DebuggerPrintf("Attempting to Register Shader Programs from unknown path: %s\n", FS::absolute(folderpath).string().c_str());
-        return;
-    }
-    folderpath = FS::canonical(folderpath);
-    folderpath.make_preferred();
-
-    auto cb = [this, &entrypoint, target](const FS::path& p) {
-        CreateAndRegisterShaderProgramFromHlslFile(p.string(), entrypoint, target);
-    };
-    FileUtils::ForEachFileInFolder(folderpath, ".hlsl", cb, recursive);
 }
 
 void Renderer::CreateAndRegisterRasterStateFromRasterDescription(const std::string& name, const RasterDesc& desc) noexcept {
@@ -3900,34 +3815,12 @@ std::string Renderer::GetShaderName(const std::filesystem::path filepath) noexce
     return {};
 }
 
-void Renderer::RegisterShadersFromFolder(std::filesystem::path folderpath, bool recursive /*= false*/) noexcept {
-    namespace FS = std::filesystem;
-    if(!FS::exists(folderpath)) {
-        DebuggerPrintf("Attempting to Register Shaders from unknown path: %s\n", FS::absolute(folderpath).string().c_str());
-        return;
-    }
-    folderpath = FS::canonical(folderpath);
-    folderpath.make_preferred();
-    auto cb =
-    [this](const FS::path& p) {
-        const auto pathAsString = p.string();
-        if(!RegisterShader(p)) {
-            DebuggerPrintf("Failed to load shader at %s\n", pathAsString.c_str());
-        }
-    };
-    FileUtils::ForEachFileInFolder(folderpath, ".shader", cb, recursive);
-}
-
 void Renderer::SetComputeShader(Shader* shader) noexcept {
     if(shader == nullptr) {
         _rhi_context->SetComputeShaderProgram(nullptr);
     } else {
         _rhi_context->SetComputeShaderProgram(shader->GetShaderProgram());
     }
-}
-
-std::size_t Renderer::GetFontCount() const noexcept {
-    return _fonts.size();
 }
 
 KerningFont* Renderer::GetFont(const std::string& nameOrFile) noexcept {
@@ -3941,19 +3834,19 @@ KerningFont* Renderer::GetFont(const std::string& nameOrFile) noexcept {
 void Renderer::SetModelMatrix(const Matrix4& mat /*= Matrix4::I*/) noexcept {
     _matrix_data.model = mat;
     _matrix_cb->Update(*_rhi_context, &_matrix_data);
-    SetConstantBuffer(MATRIX_BUFFER_INDEX, _matrix_cb.get());
+    SetConstantBuffer(GetMatrixBufferIndex(), _matrix_cb.get());
 }
 
 void Renderer::SetViewMatrix(const Matrix4& mat /*= Matrix4::I*/) noexcept {
     _matrix_data.view = mat;
     _matrix_cb->Update(*_rhi_context, &_matrix_data);
-    SetConstantBuffer(MATRIX_BUFFER_INDEX, _matrix_cb.get());
+    SetConstantBuffer(GetMatrixBufferIndex(), _matrix_cb.get());
 }
 
 void Renderer::SetProjectionMatrix(const Matrix4& mat /*= Matrix4::I*/) noexcept {
     _matrix_data.projection = mat;
     _matrix_cb->Update(*_rhi_context, &_matrix_data);
-    SetConstantBuffer(MATRIX_BUFFER_INDEX, _matrix_cb.get());
+    SetConstantBuffer(GetMatrixBufferIndex(), _matrix_cb.get());
 }
 
 void Renderer::ResetModelViewProjection() noexcept {
@@ -3965,7 +3858,7 @@ void Renderer::ResetModelViewProjection() noexcept {
 void Renderer::AppendModelMatrix(const Matrix4& modelMatrix) noexcept {
     _matrix_data.model = Matrix4::MakeRT(modelMatrix, _matrix_data.model);
     _matrix_cb->Update(*_rhi_context, &_matrix_data);
-    SetConstantBuffer(MATRIX_BUFFER_INDEX, _matrix_cb.get());
+    SetConstantBuffer(GetMatrixBufferIndex(), _matrix_cb.get());
 }
 
 void Renderer::SetOrthoProjection(const Vector2& leftBottom, const Vector2& rightTop, const Vector2& near_far) noexcept {
@@ -4185,10 +4078,6 @@ void Renderer::DrawQuad(const Rgba& frontColor, const Rgba& backColor, const Vec
     DrawIndexed(PrimitiveType::Triangles, vbo, ibo);
 }
 
-std::size_t Renderer::GetShaderCount() const noexcept {
-    return _shaders.size();
-}
-
 void Renderer::ClearRenderTargets(const RenderTargetType& rtt) noexcept {
     ID3D11DepthStencilView* dsv = _current_depthstencil->GetDepthStencilView();
     ID3D11RenderTargetView* rtv = _current_target->GetRenderTargetView();
@@ -4234,21 +4123,35 @@ void Renderer::SetRenderTargetsToBackBuffer() noexcept {
 }
 
 ViewportDesc Renderer::GetCurrentViewport() const {
-    return this->GetRenderTargetStack().top().view_desc;
+    return GetViewport(std::size_t{0u});
 }
 
 float Renderer::GetCurrentViewportAspectRatio() const {
     const auto desc = GetCurrentViewport();
     const auto width = desc.width;
     const auto height = desc.height;
-    const auto ratio = width / height;
     return width / height;
 }
 
-std::vector<ViewportDesc> Renderer::GetAllViewports() const {
-    unsigned int viewportsCount = 1;
-    //Get actual count bound.
+[[nodiscard]] unsigned int Renderer::GetViewportCount() const noexcept {
+    unsigned int viewportsCount = 1u;
     _rhi_context->GetDxContext()->RSGetViewports(&viewportsCount, nullptr);
+    return viewportsCount;
+}
+
+ViewportDesc Renderer::GetViewport(std::size_t index) const noexcept {
+    auto viewportsCount = GetViewportCount();
+    std::vector<D3D11_VIEWPORT> viewports(viewportsCount, D3D11_VIEWPORT{});
+    _rhi_context->GetDxContext()->RSGetViewports(&viewportsCount, viewports.data());
+    std::vector<ViewportDesc> viewportDescs = GetAllViewports();
+    if(!viewportDescs.empty()) {
+        return viewportDescs[index];
+    }
+    return ViewportDesc{};
+}
+
+std::vector<ViewportDesc> Renderer::GetAllViewports() const noexcept {
+    auto viewportsCount = GetViewportCount();
     std::vector<D3D11_VIEWPORT> viewports(viewportsCount, D3D11_VIEWPORT{});
     _rhi_context->GetDxContext()->RSGetViewports(&viewportsCount, viewports.data());
 
@@ -5028,108 +4931,6 @@ std::unique_ptr<Texture> Renderer::Create2DTextureFromMemory(const std::vector<R
 }
 
 std::unique_ptr<Texture> Renderer::Create2DTextureArrayFromMemory(const unsigned char* data, unsigned int width /*= 1*/, unsigned int height /*= 1*/, unsigned int depth /*= 1*/, const BufferUsage& bufferUsage /*= BufferUsage::STATIC*/, const BufferBindUsage& bindUsage /*= BufferBindUsage::SHADER_RESOURCE*/, const ImageFormat& imageFormat /*= ImageFormat::R8G8B8A8_UNORM*/) noexcept {
-    D3D11_TEXTURE2D_DESC tex_desc{};
-
-    tex_desc.Width = width;
-    tex_desc.Height = height;
-    tex_desc.MipLevels = 1;
-    tex_desc.ArraySize = depth;
-    tex_desc.Usage = BufferUsageToD3DUsage(bufferUsage);
-    tex_desc.Format = ImageFormatToDxgiFormat(imageFormat);
-    tex_desc.BindFlags = BufferBindUsageToD3DBindFlags(bindUsage);
-    //Make every texture a target and shader resource
-    tex_desc.BindFlags |= BufferBindUsageToD3DBindFlags(BufferBindUsage::Shader_Resource);
-    tex_desc.CPUAccessFlags = CPUAccessFlagFromUsage(bufferUsage);
-    //Force specific usages for unordered access
-    if(bindUsage == BufferBindUsage::Unordered_Access) {
-        tex_desc.Usage = BufferUsageToD3DUsage(BufferUsage::Gpu);
-        tex_desc.CPUAccessFlags = CPUAccessFlagFromUsage(BufferUsage::Staging);
-    }
-    //Staging textures can't be bound to the graphics pipeline.
-    if((bufferUsage & BufferUsage::Staging) == BufferUsage::Staging) {
-        tex_desc.BindFlags = 0;
-    }
-    tex_desc.MiscFlags = 0;
-    tex_desc.SampleDesc.Count = 1;
-    tex_desc.SampleDesc.Quality = 0;
-
-    // Setup Initial Data
-    D3D11_SUBRESOURCE_DATA* subresource_data = new D3D11_SUBRESOURCE_DATA[depth];
-    for(unsigned int i = 0; i < depth; ++i) {
-        subresource_data[i].pSysMem = data;
-        subresource_data[i].SysMemPitch = width * sizeof(unsigned int);
-        subresource_data[i].SysMemSlicePitch = static_cast<unsigned long long>(width) * static_cast<unsigned long long>(height) * sizeof(unsigned int);
-    }
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> dx_tex{};
-
-    //If IMMUTABLE or not multi-sampled, must use initial data.
-    bool isMultiSampled = tex_desc.SampleDesc.Count != 1 || tex_desc.SampleDesc.Quality != 0;
-    bool isImmutable = bufferUsage == BufferUsage::Static;
-    bool mustUseInitialData = isImmutable || !isMultiSampled;
-
-    HRESULT hr = _rhi_device->GetDxDevice()->CreateTexture2D(&tex_desc, (mustUseInitialData ? subresource_data : nullptr), &dx_tex);
-    delete[] subresource_data;
-    subresource_data = nullptr;
-    bool succeeded = SUCCEEDED(hr);
-    if(succeeded) {
-        return std::make_unique<TextureArray2D>(*_rhi_device, dx_tex);
-    } else {
-        return nullptr;
-    }
-}
-
-std::unique_ptr<Texture> Renderer::Create2DTextureFromGifBuffer(const unsigned char* data, unsigned int width /*= 1*/, unsigned int height /*= 1*/, unsigned int depth /*= 1*/, const BufferUsage& bufferUsage /*= BufferUsage::STATIC*/, const BufferBindUsage& bindUsage /*= BufferBindUsage::SHADER_RESOURCE*/, const ImageFormat& imageFormat /*= ImageFormat::R8G8B8A8_UNORM*/) noexcept {
-    D3D11_TEXTURE2D_DESC tex_desc{};
-
-    tex_desc.Width = width;
-    tex_desc.Height = height;
-    tex_desc.MipLevels = 1;
-    tex_desc.ArraySize = depth;
-    tex_desc.Usage = BufferUsageToD3DUsage(bufferUsage);
-    tex_desc.Format = ImageFormatToDxgiFormat(imageFormat);
-    tex_desc.BindFlags = BufferBindUsageToD3DBindFlags(bindUsage);
-    //Make every texture a target and shader resource
-    tex_desc.BindFlags |= BufferBindUsageToD3DBindFlags(BufferBindUsage::Shader_Resource);
-    tex_desc.CPUAccessFlags = CPUAccessFlagFromUsage(bufferUsage);
-    //Force specific usages for unordered access
-    if(bindUsage == BufferBindUsage::Unordered_Access) {
-        tex_desc.Usage = BufferUsageToD3DUsage(BufferUsage::Gpu);
-        tex_desc.CPUAccessFlags = CPUAccessFlagFromUsage(BufferUsage::Staging);
-    }
-    //Staging textures can't be bound to the graphics pipeline.
-    if((bufferUsage & BufferUsage::Staging) == BufferUsage::Staging) {
-        tex_desc.BindFlags = 0;
-    }
-    tex_desc.MiscFlags = 0;
-    tex_desc.SampleDesc.Count = 1;
-    tex_desc.SampleDesc.Quality = 0;
-
-    // Setup Initial Data
-    D3D11_SUBRESOURCE_DATA* subresource_data = new D3D11_SUBRESOURCE_DATA[depth];
-    for(unsigned int i = 0; i < depth; ++i) {
-        subresource_data[i].pSysMem = data;
-        subresource_data[i].SysMemPitch = width * sizeof(unsigned int);
-        subresource_data[i].SysMemSlicePitch = static_cast<unsigned long long>(width) * static_cast<unsigned long long>(height) * sizeof(unsigned int);
-    }
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> dx_tex{};
-
-    //If IMMUTABLE or not multi-sampled, must use initial data.
-    bool isMultiSampled = tex_desc.SampleDesc.Count != 1 || tex_desc.SampleDesc.Quality != 0;
-    bool isImmutable = bufferUsage == BufferUsage::Static;
-    bool mustUseInitialData = isImmutable || !isMultiSampled;
-
-    HRESULT hr = _rhi_device->GetDxDevice()->CreateTexture2D(&tex_desc, (mustUseInitialData ? subresource_data : nullptr), &dx_tex);
-    delete[] subresource_data;
-    subresource_data = nullptr;
-    bool succeeded = SUCCEEDED(hr);
-    if(succeeded) {
-        return std::make_unique<Texture2D>(*_rhi_device, dx_tex);
-    } else {
-        return nullptr;
-    }
-}
-
-std::unique_ptr<Texture> Renderer::Create2DTextureArrayFromGifBuffer(const unsigned char* data, unsigned int width /*= 1*/, unsigned int height /*= 1*/, unsigned int depth /*= 1*/, const BufferUsage& bufferUsage /*= BufferUsage::STATIC*/, const BufferBindUsage& bindUsage /*= BufferBindUsage::SHADER_RESOURCE*/, const ImageFormat& imageFormat /*= ImageFormat::R8G8B8A8_UNORM*/) noexcept {
     D3D11_TEXTURE2D_DESC tex_desc{};
 
     tex_desc.Width = width;

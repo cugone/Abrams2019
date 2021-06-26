@@ -1,13 +1,9 @@
 #include "Engine/Renderer/StructuredBuffer.hpp"
 
 #include "Engine/Core/ErrorWarningAssert.hpp"
+#include "Engine/Renderer/DirectX/DX11.hpp"
 #include "Engine/RHI/RHIDevice.hpp"
 #include "Engine/RHI/RHIDeviceContext.hpp"
-
-#if defined(_MSC_VER)
-    #pragma warning(push)
-    #pragma warning(disable : 26812) // The enum type 'xxx' is unscoped. Prefer 'enum class' over 'enum'.
-#endif
 
 StructuredBuffer::StructuredBuffer(const RHIDevice& owner, const buffer_t& buffer, std::size_t element_size, std::size_t element_count, const BufferUsage& usage, const BufferBindUsage& bindUsage) noexcept
 : Buffer<void*>()
@@ -56,7 +52,3 @@ void StructuredBuffer::Update(RHIDeviceContext& context, const buffer_t& buffer)
         dx_context->Unmap(_dx_buffer.Get(), 0);
     }
 }
-
-#if defined(_MSC_VER)
-    #pragma warning(pop)
-#endif

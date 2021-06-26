@@ -3,7 +3,10 @@
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/KerningFont.hpp"
 #include "Engine/Renderer/Camera2D.hpp"
-#include "Engine/Renderer/Renderer.hpp"
+
+#include "Engine/Services/ServiceLocator.hpp"
+#include "Engine/Services/IRendererService.hpp"
+
 #include "Engine/UI/UICanvas.hpp"
 #include "Engine/UI/UIPanel.hpp"
 #include "Engine/UI/UITypes.hpp"
@@ -28,7 +31,7 @@ UILabel::UILabel(const XMLElement& elem, UIPanel* parent /*= nullptr*/)
     GUARANTEE_OR_DIE(LoadFromXml(elem), "Label constructor failed to load.");
 }
 
-void UILabel::Render(Renderer& renderer) const {
+void UILabel::Render() const {
     if(IsHidden()) {
         return;
     }
@@ -36,6 +39,7 @@ void UILabel::Render(Renderer& renderer) const {
     const auto inv_scale = 1.0f / world_transform.GetScale();
     const auto inv_scale_matrix = Matrix4::CreateScaleMatrix(inv_scale);
     const auto model = Matrix4::MakeRT(inv_scale_matrix, world_transform);
+    auto&& renderer = ServiceLocator::get<IRendererService>();
     renderer.SetModelMatrix(model);
     renderer.SetMaterial(_font->GetMaterial());
     renderer.DrawMultilineText(_font, _text, _color);
@@ -121,7 +125,7 @@ bool UILabel::LoadFromXml(const XMLElement& elem) noexcept {
     DataUtils::ValidateXmlElement(elem, "label", "", "name", "canvas,label,panel,picturebox,button,slot", "font,value");
     _name = DataUtils::ParseXmlAttribute(elem, "name", _name);
     _fontname = DataUtils::ParseXmlAttribute(elem, "font", _fontname);
-    _font = GetParent()->GetOwningWidget()->GetRenderer().GetFont(_fontname);
+    _font = ServiceLocator::get<IRendererService>().GetFont(_fontname);
     _text = DataUtils::ParseXmlAttribute(elem, "value", "TEXT");
 
     if(auto* xml_slot = elem.FirstChildElement("slot")) {

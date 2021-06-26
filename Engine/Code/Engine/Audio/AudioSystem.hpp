@@ -7,18 +7,21 @@
 /************************************************/
 
 #include "Engine/Audio/Wav.hpp"
+
 #include "Engine/Core/EngineSubsystem.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/Win.hpp"
+
+#include "Engine/Services/IAudioService.hpp"
 
 #include <Xaudio2.h>
 #include <filesystem>
 #include <functional>
 #include <iomanip>
-#include <map>
 #include <memory>
 #include <mutex>
 #include <sstream>
+#include <utility>
 #include <vector>
 #include <x3daudio.h>
 
@@ -28,9 +31,7 @@ namespace FileUtils {
 class Wav;
 }
 
-class FileLogger;
-
-class AudioSystem : public EngineSubsystem {
+class AudioSystem : public EngineSubsystem, public IAudioService {
 private:
     class Channel;
     class ChannelGroup;
@@ -70,6 +71,14 @@ public:
         TimeUtils::FPSeconds loopEnd{};
         std::string groupName{};
     };
+
+    void Play(const std::filesystem::path& filepath) noexcept override;
+    void Play(const std::size_t id) noexcept override;
+    void Play(const std::filesystem::path& filepath, const bool looping) noexcept override;
+    void Play(const std::size_t id, const bool looping) noexcept override;
+    void Stop(const std::filesystem::path& filepath) noexcept override;
+    void Stop(const std::size_t id) noexcept override;
+    void StopAll() noexcept override;
 
 private:
     class Channel {
@@ -160,7 +169,7 @@ private:
     };
 
 public:
-    explicit AudioSystem(FileLogger& fileLogger, std::size_t max_channels = 1024);
+    explicit AudioSystem(std::size_t max_channels = 1024);
     AudioSystem(const AudioSystem& other) = delete;
     AudioSystem(AudioSystem&& other) = delete;
     AudioSystem& operator=(const AudioSystem& rhs) = delete;
@@ -184,6 +193,8 @@ public:
 
     void Play(Sound& snd, SoundDesc desc = SoundDesc{}) noexcept;
     void Play(std::filesystem::path filepath, SoundDesc desc = SoundDesc{}) noexcept;
+
+
     [[nodiscard]] Sound* CreateSound(std::filesystem::path filepath) noexcept;
     [[nodiscard]] Sound* CreateSoundInstance(std::filesystem::path filepath) noexcept;
 
@@ -208,13 +219,12 @@ public:
 protected:
 private:
     void DeactivateChannel(Channel& channel) noexcept;
-    FileLogger* _fileLogger = nullptr;
     WAVEFORMATEXTENSIBLE _audio_format_ex{};
     std::size_t _sound_count{};
     std::size_t _max_channels{};
-    std::map<std::filesystem::path, std::unique_ptr<FileUtils::Wav>> _wave_files{};
+    std::vector<std::pair<std::filesystem::path, std::unique_ptr<FileUtils::Wav>>> _wave_files{};
     std::vector<std::pair<std::filesystem::path, std::unique_ptr<Sound>>> _sounds{};
-    std::map<std::string, std::unique_ptr<ChannelGroup>> _channel_groups{};
+    std::vector<std::pair<std::filesystem::path, std::unique_ptr<ChannelGroup>>> _channel_groups{};
     std::vector<std::unique_ptr<Channel>> _active_channels{};
     std::vector<std::unique_ptr<Channel>> _idle_channels{};
     std::atomic_uint32_t _operationID{};

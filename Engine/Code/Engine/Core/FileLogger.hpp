@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine/Core/ThreadSafeQueue.hpp"
+#include "Engine/Services/IFileLoggerService.hpp"
 
 #include <atomic>
 #include <condition_variable>
@@ -14,33 +15,33 @@
 
 class JobSystem;
 
-class FileLogger {
+class FileLogger : public IFileLoggerService {
 public:
     FileLogger() = delete;
-    FileLogger(JobSystem& jobSystem, const std::string& logName) noexcept;
+    FileLogger(const std::string& logName) noexcept;
     FileLogger(const FileLogger& rhs) = delete;
     FileLogger(FileLogger&& rhs) = delete;
     FileLogger& operator=(const FileLogger& rhs) = delete;
     FileLogger& operator=(FileLogger&& rhs) = delete;
-    ~FileLogger() noexcept;
+    virtual ~FileLogger() noexcept;
 
     void Shutdown() noexcept;
-    void Log(const std::string& msg) noexcept;
-    void LogLine(const std::string& msg) noexcept;
-    void LogAndFlush(const std::string& msg) noexcept;
-    void LogLineAndFlush(const std::string& msg) noexcept;
-    void LogPrint(const std::string& msg) noexcept;
-    void LogWarn(const std::string& msg) noexcept;
-    void LogError(const std::string& msg) noexcept;
-    void LogTag(const std::string& tag, const std::string& msg) noexcept;
-    void LogPrintLine(const std::string& msg) noexcept;
-    void LogWarnLine(const std::string& msg) noexcept;
-    void LogErrorLine(const std::string& msg) noexcept;
-    void LogTagLine(const std::string& tag, const std::string& msg) noexcept;
-    void Flush() noexcept;
+    void Log(const std::string& msg) noexcept override;
+    void LogLine(const std::string& msg) noexcept override;
+    void LogAndFlush(const std::string& msg) noexcept override;
+    void LogLineAndFlush(const std::string& msg) noexcept override;
+    void LogPrint(const std::string& msg) noexcept override;
+    void LogWarn(const std::string& msg) noexcept override;
+    void LogError(const std::string& msg) noexcept override;
+    void LogTag(const std::string& tag, const std::string& msg) noexcept override;
+    void LogPrintLine(const std::string& msg) noexcept override;
+    void LogWarnLine(const std::string& msg) noexcept override;
+    void LogErrorLine(const std::string& msg) noexcept override;
+    void LogTagLine(const std::string& tag, const std::string& msg) noexcept override;
+    void Flush() noexcept override;
     void SetIsRunning(bool value = true) noexcept;
 
-    void SaveLog() noexcept;
+    void SaveLog() noexcept override;
 
 protected:
 private:
@@ -64,7 +65,6 @@ private:
     std::thread _worker{};
     std::condition_variable _signal{};
     ThreadSafeQueue<std::string> _queue;
-    JobSystem& _job_system;
     std::atomic_bool _is_running = false;
     std::atomic_bool _requesting_flush = false;
 };

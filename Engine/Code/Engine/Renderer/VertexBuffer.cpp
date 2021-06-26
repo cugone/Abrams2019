@@ -4,11 +4,6 @@
 #include "Engine/RHI/RHIDevice.hpp"
 #include "Engine/RHI/RHIDeviceContext.hpp"
 
-#if defined(_MSC_VER)
-    #pragma warning(push)
-    #pragma warning(disable : 26812) // The enum type 'xxx' is unscoped. Prefer 'enum class' over 'enum'.
-#endif
-
 VertexBuffer::VertexBuffer(const RHIDevice& owner, const buffer_t& buffer, const BufferUsage& usage, const BufferBindUsage& bindUsage) noexcept
 : ArrayBuffer<Vertex3D>() {
     D3D11_BUFFER_DESC buffer_desc{};
@@ -44,7 +39,3 @@ void VertexBuffer::Update(RHIDeviceContext& context, const buffer_t& buffer) noe
         dx_context->Unmap(_dx_buffer.Get(), 0);
     }
 }
-
-#if defined(_MSC_VER)
-    #pragma warning(pop)
-#endif

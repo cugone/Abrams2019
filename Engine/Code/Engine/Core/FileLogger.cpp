@@ -9,6 +9,9 @@
 #include "Engine/Core/Win.hpp"
 #include "Engine/Profiling/Memory.hpp"
 
+#include "Engine/Services/IJobSystemService.hpp"
+#include "Engine/Services/ServiceLocator.hpp"
+
 #include <chrono>
 #include <cstdarg>
 #include <cstdio>
@@ -17,8 +20,9 @@
 
 namespace FS = std::filesystem;
 
-FileLogger::FileLogger(JobSystem& jobSystem, const std::string& logName) noexcept
-: _job_system(jobSystem) {
+FileLogger::FileLogger(const std::string& logName) noexcept
+: IFileLoggerService()
+{
     Initialize(logName);
 }
 
@@ -29,7 +33,8 @@ FileLogger::~FileLogger() noexcept {
 void FileLogger::Log_worker() noexcept {
     JobConsumer jc;
     jc.AddCategory(JobType::Logging);
-    _job_system.SetCategorySignal(JobType::Logging, &_signal);
+    auto& js = ServiceLocator::get<IJobSystemService>();
+    js.SetCategorySignal(JobType::Logging, &_signal);
 
     while(IsRunning()) {
         std::unique_lock<std::mutex> lock(_cs);
@@ -78,7 +83,7 @@ void FileLogger::DoCopyLog() noexcept {
         to_p.make_preferred();
         job_data->to = to_p;
         job_data->from = from_p;
-        _job_system.Run(
+        ServiceLocator::get<IJobSystemService>().Run(
         JobType::Generic, [this](void* user_data) { CopyLog(user_data); }, job_data);
     }
 }
@@ -171,7 +176,7 @@ void FileLogger::Shutdown() noexcept {
             _worker.join();
         }
         FinalizeLog();
-        _job_system.SetCategorySignal(JobType::Logging, nullptr);
+        ServiceLocator::get<IJobSystemService>().SetCategorySignal(JobType::Logging, nullptr);
     }
 }
 

@@ -10,7 +10,6 @@
 
 class ShaderProgram;
 class RasterState;
-class Renderer;
 class Sampler;
 class ConstantBuffer;
 
@@ -18,8 +17,8 @@ enum class PipelineStage : uint8_t;
 
 class Shader {
 public:
-    explicit Shader(Renderer& renderer, ShaderProgram* shaderProgram = nullptr, DepthStencilState* depthStencil = nullptr, RasterState* rasterState = nullptr, BlendState* blendState = nullptr, Sampler* sampler = nullptr) noexcept;
-    Shader(Renderer& renderer, const XMLElement& element) noexcept;
+    explicit Shader(ShaderProgram* shaderProgram = nullptr, DepthStencilState* depthStencil = nullptr, RasterState* rasterState = nullptr, BlendState* blendState = nullptr, Sampler* sampler = nullptr) noexcept;
+    explicit Shader(const XMLElement& element) noexcept;
     ~Shader() = default;
 
     [[nodiscard]] const std::string& GetName() const noexcept;
@@ -44,7 +43,6 @@ private:
     void CreateAndRegisterNewRasterFromXml(const XMLElement& element) noexcept;
 
     std::string _name = "SHADER";
-    Renderer& _renderer;
     ShaderProgram* _shader_program = nullptr;
     std::unique_ptr<DepthStencilState> _depth_stencil_state;
     RasterState* _raster_state = nullptr;
@@ -52,4 +50,5 @@ private:
     Sampler* _sampler = nullptr;
     std::vector<std::unique_ptr<ConstantBuffer>> _cbuffers;
     std::vector<std::unique_ptr<ConstantBuffer>> _ccbuffers;
+    static inline std::size_t _defaultNameId{0};
 };

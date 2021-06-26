@@ -17,7 +17,7 @@ public:
     explicit UILabel(UIPanel* parent, KerningFont* font, const std::string& text = "Label");
     virtual ~UILabel() = default;
 
-    virtual void Render(Renderer& renderer) const override;
+    virtual void Render() const override;
 
     [[nodiscard]] const KerningFont* const GetFont() const;
     void SetFont(KerningFont* font);

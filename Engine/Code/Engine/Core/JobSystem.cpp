@@ -28,66 +28,6 @@ void JobSystem::GenericJobWorker(std::condition_variable* signal) noexcept {
     }
 }
 
-void JobConsumer::AddCategory(const JobType& category) noexcept {
-    const auto categoryAsSizeT = TypeUtils::GetUnderlyingValue<JobType>(category);
-    if(categoryAsSizeT >= JobSystem::_queues.size()) {
-        return;
-    }
-    if(const auto q = JobSystem::_queues[categoryAsSizeT]; q) {
-        _consumables.push_back(q);
-    }
-}
-
-bool JobConsumer::ConsumeJob() noexcept {
-    if(_consumables.empty()) {
-        return false;
-    }
-    for(const auto& consumable : _consumables) {
-        if(!consumable) {
-            continue;
-        }
-        auto& queue = *consumable;
-        if(queue.empty()) {
-            return false;
-        }
-        const auto job = queue.front();
-        queue.pop();
-        std::invoke(job->work_cb, job->user_data);
-        job->OnFinish();
-        job->state = JobState::Finished;
-        delete job;
-    }
-    return true;
-}
-
-unsigned int JobConsumer::ConsumeAll() noexcept {
-    auto processed_jobs = 0u;
-    while(ConsumeJob()) {
-        ++processed_jobs;
-    }
-    return processed_jobs;
-}
-
-void JobConsumer::ConsumeFor(TimeUtils::FPMilliseconds consume_duration) noexcept {
-    const auto start_time = TimeUtils::Now();
-    while(TimeUtils::FPMilliseconds{TimeUtils::Now() - start_time} < consume_duration) {
-        ConsumeJob();
-    }
-}
-
-bool JobConsumer::HasJobs() const noexcept {
-    if(_consumables.empty()) {
-        return false;
-    }
-    for(const auto& consumable : _consumables) {
-        const auto& queue = *consumable;
-        if(!queue.empty()) {
-            return true;
-        }
-    }
-    return false;
-}
-
 JobSystem::JobSystem(int genericCount, std::size_t categoryCount, std::condition_variable* mainJobSignal) noexcept
 : _main_job_signal(mainJobSignal) {
     Initialize(genericCount, categoryCount);
@@ -179,7 +119,7 @@ void JobSystem::SetCategorySignal(const JobType& category_id, std::condition_var
 }
 
 Job* JobSystem::Create(const JobType& category, const std::function<void(void*)>& cb, void* user_data) noexcept {
-    auto j = new Job(*this);
+    auto j = new Job();
     j->type = category;
     j->state = JobState::Created;
     j->work_cb = cb;
@@ -241,37 +181,4 @@ void JobSystem::SetIsRunning(bool value /*= true*/) noexcept {
 
 std::condition_variable* JobSystem::GetMainJobSignal() const noexcept {
     return _main_job_signal;
-}
-
-Job::Job(JobSystem& jobSystem) noexcept
-: _job_system(&jobSystem) {
-    /* DO NOTHING */
-}
-
-Job::~Job() noexcept {
-    delete user_data;
-}
-
-void Job::DependencyOf(Job* dependency) noexcept {
-    DependentOn(dependency);
-}
-
-void Job::DependentOn(Job* parent) noexcept {
-    parent->AddDependent(this);
-}
-
-void Job::OnDependancyFinished() noexcept {
-    ++num_dependencies;
-    _job_system->DispatchAndRelease(this);
-}
-
-void Job::OnFinish() noexcept {
-    for(auto& dependent : dependents) {
-        dependent->OnDependancyFinished();
-    }
-}
-
-void Job::AddDependent(Job* dependent) noexcept {
-    dependent->state = JobState::Enqueued;
-    dependents.push_back(dependent);
 }

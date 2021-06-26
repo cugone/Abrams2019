@@ -1,6 +1,8 @@
 #include "Engine/UI/UIPanel.hpp"
 
 #include "Engine/UI/UICanvas.hpp"
+#include "Engine/Services/ServiceLocator.hpp"
+#include "Engine/Services/IRendererService.hpp"
 
 UIPanel::UIPanel(UIWidget* owner)
 : _owner(owner) {
@@ -14,25 +16,18 @@ void UIPanel::Update(TimeUtils::FPSeconds deltaSeconds) {
     UpdateChildren(deltaSeconds);
 }
 
-//void Panel::Update(TimeUtils::FPSeconds deltaSeconds) {
-//    if(IsDisabled()) {
-//        return;
-//    }
-//    UpdateChildren(deltaSeconds);
-//}
-
-void UIPanel::Render(Renderer& renderer) const {
+void UIPanel::Render() const {
     if(IsHidden()) {
         return;
     }
     if(0 < _edge_color.a || 0 < _fill_color.a) {
-        DebugRenderBounds(renderer);
+        DebugRenderBounds();
     }
-    RenderChildren(renderer);
+    RenderChildren();
 }
 
-void UIPanel::DebugRender(Renderer& renderer) const {
-    DebugRenderBottomUp(renderer);
+void UIPanel::DebugRender() const {
+    DebugRenderBottomUp();
 }
 
 void UIPanel::EndFrame() {
@@ -51,20 +46,20 @@ Vector4 UIPanel::CalcDesiredSize() const noexcept {
     return Vector4::ZERO;
 }
 
-void UIPanel::DebugRenderBottomUp(Renderer& renderer) const {
-    DebugRenderBoundsAndPivot(renderer);
-    DebugRenderChildren(renderer);
+void UIPanel::DebugRenderBottomUp() const {
+    DebugRenderBoundsAndPivot();
+    DebugRenderChildren();
 }
 
-void UIPanel::DebugRenderTopDown(Renderer& renderer) const {
-    DebugRenderChildren(renderer);
-    DebugRenderBoundsAndPivot(renderer);
+void UIPanel::DebugRenderTopDown() const {
+    DebugRenderChildren();
+    DebugRenderBoundsAndPivot();
 }
 
-void UIPanel::DebugRenderChildren(Renderer& renderer) const {
+void UIPanel::DebugRenderChildren() const {
     for(auto& slot : _slots) {
         if(slot) {
-            slot->content->DebugRender(renderer);
+            slot->content->DebugRender();
         }
     }
 }
@@ -94,8 +89,18 @@ bool UIPanel::CanHaveManyChildren() const noexcept {
     return true;
 }
 
-void UIPanel::UpdateChildren(TimeUtils::FPSeconds) {
+void UIPanel::UpdateChildren(TimeUtils::FPSeconds deltaSeconds) {
+    for(auto& slot : _slots) {
+        if(slot && slot->content) {
+            slot->content->Update(deltaSeconds);
+        }
+    }
 }
 
-void UIPanel::RenderChildren(Renderer&) const {
+void UIPanel::RenderChildren() const {
+    for(const auto& slot : _slots) {
+        if(slot && slot->content) {
+            slot->content->Render();
+        }
+    }
 }

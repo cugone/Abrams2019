@@ -1,7 +1,8 @@
 #include "Engine/Renderer/RenderTargetStack.hpp"
 
 #include "Engine/Renderer/DepthStencilState.hpp"
-#include "Engine/Renderer/Renderer.hpp"
+#include "Engine/Services/ServiceLocator.hpp"
+#include "Engine/Services/IRendererService.hpp"
 
 bool operator==(const RenderTargetStack::Node& lhs, const RenderTargetStack::Node& rhs) {
     return lhs.color_target == rhs.color_target && lhs.depthstencil_target == rhs.depthstencil_target && lhs.view_desc == rhs.view_desc;
@@ -9,11 +10,6 @@ bool operator==(const RenderTargetStack::Node& lhs, const RenderTargetStack::Nod
 
 bool operator!=(const RenderTargetStack::Node& lhs, const RenderTargetStack::Node& rhs) {
     return !(lhs == rhs);
-}
-
-RenderTargetStack::RenderTargetStack(Renderer& renderer) noexcept
-: _renderer(renderer) {
-    /* DO NOTHING */
 }
 
 [[nodiscard]] bool RenderTargetStack::empty() const {
@@ -27,36 +23,39 @@ RenderTargetStack::RenderTargetStack(Renderer& renderer) noexcept
 void RenderTargetStack::push(const RenderTargetStack::Node& node) noexcept {
     _stack.push(node);
     const auto& top = _stack.top();
-    _renderer.SetRenderTarget(top.color_target, top.depthstencil_target);
+    auto& rs = ServiceLocator::get<IRendererService>();
+    rs.SetRenderTarget(top.color_target, top.depthstencil_target);
     const auto x = static_cast<unsigned int>(top.view_desc.x);
     const auto y = static_cast<unsigned int>(top.view_desc.y);
     const auto w = static_cast<unsigned int>(top.view_desc.width);
     const auto h = static_cast<unsigned int>(top.view_desc.height);
-    _renderer.SetViewport(x, y, w, h);
+    rs.SetViewport(x, y, w, h);
 }
 
 void RenderTargetStack::push(RenderTargetStack::Node&& node) noexcept {
     _stack.push(node);
     const auto& top = _stack.top();
-    _renderer.SetRenderTarget(top.color_target, top.depthstencil_target);
+    auto& rs = ServiceLocator::get<IRendererService>();
+    rs.SetRenderTarget(top.color_target, top.depthstencil_target);
     const auto x = static_cast<unsigned int>(top.view_desc.x);
     const auto y = static_cast<unsigned int>(top.view_desc.y);
     const auto w = static_cast<unsigned int>(top.view_desc.width);
     const auto h = static_cast<unsigned int>(top.view_desc.height);
-    _renderer.SetViewport(x, y, w, h);
+    rs.SetViewport(x, y, w, h);
 }
 
 void RenderTargetStack::pop() noexcept {
     _stack.pop();
     const auto& top = _stack.top();
-    _renderer.SetRenderTarget(top.color_target, top.depthstencil_target);
-    _renderer.ClearColor(Rgba::Black);
-    _renderer.ClearDepthStencilBuffer();
+    auto& rs = ServiceLocator::get<IRendererService>();
+    rs.SetRenderTarget(top.color_target, top.depthstencil_target);
+    rs.ClearColor(Rgba::Black);
+    rs.ClearDepthStencilBuffer();
     const auto x = static_cast<unsigned int>(top.view_desc.x);
     const auto y = static_cast<unsigned int>(top.view_desc.y);
     const auto w = static_cast<unsigned int>(top.view_desc.width);
     const auto h = static_cast<unsigned int>(top.view_desc.height);
-    _renderer.SetViewport(x, y, w, h);
+    rs.SetViewport(x, y, w, h);
 }
 
 [[nodiscard]] RenderTargetStack::Node& RenderTargetStack::top() noexcept {

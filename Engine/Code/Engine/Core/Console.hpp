@@ -3,6 +3,7 @@
 #include "Engine/Core/EngineSubsystem.hpp"
 #include "Engine/Core/Rgba.hpp"
 #include "Engine/Core/Stopwatch.hpp"
+
 #include "Engine/Core/Vertex3D.hpp"
 #include "Engine/Math/Vector2.hpp"
 
@@ -13,7 +14,6 @@
 
 class Camera2D;
 class KerningFont;
-class FileLogger;
 class Renderer;
 
 class Console : public EngineSubsystem {
@@ -38,8 +38,7 @@ public:
         Console* _console = nullptr;
         std::vector<Command> _commands{};
     };
-    Console() = delete;
-    explicit Console(FileLogger& fileLogger, Renderer& renderer) noexcept;
+    Console() noexcept;
     Console(const Console& other) = delete;
     Console(Console&& other) = delete;
     Console& operator=(const Console& other) = delete;
@@ -140,8 +139,6 @@ private:
     [[nodiscard]] bool WasMouseWheelJustScrolledUp() const noexcept;
     [[nodiscard]] bool WasMouseWheelJustScrolledDown() const noexcept;
 
-    FileLogger& _fileLogger;
-    Renderer& _renderer;
     std::unique_ptr<Camera2D> _camera{};
     std::map<std::string, Console::Command> _commands{};
     std::vector<std::string> _entryline_buffer{};

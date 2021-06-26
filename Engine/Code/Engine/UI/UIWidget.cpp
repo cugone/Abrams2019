@@ -4,7 +4,10 @@
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/FileUtils.hpp"
 #include "Engine/Core/StringUtils.hpp"
-#include "Engine/Renderer/Renderer.hpp"
+
+#include "Engine/Services/ServiceLocator.hpp"
+#include "Engine/Services/IRendererService.hpp"
+
 #include "Engine/UI/UICanvas.hpp"
 #include "Engine/UI/UILabel.hpp"
 #include "Engine/UI/UIPanel.hpp"
@@ -15,8 +18,8 @@
 #include <memory>
 #include <typeinfo>
 
-UIWidget::UIWidget(Renderer& renderer, const std::filesystem::path& path)
-: _renderer(renderer) {
+UIWidget::UIWidget(const std::filesystem::path& path)
+{
     {
         auto err_msg{"Failed loading Widget:\n" + path.string() + "\n is ill-formed."};
         GUARANTEE_OR_DIE(LoadFromXML(path), err_msg.c_str());
@@ -41,15 +44,16 @@ void UIWidget::Update(TimeUtils::FPSeconds deltaSeconds) {
 }
 
 void UIWidget::Render() const {
-    _renderer.SetMaterial(_renderer.GetMaterial("__2D"));
+    auto&& renderer = ServiceLocator::get<IRendererService>();
+    renderer.SetMaterial(renderer.GetMaterial("__2D"));
     if(_panel) {
-        _panel->Render(_renderer);
+        _panel->Render();
     }
 }
 
 void UIWidget::DebugRender() const {
     if(_panel) {
-        _panel->DebugRender(_renderer);
+        _panel->DebugRender();
     }
 }
 
@@ -88,14 +92,10 @@ void UIWidget::LoadUI(const XMLElement& element) {
     DataUtils::ForEachChildElement(element, std::string{}, load_all_children);
 }
 
-Renderer& UIWidget::GetRenderer() const {
-    return _renderer;
-}
-
 std::shared_ptr<UIElement> UIWidget::CreateWigetTypeFromTypename(std::string nameString, const XMLElement& elem) {
     const auto childname = StringUtils::ToLowerCase(nameString);
     if(childname == "canvas") {
-        auto c = std::make_shared<UICanvas>(this, _renderer, elem);
+        auto c = std::make_shared<UICanvas>(this, elem);
         _panel = c.get();
         return c;
     } else if(childname == "label") {

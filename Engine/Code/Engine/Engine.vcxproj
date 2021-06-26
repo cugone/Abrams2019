@@ -35,6 +35,7 @@
     <ClCompile Include="Core\ArgumentParser.cpp" />
     <ClCompile Include="Core\Base64.cpp" />
     <ClCompile Include="Core\BuildConfig.hpp" />
+    <ClCompile Include="Core\JobTypes.cpp" />
     <ClCompile Include="Core\MtlReader.cpp" />
     <ClCompile Include="Core\OrthographicCameraController.cpp" />
     <ClCompile Include="Core\Clipboard.cpp" />
@@ -60,6 +61,7 @@
     <ClCompile Include="Core\Utilities.cpp" />
     <ClCompile Include="Core\Win.cpp" />
     <ClCompile Include="Input\InputSystem.cpp" />
+    <ClCompile Include="Input\KeyCode.cpp" />
     <ClCompile Include="Input\XboxController.cpp" />
     <ClCompile Include="Math\AABB2.cpp" />
     <ClCompile Include="Math\AABB3.cpp" />
@@ -114,6 +116,7 @@
     <ClCompile Include="Renderer\ConstantBuffer.cpp" />
     <ClCompile Include="Renderer\DepthStencilState.cpp" />
     <ClCompile Include="Renderer\DirectX\DX11.cpp" />
+    <ClCompile Include="Renderer\DrawInstruction.cpp" />
     <ClCompile Include="Renderer\IndexBuffer.cpp" />
     <ClCompile Include="Renderer\InputLayout.cpp" />
     <ClCompile Include="Renderer\InputLayoutInstanced.cpp" />
@@ -141,6 +144,7 @@
     <ClCompile Include="RHI\RHIInstance.cpp" />
     <ClCompile Include="RHI\RHIOutput.cpp" />
     <ClCompile Include="RHI\RHITypes.cpp" />
+    <ClCompile Include="Services\ServiceLocator.cpp" />
     <ClCompile Include="System\Cpu.cpp" />
     <ClCompile Include="System\OS.cpp" />
     <ClCompile Include="System\Ram.cpp" />
@@ -176,6 +180,7 @@
     <ClInclude Include="Core\Argb.hpp" />
     <ClInclude Include="Core\ArgumentParser.hpp" />
     <ClInclude Include="Core\Base64.hpp" />
+    <ClInclude Include="Core\JobTypes.hpp" />
     <ClInclude Include="Core\MtlReader.hpp" />
     <ClInclude Include="Core\OrthographicCameraController.hpp" />
     <ClInclude Include="Core\Clipboard.hpp" />
@@ -205,6 +210,7 @@
     <ClInclude Include="Core\Vertex3D.hpp" />
     <ClInclude Include="Core\Win.hpp" />
     <ClInclude Include="Input\InputSystem.hpp" />
+    <ClInclude Include="Input\KeyCode.hpp" />
     <ClInclude Include="Input\XboxController.hpp" />
     <ClInclude Include="Math\AABB2.hpp" />
     <ClInclude Include="Math\AABB3.hpp" />
@@ -261,6 +267,7 @@
     <ClInclude Include="Renderer\ConstantBuffer.hpp" />
     <ClInclude Include="Renderer\DepthStencilState.hpp" />
     <ClInclude Include="Renderer\DirectX\DX11.hpp" />
+    <ClInclude Include="Renderer\DrawInstruction.hpp" />
     <ClInclude Include="Renderer\IndexBuffer.hpp" />
     <ClInclude Include="Renderer\InputLayout.hpp" />
     <ClInclude Include="Renderer\InputLayoutInstanced.hpp" />
@@ -289,6 +296,14 @@
     <ClInclude Include="RHI\RHIInstance.hpp" />
     <ClInclude Include="RHI\RHIOutput.hpp" />
     <ClInclude Include="RHI\RHITypes.hpp" />
+    <ClInclude Include="Services\IAudioService.hpp" />
+    <ClInclude Include="Services\IConfigService.hpp" />
+    <ClInclude Include="Services\IFileLoggerService.hpp" />
+    <ClInclude Include="Services\IInputService.hpp" />
+    <ClInclude Include="Services\IJobSystemService.hpp" />
+    <ClInclude Include="Services\IRendererService.hpp" />
+    <ClInclude Include="Services\IService.hpp" />
+    <ClInclude Include="Services\ServiceLocator.hpp" />
     <ClInclude Include="System\Cpu.hpp" />
     <ClInclude Include="System\OS.hpp" />
     <ClInclude Include="System\Ram.hpp" />
