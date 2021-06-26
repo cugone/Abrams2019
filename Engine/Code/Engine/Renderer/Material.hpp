@@ -83,8 +83,8 @@ public:
         , Custom58
     };
     // clang-format on
-    explicit Material(Renderer& renderer) noexcept;
-    Material(Renderer& renderer, const XMLElement& element) noexcept;
+    Material() noexcept;
+    explicit Material(const XMLElement& element) noexcept;
     ~Material() = default;
 
     [[nodiscard]] std::string GetName() const noexcept;
@@ -114,9 +114,8 @@ private:
     float _emissiveFactor = 0.0f;
     std::string _name = "MATERIAL";
     std::filesystem::path _filepath{};
-    Renderer& _renderer;
     std::vector<Texture*> _textures = {};
     Shader* _shader = nullptr;
-
+    static inline std::size_t _defaultNameId{0};
     friend class FileUtils::MtlReader;
 };

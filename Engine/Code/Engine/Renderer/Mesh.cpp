@@ -1,9 +1,12 @@
 #include "Engine/Renderer/Mesh.hpp"
 
+#include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Renderer/ConstantBuffer.hpp"
 #include "Engine/Renderer/Material.hpp"
 #include "Engine/Renderer/Shader.hpp"
 #include "Engine/Renderer/ShaderProgram.hpp"
+
+#include "Engine/Services/ServiceLocator.hpp"
 
 #include <type_traits>
 #include <vector>
@@ -135,7 +138,8 @@ std::size_t Mesh::Builder::AddIndicies(const Primitive& type) noexcept {
     return indicies.size() - 1;
 }
 
-void Mesh::Render(Renderer& renderer, const Mesh::Builder& builder) noexcept {
+void Mesh::Render(const Mesh::Builder& builder) noexcept {
+    auto&& renderer = ServiceLocator::get<IRendererService>();
     for(const auto& draw_inst : builder.draw_instructions) {
         renderer.SetMaterial(draw_inst.material);
         if(draw_inst.material) {
@@ -143,16 +147,16 @@ void Mesh::Render(Renderer& renderer, const Mesh::Builder& builder) noexcept {
             auto ccbs = draw_inst.material->GetShader()->GetComputeConstantBuffers();
             const auto cb_size = cbs.size();
             for(int i = 0; i < cb_size; ++i) {
-                renderer.SetConstantBuffer(renderer.CONSTANT_BUFFER_START_INDEX + i, &(cbs.begin() + i)->get());
+                renderer.SetConstantBuffer(renderer.GetConstantBufferStartIndex() + i, &(cbs.begin() + i)->get());
             }
             renderer.DrawIndexed(draw_inst.type, builder.verticies, builder.indicies, draw_inst.indexCount, draw_inst.indexStart, draw_inst.baseVertexLocation);
             for(int i = 0; i < cb_size; ++i) {
-                renderer.SetConstantBuffer(renderer.CONSTANT_BUFFER_START_INDEX + i, nullptr);
+                renderer.SetConstantBuffer(renderer.GetConstantBufferStartIndex() + i, nullptr);
             }
         }
     }
 }
 
-void Mesh::Render(Renderer& renderer) const noexcept {
-    Render(renderer, m_builder);
+void Mesh::Render() const noexcept {
+    Render(m_builder);
 }

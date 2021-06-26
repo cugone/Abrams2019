@@ -15,7 +15,7 @@ public:
     [[nodiscard]] static RHIInstance* const CreateInstance() noexcept;
     static void DestroyInstance() noexcept;
 
-    [[nodiscard]] std::unique_ptr<RHIDevice> CreateDevice(Renderer& renderer) const noexcept;
+    [[nodiscard]] std::unique_ptr<RHIDevice> CreateDevice() noexcept;
     static void ReportLiveObjects() noexcept;
 
 protected:

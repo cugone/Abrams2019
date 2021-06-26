@@ -4,16 +4,18 @@
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/RHI/RHIOutput.hpp"
 #include "Engine/Renderer/DepthStencilState.hpp"
-#include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/Texture2D.hpp"
+
+#include "Engine/Services/ServiceLocator.hpp"
+#include "Engine/Services/IRendererService.hpp"
 
 #include <memory>
 #include <sstream>
 
-UICanvas::UICanvas(UIWidget* owner, Renderer& renderer)
+UICanvas::UICanvas(UIWidget* owner)
 : UIPanel(owner)
-, _renderer(renderer) {
+{
     const auto [dimensions, aspect_ratio] = CalcDimensionsAndAspectRatio();
     const auto desired_size = CalcDesiredSize();
     _bounds.mins = desired_size.GetXY();
@@ -22,12 +24,12 @@ UICanvas::UICanvas(UIWidget* owner, Renderer& renderer)
     auto desc = DepthStencilDesc{};
     desc.stencil_enabled = true;
     desc.stencil_testFront = ComparisonFunction::Equal;
-    _renderer.CreateAndRegisterDepthStencilStateFromDepthStencilDescription("UIDepthStencil", desc);
+    ServiceLocator::get<IRendererService>().CreateAndRegisterDepthStencilStateFromDepthStencilDescription("UIDepthStencil", desc);
 }
 
-UICanvas::UICanvas(UIWidget* owner, Renderer& renderer, const XMLElement& elem)
+UICanvas::UICanvas(UIWidget* owner, const XMLElement& elem)
 : UIPanel(owner)
-, _renderer(renderer) {
+{
     GUARANTEE_OR_DIE(LoadFromXml(elem), "Canvas constructor failed to load.");
 }
 
@@ -38,21 +40,23 @@ void UICanvas::Update(TimeUtils::FPSeconds deltaSeconds) {
     UpdateChildren(deltaSeconds);
 }
 
-void UICanvas::Render(Renderer& renderer) const {
+void UICanvas::Render() const {
     if(IsHidden()) {
         return;
     }
+    auto&& renderer = ServiceLocator::get<IRendererService>();
     const auto old_camera = renderer.GetCamera();
-    SetupMVPFromTargetAndCamera(renderer);
-    RenderChildren(renderer);
+    SetupMVPFromTargetAndCamera();
+    RenderChildren();
     renderer.SetCamera(old_camera);
 }
 
-void UICanvas::SetupMVPFromTargetAndCamera(Renderer& renderer) const {
-    SetupMVPFromViewportAndCamera(renderer);
+void UICanvas::SetupMVPFromTargetAndCamera() const {
+    SetupMVPFromViewportAndCamera();
 }
 
-void UICanvas::SetupMVPFromViewportAndCamera(Renderer& renderer) const {
+void UICanvas::SetupMVPFromViewportAndCamera() const {
+    auto&& renderer = ServiceLocator::get<IRendererService>();
     renderer.ResetModelViewProjection();
     const auto& vp = renderer.GetCurrentViewport();
     const auto target_dims = Vector2(vp.width, vp.height);
@@ -68,11 +72,12 @@ void UICanvas::SetupMVPFromViewportAndCamera(Renderer& renderer) const {
     renderer.SetModelMatrix(GetWorldTransform());
 }
 
-void UICanvas::DebugRender(Renderer& renderer) const {
+void UICanvas::DebugRender() const {
     const auto& target = _camera.GetRenderTarget();
+    auto& renderer = ServiceLocator::get<IRendererService>();
     renderer.SetRenderTarget(target.color_target, target.depthstencil_target);
     renderer.DisableDepth();
-    DebugRenderBottomUp(renderer);
+    DebugRenderBottomUp();
     renderer.EnableDepth();
     renderer.SetRenderTarget();
     renderer.SetMaterial(nullptr);
@@ -97,20 +102,12 @@ void UICanvas::UpdateChildren(TimeUtils::FPSeconds deltaSeconds) {
     }
 }
 
-void UICanvas::RenderChildren(Renderer& renderer) const {
+void UICanvas::RenderChildren() const {
     for(auto& slot : _slots) {
         if(auto* child = slot->content) {
-            child->Render(renderer);
+            child->Render();
         }
     }
-}
-
-const Renderer& UICanvas::GetRenderer() const {
-    return _renderer;
-}
-
-Renderer& UICanvas::GetRenderer() {
-    return const_cast<Renderer&>(static_cast<const UICanvas&>(*this).GetRenderer());
 }
 
 Vector4 UICanvas::AnchorTextToAnchorValues(const std::string& text) noexcept {
@@ -252,7 +249,7 @@ void UICanvas::ArrangeChildren() noexcept {
 }
 
 std::pair<Vector2, float> UICanvas::CalcDimensionsAndAspectRatio() const {
-    const auto& viewport = _renderer.GetCurrentViewport();
+    const auto& viewport = ServiceLocator::get<IRendererService>().GetCurrentViewport();
     const auto viewport_dims = Vector2{viewport.width, viewport.height};
 
     const auto target_AR = viewport_dims.x / viewport_dims.y;

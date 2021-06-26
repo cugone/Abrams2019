@@ -1,13 +1,20 @@
 #include "Engine/UI/UISystem.hpp"
 
-#include "Engine/Core/FileLogger.hpp"
 #include "Engine/Core/FileUtils.hpp"
 #include "Engine/Core/KerningFont.hpp"
-#include "Engine/Input/InputSystem.hpp"
+
 #include "Engine/Profiling/ProfileLogScope.hpp"
-#include "Engine/Renderer/Renderer.hpp"
+#include "Engine/RHI/RHIOutput.hpp"
+#include "Engine/RHI/RHIDevice.hpp"
+#include "Engine/RHI/RHIDeviceContext.hpp"
+
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/Window.hpp"
+
+#include "Engine/Services/IRendererService.hpp"
+#include "Engine/Services/IInputService.hpp"
+#include "Engine/Services/ServiceLocator.hpp"
+
 #include "Engine/UI/UIWidget.hpp"
 
 #include <Thirdparty/Imgui/imgui_internal.h>
@@ -86,11 +93,8 @@ void TextColored(const Rgba& color, const char* fmt, ...) noexcept {
 
 } // namespace ImGui
 
-UISystem::UISystem(FileLogger& fileLogger, Renderer& renderer, InputSystem& inputSystem) noexcept
+UISystem::UISystem() noexcept
 : EngineSubsystem()
-, _fileLogger(fileLogger)
-, _renderer(renderer)
-, _inputSystem(inputSystem)
 , _context(ImGui::CreateContext()) {
 #ifdef UI_DEBUG
     IMGUI_CHECKVERSION();
@@ -109,12 +113,13 @@ UISystem::~UISystem() noexcept {
 void UISystem::Initialize() {
     namespace FS = std::filesystem;
 
-    auto* hwnd = _renderer.GetOutput()->GetWindow()->GetWindowHandle();
-    auto* dx_device = _renderer.GetDevice()->GetDxDevice();
-    auto* dx_context = _renderer.GetDeviceContext()->GetDxContext();
+    auto&& renderer = ServiceLocator::get<IRendererService>();
+    auto* hwnd = renderer.GetOutput()->GetWindow()->GetWindowHandle();
+    auto* dx_device = renderer.GetDevice()->GetDxDevice();
+    auto* dx_context = renderer.GetDeviceContext()->GetDxContext();
     ImGui_ImplWin32_Init(hwnd);
     ImGui_ImplDX11_Init(dx_device, dx_context);
-    const auto dims = Vector2{_renderer.GetOutput()->GetDimensions()};
+    const auto dims = Vector2{renderer.GetOutput()->GetDimensions()};
     auto& io = ImGui::GetIO();
     io.DisplaySize.x = dims.x;
     io.DisplaySize.y = dims.y;
@@ -149,7 +154,8 @@ void UISystem::Render() const {
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
     //2D View / HUD
-    const float ui_view_height = _renderer.GetCurrentViewport().height;
+    auto&& renderer = ServiceLocator::get<IRendererService>();
+    const float ui_view_height = renderer.GetCurrentViewport().height;
     const float ui_view_width = ui_view_height * _ui_camera.GetAspectRatio();
     const auto ui_view_extents = Vector2{ui_view_width, ui_view_height};
     const auto ui_view_half_extents = ui_view_extents * 0.5f;
@@ -159,8 +165,8 @@ void UISystem::Render() const {
     auto ui_cam_pos = ui_view_half_extents;
     _ui_camera.position = ui_cam_pos;
     _ui_camera.orientation_degrees = 0.0f;
-    _ui_camera.SetupView(ui_leftBottom, ui_rightTop, ui_nearFar, _renderer.GetCurrentViewportAspectRatio());
-    _renderer.SetCamera(_ui_camera);
+    _ui_camera.SetupView(ui_leftBottom, ui_rightTop, ui_nearFar, renderer.GetCurrentViewportAspectRatio());
+    renderer.SetCamera(_ui_camera);
 
     for(const auto* cur_widget : _active_widgets) {
         cur_widget->Render();
@@ -208,8 +214,9 @@ bool UISystem::IsImguiDemoWindowVisible() const noexcept {
 void UISystem::ToggleImguiDemoWindow() noexcept {
 #if !defined(IMGUI_DISABLE_DEMO_WINDOWS)
     show_imgui_demo_window = !show_imgui_demo_window;
-    if(!_inputSystem.IsMouseCursorVisible()) {
-        _inputSystem.ShowMouseCursor();
+    auto&& input = ServiceLocator::get<IInputService>();
+    if(!input.IsMouseCursorVisible()) {
+        input.ShowMouseCursor();
     }
 #endif
 }
@@ -225,8 +232,9 @@ bool UISystem::IsImguiMetricsWindowVisible() const noexcept {
 void UISystem::ToggleImguiMetricsWindow() noexcept {
 #if !defined(IMGUI_DISABLE_METRICS_WINDOW)
     show_imgui_metrics_window = !show_imgui_metrics_window;
-    if(!_inputSystem.IsMouseCursorVisible()) {
-        _inputSystem.ShowMouseCursor();
+    auto&& input = ServiceLocator::get<IInputService>();
+    if(!input.IsMouseCursorVisible()) {
+        input.ShowMouseCursor();
     }
 #endif
 }
@@ -241,7 +249,7 @@ bool UISystem::IsAnyImguiDebugWindowVisible() const noexcept {
 
 void UISystem::RegisterUiWidgetsFromFolder(std::filesystem::path folderpath, bool recursive /*= false*/) {
     const auto widgets_lambda = [this](const std::filesystem::path& path) {
-        auto newWidget = std::make_unique<UIWidget>(_renderer, path);
+        auto newWidget = std::make_unique<UIWidget>(path);
         const auto name = newWidget->name;
         _widgets.try_emplace(name, std::move(newWidget));
     };
@@ -276,7 +284,8 @@ void UISystem::UnloadUiWidget(const std::string& name) {
 }
 
 void UISystem::AddUiWidgetToViewport(UIWidget& widget) {
-    const auto viewport = _renderer.GetCurrentViewport();
+    auto&& renderer = ServiceLocator::get<IRendererService>();
+    const auto viewport = renderer.GetCurrentViewport();
     const auto viewportDims = Vector2{viewport.width, viewport.height};
     if(!IsWidgetLoaded(widget)) {
         LoadUiWidget(widget.name);

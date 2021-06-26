@@ -4,10 +4,12 @@
 #include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Renderer/Texture.hpp"
 
+#include "Engine/Services/ServiceLocator.hpp"
+
 #include <sstream>
 
-SpriteSheet::SpriteSheet(Renderer& renderer, const XMLElement& elem) noexcept {
-    LoadFromXml(renderer, elem);
+SpriteSheet::SpriteSheet(const XMLElement& elem) noexcept {
+    LoadFromXml(elem);
 }
 
 SpriteSheet::SpriteSheet(Texture* texture, int tilesWide, int tilesHigh) noexcept
@@ -16,8 +18,8 @@ SpriteSheet::SpriteSheet(Texture* texture, int tilesWide, int tilesHigh) noexcep
     /* DO NOTHING */
 }
 
-SpriteSheet::SpriteSheet(Renderer& renderer, const std::filesystem::path& texturePath, int tilesWide, int tilesHigh) noexcept
-: _spriteSheetTexture(renderer.CreateOrGetTexture(texturePath, IntVector3::XY_AXIS))
+SpriteSheet::SpriteSheet(const std::filesystem::path& texturePath, int tilesWide, int tilesHigh) noexcept
+: _spriteSheetTexture(ServiceLocator::get<IRendererService>().CreateOrGetTexture(texturePath, IntVector3::XY_AXIS))
 , _spriteLayout(tilesWide, tilesHigh) {
     /* DO NOTHING */
 }
@@ -75,7 +77,7 @@ Texture* SpriteSheet::GetTexture() noexcept {
     return _spriteSheetTexture;
 }
 
-void SpriteSheet::LoadFromXml(Renderer& renderer, const XMLElement& elem) noexcept {
+void SpriteSheet::LoadFromXml(const XMLElement& elem) noexcept {
     namespace FS = std::filesystem;
     DataUtils::ValidateXmlElement(elem, "spritesheet", "", "src,dimensions");
     _spriteLayout = DataUtils::ParseXmlAttribute(elem, "dimensions", _spriteLayout);
@@ -91,5 +93,5 @@ void SpriteSheet::LoadFromXml(Renderer& renderer, const XMLElement& elem) noexce
         }
     }
     p.make_preferred();
-    _spriteSheetTexture = renderer.CreateOrGetTexture(p.string(), IntVector3::XY_AXIS);
+    _spriteSheetTexture = ServiceLocator::get<IRendererService>().CreateOrGetTexture(p.string(), IntVector3::XY_AXIS);
 }

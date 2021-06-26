@@ -31,31 +31,12 @@ Image::Image(std::filesystem::path filepath) noexcept
     filepath = FS::canonical(filepath);
     filepath.make_preferred();
     if(const auto& buf = FileUtils::ReadBinaryBufferFromFile(filepath); buf.has_value()) {
-        const std::string bufSig{buf->begin(), buf->begin() + 6};
-        const std::string gifSig89a{"GIF89a"};
-        const std::string gifSig87a{"GIF87a"};
-        if(m_isGif = false; m_isGif = (bufSig == gifSig89a) || (bufSig == gifSig87a)) {
-            int depth = 0;
-            int* delays = nullptr;
-            int comp = 0;
-            int req_comp = 4;
-            auto texel_bytes = stbi_load_gif_from_memory(buf->data(), static_cast<int>(buf->size()), &delays, &m_dimensions.x, &m_dimensions.y, &depth, &comp, req_comp);
-            m_bytesPerTexel = req_comp;
-            m_gifDelays.resize(depth);
-            for(int i = 0; i < depth; ++i) {
-                m_gifDelays[i] = delays[i];
-            }
-            m_dimensions.y *= depth;
-            m_texelBytes = std::vector<unsigned char>(texel_bytes, texel_bytes + (static_cast<std::size_t>(m_dimensions.x) * m_dimensions.y * m_bytesPerTexel));
-            stbi_image_free(texel_bytes);
-        } else {
-            int comp = 0;
-            int req_comp = 4;
-            auto texel_bytes = stbi_load_from_memory(buf->data(), static_cast<int>(buf->size()), &m_dimensions.x, &m_dimensions.y, &comp, req_comp);
-            m_bytesPerTexel = req_comp;
-            m_texelBytes = std::vector<unsigned char>(texel_bytes, texel_bytes + (static_cast<std::size_t>(m_dimensions.x) * m_dimensions.y * m_bytesPerTexel));
-            stbi_image_free(texel_bytes);
-        }
+        int comp = 0;
+        int req_comp = 4;
+        auto texel_bytes = stbi_load_from_memory(buf->data(), static_cast<int>(buf->size()), &m_dimensions.x, &m_dimensions.y, &comp, req_comp);
+        m_bytesPerTexel = req_comp;
+        m_texelBytes = std::vector<unsigned char>(texel_bytes, texel_bytes + (static_cast<std::size_t>(m_dimensions.x) * m_dimensions.y * m_bytesPerTexel));
+        stbi_image_free(texel_bytes);
     } else {
         const auto ss = std::string{"Failed to load image. "} + filepath.string() + " is not a supported image type.";
         GUARANTEE_RECOVERABLE(!m_texelBytes.empty(), ss.c_str());
@@ -99,9 +80,8 @@ Image::Image(const std::vector<unsigned char>& data, unsigned int width, unsigne
 Image::Image(Image&& img) noexcept
 : m_dimensions(std::move(img.m_dimensions))
 , m_bytesPerTexel(std::move(img.m_bytesPerTexel))
-, m_gifDelays(std::move(img.m_gifDelays))
 , m_filepath(std::move(img.m_filepath))
-, m_isGif(std::move(m_isGif)) {
+{
     std::scoped_lock<std::mutex, std::mutex> lock(_cs, img._cs);
     m_texelBytes = std::move(img.m_texelBytes);
 }
@@ -140,18 +120,13 @@ Image& Image::operator=(Image&& rhs) noexcept {
     m_bytesPerTexel = std::move(rhs.m_bytesPerTexel);
     m_dimensions = std::move(rhs.m_dimensions);
     m_filepath = std::move(rhs.m_filepath);
-    m_gifDelays = std::move(rhs.m_gifDelays);
-    m_isGif = std::move(rhs.m_isGif);
     m_texelBytes = std::move(rhs.m_texelBytes);
 
     rhs.m_bytesPerTexel = 0;
     rhs.m_dimensions = IntVector2::ZERO;
     rhs.m_filepath = std::string{};
-    rhs.m_gifDelays.clear();
-    rhs.m_gifDelays.shrink_to_fit();
     rhs.m_texelBytes.clear();
     rhs.m_texelBytes.shrink_to_fit();
-    rhs.m_isGif = false;
     return *this;
 }
 
@@ -202,10 +177,6 @@ std::size_t Image::GetDataLength() const noexcept {
 
 int Image::GetBytesPerTexel() const noexcept {
     return m_bytesPerTexel;
-}
-
-const std::vector<int>& Image::GetDelaysIfGif() const noexcept {
-    return m_gifDelays;
 }
 
 bool Image::Export(std::filesystem::path filepath, int bytes_per_pixel /*= 4*/, int jpg_quality /*= 100*/) const noexcept {
@@ -268,30 +239,7 @@ Image Image::CreateImageFromFileBuffer(const std::vector<unsigned char>& data) n
     Image result{};
     result.m_dimensions = IntVector2(dim_x, dim_y);
     result.m_bytesPerTexel = comp;
-    result.m_isGif = data.size() > 6 ? (data[0] == 'G' && data[1] == 'I' && data[2] == 'F' && data[3] == '8' && (data[4] == '9' || data[4] == '7') && data[5] == 'a') : false;
-    if(!result.m_isGif) {
-        result.m_texelBytes = texel_bytes;
-    } else {
-        int depth = 0;
-        int* delays = nullptr;
-        int req_comp = 4;
-        comp = 0;
-        auto* bytes = stbi_load_gif_from_memory(data.data(), static_cast<int>(data.size()), &delays, &dim_x, &dim_y, &depth, &comp, req_comp);
-        if(!bytes) {
-            return {};
-        }
-        auto size = std::size_t(dim_x) * dim_y * comp;
-        result.m_gifDelays.assign(delays, delays + depth);
-        texel_bytes.assign(bytes, bytes + size);
-        stbi_image_free(delays);
-        delays = nullptr;
-        stbi_image_free(bytes);
-        bytes = nullptr;
-        result.m_dimensions.x = dim_x;
-        result.m_dimensions.y = dim_y;
-        result.m_dimensions.y *= depth;
-        result.m_texelBytes = texel_bytes;
-    }
+    result.m_texelBytes = texel_bytes;
     return result;
 }
 
@@ -304,7 +252,5 @@ void swap(Image& a, Image& b) noexcept {
     std::swap(a.m_bytesPerTexel, b.m_bytesPerTexel);
     std::swap(a.m_dimensions, b.m_dimensions);
     std::swap(a.m_filepath, b.m_filepath);
-    std::swap(a.m_gifDelays, b.m_gifDelays);
-    std::swap(a.m_isGif, b.m_isGif);
     std::swap(a.m_texelBytes, b.m_texelBytes);
 }

@@ -4,9 +4,9 @@
 
 #include <filesystem>
 
-class IAudioService : private IService {
+class IAudioService : public IService {
 public:
-    virtual ~IAudioService() { /* DO NOTHING */ };
+    virtual ~IAudioService() noexcept { /* DO NOTHING */ };
     virtual void SuspendAudio() noexcept = 0;
     virtual void ResumeAudio() noexcept = 0;
 

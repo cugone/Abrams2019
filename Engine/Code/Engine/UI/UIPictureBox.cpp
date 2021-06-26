@@ -3,7 +3,10 @@
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/FileUtils.hpp"
 #include "Engine/Renderer/AnimatedSprite.hpp"
-#include "Engine/Renderer/Renderer.hpp"
+
+#include "Engine/Services/IRendererService.hpp"
+#include "Engine/Services/ServiceLocator.hpp"
+
 #include "Engine/UI/UIPanel.hpp"
 #include "Engine/UI/UIWidget.hpp"
 
@@ -32,11 +35,12 @@ void UIPictureBox::Update(TimeUtils::FPSeconds deltaSeconds) {
     _sprite->Update(deltaSeconds);
 }
 
-void UIPictureBox::Render(Renderer& renderer) const {
+void UIPictureBox::Render() const {
     if(IsHidden()) {
         return;
     }
     auto* material = _sprite->GetMaterial();
+    auto&& renderer = ServiceLocator::get<IRendererService>();
     renderer.SetModelMatrix(GetWorldTransform());
     renderer.SetMaterial(material);
     const auto cur_tc = _sprite->GetCurrentTexCoords();
@@ -44,8 +48,8 @@ void UIPictureBox::Render(Renderer& renderer) const {
     renderer.DrawQuad2D(tex_coords);
 }
 
-void UIPictureBox::DebugRender(Renderer& renderer) const {
-    UIElement::DebugRender(renderer);
+void UIPictureBox::DebugRender() const {
+    UIElement::DebugRender();
 }
 
 Vector4 UIPictureBox::CalcDesiredSize() const noexcept {
@@ -59,10 +63,9 @@ bool UIPictureBox::LoadFromXml(const XMLElement& elem) noexcept {
     DataUtils::ValidateXmlElement(elem, "picturebox", "", "name,src", "");
     _name = DataUtils::ParseXmlAttribute(elem, "name", _name);
     if(const auto src = DataUtils::ParseXmlAttribute(elem, "src", ""); FileUtils::IsSafeReadPath(src)) {
-        if(const auto* parent = GetParent()) {
-            _sprite = parent->GetOwningWidget()->GetRenderer().CreateAnimatedSprite(src);
-            return true;
-        }
+        auto&& renderer = ServiceLocator::get<IRendererService>();
+        _sprite = renderer.CreateAnimatedSprite(src);
+        return true;
     }
     return false;
 }

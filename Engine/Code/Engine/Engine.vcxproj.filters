@@ -481,6 +481,15 @@
     <ClCompile Include="Services\ServiceLocator.cpp">
       <Filter>Services</Filter>
     </ClCompile>
+    <ClCompile Include="Core\JobTypes.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Input\KeyCode.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\DrawInstruction.cpp">
+      <Filter>Renderer\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vector2.hpp">
@@ -929,6 +938,30 @@
     </ClInclude>
     <ClInclude Include="Services\IService.hpp">
       <Filter>Services</Filter>
+    </ClInclude>
+    <ClInclude Include="Services\IFileLoggerService.hpp">
+      <Filter>Services</Filter>
+    </ClInclude>
+    <ClInclude Include="Services\IJobSystemService.hpp">
+      <Filter>Services</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\JobTypes.hpp">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Services\IConfigService.hpp">
+      <Filter>Services</Filter>
+    </ClInclude>
+    <ClInclude Include="Services\IInputService.hpp">
+      <Filter>Services</Filter>
+    </ClInclude>
+    <ClInclude Include="Input\KeyCode.hpp">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Services\IRendererService.hpp">
+      <Filter>Services</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\DrawInstruction.hpp">
+      <Filter>Renderer\Core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

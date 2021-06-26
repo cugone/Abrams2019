@@ -4,7 +4,10 @@
 #include "Engine/Core/KerningFont.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Math/MathUtils.hpp"
-#include "Engine/Renderer/Renderer.hpp"
+//#include "Engine/Renderer/Renderer.hpp"
+#include "Engine/Services/ServiceLocator.hpp"
+#include "Engine/Services/IRendererService.hpp"
+
 #include "Engine/UI/UIPanel.hpp"
 
 #include <sstream>
@@ -149,12 +152,12 @@ void UIElement::Update(TimeUtils::FPSeconds /*deltaSeconds*/) {
     /* DO NOTHING */
 }
 
-void UIElement::Render(Renderer& /*renderer*/) const {
+void UIElement::Render() const {
     /* DO NOTHING */
 }
 
-void UIElement::DebugRender(Renderer& renderer) const {
-    DebugRenderBoundsAndPivot(renderer);
+void UIElement::DebugRender() const {
+    DebugRenderBoundsAndPivot();
 }
 
 void UIElement::EndFrame() {
@@ -195,25 +198,27 @@ void UIElement::DirtyElement(UIInvalidateElementReason reason /*= InvalidateElem
     _dirty_reason = reason;
 }
 
-void UIElement::DebugRenderBoundsAndPivot(Renderer& renderer) const {
-    DebugRenderBounds(renderer);
-    DebugRenderPivot(renderer);
+void UIElement::DebugRenderBoundsAndPivot() const {
+    DebugRenderBounds();
+    DebugRenderPivot();
 }
 
-void UIElement::DebugRenderPivot(Renderer& renderer) const {
+void UIElement::DebugRenderPivot() const {
     const auto world_transform = GetWorldTransform();
     const auto scale = world_transform.GetScale();
     const auto inv_scale_matrix = Matrix4::CalculateInverse(Matrix4::CreateScaleMatrix(Vector3(scale.x * 0.10f, scale.y * 0.10f, 1.0f)));
     const auto pivot_pos = MathUtils::CalcPointFromNormalizedPoint(_pivot, _bounds);
     const auto pivot_pos_matrix = Matrix4::CreateTranslationMatrix(pivot_pos);
     const auto transform = Matrix4::MakeSRT(inv_scale_matrix, world_transform, pivot_pos_matrix);
+    auto&& renderer = ServiceLocator::get<IRendererService>();
     renderer.SetMaterial(renderer.GetMaterial("__2D"));
     renderer.SetModelMatrix(transform);
     renderer.DrawX2D(_pivot_color);
 }
 
-void UIElement::DebugRenderBounds(Renderer& renderer) const {
+void UIElement::DebugRenderBounds() const {
     const auto world_transform = GetWorldTransform();
+    auto&& renderer = ServiceLocator::get<IRendererService>();
     renderer.SetModelMatrix(world_transform);
     renderer.SetMaterial(renderer.GetMaterial("__2D"));
     renderer.DrawAABB2(_edge_color, _fill_color);

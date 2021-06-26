@@ -7,14 +7,15 @@
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/Texture2D.hpp"
 
-AnimatedSprite::AnimatedSprite(Renderer& renderer,
-                               std::weak_ptr<SpriteSheet> spriteSheet,
+#include "Engine/Services/ServiceLocator.hpp"
+#include "Engine/Services/IRendererService.hpp"
+
+AnimatedSprite::AnimatedSprite(std::weak_ptr<SpriteSheet> spriteSheet,
                                TimeUtils::FPSeconds durationSeconds,
                                int startSpriteIndex,
                                int frameLength,
                                SpriteAnimMode playbackMode /*= SpriteAnimMode::LOOPING*/) noexcept
-: _renderer(renderer)
-, _sheet(spriteSheet)
+: _sheet(spriteSheet)
 , _duration_seconds(durationSeconds)
 , _playback_mode(playbackMode)
 , _start_index(startSpriteIndex)
@@ -23,9 +24,8 @@ AnimatedSprite::AnimatedSprite(Renderer& renderer,
     _max_seconds_per_frame = TimeUtils::FPSeconds{_duration_seconds / (has_frames ? static_cast<float>(_end_index - _start_index) : 1.0f)};
 }
 
-AnimatedSprite::AnimatedSprite(Renderer& renderer, std::weak_ptr<SpriteSheet> spriteSheet, TimeUtils::FPSeconds durationSeconds, const IntVector2& startSpriteCoords, int frameLength, SpriteAnimMode playbackMode /*= SpriteAnimMode::Looping*/) noexcept
-: _renderer(renderer)
-, _sheet(spriteSheet)
+AnimatedSprite::AnimatedSprite(std::weak_ptr<SpriteSheet> spriteSheet, TimeUtils::FPSeconds durationSeconds, const IntVector2& startSpriteCoords, int frameLength, SpriteAnimMode playbackMode /*= SpriteAnimMode::Looping*/) noexcept
+: _sheet(spriteSheet)
 , _duration_seconds(durationSeconds)
 , _playback_mode(playbackMode)
 , _start_index(startSpriteCoords.x + startSpriteCoords.y * _sheet.lock()->GetLayout().x)
@@ -34,25 +34,23 @@ AnimatedSprite::AnimatedSprite(Renderer& renderer, std::weak_ptr<SpriteSheet> sp
     _max_seconds_per_frame = TimeUtils::FPSeconds{_duration_seconds / (has_frames ? static_cast<float>(_end_index - _start_index) : 1.0f)};
 }
 
-AnimatedSprite::AnimatedSprite(Renderer& renderer, const XMLElement& elem) noexcept
-: _renderer(renderer) {
-    LoadFromXml(_renderer, elem);
+AnimatedSprite::AnimatedSprite(const XMLElement& elem) noexcept
+{
+    LoadFromXml(elem);
 }
 
-AnimatedSprite::AnimatedSprite(Renderer& renderer, std::weak_ptr<SpriteSheet> sheet, const XMLElement& elem) noexcept
-: _renderer(renderer)
-, _sheet(sheet) {
-    LoadFromXml(_renderer, elem);
+AnimatedSprite::AnimatedSprite(std::weak_ptr<SpriteSheet> sheet, const XMLElement& elem) noexcept
+: _sheet(sheet) {
+    LoadFromXml(elem);
 }
 
-AnimatedSprite::AnimatedSprite(Renderer& renderer, std::weak_ptr<SpriteSheet> sheet, const IntVector2& startSpriteCoords /* = IntVector2::ZERO*/) noexcept
-: AnimatedSprite(renderer, sheet, TimeUtils::FPFrames{1}, startSpriteCoords, 0) {
+AnimatedSprite::AnimatedSprite(std::weak_ptr<SpriteSheet> sheet, const IntVector2& startSpriteCoords /* = IntVector2::ZERO*/) noexcept
+: AnimatedSprite(sheet, TimeUtils::FPFrames{1}, startSpriteCoords, 0) {
     /* DO NOTHING */
 }
 
-AnimatedSprite::AnimatedSprite(Renderer& renderer, const AnimatedSpriteDesc& desc) noexcept
-: _renderer(renderer)
-, _material(desc.material)
+AnimatedSprite::AnimatedSprite(const AnimatedSpriteDesc& desc) noexcept
+: _material(desc.material)
 , _sheet(desc.spriteSheet)
 , _duration_seconds(desc.durationSeconds)
 , _playback_mode(desc.playbackMode)
@@ -301,11 +299,11 @@ int AnimatedSprite::GetIndexFromCoords(const IntVector2& coords) noexcept {
     return 0;
 }
 
-void AnimatedSprite::LoadFromXml(Renderer& renderer, const XMLElement& elem) noexcept {
+void AnimatedSprite::LoadFromXml(const XMLElement& elem) noexcept {
     DataUtils::ValidateXmlElement(elem, "animation", "animationset", "", "spritesheet", "name");
     if(const auto xml_sheet = elem.FirstChildElement("spritesheet")) {
         DataUtils::ValidateXmlElement(*xml_sheet, "spritesheet", "", "src,dimensions");
-        _sheet = renderer.CreateSpriteSheet(*xml_sheet);
+        _sheet = ServiceLocator::get<IRendererService>().CreateSpriteSheet(*xml_sheet);
     }
 
     const auto xml_animset = elem.FirstChildElement("animationset");

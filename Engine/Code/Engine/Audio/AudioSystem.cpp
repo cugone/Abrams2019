@@ -3,17 +3,18 @@
 #include "Engine/Audio/Wav.hpp"
 #include "Engine/Core/BuildConfig.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
-#include "Engine/Core/FileLogger.hpp"
 #include "Engine/Core/FileUtils.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Input/InputSystem.hpp"
 
+#include "Engine/Services/ServiceLocator.hpp"
+#include "Engine/Services/IFileLoggerService.hpp"
+
 #include <algorithm>
 
-AudioSystem::AudioSystem(FileLogger& fileLogger, std::size_t max_channels /*= 1024*/)
+AudioSystem::AudioSystem(std::size_t max_channels /*= 1024*/)
 : EngineSubsystem()
 , IAudioService()
-, _fileLogger(&fileLogger)
 , _max_channels(max_channels) {
     bool co_init_succeeded = SUCCEEDED(::CoInitializeEx(nullptr, COINIT_MULTITHREADED));
     GUARANTEE_OR_DIE(co_init_succeeded, "Failed to setup Audio System.");
@@ -511,7 +512,7 @@ void AudioSystem::Channel::Stop() noexcept {
 void AudioSystem::Channel::Stop(uint32_t operationSetId) noexcept {
     if(_voice) {
         std::scoped_lock<std::mutex> lock(_cs);
-        _voice->Stop(0, operationSetId);
+        _voice->Stop(XAUDIO2_PLAY_TAILS, operationSetId);
         _voice->FlushSourceBuffers();
     }
 }

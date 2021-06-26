@@ -6,11 +6,9 @@
 
 class InputLayout;
 class InputLayoutInstanced;
-class RHIDevice;
 
 struct ShaderProgramDesc {
     std::string name{"UNNAMED SHADER PROGRAM"};
-    const RHIDevice* device = nullptr;
     ID3D11VertexShader* vs = nullptr;
     ID3D11PixelShader* ps = nullptr;
     ID3DBlob* vs_bytecode = nullptr;
@@ -46,7 +44,6 @@ public:
     void SetDescription(ShaderProgramDesc&& description) noexcept;
 
     [[nodiscard]] const std::string& GetName() const noexcept;
-    [[nodiscard]] const RHIDevice* GetParentDevice() const noexcept;
     [[nodiscard]] ID3DBlob* GetVSByteCode() const noexcept;
     [[nodiscard]] ID3DBlob* GetHSByteCode() const noexcept;
     [[nodiscard]] ID3DBlob* GetDSByteCode() const noexcept;

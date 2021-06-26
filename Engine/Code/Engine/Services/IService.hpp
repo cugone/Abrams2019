@@ -1,6 +1,5 @@
 #pragma once
 
-class IService {
-public:
-    virtual ~IService() {};
-};
+class IService {};
+
+class NullService : public IService {};

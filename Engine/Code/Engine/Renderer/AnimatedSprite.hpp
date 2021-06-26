@@ -7,7 +7,6 @@
 #include "Engine/Renderer/SpriteSheet.hpp"
 
 class Material;
-class Renderer;
 class Texture;
 struct AnimatedSpriteDesc;
 
@@ -23,10 +22,10 @@ public:
         , Max
     };
     // clang-format on
-    AnimatedSprite(Renderer& renderer, const XMLElement& elem) noexcept;
-    AnimatedSprite(Renderer& renderer, const AnimatedSpriteDesc& desc) noexcept;
-    AnimatedSprite(Renderer& renderer, std::weak_ptr<SpriteSheet> sheet, const XMLElement& elem) noexcept;
-    AnimatedSprite(Renderer& renderer, std::weak_ptr<SpriteSheet> sheet, const IntVector2& startSpriteCoords) noexcept;
+    AnimatedSprite(const XMLElement& elem) noexcept;
+    AnimatedSprite(const AnimatedSpriteDesc& desc) noexcept;
+    AnimatedSprite(std::weak_ptr<SpriteSheet> sheet, const XMLElement& elem) noexcept;
+    AnimatedSprite(std::weak_ptr<SpriteSheet> sheet, const IntVector2& startSpriteCoords) noexcept;
     ~AnimatedSprite() noexcept;
 
     void Update(TimeUtils::FPSeconds deltaSeconds) noexcept;
@@ -55,14 +54,13 @@ public:
 
 protected:
 private:
-    AnimatedSprite(Renderer& renderer, std::weak_ptr<SpriteSheet> spriteSheet, TimeUtils::FPSeconds durationSeconds, int startSpriteIndex, int frameLength, SpriteAnimMode playbackMode = SpriteAnimMode::Looping) noexcept;
-    AnimatedSprite(Renderer& renderer, std::weak_ptr<SpriteSheet> spriteSheet, TimeUtils::FPSeconds durationSeconds, const IntVector2& startSpriteCoords, int frameLength, SpriteAnimMode playbackMode = SpriteAnimMode::Looping) noexcept;
+    AnimatedSprite(std::weak_ptr<SpriteSheet> spriteSheet, TimeUtils::FPSeconds durationSeconds, int startSpriteIndex, int frameLength, SpriteAnimMode playbackMode = SpriteAnimMode::Looping) noexcept;
+    AnimatedSprite(std::weak_ptr<SpriteSheet> spriteSheet, TimeUtils::FPSeconds durationSeconds, const IntVector2& startSpriteCoords, int frameLength, SpriteAnimMode playbackMode = SpriteAnimMode::Looping) noexcept;
 
-    void LoadFromXml(Renderer& renderer, const XMLElement& elem) noexcept;
+    void LoadFromXml(const XMLElement& elem) noexcept;
     [[nodiscard]] SpriteAnimMode GetAnimModeFromOptions(bool looping, bool backwards, bool ping_pong /*= false*/) noexcept;
     [[nodiscard]] int GetIndexFromCoords(const IntVector2& coords) noexcept;
 
-    Renderer& _renderer;
     Material* _material = nullptr;
     std::weak_ptr<SpriteSheet> _sheet{};
     TimeUtils::FPSeconds _duration_seconds = TimeUtils::FPFrames{1};
@@ -73,8 +71,6 @@ private:
     int _start_index{0};
     int _end_index{1};
     bool _is_playing = true;
-
-    friend class Renderer;
 };
 
 struct AnimatedSpriteDesc {

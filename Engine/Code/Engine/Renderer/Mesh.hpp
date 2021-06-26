@@ -2,7 +2,7 @@
 
 #include "Engine/Core/Vertex3D.hpp"
 #include "Engine/RHI/RHITypes.hpp"
-#include "Engine/Renderer/Renderer.hpp"
+#include "Engine/Renderer/DrawInstruction.hpp"
 
 #include <vector>
 
@@ -36,7 +36,7 @@ public:
 
         std::vector<Vertex3D> verticies{};
         std::vector<unsigned int> indicies{};
-        std::vector<Renderer::DrawInstruction> draw_instructions{};
+        std::vector<DrawInstruction> draw_instructions{};
 
         void Begin(const PrimitiveType& type) noexcept;
         void Begin(const PrimitiveType& type, std::size_t indexStart) noexcept;
@@ -58,11 +58,11 @@ public:
 
     private:
         Vertex3D _vertex_prototype{};
-        Renderer::DrawInstruction _current_draw_instruction{};
+        DrawInstruction _current_draw_instruction{};
     };
 
-    static void Render(Renderer& renderer, const Mesh::Builder& builder) noexcept;
-    void Render(Renderer& renderer) const noexcept;
+    static void Render(const Mesh::Builder& builder) noexcept;
+    void Render() const noexcept;
 
 protected:
     Mesh::Builder m_builder{};

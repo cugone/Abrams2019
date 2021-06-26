@@ -1,12 +1,11 @@
 #pragma once
 
-#include "Engine/Renderer/DirectX/DX11.hpp"
+#include "Engine/RHI/RHITypes.hpp"
 
 #include <stack>
 #include <vector>
 
 class DepthStencilState;
-class Renderer;
 class Texture;
 
 class RenderTargetStack {
@@ -17,7 +16,7 @@ public:
         ViewportDesc view_desc{};
     };
 
-    explicit RenderTargetStack(Renderer& renderer) noexcept;
+    RenderTargetStack() noexcept = default;
     ~RenderTargetStack() = default;
 
     [[nodiscard]] const RenderTargetStack::Node& top() const noexcept;
@@ -30,7 +29,6 @@ public:
 
 protected:
 private:
-    Renderer& _renderer;
     std::stack<RenderTargetStack::Node, std::vector<RenderTargetStack::Node>> _stack{};
 };
 

@@ -18,8 +18,8 @@ public:
     void SetImage(std::unique_ptr<AnimatedSprite> sprite) noexcept;
     [[nodiscard]] const AnimatedSprite* const GetImage() const noexcept;
     virtual void Update(TimeUtils::FPSeconds deltaSeconds) override;
-    virtual void Render(Renderer& renderer) const override;
-    virtual void DebugRender(Renderer& renderer) const override;
+    virtual void Render() const override;
+    virtual void DebugRender() const override;
 
     [[nodiscard]] Vector4 CalcDesiredSize() const noexcept override;
 

@@ -4,9 +4,6 @@
 #include "Engine/Renderer/Camera2D.hpp"
 #include "Engine/UI/UIPanel.hpp"
 
-class Texture;
-class Renderer;
-
 class UICanvasSlot : public UIPanelSlot {
 public:
     explicit UICanvasSlot(UIElement* content = nullptr,
@@ -27,22 +24,19 @@ public:
 
 class UICanvas : public UIPanel {
 public:
-    explicit UICanvas(UIWidget* owner, Renderer& renderer);
-    explicit UICanvas(UIWidget* owner, Renderer& renderer, const XMLElement& elem);
+    explicit UICanvas(UIWidget* owner);
+    explicit UICanvas(UIWidget* owner, const XMLElement& elem);
     virtual ~UICanvas() = default;
     void Update(TimeUtils::FPSeconds deltaSeconds) override;
-    void Render(Renderer& renderer) const override;
-    void SetupMVPFromTargetAndCamera(Renderer& renderer) const;
-    void SetupMVPFromViewportAndCamera(Renderer& renderer) const;
-    void DebugRender(Renderer& renderer) const override;
+    void Render() const override;
+    void SetupMVPFromTargetAndCamera() const;
+    void SetupMVPFromViewportAndCamera() const;
+    void DebugRender() const override;
     void EndFrame() override;
     [[nodiscard]] const Camera2D& GetUICamera() const;
 
     void UpdateChildren(TimeUtils::FPSeconds deltaSeconds) override;
-    void RenderChildren(Renderer& renderer) const override;
-
-    [[nodiscard]] const Renderer& GetRenderer() const;
-    [[nodiscard]] Renderer& GetRenderer();
+    void RenderChildren() const override;
 
     [[nodiscard]] static Vector4 AnchorTextToAnchorValues(const std::string& text) noexcept;
 
@@ -69,7 +63,6 @@ private:
     [[nodiscard]] AABB2 CalcAlignedAbsoluteBounds() const noexcept;
 
     mutable Camera2D _camera{};
-    Renderer& _renderer;
 
     friend class UICanvasSlot;
     friend class UIWidget;

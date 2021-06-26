@@ -11,7 +11,7 @@ class UIPanel;
 
 class UIWidget {
 public:
-    UIWidget(Renderer& renderer, const std::filesystem::path& path);
+    explicit UIWidget(const std::filesystem::path& path);
     ~UIWidget();
     std::string name{"DEFAULT WIDGET"};
     void BeginFrame();
@@ -19,8 +19,6 @@ public:
     void Render() const;
     void DebugRender() const;
     void EndFrame();
-
-    Renderer& GetRenderer() const;
 
 protected:
     [[nodiscard]] bool LoadFromXML(const std::filesystem::path& path);
@@ -32,7 +30,6 @@ private:
     [[nodiscard]] bool HasPanelChild(const XMLElement& elem);
 
     std::vector<std::shared_ptr<UIElement>> _elements{};
-    Renderer& _renderer;
     UIPanel* _panel{};
 
     friend class UIPanel;

@@ -1,6 +1,5 @@
 #include "Engine/Renderer/ShaderProgram.hpp"
 
-#include "Engine/RHI/RHIDevice.hpp"
 #include "Engine/Renderer/DirectX/DX11.hpp"
 #include "Engine/Renderer/InputLayout.hpp"
 #include "Engine/Renderer/InputLayoutInstanced.hpp"
@@ -20,10 +19,6 @@ void ShaderProgram::SetDescription(ShaderProgramDesc&& description) noexcept {
 
 const std::string& ShaderProgram::GetName() const noexcept {
     return _desc.name;
-}
-
-const RHIDevice* ShaderProgram::GetParentDevice() const noexcept {
-    return _desc.device;
 }
 
 ID3DBlob* ShaderProgram::GetVSByteCode() const noexcept {
@@ -109,9 +104,6 @@ bool ShaderProgram::HasCS() const noexcept {
 ShaderProgramDesc::ShaderProgramDesc(ShaderProgramDesc&& other) noexcept {
     name = std::move(other.name);
 
-    device = other.device;
-    other.device = nullptr;
-
     input_layout = std::move(other.input_layout);
     other.input_layout = nullptr;
 
@@ -151,9 +143,6 @@ ShaderProgramDesc::ShaderProgramDesc(ShaderProgramDesc&& other) noexcept {
 
 ShaderProgramDesc& ShaderProgramDesc::operator=(ShaderProgramDesc&& other) noexcept {
     name = std::move(other.name);
-
-    device = other.device;
-    other.device = nullptr;
 
     input_layout = std::move(other.input_layout);
     other.input_layout = nullptr;

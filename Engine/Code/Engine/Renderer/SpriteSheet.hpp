@@ -12,7 +12,7 @@ class Texture;
 
 class SpriteSheet {
 public:
-    SpriteSheet(Renderer& renderer, const XMLElement& elem) noexcept;
+    SpriteSheet(const XMLElement& elem) noexcept;
     ~SpriteSheet() = default;
 
     [[nodiscard]] AABB2 GetTexCoordsFromSpriteCoords(int spriteX, int spriteY) const noexcept;
@@ -29,9 +29,9 @@ public:
 protected:
 private:
     SpriteSheet(Texture* texture, int tilesWide, int tilesHigh) noexcept;
-    SpriteSheet(Renderer& renderer, const std::filesystem::path& texturePath, int tilesWide, int tilesHigh) noexcept;
+    SpriteSheet(const std::filesystem::path& texturePath, int tilesWide, int tilesHigh) noexcept;
 
-    void LoadFromXml(Renderer& renderer, const XMLElement& elem) noexcept;
+    void LoadFromXml(const XMLElement& elem) noexcept;
     Texture* _spriteSheetTexture = nullptr;
     IntVector2 _spriteLayout{1, 1};
 

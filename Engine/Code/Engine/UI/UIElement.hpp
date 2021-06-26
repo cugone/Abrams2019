@@ -8,7 +8,6 @@
 #include "Engine/UI/UIPanelSlot.hpp"
 #include "Engine/UI/UITypes.hpp"
 
-class Renderer;
 class UIPanel;
 struct UIPanelSlot;
 
@@ -18,8 +17,8 @@ public:
     virtual ~UIElement() = 0;
 
     virtual void Update(TimeUtils::FPSeconds deltaSeconds);
-    virtual void Render(Renderer& renderer) const;
-    virtual void DebugRender(Renderer& renderer) const;
+    virtual void Render() const;
+    virtual void DebugRender() const;
     virtual void EndFrame();
     void SetBorderColor(const Rgba& color);
     void SetBackgroundColor(const Rgba& color);
@@ -103,9 +102,9 @@ protected:
     [[nodiscard]] bool IsParent() const;
     [[nodiscard]] bool IsChild() const;
 
-    void DebugRenderBoundsAndPivot(Renderer& renderer) const;
-    void DebugRenderPivot(Renderer& renderer) const;
-    void DebugRenderBounds(Renderer& renderer) const;
+    void DebugRenderBoundsAndPivot() const;
+    void DebugRenderPivot() const;
+    void DebugRenderBounds() const;
 
     [[nodiscard]] AABB2 GetParentLocalBounds() const;
     [[nodiscard]] AABB2 GetParentRelativeBounds() const;

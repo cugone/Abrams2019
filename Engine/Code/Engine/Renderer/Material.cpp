@@ -3,39 +3,39 @@
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Core/Win.hpp"
-#include "Engine/Renderer/Renderer.hpp"
+
+#include "Engine/Services/IRendererService.hpp"
+#include "Engine/Services/ServiceLocator.hpp"
 
 #include <algorithm>
 #include <filesystem>
 #include <iostream>
 #include <sstream>
 
-Material::Material(Renderer& renderer) noexcept
-: _renderer(renderer)
-, _textures(CustomTextureIndexSlotOffset, nullptr) {
-    _textures[0] = _renderer.GetTexture("__diffuse");
-    _textures[1] = _renderer.GetTexture("__normal");
-    _textures[2] = _renderer.GetTexture("__displacement");
-    _textures[3] = _renderer.GetTexture("__specular");
-    _textures[4] = _renderer.GetTexture("__occlusion");
-    _textures[5] = _renderer.GetTexture("__emissive");
+Material::Material() noexcept
+: _textures(CustomTextureIndexSlotOffset, nullptr) {
+    auto&& rs = ServiceLocator::get<IRendererService>();
+    _textures[0] = rs.GetTexture("__diffuse");
+    _textures[1] = rs.GetTexture("__normal");
+    _textures[2] = rs.GetTexture("__displacement");
+    _textures[3] = rs.GetTexture("__specular");
+    _textures[4] = rs.GetTexture("__occlusion");
+    _textures[5] = rs.GetTexture("__emissive");
 
-    std::size_t count = _renderer.GetMaterialCount();
-    _name += "_" + std::to_string(count);
+    _name += "_" + std::to_string(_defaultNameId++);
 }
 
-Material::Material(Renderer& renderer, const XMLElement& element) noexcept
-: _renderer(renderer)
-, _textures(CustomTextureIndexSlotOffset, nullptr) {
-    _textures[0] = _renderer.GetTexture("__diffuse");
-    _textures[1] = _renderer.GetTexture("__normal");
-    _textures[2] = _renderer.GetTexture("__displacement");
-    _textures[3] = _renderer.GetTexture("__specular");
-    _textures[4] = _renderer.GetTexture("__occlusion");
-    _textures[5] = _renderer.GetTexture("__emissive");
+Material::Material(const XMLElement& element) noexcept
+: _textures(CustomTextureIndexSlotOffset, nullptr) {
+    auto&& rs = ServiceLocator::get<IRendererService>();
+    _textures[0] = rs.GetTexture("__diffuse");
+    _textures[1] = rs.GetTexture("__normal");
+    _textures[2] = rs.GetTexture("__displacement");
+    _textures[3] = rs.GetTexture("__specular");
+    _textures[4] = rs.GetTexture("__occlusion");
+    _textures[5] = rs.GetTexture("__emissive");
 
-    std::size_t count = _renderer.GetMaterialCount();
-    _name += "_" + std::to_string(count);
+    _name += "_" + std::to_string(_defaultNameId++);
 
     GUARANTEE_OR_DIE(LoadFromXml(element), "Material constructor failed to load.");
 }
@@ -46,7 +46,7 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
     DataUtils::ValidateXmlElement(element, "material", "shader", "name", "lighting,textures");
 
     _name = DataUtils::ParseXmlAttribute(element, "name", _name);
-
+    auto& rs = ServiceLocator::get<IRendererService>();
     {
         const auto xml_shader = element.FirstChildElement("shader");
         DataUtils::ValidateXmlElement(*xml_shader, "shader", "", "src");
@@ -67,17 +67,18 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
             GUARANTEE_OR_DIE(!ec, error_msg.c_str());
         }
         shader_src.make_preferred();
-        if(auto shader = _renderer.GetShader(shader_src.string())) {
+
+        if(auto shader = rs.GetShader(shader_src.string())) {
             _shader = shader;
         } else {
             DebuggerPrintf("Shader: %s\n referenced in Material file \"%s\" did not already exist. Attempting to create from source...", shader_src.string().c_str(), _name.c_str());
-            if(!_renderer.RegisterShader(shader_src.string())) {
+            if(!rs.RegisterShader(shader_src.string())) {
                 DebuggerPrintf("failed.\n");
                 return false;
             }
             DebuggerPrintf("done.\n");
-            if(shader = _renderer.GetShader(shader_src.string()); shader == nullptr) {
-                if(shader = _renderer.GetShader(_renderer.GetShaderName(shader_src)); shader != nullptr) {
+            if(shader = rs.GetShader(shader_src.string()); shader == nullptr) {
+                if(shader = rs.GetShader(rs.GetShaderName(shader_src)); shader != nullptr) {
                     _shader = shader;
                 }
             }
@@ -106,7 +107,7 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
     }
 
     if(const auto xml_textures = element.FirstChildElement("textures")) {
-        const auto invalid_tex = _renderer.GetTexture("__invalid");
+        const auto invalid_tex = rs.GetTexture("__invalid");
 
         if(const auto xml_diffuse = xml_textures->FirstChildElement("diffuse")) {
             const auto file = DataUtils::ParseXmlAttribute(*xml_diffuse, "src", "");
@@ -125,13 +126,13 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
                 p.make_preferred();
                 const auto& p_str = p.string();
                 bool empty_path = p.empty();
-                bool texture_not_loaded = _renderer.IsTextureNotLoaded(p_str);
+                bool texture_not_loaded = rs.IsTextureNotLoaded(p_str);
                 if(texture_not_loaded) {
-                    texture_not_loaded = _renderer.CreateTexture(p.string(), IntVector3::XY_AXIS) ? false : true;
+                    texture_not_loaded = rs.CreateTexture(p.string(), IntVector3::XY_AXIS) ? false : true;
                 }
                 bool texture_not_exist = !empty_path && texture_not_loaded;
                 bool invalid_src = empty_path || texture_not_exist;
-                auto tex = invalid_src ? invalid_tex : (_renderer.GetTexture(p_str));
+                auto tex = invalid_src ? invalid_tex : (rs.GetTexture(p_str));
                 _textures[0] = tex;
             }
         }
@@ -153,13 +154,13 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
                 p.make_preferred();
                 const auto& p_str = p.string();
                 bool empty_path = p.empty();
-                bool texture_not_loaded = _renderer.IsTextureNotLoaded(p_str);
+                bool texture_not_loaded = rs.IsTextureNotLoaded(p_str);
                 if(texture_not_loaded) {
-                    texture_not_loaded = _renderer.CreateTexture(p.string(), IntVector3::XY_AXIS) ? false : true;
+                    texture_not_loaded = rs.CreateTexture(p.string(), IntVector3::XY_AXIS) ? false : true;
                 }
                 bool texture_not_exist = !empty_path && texture_not_loaded;
                 bool invalid_src = empty_path || texture_not_exist;
-                auto tex = invalid_src ? invalid_tex : (_renderer.GetTexture(p_str));
+                auto tex = invalid_src ? invalid_tex : (rs.GetTexture(p_str));
                 _textures[1] = tex;
             }
         }
@@ -181,13 +182,13 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
                 p.make_preferred();
                 const auto& p_str = p.string();
                 bool empty_path = p.empty();
-                bool texture_not_loaded = _renderer.IsTextureNotLoaded(p_str);
+                bool texture_not_loaded = rs.IsTextureNotLoaded(p_str);
                 if(texture_not_loaded) {
-                    texture_not_loaded = _renderer.CreateTexture(p.string(), IntVector3::XY_AXIS) ? false : true;
+                    texture_not_loaded = rs.CreateTexture(p.string(), IntVector3::XY_AXIS) ? false : true;
                 }
                 bool texture_not_exist = !empty_path && texture_not_loaded;
                 bool invalid_src = empty_path || texture_not_exist;
-                auto tex = invalid_src ? invalid_tex : (_renderer.GetTexture(p_str));
+                auto tex = invalid_src ? invalid_tex : (rs.GetTexture(p_str));
                 _textures[2] = tex;
             }
         }
@@ -209,13 +210,13 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
                 p.make_preferred();
                 const auto& p_str = p.string();
                 bool empty_path = p.empty();
-                bool texture_not_loaded = _renderer.IsTextureNotLoaded(p_str);
+                bool texture_not_loaded = rs.IsTextureNotLoaded(p_str);
                 if(texture_not_loaded) {
-                    texture_not_loaded = _renderer.CreateTexture(p.string(), IntVector3::XY_AXIS) ? false : true;
+                    texture_not_loaded = rs.CreateTexture(p.string(), IntVector3::XY_AXIS) ? false : true;
                 }
                 bool texture_not_exist = !empty_path && texture_not_loaded;
                 bool invalid_src = empty_path || texture_not_exist;
-                auto tex = invalid_src ? invalid_tex : (_renderer.GetTexture(p_str));
+                auto tex = invalid_src ? invalid_tex : (rs.GetTexture(p_str));
                 _textures[3] = tex;
             }
         }
@@ -237,13 +238,13 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
                 p.make_preferred();
                 const auto& p_str = p.string();
                 bool empty_path = p.empty();
-                bool texture_not_loaded = _renderer.IsTextureNotLoaded(p_str);
+                bool texture_not_loaded = rs.IsTextureNotLoaded(p_str);
                 if(texture_not_loaded) {
-                    texture_not_loaded = _renderer.CreateTexture(p.string(), IntVector3::XY_AXIS) ? false : true;
+                    texture_not_loaded = rs.CreateTexture(p.string(), IntVector3::XY_AXIS) ? false : true;
                 }
                 bool texture_not_exist = !empty_path && texture_not_loaded;
                 bool invalid_src = empty_path || texture_not_exist;
-                auto tex = invalid_src ? invalid_tex : (_renderer.GetTexture(p_str));
+                auto tex = invalid_src ? invalid_tex : (rs.GetTexture(p_str));
                 _textures[4] = tex;
             }
         }
@@ -265,13 +266,13 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
                 p.make_preferred();
                 const auto& p_str = p.string();
                 bool empty_path = p.empty();
-                bool texture_not_loaded = _renderer.IsTextureNotLoaded(p_str);
+                bool texture_not_loaded = rs.IsTextureNotLoaded(p_str);
                 if(texture_not_loaded) {
-                    texture_not_loaded = _renderer.CreateTexture(p.string(), IntVector3::XY_AXIS) ? false : true;
+                    texture_not_loaded = rs.CreateTexture(p.string(), IntVector3::XY_AXIS) ? false : true;
                 }
                 bool texture_not_exist = !empty_path && texture_not_loaded;
                 bool invalid_src = empty_path || texture_not_exist;
-                auto tex = invalid_src ? invalid_tex : (_renderer.GetTexture(p_str));
+                auto tex = invalid_src ? invalid_tex : (rs.GetTexture(p_str));
                 _textures[5] = tex;
             }
         }
@@ -283,39 +284,39 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
             AddTextureSlots(numTextures);
         }
 
-        DataUtils::ForEachChildElement(*xml_textures, "texture",
-                                       [this, &invalid_tex](const XMLElement& elem) {
-                                           DataUtils::ValidateXmlElement(elem, "texture", "", "index,src");
-                                           std::size_t index = CustomTextureIndexSlotOffset + DataUtils::ParseXmlAttribute(elem, std::string("index"), 0u);
-                                           if(index >= CustomTextureIndexSlotOffset + MaxCustomTextureSlotCount) {
-                                               return;
-                                           }
-                                           auto file = DataUtils::ParseXmlAttribute(elem, "src", "");
-                                           FS::path p(file);
-                                           bool bad_path = false;
-                                           if(!StringUtils::StartsWith(p.string(), "__")) {
-                                               std::error_code ec{};
-                                               p = FS::canonical(p, ec);
-                                               if(ec) {
-                                                   bad_path = true;
-                                                   _textures[index] = invalid_tex;
-                                                   DebuggerPrintf("Custom texture at index %lu referenced in Material file \"%s\" could not be found. The filesystem returned an error: %s\n", index, _name.c_str(), ec.message().c_str());
-                                               }
-                                           }
-                                           if(!bad_path) {
-                                               p.make_preferred();
-                                               const auto& p_str = p.string();
-                                               bool empty_path = p.empty();
-                                               bool texture_not_loaded = _renderer.IsTextureNotLoaded(p_str);
-                                               if(texture_not_loaded) {
-                                                   texture_not_loaded = _renderer.CreateTexture(p.string(), IntVector3::XY_AXIS) ? false : true;
-                                               }
-                                               bool texture_not_exist = !empty_path && texture_not_loaded;
-                                               bool invalid_src = empty_path || texture_not_exist;
-                                               auto tex = invalid_src ? invalid_tex : (_renderer.GetTexture(p_str));
-                                               _textures[index] = tex;
-                                           }
-                                       });
+        DataUtils::ForEachChildElement(*xml_textures, "texture", [this, &invalid_tex](const XMLElement& elem) {
+            auto& rs = ServiceLocator::get<IRendererService>();
+            DataUtils::ValidateXmlElement(elem, "texture", "", "index,src");
+            std::size_t index = CustomTextureIndexSlotOffset + DataUtils::ParseXmlAttribute(elem, std::string("index"), 0u);
+            if(index >= CustomTextureIndexSlotOffset + MaxCustomTextureSlotCount) {
+                return;
+            }
+            auto file = DataUtils::ParseXmlAttribute(elem, "src", "");
+            FS::path p(file);
+            bool bad_path = false;
+            if(!StringUtils::StartsWith(p.string(), "__")) {
+                std::error_code ec{};
+                p = FS::canonical(p, ec);
+                if(ec) {
+                    bad_path = true;
+                    _textures[index] = invalid_tex;
+                    DebuggerPrintf("Custom texture at index %lu referenced in Material file \"%s\" could not be found. The filesystem returned an error: %s\n", index, _name.c_str(), ec.message().c_str());
+                }
+            }
+            if(!bad_path) {
+                p.make_preferred();
+                const auto& p_str = p.string();
+                bool empty_path = p.empty();
+                bool texture_not_loaded = rs.IsTextureNotLoaded(p_str);
+                if(texture_not_loaded) {
+                    texture_not_loaded = rs.CreateTexture(p.string(), IntVector3::XY_AXIS) ? false : true;
+                }
+                bool texture_not_exist = !empty_path && texture_not_loaded;
+                bool invalid_src = empty_path || texture_not_exist;
+                auto tex = invalid_src ? invalid_tex : (rs.GetTexture(p_str));
+                _textures[index] = tex;
+            }
+        });
     }
     return true;
 }

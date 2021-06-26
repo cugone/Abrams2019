@@ -13,7 +13,6 @@
 #include "Engine/Core/Win.hpp"
 
 #include "Engine/Services/IAudioService.hpp"
-#include "Engine/Services/ServiceLocator.hpp"
 
 #include <Xaudio2.h>
 #include <filesystem>
@@ -31,8 +30,6 @@
 namespace FileUtils {
 class Wav;
 }
-
-class FileLogger;
 
 class AudioSystem : public EngineSubsystem, public IAudioService {
 private:
@@ -172,7 +169,7 @@ private:
     };
 
 public:
-    explicit AudioSystem(FileLogger& fileLogger, std::size_t max_channels = 1024);
+    explicit AudioSystem(std::size_t max_channels = 1024);
     AudioSystem(const AudioSystem& other) = delete;
     AudioSystem(AudioSystem&& other) = delete;
     AudioSystem& operator=(const AudioSystem& rhs) = delete;
@@ -222,7 +219,6 @@ public:
 protected:
 private:
     void DeactivateChannel(Channel& channel) noexcept;
-    static inline FileLogger& _fileLogger = ServiceLocator::get<FileLogger>();
     WAVEFORMATEXTENSIBLE _audio_format_ex{};
     std::size_t _sound_count{};
     std::size_t _max_channels{};
