@@ -3,7 +3,7 @@
 #include "Engine/Renderer/Material.hpp"
 
 [[nodiscard]] bool DrawInstruction::operator==(const DrawInstruction& rhs) {
-    return material == rhs.material && type == rhs.type && indexCount == rhs.indexCount && indexStart == rhs.indexStart && baseVertexLocation == rhs.baseVertexLocation;
+    return material == rhs.material && type == rhs.type;
 }
 
 [[nodiscard]] bool DrawInstruction::operator!=(const DrawInstruction& rhs) {
