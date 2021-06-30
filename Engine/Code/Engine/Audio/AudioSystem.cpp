@@ -682,7 +682,7 @@ AudioSystem::ChannelGroup::ChannelGroup(AudioSystem& parentAudioSystem, std::str
 }
 
 void AudioSystem::ChannelGroup::AddChannel(Channel* channel) noexcept {
-    if(channel == nullptr || channel->_voice == nullptr) {
+    if(channel == nullptr || channel->_voice == nullptr || _groupVoice == nullptr) {
         return;
     }
     {
