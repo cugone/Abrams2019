@@ -443,9 +443,9 @@ AudioSystem::Channel::Channel(AudioSystem& audioSystem, const ChannelDesc& desc)
     _buffer.pContext = this;
     auto fmt = reinterpret_cast<const WAVEFORMATEX*>(&(_audio_system->GetFormat()));
     _audio_system->_xaudio2->CreateSourceVoice(&_voice, fmt, 0, _desc.frequency_max, &vcb);
-    if(auto* group = _audio_system->GetChannelGroup(desc.groupName); group != nullptr) {
-        group->AddChannel(this);
-    }
+    //if(auto* group = _audio_system->GetChannelGroup(desc.groupName); group != nullptr) {
+    //    group->AddChannel(this);
+    //}
 }
 
 AudioSystem::Channel::~Channel() noexcept {
