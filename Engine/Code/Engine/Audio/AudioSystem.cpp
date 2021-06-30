@@ -24,12 +24,16 @@ AudioSystem::AudioSystem(std::size_t max_channels /*= 1024*/)
 }
 
 AudioSystem::~AudioSystem() noexcept {
-    {
-        std::scoped_lock<std::mutex> lock(_cs);
-        for(auto& channel : _active_channels) {
-            channel->Stop();
+    for(auto& group : _channel_groups) {
+        if(group.second) {
+            group.second->Stop();
         }
     }
+
+    for(auto& channel : _active_channels) {
+        channel->Stop();
+    }
+
     {
         bool done_cleanup = false;
         do {
@@ -213,9 +217,7 @@ void AudioSystem::Render() const {
 }
 
 void AudioSystem::EndFrame() {
-    std::scoped_lock<std::mutex> lock(_cs);
-    _idle_channels.erase(std::remove_if(std::begin(_idle_channels), std::end(_idle_channels), [](const std::unique_ptr<Channel>& c) { return c == nullptr; }), std::end(_idle_channels));
-    _active_channels.erase(std::remove_if(std::begin(_active_channels), std::end(_active_channels), [](const std::unique_ptr<Channel>& c) { return c == nullptr; }), std::end(_active_channels));
+    /* DO NOTHING */
 }
 
 bool AudioSystem::ProcessSystemMessage(const EngineMessage& /*msg*/) noexcept {
@@ -447,11 +449,8 @@ AudioSystem::Channel::Channel(AudioSystem& audioSystem, const ChannelDesc& desc)
 AudioSystem::Channel::~Channel() noexcept {
     if(_voice) {
         Stop();
-        {
-            std::scoped_lock<std::mutex> lock(_cs);
-            _voice->DestroyVoice();
-            _voice = nullptr;
-        }
+        _voice->DestroyVoice();
+        _voice = nullptr;
     }
 }
 
@@ -468,13 +467,10 @@ void AudioSystem::Channel::Play(Sound& snd) noexcept {
             _buffer.LoopBegin = _desc.loop_beginSamples;
             _buffer.LoopLength = _desc.loop_endSamples - _desc.loop_beginSamples;
         }
-        {
-            std::scoped_lock<std::mutex> lock(_cs);
-            _voice->SubmitSourceBuffer(&_buffer, nullptr);
-            _voice->SetVolume(_desc.volume);
-            _voice->SetFrequencyRatio(_desc.frequency);
-            _voice->Start();
-        }
+        _voice->SubmitSourceBuffer(&_buffer, nullptr);
+        _voice->SetVolume(_desc.volume);
+        _voice->SetFrequencyRatio(_desc.frequency);
+        _voice->Start();
     }
 }
 
@@ -491,19 +487,15 @@ void AudioSystem::Channel::Play(Sound& snd, uint32_t operationSetId) noexcept {
             _buffer.LoopBegin = _desc.loop_beginSamples;
             _buffer.LoopLength = _desc.loop_endSamples - _desc.loop_beginSamples;
         }
-        {
-            std::scoped_lock<std::mutex> lock(_cs);
-            _voice->SubmitSourceBuffer(&_buffer, nullptr);
-            _voice->SetVolume(_desc.volume, operationSetId);
-            _voice->SetFrequencyRatio(_desc.frequency, operationSetId);
-            _voice->Start(0, operationSetId);
-        }
+        _voice->SubmitSourceBuffer(&_buffer, nullptr);
+        _voice->SetVolume(_desc.volume, operationSetId);
+        _voice->SetFrequencyRatio(_desc.frequency, operationSetId);
+        _voice->Start(0, operationSetId);
     }
 }
 
 void AudioSystem::Channel::Stop() noexcept {
     if(_voice) {
-        std::scoped_lock<std::mutex> lock(_cs);
         _voice->Stop();
         _voice->FlushSourceBuffers();
     }
@@ -511,22 +503,19 @@ void AudioSystem::Channel::Stop() noexcept {
 
 void AudioSystem::Channel::Stop(uint32_t operationSetId) noexcept {
     if(_voice) {
-        std::scoped_lock<std::mutex> lock(_cs);
-        _voice->Stop(XAUDIO2_PLAY_TAILS, operationSetId);
+        _voice->Stop(0, operationSetId);
         _voice->FlushSourceBuffers();
     }
 }
 
 void AudioSystem::Channel::Pause() noexcept {
     if(_voice) {
-        std::scoped_lock<std::mutex> lock(_cs);
         _voice->Stop();
     }
 }
 
 void AudioSystem::Channel::Pause(uint32_t operationSetId) noexcept {
     if(_voice) {
-        std::scoped_lock<std::mutex> lock(_cs);
         _voice->Stop(0, operationSetId);
     }
 }
@@ -685,12 +674,9 @@ void AudioSystem::ChannelGroup::AddChannel(Channel* channel) noexcept {
     if(channel == nullptr || channel->_voice == nullptr || _groupVoice == nullptr) {
         return;
     }
-    {
-        std::scoped_lock lock(_cs);
-        auto SFXSend = XAUDIO2_SEND_DESCRIPTOR{0, _groupVoice};
-        auto SFXSendList = XAUDIO2_VOICE_SENDS{1, &SFXSend};
-        channel->_voice->SetOutputVoices(&SFXSendList);
-    }
+    auto SFXSend = XAUDIO2_SEND_DESCRIPTOR{0, _groupVoice};
+    auto SFXSendList = XAUDIO2_VOICE_SENDS{1, &SFXSend};
+    channel->_voice->SetOutputVoices(&SFXSendList);
     channels.push_back(channel);
 }
 
@@ -698,10 +684,7 @@ void AudioSystem::ChannelGroup::RemoveChannel(Channel* channel) noexcept {
     if(channel == nullptr || channel->_voice == nullptr) {
         return;
     }
-    {
-        std::scoped_lock lock(_cs);
-        channel->_voice->SetOutputVoices(nullptr); //Removes from group, still sends to master
-    }
+    channel->_voice->SetOutputVoices(nullptr); //Removes from group, still sends to master
     if(auto found = std::find(std::begin(channels), std::end(channels), channel); found != std::end(channels)) {
         channels.push_back(channel);
     }
@@ -712,7 +695,6 @@ void AudioSystem::ChannelGroup::SetVolume(float newVolume) noexcept {
 }
 
 float AudioSystem::ChannelGroup::GetVolume() const noexcept {
-    std::scoped_lock<std::mutex> lock(_cs);
     float v{0.0f};
     _groupVoice->GetVolume(&v);
     return v;

@@ -143,7 +143,6 @@ private:
         Sound* _sound = nullptr;
         AudioSystem* _audio_system = nullptr;
         ChannelDesc _desc{};
-        mutable std::mutex _cs{};
 
         friend class VoiceCallback;
         friend class ChannelGroup;
@@ -230,7 +229,7 @@ private:
     std::atomic_uint32_t _operationID{};
     IXAudio2* _xaudio2 = nullptr;
     X3DAUDIO_HANDLE _x3daudio;
-    IXAudio2MasteringVoice* _master_voice = nullptr;
+    IXAudio2MasteringVoice* _master_voice{};
     EngineCallback _engine_callback{};
-    std::mutex _cs{};
+    mutable std::mutex _cs{};
 };
