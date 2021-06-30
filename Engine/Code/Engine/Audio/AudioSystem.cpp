@@ -267,6 +267,7 @@ void AudioSystem::DeactivateChannel(Channel& channel) noexcept {
     std::scoped_lock<std::mutex> lock(_cs);
     const auto found_iter = std::find_if(std::begin(_active_channels), std::end(_active_channels),
                                          [&channel](const std::unique_ptr<Channel>& c) { return c.get() == &channel; });
+    _idle_channels.push_back(std::move(*found_iter));
     _active_channels.erase(found_iter);
 }
 
@@ -291,6 +292,7 @@ void AudioSystem::Play(Sound& snd, SoundDesc desc /* = SoundDesc{}*/) noexcept {
     channelDesc = desc;
     _idle_channels.push_back(std::make_unique<Channel>(*this, channelDesc));
     _active_channels.push_back(std::move(_idle_channels.back()));
+    _idle_channels.pop_back();
     auto& inserted_channel = _active_channels.back();
     inserted_channel->Play(snd);
 }
