@@ -2,7 +2,7 @@
 .SYNOPSIS
     Compiles a single .hlsl file into its composite .cso compiled shader files.
 .DESCRIPTION
-    Compile a single .hlsl file into its composite .cso files, certain pairs of
+    Compile a single .hlsl file into its composite .cso compiled shader files. Certain pairs of
     switches are required when any of them are used. At a minimum, a shader must
     use -vs and -ps to be a valid renderable shader. To correctly use the
     Tessellation stage both -hs and -ds must be used together. The geometry stage
@@ -37,6 +37,27 @@
 .PARAMETER d
     Tells the script to compile in debug mode.
     This enables validation and disables optimizations.
+.INPUTS
+    None
+.OUTPUTS
+    None
+.EXAMPLE
+    PS> Compile-Shader.ps1 -Path "renderableshader.hlsl" -vs -ps
+.EXAMPLE
+    PS> Compile-Shader.ps1 -Path "tesselatedshader.hlsl" -hs -ds
+.EXAMPLE
+    PS> Compile-Shader.ps1 -Path "computeshader.hlsl" -cs
+.EXAMPLE
+    PS> Compile-Shader.ps1 -Path "geometryshader.hlsl" -gs
+.EXAMPLE
+    PS> Compile-Shader.ps1 -Path "renderabletesselatedshader.hlsl" -vs -ps -hs -ds
+.EXAMPLE
+    PS> Compile-Shader.ps1 -Path "renderablegeometryshader.hlsl" -vs -ps -gs
+.EXAMPLE
+    PS> Compile-Shader.ps1 -Path "renderablecomputeshader.hlsl" -vs -ps -cs
+.EXAMPLE
+    PS> Compile-Shader.ps1 -Path "complexshader.hlsl" -vs -ps -hs -ds -gs -cs
+
 #>
 [CmdletBinding()]
 param(
