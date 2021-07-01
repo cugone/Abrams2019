@@ -68,6 +68,9 @@
     <Filter Include="Services">
       <UniqueIdentifier>{a63707d4-a79f-44ee-bfa3-69b443c8472c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Physics\Particles">
+      <UniqueIdentifier>{b1c5d50a-7916-48b5-a7cb-68a8c6d7aaee}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Math\Vector2.cpp">
