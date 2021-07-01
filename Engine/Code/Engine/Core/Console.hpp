@@ -4,7 +4,7 @@
 #include "Engine/Core/Rgba.hpp"
 #include "Engine/Core/Stopwatch.hpp"
 
-#include "Engine/Core/Vertex3D.hpp"
+#include "Engine/Renderer/Vertex3D.hpp"
 #include "Engine/Math/Vector2.hpp"
 
 #include <functional>

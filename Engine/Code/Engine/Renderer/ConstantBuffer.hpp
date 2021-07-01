@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Engine/Core/Vertex3D.hpp"
+#include "Engine/Renderer/Vertex3D.hpp"
 #include "Engine/Renderer/Buffer.hpp"
 
 #include <vector>

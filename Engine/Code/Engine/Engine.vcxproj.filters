@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Thirdparty">
@@ -621,9 +621,6 @@
     <ClInclude Include="Core\FileUtils.hpp">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="Core\Vertex3D.hpp">
-      <Filter>Renderer\Core</Filter>
-    </ClInclude>
     <ClInclude Include="Renderer\DepthStencilState.hpp">
       <Filter>Renderer\Core</Filter>
     </ClInclude>
@@ -961,6 +958,9 @@
       <Filter>Services</Filter>
     </ClInclude>
     <ClInclude Include="Renderer\DrawInstruction.hpp">
+      <Filter>Renderer\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\Vertex3D.hpp">
       <Filter>Renderer\Core</Filter>
     </ClInclude>
   </ItemGroup>

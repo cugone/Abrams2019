@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="DebugProfile|x64">
@@ -207,7 +207,6 @@
     <ClInclude Include="Core\TimeUtils.hpp" />
     <ClInclude Include="Core\TypeUtils.hpp" />
     <ClInclude Include="Core\Utilities.hpp" />
-    <ClInclude Include="Core\Vertex3D.hpp" />
     <ClInclude Include="Core\Win.hpp" />
     <ClInclude Include="Input\InputSystem.hpp" />
     <ClInclude Include="Input\KeyCode.hpp" />
@@ -287,6 +286,7 @@
     <ClInclude Include="Renderer\Texture2D.hpp" />
     <ClInclude Include="Renderer\Texture3D.hpp" />
     <ClInclude Include="Renderer\TextureArray2D.hpp" />
+    <ClInclude Include="Renderer\Vertex3D.hpp" />
     <ClInclude Include="Renderer\VertexBuffer.hpp" />
     <ClInclude Include="Renderer\Window.hpp" />
     <ClInclude Include="RHI\RHI.hpp" />

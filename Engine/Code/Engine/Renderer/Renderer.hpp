@@ -8,7 +8,6 @@
 #include "Engine/Core/Image.hpp"
 #include "Engine/Core/JobSystem.hpp"
 #include "Engine/Core/TimeUtils.hpp"
-#include "Engine/Core/Vertex3D.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/AABB3.hpp"
 #include "Engine/Math/IntVector2.hpp"
@@ -20,6 +19,7 @@
 #include "Engine/Renderer/RenderTargetStack.hpp"
 #include "Engine/Renderer/StructuredBuffer.hpp"
 #include "Engine/Renderer/VertexBuffer.hpp"
+#include "Engine/Renderer/Vertex3D.hpp"
 
 #include "Engine/Services/IRendererService.hpp"
 

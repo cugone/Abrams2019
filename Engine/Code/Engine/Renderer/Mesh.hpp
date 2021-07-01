@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Engine/Core/Vertex3D.hpp"
+#include "Engine/Renderer/Vertex3D.hpp"
 #include "Engine/RHI/RHITypes.hpp"
 #include "Engine/Renderer/DrawInstruction.hpp"
 

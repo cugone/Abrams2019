@@ -10,6 +10,7 @@
 #include "Engine/Renderer/Material.hpp"
 #include "Engine/Renderer/ShaderProgram.hpp"
 #include "Engine/Renderer/RasterState.hpp"
+#include "Engine/Renderer/Vertex3D.hpp"
 #include "Engine/Renderer/VertexBuffer.hpp"
 #include "Engine/Renderer/IndexBuffer.hpp"
 #include "Engine/Renderer/ConstantBuffer.hpp"
