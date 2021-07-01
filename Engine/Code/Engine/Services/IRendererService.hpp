@@ -11,7 +11,9 @@
 #include "Engine/Renderer/ShaderProgram.hpp"
 #include "Engine/Renderer/RasterState.hpp"
 #include "Engine/Renderer/Vertex3D.hpp"
+#include "Engine/Renderer/Vertex3DInstanced.hpp"
 #include "Engine/Renderer/VertexBuffer.hpp"
+#include "Engine/Renderer/VertexBufferInstanced.hpp"
 #include "Engine/Renderer/IndexBuffer.hpp"
 #include "Engine/Renderer/ConstantBuffer.hpp"
 #include "Engine/Renderer/StructuredBuffer.hpp"
@@ -63,6 +65,7 @@ public:
     [[nodiscard]] virtual std::string GetWindowTitle() const noexcept = 0;
 
     [[nodiscard]] virtual std::unique_ptr<VertexBuffer> CreateVertexBuffer(const VertexBuffer::buffer_t& vbo) const noexcept = 0;
+    [[nodiscard]] virtual std::unique_ptr<VertexBufferInstanced> CreateVertexBufferInstanced(const VertexBufferInstanced::buffer_t& vbio) const noexcept =0;
     [[nodiscard]] virtual std::unique_ptr<IndexBuffer> CreateIndexBuffer(const IndexBuffer::buffer_t& ibo) const noexcept = 0;
     [[nodiscard]] virtual std::unique_ptr<ConstantBuffer> CreateConstantBuffer(void* const& buffer, const std::size_t& buffer_size) const noexcept = 0;
     [[nodiscard]] virtual std::unique_ptr<StructuredBuffer> CreateStructuredBuffer(const StructuredBuffer::buffer_t& sbo, std::size_t element_size, std::size_t element_count) const noexcept = 0;
@@ -166,6 +169,10 @@ public:
     virtual void Draw(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo, std::size_t vertex_count) noexcept = 0;
     virtual void DrawIndexed(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo, const std::vector<unsigned int>& ibo) noexcept = 0;
     virtual void DrawIndexed(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo, const std::vector<unsigned int>& ibo, std::size_t index_count, std::size_t startVertex = 0, std::size_t baseVertexLocation = 0) noexcept = 0;
+    virtual void DrawInstanced(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo, const std::vector<Vertex3DInstanced> vbio, std::size_t instanceCount) noexcept = 0;
+    virtual void DrawInstanced(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo, const std::vector<Vertex3DInstanced> vbio, std::size_t instanceCount, std::size_t vertexCount) noexcept = 0;
+    virtual void DrawIndexedInstanced(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo, const std::vector<Vertex3DInstanced> vbio, const std::vector<unsigned int>& ibo, std::size_t instanceCount) noexcept = 0;
+    virtual void DrawIndexedInstanced(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo, const std::vector<Vertex3DInstanced> vbio, const std::vector<unsigned int>& ibo, std::size_t instanceCount, std::size_t startIndexLocation, std::size_t baseVertexLocation, std::size_t startInstanceLocation) noexcept = 0;
 
     virtual void SetLightingEyePosition(const Vector3& position) noexcept = 0;
     virtual void SetAmbientLight(const Rgba& ambient) noexcept = 0;
@@ -354,6 +361,7 @@ public:
     [[nodiscard]] std::string GetWindowTitle() const noexcept override {}
 
     [[nodiscard]] std::unique_ptr<VertexBuffer> CreateVertexBuffer([[maybe_unused]] const VertexBuffer::buffer_t& vbo) const noexcept override {}
+    [[nodiscard]] std::unique_ptr<VertexBufferInstanced> CreateVertexBufferInstanced([[maybe_unused]] const VertexBufferInstanced::buffer_t& vbio) const noexcept override {};
     [[nodiscard]] std::unique_ptr<IndexBuffer> CreateIndexBuffer([[maybe_unused]] const IndexBuffer::buffer_t& ibo) const noexcept override {}
     [[nodiscard]] std::unique_ptr<ConstantBuffer> CreateConstantBuffer([[maybe_unused]] void* const& buffer, [[maybe_unused]] const std::size_t& buffer_size) const noexcept override {}
     [[nodiscard]] std::unique_ptr<StructuredBuffer> CreateStructuredBuffer([[maybe_unused]] const StructuredBuffer::buffer_t& sbo, [[maybe_unused]] std::size_t element_size, [[maybe_unused]] std::size_t element_count) const noexcept override {}
@@ -458,6 +466,10 @@ public:
     void Draw([[maybe_unused]] const PrimitiveType& topology, [[maybe_unused]] const std::vector<Vertex3D>& vbo, [[maybe_unused]] std::size_t vertex_count) noexcept override {}
     void DrawIndexed([[maybe_unused]] const PrimitiveType& topology, [[maybe_unused]] const std::vector<Vertex3D>& vbo, [[maybe_unused]] const std::vector<unsigned int>& ibo) noexcept override {}
     void DrawIndexed([[maybe_unused]] const PrimitiveType& topology, [[maybe_unused]] const std::vector<Vertex3D>& vbo, [[maybe_unused]] const std::vector<unsigned int>& ibo, [[maybe_unused]] std::size_t index_count, [[maybe_unused]] std::size_t startVertex = 0, [[maybe_unused]] std::size_t baseVertexLocation = 0) noexcept override {}
+    void DrawInstanced([[maybe_unused]] const PrimitiveType& topology, [[maybe_unused]] const std::vector<Vertex3D>& vbo, [[maybe_unused]] const std::vector<Vertex3DInstanced> vbio, [[maybe_unused]] std::size_t instanceCount) noexcept override {};
+    void DrawInstanced([[maybe_unused]] const PrimitiveType& topology, [[maybe_unused]] const std::vector<Vertex3D>& vbo, [[maybe_unused]] const std::vector<Vertex3DInstanced> vbio, [[maybe_unused]] std::size_t instanceCount, [[maybe_unused]] std::size_t vertexCount) noexcept override {};
+    void DrawIndexedInstanced([[maybe_unused]] const PrimitiveType& topology, [[maybe_unused]] const std::vector<Vertex3D>& vbo, [[maybe_unused]] const std::vector<Vertex3DInstanced> vbio, [[maybe_unused]] const std::vector<unsigned int>& ibo, [[maybe_unused]] std::size_t instanceCount) noexcept override {}
+    void DrawIndexedInstanced([[maybe_unused]] const PrimitiveType& topology, [[maybe_unused]] const std::vector<Vertex3D>& vbo, [[maybe_unused]] const std::vector<Vertex3DInstanced> vbio, [[maybe_unused]] const std::vector<unsigned int>& ibo, [[maybe_unused]] std::size_t instanceCount, [[maybe_unused]] std::size_t startIndexLocation, [[maybe_unused]] std::size_t baseVertexLocation, [[maybe_unused]] std::size_t startInstanceLocation) noexcept override {};
 
     void SetLightingEyePosition([[maybe_unused]] const Vector3& position) noexcept override {}
     void SetAmbientLight([[maybe_unused]] const Rgba& ambient) noexcept override {}

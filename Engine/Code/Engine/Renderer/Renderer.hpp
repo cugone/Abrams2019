@@ -20,6 +20,9 @@
 #include "Engine/Renderer/StructuredBuffer.hpp"
 #include "Engine/Renderer/VertexBuffer.hpp"
 #include "Engine/Renderer/Vertex3D.hpp"
+#include "Engine/Renderer/Vertex3DInstanced.hpp"
+#include "Engine/Renderer/VertexBuffer.hpp"
+#include "Engine/Renderer/VertexBufferInstanced.hpp"
 
 #include "Engine/Services/IRendererService.hpp"
 
@@ -214,6 +217,7 @@ public:
     [[nodiscard]] std::string GetWindowTitle() const noexcept override;
 
     [[nodiscard]] std::unique_ptr<VertexBuffer> CreateVertexBuffer(const VertexBuffer::buffer_t& vbo) const noexcept override;
+    [[nodiscard]] std::unique_ptr<VertexBufferInstanced> CreateVertexBufferInstanced(const VertexBufferInstanced::buffer_t& vbio) const noexcept override;
     [[nodiscard]] std::unique_ptr<IndexBuffer> CreateIndexBuffer(const IndexBuffer::buffer_t& ibo) const noexcept override;
     [[nodiscard]] std::unique_ptr<ConstantBuffer> CreateConstantBuffer(void* const& buffer, const std::size_t& buffer_size) const noexcept override;
     [[nodiscard]] std::unique_ptr<StructuredBuffer> CreateStructuredBuffer(const StructuredBuffer::buffer_t& sbo, std::size_t element_size, std::size_t element_count) const noexcept override;
@@ -317,6 +321,10 @@ public:
     void Draw(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo, std::size_t vertex_count) noexcept override;
     void DrawIndexed(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo, const std::vector<unsigned int>& ibo) noexcept override;
     void DrawIndexed(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo, const std::vector<unsigned int>& ibo, std::size_t index_count, std::size_t startVertex = 0, std::size_t baseVertexLocation = 0) noexcept override;
+    void DrawInstanced(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo, const std::vector<Vertex3DInstanced> vbio, std::size_t instanceCount) noexcept override;
+    void DrawInstanced(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo, const std::vector<Vertex3DInstanced> vbio, std::size_t instanceCount, std::size_t vertexCount) noexcept override;
+    void DrawIndexedInstanced(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo, const std::vector<Vertex3DInstanced> vbio, const std::vector<unsigned int>& ibo, std::size_t instanceCount) noexcept override;
+    void DrawIndexedInstanced(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo, const std::vector<Vertex3DInstanced> vbio, const std::vector<unsigned int>& ibo, std::size_t instanceCount, std::size_t startIndexLocation, std::size_t baseVertexLocation, std::size_t startInstanceLocation) noexcept override;
 
     void SetLightingEyePosition(const Vector3& position) noexcept override;
     void SetAmbientLight(const Rgba& ambient) noexcept override;
@@ -501,10 +509,13 @@ private:
     void CreateDefaultConstantBuffers() noexcept;
     void CreateWorkingVboAndIbo() noexcept;
     void UpdateVbo(const VertexBuffer::buffer_t& vbo) noexcept;
+    void UpdateVbio(const VertexBufferInstanced::buffer_t& vbio) noexcept;
     void UpdateIbo(const IndexBuffer::buffer_t& ibo) noexcept;
 
     void Draw(const PrimitiveType& topology, VertexBuffer* vbo, std::size_t vertex_count) noexcept;
+    void DrawInstanced(const PrimitiveType& topology, VertexBuffer* vbo, VertexBufferInstanced* vbio, std::size_t vertexPerInstanceCount, std::size_t instanceCount, std::size_t startVertexLocation, std::size_t startInstanceLocation) noexcept;
     void DrawIndexed(const PrimitiveType& topology, VertexBuffer* vbo, IndexBuffer* ibo, std::size_t index_count, std::size_t startVertex = 0, std::size_t baseVertexLocation = 0) noexcept;
+    void DrawIndexedInstanced(const PrimitiveType& topology, VertexBuffer* vbo, VertexBufferInstanced* vbio, IndexBuffer* ibo, std::size_t indexPerInstanceCount, std::size_t instanceCount, std::size_t startIndexLocation, std::size_t baseVertexLocation, std::size_t startInstanceLocation) noexcept;
 
     [[nodiscard]] std::shared_ptr<SpriteSheet> CreateSpriteSheet(Texture* texture, int tilesWide, int tilesHigh) noexcept;
 
@@ -603,6 +614,7 @@ private:
     time_buffer_t _time_data{};
     lighting_buffer_t _lighting_data{};
     std::size_t _current_vbo_size = 0;
+    std::size_t _current_vbio_size = 0;
     std::size_t _current_ibo_size = 0;
     RHIInstance* _rhi_instance = nullptr;
     std::unique_ptr<RHIDevice> _rhi_device = nullptr;
@@ -618,6 +630,7 @@ private:
     IntVector2 _window_dimensions = IntVector2::ZERO;
     RHIOutputMode _current_outputMode = RHIOutputMode::Windowed;
     std::unique_ptr<VertexBuffer> _temp_vbo = nullptr;
+    std::unique_ptr<VertexBufferInstanced> _temp_vbio = nullptr;
     std::unique_ptr<IndexBuffer> _temp_ibo = nullptr;
     std::unique_ptr<ConstantBuffer> _matrix_cb = nullptr;
     std::unique_ptr<ConstantBuffer> _time_cb = nullptr;

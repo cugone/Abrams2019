@@ -53,6 +53,10 @@ std::unique_ptr<VertexBuffer> RHIDevice::CreateVertexBuffer(const VertexBuffer::
     return std::make_unique<VertexBuffer>(*this, vbo, usage, bindusage);
 }
 
+std::unique_ptr<VertexBufferInstanced> RHIDevice::CreateVertexBufferInstanced(const VertexBufferInstanced::buffer_t& vbio, const BufferUsage& usage, const BufferBindUsage& bindusage) const noexcept {
+    return std::make_unique<VertexBufferInstanced>(*this, vbio, usage, bindusage);
+}
+
 std::unique_ptr<IndexBuffer> RHIDevice::CreateIndexBuffer(const IndexBuffer::buffer_t& ibo, const BufferUsage& usage, const BufferBindUsage& bindusage) const noexcept {
     return std::make_unique<IndexBuffer>(*this, ibo, usage, bindusage);
 }

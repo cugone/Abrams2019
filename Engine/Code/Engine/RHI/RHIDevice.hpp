@@ -10,6 +10,7 @@
 #include "Engine/Renderer/IndexBuffer.hpp"
 #include "Engine/Renderer/StructuredBuffer.hpp"
 #include "Engine/Renderer/VertexBuffer.hpp"
+#include "Engine/Renderer/VertexBufferInstanced.hpp"
 
 #include <filesystem>
 #include <memory>
@@ -25,6 +26,7 @@ class DepthStencilState;
 class InputLayout;
 class InputLayoutInstanced;
 struct Vertex3D;
+struct Vertex3DInstanced;
 class ShaderProgram;
 class Renderer;
 struct WindowDesc;
@@ -39,6 +41,7 @@ public:
     [[nodiscard]] std::pair<std::unique_ptr<RHIOutput>, std::unique_ptr<RHIDeviceContext>> CreateOutputAndContext(const WindowDesc& desc) noexcept;
 
     [[nodiscard]] std::unique_ptr<VertexBuffer> CreateVertexBuffer(const VertexBuffer::buffer_t& vbo, const BufferUsage& usage, const BufferBindUsage& bindusage) const noexcept;
+    [[nodiscard]] std::unique_ptr<VertexBufferInstanced> CreateVertexBufferInstanced(const VertexBufferInstanced::buffer_t& vbio, const BufferUsage& usage, const BufferBindUsage& bindusage) const noexcept;
     [[nodiscard]] std::unique_ptr<IndexBuffer> CreateIndexBuffer(const IndexBuffer::buffer_t& ibo, const BufferUsage& usage, const BufferBindUsage& bindusage) const noexcept;
 
     [[nodiscard]] std::unique_ptr<StructuredBuffer> CreateStructuredBuffer(const StructuredBuffer::buffer_t& buffer, std::size_t element_size, std::size_t element_count, const BufferUsage& usage, const BufferBindUsage& bindUsage) const noexcept;

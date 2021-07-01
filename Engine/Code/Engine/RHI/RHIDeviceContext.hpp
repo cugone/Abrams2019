@@ -46,7 +46,9 @@ public:
     void SetComputeStructuredBuffer(unsigned int index, StructuredBuffer* buffer) noexcept;
 
     void Draw(std::size_t vertexCount, std::size_t startVertex = 0) noexcept;
+    void DrawInstanced(std::size_t vertexCountPerInstance, std::size_t instanceCount, std::size_t startVertexLocation, std::size_t startInstanceLocation) noexcept;
     void DrawIndexed(std::size_t vertexCount, std::size_t startVertex = 0, std::size_t baseVertexLocation = 0) noexcept;
+    void DrawIndexedInstanced(std::size_t indexCountPerInstance, std::size_t instanceCount, std::size_t startIndexLocation, std::size_t baseVertexLocation, std::size_t startInstanceLocation) noexcept;
 
     [[nodiscard]] const RHIDevice* GetParentDevice() const noexcept;
     [[nodiscard]] ID3D11DeviceContext* GetDxContext() noexcept;

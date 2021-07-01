@@ -182,8 +182,16 @@ void RHIDeviceContext::Draw(std::size_t vertexCount, std::size_t startVertex /*=
     _dx_context->Draw(static_cast<unsigned int>(vertexCount), static_cast<unsigned int>(startVertex));
 }
 
+void RHIDeviceContext::DrawInstanced(std::size_t vertexCountPerInstance, std::size_t instanceCount, std::size_t startVertexLocation, std::size_t startInstanceLocation) noexcept {
+    _dx_context->DrawInstanced(static_cast<unsigned int>(vertexCountPerInstance), static_cast<unsigned int>(instanceCount), static_cast<unsigned int>(startVertexLocation), static_cast<unsigned int>(startInstanceLocation));
+}
+
 void RHIDeviceContext::DrawIndexed(std::size_t vertexCount, std::size_t startVertex /*= 0*/, std::size_t baseVertexLocation /*= 0*/) noexcept {
     _dx_context->DrawIndexed(static_cast<unsigned int>(vertexCount), static_cast<unsigned int>(startVertex), static_cast<int>(baseVertexLocation));
+}
+
+void RHIDeviceContext::DrawIndexedInstanced(std::size_t indexCountPerInstance, std::size_t instanceCount, std::size_t startIndexLocation, std::size_t baseVertexLocation, std::size_t startInstanceLocation) noexcept {
+    _dx_context->DrawIndexedInstanced(static_cast<unsigned int>(indexCountPerInstance), static_cast<unsigned int>(instanceCount), static_cast<unsigned int>(startIndexLocation), static_cast<unsigned int>(baseVertexLocation), static_cast<unsigned int>(startInstanceLocation));
 }
 
 const RHIDevice* RHIDeviceContext::GetParentDevice() const noexcept {

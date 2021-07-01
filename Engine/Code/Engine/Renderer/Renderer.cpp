@@ -55,6 +55,7 @@
 #include <Thirdparty/stb/stb_image.h>
 
 #include <algorithm>
+#include <array>
 #include <cstddef>
 #include <filesystem>
 #include <fstream>
@@ -558,6 +559,10 @@ std::unique_ptr<VertexBuffer> Renderer::CreateVertexBuffer(const VertexBuffer::b
     return _rhi_device->CreateVertexBuffer(vbo, BufferUsage::Dynamic, BufferBindUsage::Vertex_Buffer);
 }
 
+std::unique_ptr<VertexBufferInstanced> Renderer::CreateVertexBufferInstanced(const VertexBufferInstanced::buffer_t& vbio) const noexcept {
+    return _rhi_device->CreateVertexBufferInstanced(vbio, BufferUsage::Dynamic, BufferBindUsage::Vertex_Buffer);
+}
+
 std::unique_ptr<IndexBuffer> Renderer::CreateIndexBuffer(const IndexBuffer::buffer_t& ibo) const noexcept {
     return _rhi_device->CreateIndexBuffer(ibo, BufferUsage::Dynamic, BufferBindUsage::Index_Buffer);
 }
@@ -893,6 +898,28 @@ void Renderer::DrawIndexed(const PrimitiveType& topology, const std::vector<Vert
     DrawIndexed(topology, _temp_vbo.get(), _temp_ibo.get(), index_count, startVertex, baseVertexLocation);
 }
 
+void Renderer::DrawInstanced(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo, const std::vector<Vertex3DInstanced> vbio, std::size_t instanceCount) noexcept {
+    DrawInstanced(topology, vbo, vbio, instanceCount, vbo.size());
+}
+
+void Renderer::DrawInstanced(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo, const std::vector<Vertex3DInstanced> vbio, std::size_t instanceCount, std::size_t vertexCount) noexcept {
+    UpdateVbo(vbo);
+    UpdateVbio(vbio);
+    DrawInstanced(topology, _temp_vbo.get(), _temp_vbio.get(), vertexCount, instanceCount, std::size_t{0u}, std::size_t{0u});
+}
+
+void Renderer::DrawIndexedInstanced(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo, const std::vector<Vertex3DInstanced> vbio, const std::vector<unsigned int>& ibo, std::size_t instanceCount) noexcept {
+    DrawIndexedInstanced(topology, vbo, vbio, ibo, instanceCount, 0, 0, 0);
+}
+
+void Renderer::DrawIndexedInstanced(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo, const std::vector<Vertex3DInstanced> vbio, const std::vector<unsigned int>& ibo, std::size_t instanceCount, std::size_t startIndexLocation, std::size_t baseVertexLocation, std::size_t startInstanceLocation) noexcept {
+    UpdateVbo(vbo);
+    UpdateVbio(vbio);
+    UpdateIbo(ibo);
+    DrawIndexedInstanced(topology, _temp_vbo.get(), _temp_vbio.get(), _temp_ibo.get(), ibo.size(), instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
+}
+
+
 void Renderer::SetLightingEyePosition(const Vector3& position) noexcept {
     _lighting_data.eye_position = Vector4(position, 1.0f);
     _lighting_cb->Update(*_rhi_context, &_lighting_data);
@@ -1062,6 +1089,19 @@ void Renderer::Draw(const PrimitiveType& topology, VertexBuffer* vbo, std::size_
     _rhi_context->Draw(vertex_count);
 }
 
+void Renderer::DrawInstanced(const PrimitiveType& topology, VertexBuffer* vbo, VertexBufferInstanced* vbio, std::size_t vertexPerInstanceCount, std::size_t instanceCount, std::size_t startVertexLocation, std::size_t startInstanceLocation) noexcept {
+    GUARANTEE_OR_DIE(_current_material, "Attempting to call Draw function without a material set!\n");
+    D3D11_PRIMITIVE_TOPOLOGY d3d_prim = PrimitiveTypeToD3dTopology(topology);
+    _rhi_context->GetDxContext()->IASetPrimitiveTopology(d3d_prim);
+    unsigned int stride = sizeof(VertexBuffer::arraybuffer_t);
+    unsigned int offsets = 0;
+    const auto dx_vbo_buffer = vbo->GetDxBuffer();
+    const auto dx_vbio_buffer = vbio->GetDxBuffer();
+    ID3D11Buffer* const dx_buffers[] = {vbo->GetDxBuffer().Get(), vbio->GetDxBuffer().Get()};
+    _rhi_context->GetDxContext()->IASetVertexBuffers(0, 2, dx_buffers, &stride, &offsets);
+    _rhi_context->DrawInstanced(vertexPerInstanceCount, instanceCount, startVertexLocation, startInstanceLocation);
+}
+
 void Renderer::DrawIndexed(const PrimitiveType& topology, VertexBuffer* vbo, IndexBuffer* ibo, std::size_t index_count, std::size_t startVertex /*= 0*/, std::size_t baseVertexLocation /*= 0*/) noexcept {
     GUARANTEE_OR_DIE(_current_material, "Attempting to call Draw function without a material set!\n");
     D3D11_PRIMITIVE_TOPOLOGY d3d_prim = PrimitiveTypeToD3dTopology(topology);
@@ -1074,6 +1114,22 @@ void Renderer::DrawIndexed(const PrimitiveType& topology, VertexBuffer* vbo, Ind
     _rhi_context->GetDxContext()->IASetIndexBuffer(dx_ibo_buffer.Get(), DXGI_FORMAT_R32_UINT, offsets);
     _rhi_context->DrawIndexed(index_count, startVertex, baseVertexLocation);
 }
+
+void Renderer::DrawIndexedInstanced(const PrimitiveType& topology, VertexBuffer* vbo, VertexBufferInstanced* vbio, IndexBuffer* ibo, std::size_t indexPerInstanceCount, std::size_t instanceCount, std::size_t startIndexLocation, std::size_t baseVertexLocation, std::size_t startInstanceLocation) noexcept {
+    GUARANTEE_OR_DIE(_current_material, "Attempting to call Draw function without a material set!\n");
+    D3D11_PRIMITIVE_TOPOLOGY d3d_prim = PrimitiveTypeToD3dTopology(topology);
+    _rhi_context->GetDxContext()->IASetPrimitiveTopology(d3d_prim);
+    unsigned int stride = sizeof(VertexBuffer::arraybuffer_t);
+    unsigned int offsets = 0;
+    const auto dx_vbo_buffer = vbo->GetDxBuffer();
+    const auto dx_vbio_buffer = vbio->GetDxBuffer();
+    ID3D11Buffer* const dx_buffers[] = {vbo->GetDxBuffer().Get(), vbio->GetDxBuffer().Get()};
+    auto dx_ibo_buffer = ibo->GetDxBuffer();
+    _rhi_context->GetDxContext()->IASetVertexBuffers(0, 2, dx_buffers, &stride, &offsets);
+    _rhi_context->GetDxContext()->IASetIndexBuffer(dx_ibo_buffer.Get(), DXGI_FORMAT_R32_UINT, offsets);
+    _rhi_context->DrawIndexedInstanced(indexPerInstanceCount, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
+}
+
 
 void Renderer::DrawPoint2D(float pointX, float pointY, const Rgba& color /*= Rgba::WHITE*/) noexcept {
     std::vector<Vertex3D> vbo{};
@@ -3635,6 +3691,14 @@ void Renderer::UpdateVbo(const VertexBuffer::buffer_t& vbo) noexcept {
         _current_vbo_size = vbo.size();
     }
     _temp_vbo->Update(*_rhi_context, vbo);
+}
+
+void Renderer::UpdateVbio(const VertexBufferInstanced::buffer_t& vbio) noexcept {
+    if(_current_vbio_size < vbio.size()) {
+        _temp_vbio = std::move(_rhi_device->CreateVertexBufferInstanced(vbio, BufferUsage::Dynamic, BufferBindUsage::Vertex_Buffer));
+        _current_vbio_size = vbio.size();
+    }
+    _temp_vbio->Update(*_rhi_context, vbio);
 }
 
 void Renderer::UpdateIbo(const IndexBuffer::buffer_t& ibo) noexcept {

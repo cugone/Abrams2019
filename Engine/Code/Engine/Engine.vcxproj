@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="DebugProfile|x64">
@@ -122,6 +122,7 @@
     <ClCompile Include="Renderer\InputLayoutInstanced.cpp" />
     <ClCompile Include="Renderer\Material.cpp" />
     <ClCompile Include="Renderer\Mesh.cpp" />
+    <ClCompile Include="Renderer\MeshInstanced.cpp" />
     <ClCompile Include="Renderer\Model.cpp" />
     <ClCompile Include="Renderer\RasterState.cpp" />
     <ClCompile Include="Renderer\Renderer.cpp" />
@@ -137,6 +138,7 @@
     <ClCompile Include="Renderer\Texture3D.cpp" />
     <ClCompile Include="Renderer\TextureArray2D.cpp" />
     <ClCompile Include="Renderer\VertexBuffer.cpp" />
+    <ClCompile Include="Renderer\VertexBufferInstanced.cpp" />
     <ClCompile Include="Renderer\Window.cpp" />
     <ClCompile Include="RHI\RHIDevice.cpp" />
     <ClCompile Include="RHI\RHIDeviceContext.cpp" />
@@ -272,6 +274,7 @@
     <ClInclude Include="Renderer\InputLayoutInstanced.hpp" />
     <ClInclude Include="Renderer\Material.hpp" />
     <ClInclude Include="Renderer\Mesh.hpp" />
+    <ClInclude Include="Renderer\MeshInstanced.hpp" />
     <ClInclude Include="Renderer\Model.hpp" />
     <ClInclude Include="Renderer\RasterState.hpp" />
     <ClInclude Include="Renderer\Renderer.hpp" />
@@ -287,7 +290,9 @@
     <ClInclude Include="Renderer\Texture3D.hpp" />
     <ClInclude Include="Renderer\TextureArray2D.hpp" />
     <ClInclude Include="Renderer\Vertex3D.hpp" />
+    <ClInclude Include="Renderer\Vertex3DInstanced.hpp" />
     <ClInclude Include="Renderer\VertexBuffer.hpp" />
+    <ClInclude Include="Renderer\VertexBufferInstanced.hpp" />
     <ClInclude Include="Renderer\Window.hpp" />
     <ClInclude Include="RHI\RHI.hpp" />
     <ClInclude Include="RHI\RHIDevice.hpp" />

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Thirdparty">
@@ -490,6 +490,12 @@
     <ClCompile Include="Renderer\DrawInstruction.cpp">
       <Filter>Renderer\Core</Filter>
     </ClCompile>
+    <ClCompile Include="Renderer\VertexBufferInstanced.cpp">
+      <Filter>Renderer\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\MeshInstanced.cpp">
+      <Filter>Renderer\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vector2.hpp">
@@ -960,7 +966,16 @@
     <ClInclude Include="Renderer\DrawInstruction.hpp">
       <Filter>Renderer\Core</Filter>
     </ClInclude>
+    <ClInclude Include="Renderer\VertexBufferInstanced.hpp">
+      <Filter>Renderer\Core</Filter>
+    </ClInclude>
     <ClInclude Include="Renderer\Vertex3D.hpp">
+      <Filter>Renderer\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\Vertex3DInstanced.hpp">
+      <Filter>Renderer\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\MeshInstanced.hpp">
       <Filter>Renderer\Core</Filter>
     </ClInclude>
   </ItemGroup>
