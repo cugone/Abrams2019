@@ -8,7 +8,7 @@
     Tessellation stage both -hs and -ds must be used together. The geometry stage
     is optional in all use cases and can be used by itself. The compute shader
     stage is also optional and can be used by itself.
-.PARAMETER HlslScript
+.PARAMETER Path
     The path to the .hlsl script to compile.
 .PARAMETER vs
     Tells the script to compile as a Vertex Shader.
@@ -40,9 +40,9 @@
 #>
 [CmdletBinding()]
 param(
-    [Parameter( Mandatory , Position = 0 )]
+    [Parameter( Mandatory )]
     [ValidateNotNullOrEmpty()]
-    [string]$HlslScript,
+    [System.IO.FileInfo]$Path,
     [Parameter( Mandatory , ParameterSetName = 'VSPS')]
     [Switch]$vs,
     [Parameter( Mandatory , ParameterSetName = 'VSPS' )]
@@ -64,8 +64,9 @@ param(
     [Switch]$d
 )
 
-function Verify-Args {
+function Test-Args {
     [CmdletBinding()]
+    [OutputType([bool])]
     param(
         [Parameter(Mandatory=$false)]
         [bool]$vs,
@@ -86,18 +87,19 @@ function Verify-Args {
         $hsds = !(!$hs -or !$ds) -and !($hs -xor $ds)
         $invalid = -not ($vsps -or $hsds -or $gs -or $cs)
         if($invalid) {
-            Write-Host "Missing required arguments. VS and PS, HS and DS, or GS, or CS"
+            Write-Output "Missing required arguments. VS and PS, HS and DS, or GS, or CS"
             Return $false
         }
         Return $true
     } else {
-        Write-Host "No shader stages specified."
+        Write-Output "No shader stages specified."
         Return $false
     }
 }
 
 function Get-EntryPointForStage {
     [CmdletBinding()]
+    [OutputType([String])]
     param(
         [Parameter(Mandatory)]
         [string]$stageId
@@ -137,31 +139,31 @@ function Get-StagesFromArgs() {
     return $array
 }
 
-$validPath = Test-Path -Path $HlslScript
+$validPath = Test-Path -Path $Path
 if(!$validPath) {
-    Write-Host "Script: $HlslScript does not exist."
+    Write-Output "Script: $Path does not exist."
     Return;
 }
 
-$validArgs = Verify-Args $vs $hs $ds $gs $ps $cs
+$validArgs = Test-Args -vs $vs -hs $hs -ds $ds -gs $gs -ps $ps -cs $cs
 if($validArgs) {
-    $file = $HlslScript.Substring(0, $HlslScript.LastIndexOf('.'))
-    $ShaderArgs = Get-StagesFromArgs $vs $hs $ds $gs $ps $cs
+    $file = $Path.Substring(0, $Path.LastIndexOf('.'))
+    $ShaderArgs = Get-StagesFromArgs -vs $vs -hs $hs -ds $ds -gs $gs -ps $ps -cs $cs
     if($d) {
-        Write-Host "Debug mode."
+        Write-Output "Debug mode."
     } else {
-        Write-Host "Release mode."
+        Write-Output "Release mode."
     }
     foreach($stage in $ShaderArgs) {
         $CsoPath = $file + "_" + $stage.ToUpper() + ".cso"
         $EntryPoint = Get-EntryPointForStage $stage
         $target = $stage + "_5_0"
         if($d) {
-            fxc.exe /T $target /Fo $CsoPath /E $EntryPoint /Zi /Od /WX /nologo /Zpc $HlslScript
+            fxc.exe /T $target /Fo $CsoPath /E $EntryPoint /Zi /Od /WX /nologo /Zpc $Path
         } else {
-            fxc.exe /T $target /Fo $CsoPath /E $EntryPoint /O3 /WX /Vd /nologo /Zpc $HlslScript
+            fxc.exe /T $target /Fo $CsoPath /E $EntryPoint /O3 /WX /Vd /nologo /Zpc $Path
         }
     }
 } else {
-    Write-Host "Script terminated due to invalid arguments."
+    Write-Output "Script terminated due to invalid arguments."
 }
