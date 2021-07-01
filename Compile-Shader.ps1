@@ -1,0 +1,167 @@
+<#
+.SYNOPSIS
+    Compiles a single .hlsl file into its composite .cso compiled shader files.
+.DESCRIPTION
+    Compile a single .hlsl file into its composite .cso files, certain pairs of
+    switches are required when any of them are used. At a minimum, a shader must
+    use -vs and -ps to be a valid renderable shader. To correctly use the
+    Tessellation stage both -hs and -ds must be used together. The geometry stage
+    is optional in all use cases and can be used by itself. The compute shader
+    stage is also optional and can be used by itself.
+.PARAMETER HlslScript
+    The path to the .hlsl script to compile.
+.PARAMETER vs
+    Tells the script to compile as a Vertex Shader.
+    The entry point of the shader must be VertexFunction.
+    If used, -ps must also be supplied.
+.PARAMETER ps
+    Tells the script to compile as a Pixel Shader.
+    The entry point of the shader must be PixelFunction.
+    If used, -vs must also be supplied.
+.PARAMETER hs
+    Tells the script to compile as a Hull Shader.
+    The entry point of the shader must be HullFunction.
+    If used, -ds must also be supplied.
+.PARAMETER ds
+    Tells the script to compile as a Domain Shader.
+    The entry point of the shader must be DomainFunction.
+    If used, -hs must also be supplied.
+.PARAMETER gs
+    Tells the script to compile as a Geometry Shader.
+    The entry point of the shader must be GeometryFunction.
+    This switch is optional.
+.PARAMETER cs
+    Tells the script to compile as a Compute Shader.
+    The entry point of the shader must be ComputeFunction.
+    This switch it optional and can appear by itself.
+.PARAMETER d
+    Tells the script to compile in debug mode.
+    This enables validation and disables optimizations.
+#>
+[CmdletBinding()]
+param(
+    [Parameter( Mandatory , Position = 0 )]
+    [ValidateNotNullOrEmpty()]
+    [string]$HlslScript,
+    [Parameter( Mandatory , ParameterSetName = 'VSPS')]
+    [Switch]$vs,
+    [Parameter( Mandatory , ParameterSetName = 'VSPS' )]
+    [Switch]$ps,
+    [Parameter( Mandatory , ParameterSetName = 'HSDS' )]
+    [Parameter( ParameterSetName = 'VSPS')]
+    [Switch]$hs,
+    [Parameter( Mandatory , ParameterSetName = 'HSDS' )]
+    [Parameter( ParameterSetName = 'VSPS')]
+    [Switch]$ds,
+    [Parameter( Mandatory , ParameterSetName = 'GS' )]
+    [Parameter( ParameterSetName = 'VSPS')]
+    [Parameter( ParameterSetName = 'HSDS')]
+    [Switch]$gs,
+    [Parameter( Mandatory , ParameterSetName = 'CS' )]
+    [Parameter( ParameterSetName = 'VSPS')]
+    [Parameter( ParameterSetName = 'HSDS')]
+    [Switch]$cs,
+    [Switch]$d
+)
+
+function Verify-Args {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$false)]
+        [bool]$vs,
+        [Parameter(Mandatory=$false)]
+        [bool]$hs,
+        [Parameter(Mandatory=$false)]
+        [bool]$ds,
+        [Parameter(Mandatory=$false)]
+        [bool]$gs,
+        [Parameter(Mandatory=$false)]
+        [bool]$ps,
+        [Parameter(Mandatory=$false)]
+        [bool]$cs
+    )
+    $nostages = $false -eq ($vs -or $hs -or $ds -or $gs -or $ps -or $cs)
+    if(!$nostages) {
+        $vsps = !(!$vs -or !$ps) -and !($vs -xor $ps)
+        $hsds = !(!$hs -or !$ds) -and !($hs -xor $ds)
+        $invalid = -not ($vsps -or $hsds -or $gs -or $cs)
+        if($invalid) {
+            Write-Host "Missing required arguments. VS and PS, HS and DS, or GS, or CS"
+            Return $false
+        }
+        Return $true
+    } else {
+        Write-Host "No shader stages specified."
+        Return $false
+    }
+}
+
+function Get-EntryPointForStage {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$stageId
+    )
+    if($stageId -eq "vs") { Return "VertexFunction" }
+    if($stageId -eq "ps") { Return "PixelFunction" }
+    if($stageId -eq "hs") { Return "HullFunction" }
+    if($stageId -eq "ds") { Return "DomainFunction" }
+    if($stageId -eq "gs") { Return "GeometryFunction" }
+    if($stageId -eq "cs") { Return "ComputeFunction" }
+    Return $null
+}
+
+function Get-StagesFromArgs() {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [bool]$vs,
+        [Parameter(Mandatory)]
+        [bool]$hs,
+        [Parameter(Mandatory)]
+        [bool]$ds,
+        [Parameter(Mandatory)]
+        [bool]$gs,
+        [Parameter(Mandatory)]
+        [bool]$ps,
+        [Parameter(Mandatory)]
+        [bool]$cs
+    )
+    $array = @()
+    if($vs) { $array += "vs" }
+    if($hs) { $array += "hs" }
+    if($ds) { $array += "ds" }
+    if($gs) { $array += "gs" }
+    if($ps) { $array += "ps" }
+    if($cs) { $array += "cs" }
+    return $array
+}
+
+$validPath = Test-Path -Path $HlslScript
+if(!$validPath) {
+    Write-Host "Script: $HlslScript does not exist."
+    Return;
+}
+
+$validArgs = Verify-Args $vs $hs $ds $gs $ps $cs
+if($validArgs) {
+    $file = $HlslScript.Substring(0, $HlslScript.LastIndexOf('.'))
+    $ShaderArgs = Get-StagesFromArgs $vs $hs $ds $gs $ps $cs
+    if($d) {
+        Write-Host "Debug mode."
+    } else {
+        Write-Host "Release mode."
+    }
+    foreach($stage in $ShaderArgs) {
+        $CsoPath = $file + "_" + $stage.ToUpper() + ".cso"
+        $EntryPoint = Get-EntryPointForStage $stage
+        $target = $stage + "_5_0"
+        if($d) {
+            fxc.exe /T $target /Fo $CsoPath /E $EntryPoint /Zi /Od /WX /nologo /Zpc $HlslScript
+        } else {
+            fxc.exe /T $target /Fo $CsoPath /E $EntryPoint /O3 /WX /Vd /nologo /Zpc $HlslScript
+        }
+    }
+} else {
+    Write-Host "Script terminated due to invalid arguments."
+}
