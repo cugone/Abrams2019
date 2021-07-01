@@ -508,6 +508,9 @@
     <ClCompile Include="Physics\Particles\ParticleSystem.cpp">
       <Filter>Physics\Particles</Filter>
     </ClCompile>
+    <ClCompile Include="Physics\Particles\ParticlePool.cpp">
+      <Filter>Physics\Particles</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vector2.hpp">
@@ -997,6 +1000,9 @@
       <Filter>Physics\Particles</Filter>
     </ClInclude>
     <ClInclude Include="Physics\Particles\ParticleSystem.hpp">
+      <Filter>Physics\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics\Particles\ParticlePool.hpp">
       <Filter>Physics\Particles</Filter>
     </ClInclude>
   </ItemGroup>
