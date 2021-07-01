@@ -898,21 +898,21 @@ void Renderer::DrawIndexed(const PrimitiveType& topology, const std::vector<Vert
     DrawIndexed(topology, _temp_vbo.get(), _temp_ibo.get(), index_count, startVertex, baseVertexLocation);
 }
 
-void Renderer::DrawInstanced(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo, const std::vector<Vertex3DInstanced> vbio, std::size_t instanceCount) noexcept {
+void Renderer::DrawInstanced(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo, const std::vector<Vertex3DInstanced>& vbio, std::size_t instanceCount) noexcept {
     DrawInstanced(topology, vbo, vbio, instanceCount, vbo.size());
 }
 
-void Renderer::DrawInstanced(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo, const std::vector<Vertex3DInstanced> vbio, std::size_t instanceCount, std::size_t vertexCount) noexcept {
+void Renderer::DrawInstanced(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo, const std::vector<Vertex3DInstanced>& vbio, std::size_t instanceCount, std::size_t vertexCount) noexcept {
     UpdateVbo(vbo);
     UpdateVbio(vbio);
     DrawInstanced(topology, _temp_vbo.get(), _temp_vbio.get(), vertexCount, instanceCount, std::size_t{0u}, std::size_t{0u});
 }
 
-void Renderer::DrawIndexedInstanced(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo, const std::vector<Vertex3DInstanced> vbio, const std::vector<unsigned int>& ibo, std::size_t instanceCount) noexcept {
+void Renderer::DrawIndexedInstanced(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo, const std::vector<Vertex3DInstanced>& vbio, const std::vector<unsigned int>& ibo, std::size_t instanceCount) noexcept {
     DrawIndexedInstanced(topology, vbo, vbio, ibo, instanceCount, 0, 0, 0);
 }
 
-void Renderer::DrawIndexedInstanced(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo, const std::vector<Vertex3DInstanced> vbio, const std::vector<unsigned int>& ibo, std::size_t instanceCount, std::size_t startIndexLocation, std::size_t baseVertexLocation, std::size_t startInstanceLocation) noexcept {
+void Renderer::DrawIndexedInstanced(const PrimitiveType& topology, const std::vector<Vertex3D>& vbo, const std::vector<Vertex3DInstanced>& vbio, const std::vector<unsigned int>& ibo, std::size_t instanceCount, std::size_t startIndexLocation, std::size_t baseVertexLocation, std::size_t startInstanceLocation) noexcept {
     UpdateVbo(vbo);
     UpdateVbio(vbio);
     UpdateIbo(ibo);

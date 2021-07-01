@@ -284,9 +284,9 @@ void UISystem::UnloadUiWidget(const std::string& name) {
 }
 
 void UISystem::AddUiWidgetToViewport(UIWidget& widget) {
-    auto&& renderer = ServiceLocator::get<IRendererService>();
-    const auto viewport = renderer.GetCurrentViewport();
-    const auto viewportDims = Vector2{viewport.width, viewport.height};
+    //auto&& renderer = ServiceLocator::get<IRendererService>();
+    //const auto viewport = renderer.GetCurrentViewport();
+    //const auto viewportDims = Vector2{viewport.width, viewport.height};
     if(!IsWidgetLoaded(widget)) {
         LoadUiWidget(widget.name);
     }

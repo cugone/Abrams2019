@@ -12,7 +12,7 @@ class Texture;
 
 class SpriteSheet {
 public:
-    SpriteSheet(const XMLElement& elem) noexcept;
+    explicit SpriteSheet(const XMLElement& elem) noexcept;
     ~SpriteSheet() = default;
 
     [[nodiscard]] AABB2 GetTexCoordsFromSpriteCoords(int spriteX, int spriteY) const noexcept;

@@ -58,9 +58,9 @@ public:
     void SetValue(const std::string& key, const std::string& value) noexcept override;
     void SetValue(const std::string& key, const char* value) noexcept override;
 
-    void PrintConfig(std::string key, std::ostream& output) const noexcept override;
+    void PrintConfig(const std::string& key, std::ostream& output) const noexcept override;
     void PrintConfigs(std::ostream& output) const noexcept override;
-    void PrintKeyValue(std::ostream& output, std::string key, std::string value) const noexcept override;
+    void PrintKeyValue(std::ostream& output, const std::string& key, const std::string& value) const noexcept override;
 
     friend std::ostream& operator<<(std::ostream& output, const Config& config) noexcept;
     friend std::istream& operator>>(std::istream& input, Config& config) noexcept;

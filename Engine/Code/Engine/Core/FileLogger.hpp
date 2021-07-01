@@ -18,7 +18,7 @@ class JobSystem;
 class FileLogger : public IFileLoggerService {
 public:
     FileLogger() = delete;
-    FileLogger(const std::string& logName) noexcept;
+    explicit FileLogger(const std::string& logName) noexcept;
     FileLogger(const FileLogger& rhs) = delete;
     FileLogger(FileLogger&& rhs) = delete;
     FileLogger& operator=(const FileLogger& rhs) = delete;

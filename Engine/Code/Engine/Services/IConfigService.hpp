@@ -47,9 +47,9 @@ public:
     virtual void SetValue(const std::string& key, const std::string& value) noexcept = 0;
     virtual void SetValue(const std::string& key, const char* value) noexcept = 0;
 
-    virtual void PrintConfig(std::string key, std::ostream& output) const noexcept = 0;
+    virtual void PrintConfig(const std::string& key, std::ostream& output) const noexcept = 0;
     virtual void PrintConfigs(std::ostream& output) const noexcept = 0;
-    virtual void PrintKeyValue(std::ostream& output, std::string key, std::string value) const noexcept = 0;
+    virtual void PrintKeyValue(std::ostream& output, const std::string& key, const std::string& value) const noexcept = 0;
 
 protected:
 private:
@@ -93,9 +93,9 @@ public:
     void SetValue([[maybe_unused]] const std::string& key, [[maybe_unused]] const long double& value) noexcept override {}
     void SetValue([[maybe_unused]] const std::string& key, [[maybe_unused]] const std::string& value) noexcept override {}
     void SetValue([[maybe_unused]] const std::string& key, [[maybe_unused]] const char* value) noexcept override {}
-    void PrintConfig([[maybe_unused]] std::string key, [[maybe_unused]] std::ostream& output) const noexcept override {}
+    void PrintConfig([[maybe_unused]] const std::string& key, [[maybe_unused]] std::ostream& output) const noexcept override {}
     void PrintConfigs([[maybe_unused]] std::ostream& output) const noexcept override {}
-    void PrintKeyValue([[maybe_unused]] std::ostream& output, [[maybe_unused]] std::string key, [[maybe_unused]] std::string value) const noexcept override {}
+    void PrintKeyValue([[maybe_unused]] std::ostream& output, [[maybe_unused]] const std::string& key, [[maybe_unused]] const std::string& value) const noexcept override {}
 
 protected:
 private:

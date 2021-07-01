@@ -22,8 +22,8 @@ public:
         , Max
     };
     // clang-format on
-    AnimatedSprite(const XMLElement& elem) noexcept;
-    AnimatedSprite(const AnimatedSpriteDesc& desc) noexcept;
+    explicit AnimatedSprite(const XMLElement& elem) noexcept;
+    explicit AnimatedSprite(const AnimatedSpriteDesc& desc) noexcept;
     AnimatedSprite(std::weak_ptr<SpriteSheet> sheet, const XMLElement& elem) noexcept;
     AnimatedSprite(std::weak_ptr<SpriteSheet> sheet, const IntVector2& startSpriteCoords) noexcept;
     ~AnimatedSprite() noexcept;
