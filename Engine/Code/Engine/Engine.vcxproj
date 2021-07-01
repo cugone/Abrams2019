@@ -97,6 +97,9 @@
     <ClCompile Include="Physics\ForceGenerator.cpp" />
     <ClCompile Include="Physics\GravityForceGenerator.cpp" />
     <ClCompile Include="Physics\Joint.cpp" />
+    <ClCompile Include="Physics\Particles\Emitter.cpp" />
+    <ClCompile Include="Physics\Particles\Particle.cpp" />
+    <ClCompile Include="Physics\Particles\ParticleSystem.cpp" />
     <ClCompile Include="Physics\PhysicsSystem.cpp" />
     <ClCompile Include="Physics\PhysicsTypes.cpp" />
     <ClCompile Include="Physics\PhysicsUtils.cpp" />
@@ -248,6 +251,9 @@
     <ClInclude Include="Physics\ForceGenerator.hpp" />
     <ClInclude Include="Physics\GravityForceGenerator.hpp" />
     <ClInclude Include="Physics\Joint.hpp" />
+    <ClInclude Include="Physics\Particles\Emitter.hpp" />
+    <ClInclude Include="Physics\Particles\Particle.hpp" />
+    <ClInclude Include="Physics\Particles\ParticleSystem.hpp" />
     <ClInclude Include="Physics\PhysicsSystem.hpp" />
     <ClInclude Include="Physics\PhysicsTypes.hpp" />
     <ClInclude Include="Physics\PhysicsUtils.hpp" />
