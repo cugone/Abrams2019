@@ -245,6 +245,15 @@ template<size_t N, size_t K>
 [[nodiscard]] Vector2 GetRandomPointInside(const AABB2& aabb) noexcept;
 [[nodiscard]] Vector2 GetRandomPointInside(const Disc2& disc) noexcept;
 
+[[nodiscard]] Vector3 GetRandomPointInsideDisc(const Vector3& position, const Vector3& normal, float radius) noexcept;
+[[nodiscard]] Vector3 GetRandomPointInsideCube(float radius) noexcept;
+[[nodiscard]] Vector3 GetRandomPointInsideSphere(float radius) noexcept;
+
+[[nodiscard]] Vector2 GetRandomPointInsidePlane(const Plane2& p, float r) noexcept;
+[[nodiscard]] Vector3 GetRandomPointInsidePlane(const Plane3& p, float r) noexcept;
+[[nodiscard]] Vector2 GetRandomPointInsidePlane(const Vector2& pos, const Vector2& normal, float r) noexcept;
+[[nodiscard]] Vector3 GetRandomPointInsidePlane(const Vector3& pos, const Vector3& normal, float r) noexcept;
+
 [[nodiscard]] Vector3 GetRandomPointInside(const AABB3& aabb) noexcept;
 [[nodiscard]] Vector3 GetRandomPointInside(const Sphere3& sphere) noexcept;
 

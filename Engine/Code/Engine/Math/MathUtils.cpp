@@ -692,6 +692,74 @@ Vector3 GetRandomPointInside(const Sphere3& sphere) noexcept {
     return sphere.center + Vector3{x, y, z};
 }
 
+Vector3 GetRandomPointInsideDisc(const Vector3& position, const Vector3& normal, float radius) noexcept {
+    return GetRandomPointInsidePlane(Plane3(normal, position.CalcLength()), radius);
+}
+
+Vector2 GetRandomPointInsidePlane(const Plane2& p, float r) noexcept {
+    return Vector2(GetRandomPointInsidePlane(Plane3(Vector3(p.normal, 0.0f), p.dist), r));
+}
+
+Vector3 GetRandomPointInsidePlane(const Plane3& p, float r) noexcept {
+    Vector3 n = p.normal;
+    Vector3 w;
+    if(n.x == 0.0f) {
+        w = CrossProduct(n, Vector3(1.0f, 0.0f, 0.0f));
+    } else {
+        w = CrossProduct(n, Vector3(0.0f, 0.0f, 1.0f));
+    }
+
+    // rotate the vector around n by a random angle
+    // using Rodrigues' rotation formula
+    // http://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula
+    float theta = MathUtils::GetRandomFloatZeroToOne() * MathUtils::M_PI;
+    Vector3 k = n.GetNormalize();
+    w = w * std::cos(theta) + CrossProduct(k, w) * std::sin(theta);
+
+    // Scale the vector fill our disk.
+    // If the radius is zero, generate unit vectors
+    if(r == 0.0f) {
+        w *= (r / w.CalcLength());
+    } else {
+        r = MathUtils::GetRandomFloatZeroToOne() * r;
+        w *= (r / w.CalcLength());
+    }
+
+    // now translate the vector from ax + by + cz = 0
+    // to the plane ax + by + cz = d
+    // http://en.wikipedia.org/wiki/Distance_from_a_point_to_a_plane
+    float d = p.dist;
+    if(d != 0.0f) {
+        Vector3 t = n * (d / MathUtils::DotProduct(n, n));
+        w += t;
+    }
+
+    return w;
+}
+
+Vector2 GetRandomPointInsidePlane(const Vector2& pos, const Vector2& normal, float r) noexcept {
+    return GetRandomPointInsidePlane(Plane2(normal, pos.CalcLength()), r);
+}
+
+Vector3 GetRandomPointInsidePlane(const Vector3& pos, const Vector3& normal, float r) noexcept {
+    return GetRandomPointInsidePlane(Plane3(normal, pos.CalcLength()), r);
+}
+
+Vector3 GetRandomPointInsideCube(float radius) noexcept {
+    float x = GetRandomFloatNegOneToOne() * radius;
+    float y = GetRandomFloatNegOneToOne() * radius;
+    float z = GetRandomFloatNegOneToOne() * radius;
+    return Vector3(x, y, z);
+}
+
+Vector3 GetRandomPointInsideSphere(float radius) noexcept {
+    Vector3 p = GetRandomPointInsideCube(radius);
+    while(p.CalcLength() > radius) {
+        p = GetRandomPointInsideCube(radius);
+    }
+    return p;
+}
+
 bool Contains(const AABB2& aabb, const Vector2& point) noexcept {
     return IsPointInside(aabb, point);
 }
