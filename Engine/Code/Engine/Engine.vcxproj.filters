@@ -499,16 +499,22 @@
     <ClCompile Include="Renderer\MeshInstanced.cpp">
       <Filter>Renderer\Core</Filter>
     </ClCompile>
-    <ClCompile Include="Physics\Particles\Emitter.cpp">
-      <Filter>Physics\Particles</Filter>
-    </ClCompile>
     <ClCompile Include="Physics\Particles\Particle.cpp">
       <Filter>Physics\Particles</Filter>
     </ClCompile>
     <ClCompile Include="Physics\Particles\ParticleSystem.cpp">
       <Filter>Physics\Particles</Filter>
     </ClCompile>
-    <ClCompile Include="Physics\Particles\ParticlePool.cpp">
+    <ClCompile Include="Physics\Particles\ParticleEffectDefinition.cpp">
+      <Filter>Physics\Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="Physics\Particles\ParticleEmitterDefinition.cpp">
+      <Filter>Physics\Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="Physics\Particles\ParticleEmitter.cpp">
+      <Filter>Physics\Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="Physics\Particles\ParticleEffect.cpp">
       <Filter>Physics\Particles</Filter>
     </ClCompile>
   </ItemGroup>
@@ -993,16 +999,22 @@
     <ClInclude Include="Renderer\MeshInstanced.hpp">
       <Filter>Renderer\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Physics\Particles\Emitter.hpp">
-      <Filter>Physics\Particles</Filter>
-    </ClInclude>
     <ClInclude Include="Physics\Particles\Particle.hpp">
       <Filter>Physics\Particles</Filter>
     </ClInclude>
     <ClInclude Include="Physics\Particles\ParticleSystem.hpp">
       <Filter>Physics\Particles</Filter>
     </ClInclude>
-    <ClInclude Include="Physics\Particles\ParticlePool.hpp">
+    <ClInclude Include="Physics\Particles\ParticleEffectDefinition.hpp">
+      <Filter>Physics\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics\Particles\ParticleEmitterDefinition.hpp">
+      <Filter>Physics\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics\Particles\ParticleEmitter.hpp">
+      <Filter>Physics\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="Physics\Particles\ParticleEffect.hpp">
       <Filter>Physics\Particles</Filter>
     </ClInclude>
   </ItemGroup>

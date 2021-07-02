@@ -12,22 +12,25 @@
         #define DEBUG_BUILD
         #define AUDIO_DEBUG
         #define RENDER_DEBUG
-        #define PROFILE_BUILD
+        #define PHYSICS_DEBUG
         #define UI_DEBUG
+        #define PROFILE_BUILD
     #elif defined(FINAL_BUILD)
         #undef TRACK_MEMORY
         #undef DEBUG_BUILD
         #undef AUDIO_DEBUG
         #undef RENDER_DEBUG
-        #undef PROFILE_BUILD
+        #undef PHYSICS_DEBUG
         #undef UI_DEBUG
+        #undef PROFILE_BUILD
     #else
         #define TRACK_MEMORY TRACK_MEMORY_BASIC
         #define DEBUG_BUILD
         #define AUDIO_DEBUG
         #define RENDER_DEBUG
-        #define PROFILE_BUILD
+        #define PHYSICS_DEBUG
         #define UI_DEBUG
+        #define PROFILE_BUILD
     #endif
 
     #define MAX_LOGS 3u

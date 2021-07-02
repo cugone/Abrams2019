@@ -1,29 +1,53 @@
 #include "Engine/Physics/Particles/ParticleSystem.hpp"
 
-void ParticleSystem::BeginFrame() noexcept {
+#include "Engine/Core/DataUtils.hpp"
+#include "Engine/Core/ErrorWarningAssert.hpp"
+#include "Engine/Core/FileUtils.hpp"
+
+#include "Engine/Physics/Particles/ParticleEffectDefinition.hpp"
+
+#include <filesystem>
+#include <iostream>
+#include <sstream>
+
+ParticleEffectDefinition* ParticleSystem::GetEffectDefinition(const std::string& name) {
+    namespace FS = std::filesystem;
+    FS::path p(name);
+    if(auto found_effect = ParticleEffectDefinition::s_particleEffectDefinitions.find(p.string()); found_effect == std::end(ParticleEffectDefinition::s_particleEffectDefinitions)) {
+        return nullptr;
+    } else {
+        return found_effect->second.get();
+    }
 }
 
-void ParticleSystem::Update([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept {
-}
-
-void ParticleSystem::Render() const noexcept {
-}
-
-void ParticleSystem::EndFrame() noexcept {
-}
-
-void ParticleSystem::AddEmitter(std::unique_ptr<Emitter> newEmitter) noexcept {
-    m_emitters.emplace_back(newEmitter);
-}
-
-void ParticleSystem::DestroyEmitter(Emitter* emitter) noexcept {
-    if(emitter == nullptr) {
+void ParticleSystem::RegisterEffectsFromFolder(std::filesystem::path folderpath, bool recursive /*= false*/) {
+    namespace FS = std::filesystem;
+    if(!FS::exists(folderpath)) {
+        DebuggerPrintf("Attempting to Register Materials from unknown path: %s", FS::absolute(folderpath).string().c_str());
         return;
     }
-    m_emitters.erase(std::remove_if(std::begin(m_emitters), std::end(m_emitters), [&emitter](const auto&& e) { return e.get() == emitter; }), std::end(m_emitters));
+    folderpath = FS::canonical(folderpath);
+    folderpath.make_preferred();
+    auto cb =
+    [this](const FS::path& p) {
+        const auto pathAsString = p.string();
+        if(!RegisterEffectFromFile(p)) {
+            DebuggerPrintf("Failed to load material at %s\n", pathAsString.c_str());
+        }
+    };
+    FileUtils::ForEachFileInFolder(folderpath, ".effect", cb, recursive);
 }
 
-void ParticleSystem::DestroyAllEmitters() noexcept {
-    m_emitters.clear();
-    m_emitters.shrink_to_fit();
+bool ParticleSystem::RegisterEffectFromFile(const std::filesystem::path& filepath) {
+    namespace FS = std::filesystem;
+    FS::path p(filepath);
+    tinyxml2::XMLDocument doc;
+    auto load_result = doc.LoadFile(p.string().c_str());
+    bool success = load_result == tinyxml2::XML_SUCCESS;
+    if(success) {
+        ParticleEffectDefinition::LoadDefinition(*doc.RootElement());
+        return success;
+    }
+    return success;
 }
+

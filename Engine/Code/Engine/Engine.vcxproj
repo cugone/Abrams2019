@@ -97,9 +97,11 @@
     <ClCompile Include="Physics\ForceGenerator.cpp" />
     <ClCompile Include="Physics\GravityForceGenerator.cpp" />
     <ClCompile Include="Physics\Joint.cpp" />
-    <ClCompile Include="Physics\Particles\Emitter.cpp" />
     <ClCompile Include="Physics\Particles\Particle.cpp" />
-    <ClCompile Include="Physics\Particles\ParticlePool.cpp" />
+    <ClCompile Include="Physics\Particles\ParticleEffect.cpp" />
+    <ClCompile Include="Physics\Particles\ParticleEffectDefinition.cpp" />
+    <ClCompile Include="Physics\Particles\ParticleEmitter.cpp" />
+    <ClCompile Include="Physics\Particles\ParticleEmitterDefinition.cpp" />
     <ClCompile Include="Physics\Particles\ParticleSystem.cpp" />
     <ClCompile Include="Physics\PhysicsSystem.cpp" />
     <ClCompile Include="Physics\PhysicsTypes.cpp" />
@@ -252,9 +254,11 @@
     <ClInclude Include="Physics\ForceGenerator.hpp" />
     <ClInclude Include="Physics\GravityForceGenerator.hpp" />
     <ClInclude Include="Physics\Joint.hpp" />
-    <ClInclude Include="Physics\Particles\Emitter.hpp" />
     <ClInclude Include="Physics\Particles\Particle.hpp" />
-    <ClInclude Include="Physics\Particles\ParticlePool.hpp" />
+    <ClInclude Include="Physics\Particles\ParticleEffect.hpp" />
+    <ClInclude Include="Physics\Particles\ParticleEffectDefinition.hpp" />
+    <ClInclude Include="Physics\Particles\ParticleEmitter.hpp" />
+    <ClInclude Include="Physics\Particles\ParticleEmitterDefinition.hpp" />
     <ClInclude Include="Physics\Particles\ParticleSystem.hpp" />
     <ClInclude Include="Physics\PhysicsSystem.hpp" />
     <ClInclude Include="Physics\PhysicsTypes.hpp" />
