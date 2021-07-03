@@ -42,7 +42,7 @@ bool ParticleEffectDefinition::LoadDefinition(const XMLElement& element) {
         emitter_names.reserve(emitter_count);
         DataUtils::ForEachChildElement(element, "emitter", [&emitter_names](const XMLElement& elem) {
             std::string name = DataUtils::ParseXmlAttribute(elem, "name", "UNNAMED_PARTICLE_EMITTER");
-            auto def = ParticleEmitterDefinition::CreateParticleEmitterDefinition(elem);
+            ParticleEmitterDefinition::CreateAndRegisterParticleEmitterDefinition(elem);
             emitter_names.push_back(name);
             });
         return emitter_names;
