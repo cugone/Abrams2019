@@ -42,6 +42,7 @@ public:
     static inline std::map<std::string, std::unique_ptr<ParticleEmitterDefinition>> s_particleEmitterDefintions{};
 
     static ParticleEmitterDefinition* CreateOrGetParticleEmitterDefinition(const std::string& name, const XMLElement& element) noexcept;
+    static ParticleEmitterDefinition* CreateAndRegisterParticleEmitterDefinition(const XMLElement& element) noexcept;
     static ParticleEmitterDefinition* GetParticleEmitterDefinition(const std::string& name) noexcept;
 protected:
 private:

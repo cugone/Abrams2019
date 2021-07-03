@@ -150,13 +150,17 @@ ParticleEmitterDefinition::ParticleEmitterDefinition(const XMLElement& element) 
 
 ParticleEmitterDefinition* ParticleEmitterDefinition::CreateOrGetParticleEmitterDefinition(const std::string& name, const XMLElement& element) noexcept {
     if(auto found_iter = s_particleEmitterDefintions.find(name); found_iter == s_particleEmitterDefintions.end()) {
-        auto def = CreateParticleEmitterDefinition(element);
-        const std::string name_copy = def->_name;
-        auto* ptr = def.get();
-        s_particleEmitterDefintions.insert_or_assign(name_copy, std::move(def));
-        return ptr;
+        return CreateAndRegisterParticleEmitterDefinition(element);
     }
     return GetParticleEmitterDefinition(name);
+}
+
+ParticleEmitterDefinition* ParticleEmitterDefinition::CreateAndRegisterParticleEmitterDefinition(const XMLElement& element) noexcept {
+    auto def = CreateParticleEmitterDefinition(element);
+    const std::string name_copy = def->_name;
+    auto* ptr = def.get();
+    s_particleEmitterDefintions.insert_or_assign(name_copy, std::move(def));
+    return ptr;
 }
 
 ParticleEmitterDefinition* ParticleEmitterDefinition::GetParticleEmitterDefinition(const std::string& name) noexcept {
