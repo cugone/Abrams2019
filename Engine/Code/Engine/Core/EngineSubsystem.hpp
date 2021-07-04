@@ -96,6 +96,7 @@ enum class WindowsSystemMessage : unsigned int {
     , Window_QueryDragIcon
     , Window_QueryOpen
     , Window_Quit
+    , Window_SetIcon
     , Window_ShowWindow
     , Window_Size
     , Window_Sizing

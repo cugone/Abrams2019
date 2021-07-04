@@ -216,6 +216,8 @@ public:
     void SetWindowTitle(const std::string& newTitle) noexcept override;
     [[nodiscard]] std::string GetWindowTitle() const noexcept override;
 
+    void SetWindowIcon(void* iconResource) noexcept;
+
     [[nodiscard]] std::unique_ptr<VertexBuffer> CreateVertexBuffer(const VertexBuffer::buffer_t& vbo) const noexcept override;
     [[nodiscard]] std::unique_ptr<VertexBufferInstanced> CreateVertexBufferInstanced(const VertexBufferInstanced::buffer_t& vbio) const noexcept override;
     [[nodiscard]] std::unique_ptr<IndexBuffer> CreateIndexBuffer(const IndexBuffer::buffer_t& ibo) const noexcept override;

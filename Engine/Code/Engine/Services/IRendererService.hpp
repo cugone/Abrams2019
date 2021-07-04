@@ -63,6 +63,7 @@ public:
     virtual void SetWindowedMode() noexcept = 0;
     virtual void SetWindowTitle(const std::string& newTitle) noexcept = 0;
     [[nodiscard]] virtual std::string GetWindowTitle() const noexcept = 0;
+    virtual void SetWindowIcon(void* iconResource) noexcept = 0;
 
     [[nodiscard]] virtual std::unique_ptr<VertexBuffer> CreateVertexBuffer(const VertexBuffer::buffer_t& vbo) const noexcept = 0;
     [[nodiscard]] virtual std::unique_ptr<VertexBufferInstanced> CreateVertexBufferInstanced(const VertexBufferInstanced::buffer_t& vbio) const noexcept =0;
@@ -359,6 +360,8 @@ public:
     void SetWindowedMode() noexcept override {}
     void SetWindowTitle([[maybe_unused]] const std::string& newTitle) noexcept override {}
     [[nodiscard]] std::string GetWindowTitle() const noexcept override {}
+
+    void SetWindowIcon([[maybe_unused]] void* iconResource) noexcept override {}
 
     [[nodiscard]] std::unique_ptr<VertexBuffer> CreateVertexBuffer([[maybe_unused]] const VertexBuffer::buffer_t& vbo) const noexcept override {}
     [[nodiscard]] std::unique_ptr<VertexBufferInstanced> CreateVertexBufferInstanced([[maybe_unused]] const VertexBufferInstanced::buffer_t& vbio) const noexcept override {};

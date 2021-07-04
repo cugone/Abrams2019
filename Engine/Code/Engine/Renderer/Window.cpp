@@ -288,8 +288,13 @@ void Window::SetTitle(const std::string& title) noexcept {
     _title = title;
     ::SetWindowTextA(_hWnd, _title.data());
 }
+
 const std::string& Window::GetTitle() const noexcept {
     return _title;
+}
+
+void Window::SetIcon(void* /*iconResource*/) noexcept {
+//TODO: Implement SetIcon
 }
 
 bool Window::Register() noexcept {

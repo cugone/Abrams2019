@@ -121,6 +121,7 @@ WindowsSystemMessage EngineSubsystem::GetWindowsSystemMessageFromUintMessage(uns
     case WM_QUERYDRAGICON: return WindowsSystemMessage::Window_QueryDragIcon;
     case WM_QUERYOPEN: return WindowsSystemMessage::Window_QueryOpen;
     case WM_QUIT: return WindowsSystemMessage::Window_Quit;
+    case WM_SETICON: return WindowsSystemMessage::Window_SetIcon;
     case WM_SHOWWINDOW: return WindowsSystemMessage::Window_ShowWindow;
     case WM_SIZE: return WindowsSystemMessage::Window_Size;
     case WM_SIZING: return WindowsSystemMessage::Window_Sizing;
