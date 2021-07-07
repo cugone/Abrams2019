@@ -6,6 +6,8 @@
 #include "Engine/Math/IntVector2.hpp"
 #include "Engine/RHI/RHITypes.hpp"
 
+#include "Engine/Core/FileUtils.hpp"
+
 #include <algorithm>
 
 Window::Window() noexcept
@@ -293,10 +295,6 @@ const std::string& Window::GetTitle() const noexcept {
     return _title;
 }
 
-void Window::SetIcon(void* /*iconResource*/) noexcept {
-//TODO: Implement SetIcon
-}
-
 bool Window::Register() noexcept {
     _hInstance = GetModuleHandle(nullptr);
     memset(&_wc, 0, sizeof(_wc));
@@ -307,12 +305,15 @@ bool Window::Register() noexcept {
     _wc.cbClsExtra = 0;
     _wc.cbWndExtra = 0;
     _wc.hInstance = _hInstance;
-    _wc.hIcon = nullptr;
-    _wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+    auto path = FileUtils::GetKnownFolderPath(FileUtils::KnownPathID::GameData) / "Resources/Icons/icon.ico";
+    HICON iconTaskbar = (HICON)::LoadImage(nullptr, path.string().c_str(), IMAGE_ICON, 64, 64, LR_LOADFROMFILE);
+    _wc.hIcon = iconTaskbar;
+    _wc.hCursor = ::LoadCursor(NULL, IDC_ARROW);
     _wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
     _wc.lpszMenuName = NULL;
     _wc.lpszClassName = window_class_name;
-    _wc.hIconSm = nullptr;
+    HICON iconTitlebar = (HICON)::LoadImage(nullptr, path.string().c_str(), IMAGE_ICON, 16, 16, LR_LOADFROMFILE);
+    _wc.hIconSm = iconTitlebar;
     return 0 != RegisterClassEx(&_wc);
 }
 

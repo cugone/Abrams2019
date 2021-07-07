@@ -3051,12 +3051,12 @@ void Renderer::UnbindComputeConstantBuffers() noexcept {
     }
 }
 
-void Renderer::SetWindowIcon(void* iconResource) noexcept {
-    if(auto output = GetOutput()) {
-        if(auto window = output->GetWindow()) {
-            window->SetIcon(iconResource);
-        }
-    }
+void Renderer::SetWindowIcon(void* /*iconResource*/) noexcept {
+    //if(auto output = GetOutput()) {
+        //if(auto window = output->GetWindow()) {
+            //window->SetIcon(iconResource);
+        //}
+    //}
 }
 
 void Renderer::SetWindowTitle(const std::string& newTitle) noexcept {

@@ -56,8 +56,6 @@ public:
     void SetTitle(const std::string& title) noexcept;
     [[nodiscard]] const std::string& GetTitle() const noexcept;
 
-    void SetIcon(void* iconResource) noexcept;
-
 protected:
     [[nodiscard]] bool Register() noexcept;
     [[nodiscard]] bool Unregister() noexcept;
