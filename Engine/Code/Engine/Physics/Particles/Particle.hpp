@@ -15,7 +15,7 @@ class Material;
 
 class ParticleRenderState {
 public:
-    enum ParticleShape {
+    enum class ParticleShape {
         Quad,
         Cube,
     };
