@@ -62,6 +62,8 @@
     <ClCompile Include="Core\TimeUtils.cpp" />
     <ClCompile Include="Core\Utilities.cpp" />
     <ClCompile Include="Core\Win.cpp" />
+    <ClCompile Include="Game\GameBase.cpp" />
+    <ClCompile Include="Game\GameSettings.cpp" />
     <ClCompile Include="Input\InputSystem.cpp" />
     <ClCompile Include="Input\KeyCode.cpp" />
     <ClCompile Include="Input\XboxController.cpp" />
@@ -220,6 +222,8 @@
     <ClInclude Include="Core\TypeUtils.hpp" />
     <ClInclude Include="Core\Utilities.hpp" />
     <ClInclude Include="Core\Win.hpp" />
+    <ClInclude Include="Game\GameBase.hpp" />
+    <ClInclude Include="Game\GameSettings.hpp" />
     <ClInclude Include="Input\InputSystem.hpp" />
     <ClInclude Include="Input\KeyCode.hpp" />
     <ClInclude Include="Input\XboxController.hpp" />

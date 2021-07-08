@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine/Audio/AudioSystem.hpp"
+#include "Engine/Core/App.hpp"
 #include "Engine/Core/Config.hpp"
 #include "Engine/Core/Console.hpp"
 #include "Engine/Core/FileLogger.hpp"
@@ -8,8 +9,7 @@
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Renderer/Renderer.hpp"
 #include "Engine/UI/UISystem.hpp"
-#include "Engine/App.hpp"
-#include "Engine/Game.hpp"
+#include "Engine/Game/GameBase.hpp"
 
 extern JobSystem* g_theJobSystem;
 extern FileLogger* g_theFileLogger;

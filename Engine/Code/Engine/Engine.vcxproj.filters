@@ -71,6 +71,9 @@
     <Filter Include="Physics\Particles">
       <UniqueIdentifier>{b1c5d50a-7916-48b5-a7cb-68a8c6d7aaee}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{8f2a621d-7ba7-4449-9dd5-01726f3f7d56}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Math\Vector2.cpp">
@@ -522,6 +525,12 @@
     </ClCompile>
     <ClCompile Include="Core\App.cpp">
       <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\GameSettings.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\GameBase.cpp">
+      <Filter>Game</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1028,6 +1037,12 @@
     </ClInclude>
     <ClInclude Include="Core\App.hpp">
       <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\GameSettings.hpp">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\GameBase.hpp">
+      <Filter>Game</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
