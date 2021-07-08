@@ -5,6 +5,9 @@
 #include "Engine/Physics/RigidBody.hpp"
 #include "Engine/Renderer/Renderer.hpp"
 
+#include "Engine/Services/ServiceLocator.hpp"
+#include "Engine/Services/IRendererService.hpp"
+
 CableJoint::CableJoint(const CableJointDef& def) noexcept {
     _def.rigidBodyA = def.rigidBodyA;
     _def.rigidBodyB = def.rigidBodyB;
@@ -59,12 +62,13 @@ void CableJoint::Notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noex
     }
 }
 
-void CableJoint::DebugRender(Renderer& renderer) const noexcept {
+void CableJoint::DebugRender() const noexcept {
     if(!(_def.rigidBodyA || _def.rigidBodyB)) {
         return;
     }
     const auto posA = GetAnchorA();
     const auto posB = GetAnchorB();
+    auto& renderer = ServiceLocator::get<IRendererService>();
     renderer.SetModelMatrix(Matrix4::I);
     renderer.DrawLine2D(posA, posB);
 }

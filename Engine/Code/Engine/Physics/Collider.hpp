@@ -12,7 +12,7 @@ struct Position;
 class Collider {
 public:
     virtual ~Collider() = default;
-    virtual void DebugRender(Renderer& renderer) const noexcept = 0;
+    virtual void DebugRender() const noexcept = 0;
     [[nodiscard]] virtual Vector2 CalcDimensions() const noexcept = 0;
     [[nodiscard]] virtual Vector2 CalcCenter() const noexcept = 0;
     [[nodiscard]] virtual float CalcArea() const noexcept = 0;
@@ -31,7 +31,7 @@ public:
     explicit ColliderPolygon(int sides, const Vector2& position, const Vector2& half_extents, float orientationDegrees);
 
     virtual ~ColliderPolygon() = default;
-    virtual void DebugRender(Renderer& renderer) const noexcept override;
+    virtual void DebugRender() const noexcept override;
     virtual void SetPosition(const Vector2& position) noexcept override;
     [[nodiscard]] virtual float GetOrientationDegrees() const noexcept override;
     virtual void SetOrientationDegrees(float degrees) noexcept override;
@@ -66,7 +66,7 @@ public:
     virtual ~ColliderAABB() = default;
     [[nodiscard]] virtual float CalcArea() const noexcept override;
 
-    virtual void DebugRender(Renderer& renderer) const noexcept override;
+    virtual void DebugRender() const noexcept override;
     [[nodiscard]] virtual Vector2 GetHalfExtents() const noexcept override;
     [[nodiscard]] virtual Vector2 Support(const Vector2& d) const noexcept override;
     virtual void SetPosition(const Vector2& position) noexcept override;
@@ -87,7 +87,7 @@ public:
     virtual ~ColliderOBB() = default;
     [[nodiscard]] virtual float CalcArea() const noexcept override;
 
-    virtual void DebugRender(Renderer& renderer) const noexcept override;
+    virtual void DebugRender() const noexcept override;
     [[nodiscard]] virtual Vector2 GetHalfExtents() const noexcept override;
     [[nodiscard]] virtual Vector2 Support(const Vector2& d) const noexcept override;
     virtual void SetPosition(const Vector2& position) noexcept override;
@@ -110,7 +110,7 @@ public:
     [[nodiscard]] virtual float CalcArea() const noexcept override;
     [[nodiscard]] virtual Vector2 GetHalfExtents() const noexcept override;
     [[nodiscard]] virtual Vector2 Support(const Vector2& d) const noexcept override;
-    virtual void DebugRender(Renderer& renderer) const noexcept override;
+    virtual void DebugRender() const noexcept override;
     virtual void SetPosition(const Vector2& position) noexcept override;
     [[nodiscard]] virtual float GetOrientationDegrees() const noexcept override;
     virtual void SetOrientationDegrees(float degrees) noexcept override;

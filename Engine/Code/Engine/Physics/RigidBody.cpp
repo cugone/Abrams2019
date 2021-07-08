@@ -6,6 +6,9 @@
 #include "Engine/Profiling/ProfileLogScope.hpp"
 #include "Engine/Renderer/Renderer.hpp"
 
+#include "Engine/Services/ServiceLocator.hpp"
+#include "Engine/Services/IRendererService.hpp"
+
 #include <cmath>
 #include <numeric>
 #include <type_traits>
@@ -158,7 +161,8 @@ void RigidBody::Update(TimeUtils::FPSeconds deltaSeconds) {
     }
 }
 
-void RigidBody::DebugRender(Renderer& renderer) const {
+void RigidBody::DebugRender() const {
+    auto& renderer = ServiceLocator::get<IRendererService>();
     if(const auto collider = GetCollider(); collider != nullptr) {
         const auto he = this->GetBounds().half_extents * 2.0f;
         const auto S = Matrix4::CreateScaleMatrix(he);
@@ -166,7 +170,7 @@ void RigidBody::DebugRender(Renderer& renderer) const {
         const auto T = Matrix4::CreateTranslationMatrix(GetPosition());
         const auto M = Matrix4::MakeSRT(S, R, T);
         renderer.SetModelMatrix(M);
-        collider->DebugRender(renderer);
+        collider->DebugRender();
         renderer.DrawOBB2(GetOrientationDegrees(), Rgba::Green);
     }
 }

@@ -36,7 +36,7 @@ public:
     [[nodiscard]] virtual bool IsNotAttached() const noexcept = 0;
 
     virtual void Notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept = 0;
-    virtual void DebugRender(Renderer& renderer) const noexcept = 0;
+    virtual void DebugRender() const noexcept = 0;
 
     [[nodiscard]] virtual RigidBody* GetBodyA() const noexcept = 0;
     [[nodiscard]] virtual RigidBody* GetBodyB() const noexcept = 0;

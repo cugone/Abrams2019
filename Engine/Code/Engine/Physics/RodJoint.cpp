@@ -5,6 +5,9 @@
 #include "Engine/Physics/RigidBody.hpp"
 #include "Engine/Renderer/Renderer.hpp"
 
+#include "Engine/Services/ServiceLocator.hpp"
+#include "Engine/Services/IRendererService.hpp"
+
 RodJoint::RodJoint(const RodJointDef& def) noexcept {
     _def.rigidBodyA = def.rigidBodyA;
     _def.rigidBodyB = def.rigidBodyB;
@@ -66,12 +69,13 @@ void RodJoint::Notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexce
     }
 }
 
-void RodJoint::DebugRender(Renderer& renderer) const noexcept {
+void RodJoint::DebugRender() const noexcept {
     if(!(_def.rigidBodyA || _def.rigidBodyB)) {
         return;
     }
     const auto posA = GetAnchorA();
     const auto posB = GetAnchorB();
+    auto& renderer = ServiceLocator::get<IRendererService>();
     renderer.SetModelMatrix(Matrix4::I);
     renderer.DrawLine2D(posA, posB);
 }

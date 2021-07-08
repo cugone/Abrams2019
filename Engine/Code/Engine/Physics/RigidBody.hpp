@@ -95,7 +95,7 @@ public:
 
     void BeginFrame();
     void Update(TimeUtils::FPSeconds deltaSeconds);
-    void DebugRender(Renderer& renderer) const;
+    void DebugRender() const;
     void Endframe();
 
     void EnablePhysics(bool enabled);

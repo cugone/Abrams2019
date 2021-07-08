@@ -4,14 +4,17 @@
 #include "Engine/Physics/PhysicsTypes.hpp"
 #include "Engine/Renderer/Renderer.hpp"
 
+#include "Engine/Services/ServiceLocator.hpp"
+#include "Engine/Services/IRendererService.hpp"
+
 ColliderPolygon::ColliderPolygon(int sides, const Vector2& position, const Vector2& half_extents, float orientationDegrees)
 : Collider()
 , _polygon{sides, position, half_extents, orientationDegrees} {
     /* DO NOTHING */
 }
 
-void ColliderPolygon::DebugRender(Renderer& renderer) const noexcept {
-    renderer.DrawPolygon2D(Vector2::ZERO, 0.5f, _polygon.GetSides(), Rgba::Pink);
+void ColliderPolygon::DebugRender() const noexcept {
+    ServiceLocator::get<IRendererService>().DrawPolygon2D(Vector2::ZERO, 0.5f, _polygon.GetSides(), Rgba::Pink);
 }
 
 int ColliderPolygon::GetSides() const {
@@ -117,8 +120,8 @@ float ColliderOBB::CalcArea() const noexcept {
     return dims.x * dims.y;
 }
 
-void ColliderOBB::DebugRender(Renderer& renderer) const noexcept {
-    renderer.DrawOBB2(m_obb.orientationDegrees, Rgba::Pink);
+void ColliderOBB::DebugRender() const noexcept {
+    ServiceLocator::get<IRendererService>().DrawOBB2(m_obb.orientationDegrees, Rgba::Pink);
 }
 
 Vector2 ColliderOBB::GetHalfExtents() const noexcept {
@@ -176,8 +179,8 @@ Vector2 ColliderCircle::Support(const Vector2& d) const noexcept {
     //return ColliderPolygon::Support(d);
 }
 
-void ColliderCircle::DebugRender(Renderer& renderer) const noexcept {
-    renderer.DrawCircle2D(Vector2::ZERO, 0.5f, Rgba::Pink); // _polygon.GetPosition(), _polygon.GetHalfExtents().x, Rgba::Pink);
+void ColliderCircle::DebugRender() const noexcept {
+    ServiceLocator::get<IRendererService>().DrawCircle2D(Vector2::ZERO, 0.5f, Rgba::Pink); // _polygon.GetPosition(), _polygon.GetHalfExtents().x, Rgba::Pink);
 }
 
 void ColliderCircle::SetPosition(const Vector2& position) noexcept {
@@ -218,10 +221,10 @@ float ColliderAABB::CalcArea() const noexcept {
     return dims.x * dims.y;
 }
 
-void ColliderAABB::DebugRender(Renderer& renderer) const noexcept {
+void ColliderAABB::DebugRender() const noexcept {
     AABB2 aabb = AABB2::NEG_ONE_TO_ONE;
     aabb.ScalePadding(0.5f, 0.5f);
-    renderer.DrawAABB2(aabb, Rgba::Pink, Rgba::NoAlpha);
+    ServiceLocator::get<IRendererService>().DrawAABB2(aabb, Rgba::Pink, Rgba::NoAlpha);
 }
 
 Vector2 ColliderAABB::GetHalfExtents() const noexcept {

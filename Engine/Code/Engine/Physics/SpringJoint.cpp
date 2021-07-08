@@ -4,6 +4,9 @@
 #include "Engine/Physics/RigidBody.hpp"
 #include "Engine/Renderer/Renderer.hpp"
 
+#include "Engine/Services/ServiceLocator.hpp"
+#include "Engine/Services/IRendererService.hpp"
+
 SpringJoint::SpringJoint(const SpringJointDef& def) noexcept {
     _def.rigidBodyA = def.rigidBodyA;
     _def.rigidBodyB = def.rigidBodyB;
@@ -51,12 +54,14 @@ void SpringJoint::Notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noe
     second_body->ApplyImpulse(left_direction * left_magnitude);
 }
 
-void SpringJoint::DebugRender(Renderer& renderer) const noexcept {
+void SpringJoint::DebugRender() const noexcept {
     if(!(_def.rigidBodyA || _def.rigidBodyB)) {
         return;
     }
     const auto posA = GetAnchorA();
     const auto posB = GetAnchorB();
+
+    auto& renderer = ServiceLocator::get<IRendererService>();
     renderer.SetModelMatrix(Matrix4::I);
     renderer.DrawLine2D(posA, posB);
 }

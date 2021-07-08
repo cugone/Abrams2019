@@ -3,6 +3,9 @@
 #include "Engine/Math/Plane2.hpp"
 #include "Engine/Physics/PhysicsUtils.hpp"
 
+#include "Engine/Services/ServiceLocator.hpp"
+#include "Engine/Services/IRendererService.hpp"
+
 #include <algorithm>
 #include <mutex>
 
@@ -67,9 +70,8 @@ void PhysicsSystem::EnableDrag(bool isGravityEnabled) noexcept {
     }
 }
 
-PhysicsSystem::PhysicsSystem(Renderer& renderer, const PhysicsSystemDesc& desc /*= PhysicsSystemDesc{}*/)
-: _renderer(renderer)
-, _desc(desc)
+PhysicsSystem::PhysicsSystem(const PhysicsSystemDesc& desc /*= PhysicsSystemDesc{}*/)
+: _desc(desc)
 //, _world_partition(_desc.world_bounds)
 {
     /* DO NOTHING */
@@ -115,8 +117,9 @@ void PhysicsSystem::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
     _deltaSeconds = deltaSeconds;
     ApplyGravityAndDrag(deltaSeconds);
     ApplyCustomAndJointForces(deltaSeconds);
-    const auto camera_position = Vector2(_renderer.GetCamera().GetPosition());
-    const auto half_extents = Vector2(_renderer.GetOutput()->GetDimensions()) * 0.5f;
+    auto& renderer = ServiceLocator::get<IRendererService>();
+    const auto camera_position = Vector2(renderer.GetCamera().GetPosition());
+    const auto half_extents = Vector2(renderer.GetOutput()->GetDimensions()) * 0.5f;
     const auto query_area = AABB2(camera_position - half_extents, camera_position + half_extents);
     const auto potential_collisions = BroadPhaseCollision(query_area);
     const auto actual_collisions = NarrowPhaseCollision(potential_collisions, PhysicsUtils::GJK, PhysicsUtils::EPA);
@@ -234,21 +237,22 @@ void PhysicsSystem::SolveVelocityConstraints() const noexcept {
 }
 
 void PhysicsSystem::Render() const noexcept {
+    auto& renderer = ServiceLocator::get<IRendererService>();
     if(_show_colliders) {
         for(const auto& body : _rigidBodies) {
-            body->DebugRender(_renderer);
+            body->DebugRender();
         }
     }
     if(_show_joints) {
         for(const auto& joint : _joints) {
-            joint->DebugRender(_renderer);
+            joint->DebugRender();
         }
     }
     if(_show_world_partition) {
-        //_world_partition.DebugRender(_renderer);
+        //_world_partition.DebugRender();
     }
     if(_show_contacts) {
-        _renderer.SetModelMatrix(Matrix4::I);
+        renderer.SetModelMatrix(Matrix4::I);
     }
 }
 

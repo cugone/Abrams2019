@@ -37,7 +37,7 @@ struct PhysicsSystemDesc {
 
 class PhysicsSystem {
 public:
-    explicit PhysicsSystem(Renderer& renderer, const PhysicsSystemDesc& desc = PhysicsSystemDesc{});
+    explicit PhysicsSystem(const PhysicsSystemDesc& desc = PhysicsSystemDesc{});
     ~PhysicsSystem();
 
     void Initialize() noexcept;
@@ -95,7 +95,6 @@ private:
     void SolvePositionConstraints() const noexcept;
     void SolveVelocityConstraints() const noexcept;
 
-    Renderer& _renderer;
     PhysicsSystemDesc _desc{};
     bool _is_running = false;
     std::vector<RigidBody*> _rigidBodies{};
