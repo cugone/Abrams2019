@@ -62,7 +62,6 @@
     <ClCompile Include="Core\TimeUtils.cpp" />
     <ClCompile Include="Core\Utilities.cpp" />
     <ClCompile Include="Core\Win.cpp" />
-    <ClCompile Include="Game\GameBase.cpp" />
     <ClCompile Include="Game\GameSettings.cpp" />
     <ClCompile Include="Input\InputSystem.cpp" />
     <ClCompile Include="Input\KeyCode.cpp" />
