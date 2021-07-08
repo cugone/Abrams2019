@@ -19,7 +19,7 @@ public:
         Quad,
         Cube,
     };
-    ParticleRenderState();
+    ParticleRenderState() noexcept = default;
 
     ParticleRenderState(const ParticleRenderState& other) = default;
     ParticleRenderState& operator=(const ParticleRenderState& rhs) = default;

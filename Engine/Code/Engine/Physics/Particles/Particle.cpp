@@ -218,22 +218,6 @@ bool operator<(const Particle& a, const Particle& b) {
     return a.GetRenderState().GetColor().a < b.GetRenderState().GetColor().a;
 }
 
-//------------------------------------------------------------------------------
-ParticleRenderState::ParticleRenderState()
-: start_scale(1.0f, 1.0f, 1.0f)
-, scale(start_scale)
-, end_scale(start_scale)
-, start_age(1.0f)
-, age(start_age)
-, start_color(Rgba::White)
-, color(start_color)
-, end_color(start_color)
-, shape(ParticleShape::Quad)
-, particle_material(nullptr)
-, billboarded(false) {
-    /* DO NOTHING */
-}
-
 void ParticleRenderState::SetLifetime(float lifetimeSeconds) {
     start_age = lifetimeSeconds;
     age = start_age;
