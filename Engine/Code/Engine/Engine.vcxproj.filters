@@ -517,6 +517,12 @@
     <ClCompile Include="Physics\Particles\ParticleEffect.cpp">
       <Filter>Physics\Particles</Filter>
     </ClCompile>
+    <ClCompile Include="Core\EngineCommon.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\App.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vector2.hpp">
@@ -1016,6 +1022,12 @@
     </ClInclude>
     <ClInclude Include="Physics\Particles\ParticleEffect.hpp">
       <Filter>Physics\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\EngineCommon.hpp">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\App.hpp">
+      <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

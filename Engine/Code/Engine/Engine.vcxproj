@@ -31,10 +31,12 @@
     <ClCompile Include="..\Thirdparty\TinyXML2\tinyxml2.cpp" />
     <ClCompile Include="Audio\AudioSystem.cpp" />
     <ClCompile Include="Audio\Wav.cpp" />
+    <ClCompile Include="Core\App.cpp" />
     <ClCompile Include="Core\Argb.cpp" />
     <ClCompile Include="Core\ArgumentParser.cpp" />
     <ClCompile Include="Core\Base64.cpp" />
     <ClCompile Include="Core\BuildConfig.hpp" />
+    <ClCompile Include="Core\EngineCommon.cpp" />
     <ClCompile Include="Core\JobTypes.cpp" />
     <ClCompile Include="Core\MtlReader.cpp" />
     <ClCompile Include="Core\OrthographicCameraController.cpp" />
@@ -185,9 +187,11 @@
     <ClInclude Include="..\Thirdparty\TinyXML2\tinyxml2.h" />
     <ClInclude Include="Audio\AudioSystem.hpp" />
     <ClInclude Include="Audio\Wav.hpp" />
+    <ClInclude Include="Core\App.hpp" />
     <ClInclude Include="Core\Argb.hpp" />
     <ClInclude Include="Core\ArgumentParser.hpp" />
     <ClInclude Include="Core\Base64.hpp" />
+    <ClInclude Include="Core\EngineCommon.hpp" />
     <ClInclude Include="Core\JobTypes.hpp" />
     <ClInclude Include="Core\MtlReader.hpp" />
     <ClInclude Include="Core\OrthographicCameraController.hpp" />
