@@ -109,12 +109,12 @@ void ParticleEmitter::Update(float time, float deltaSeconds) {
 }
 
 void ParticleEmitter::Render() const {
-    const auto p = Matrix4::I;
+    const auto p = Matrix4::CreateTranslationMatrix(parent_effect->position);
     const auto t = Matrix4::CreateTranslationMatrix(ParticleEmitterDefinition::GetParticleEmitterDefinition(_name)->_position);
     const auto s = Matrix4::I;
     const auto r = Matrix4::I;
 
-    const auto pointlight_model = Matrix4::MakeRT(Matrix4::MakeSRT(s, r, t), p);
+    const auto pointlight_model = Matrix4::MakeRT(p, Matrix4::MakeSRT(s, r, t));
 
     auto& renderer = ServiceLocator::get<IRendererService>();
     renderer.SetModelMatrix(pointlight_model);
@@ -177,7 +177,7 @@ void ParticleEmitter::UpdateParticles(float time, float deltaSeconds) {
     const auto loc = Matrix4::CreateTranslationMatrix(definition->_position);
     auto& renderer = ServiceLocator::get<IRendererService>();
     const auto billboard = definition->_isBillboarded ? renderer.GetCamera().GetInverseViewMatrix() : Matrix4::I;
-    const auto result = loc * billboard;
+    const auto result = Matrix4::MakeRT(billboard, loc);
     for(Particle& p : _particles) {
         renderer.AppendModelMatrix(result);
         p.Update(time, deltaSeconds);
