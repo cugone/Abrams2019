@@ -12,6 +12,84 @@
 #include <iostream>
 #include <sstream>
 
+bool IsIntrinsic(std::filesystem::path& p) noexcept;
+
+bool IsIntrinsic(std::filesystem::path& p) noexcept {
+    return StringUtils::StartsWith(p.string(), "__");
+}
+
+namespace StringUtils {
+    std::string to_string(const Material::TextureID& slot) noexcept {
+        switch(slot) {
+        case Material::TextureID::Diffuse: return "Diffuse";
+        case Material::TextureID::Normal: return "Normal";
+        case Material::TextureID::Displacement: return "Displacement";
+        case Material::TextureID::Specular: return "Specular";
+        case Material::TextureID::Occlusion: return "Occlusion";
+        case Material::TextureID::Emissive: return "Emissive";
+        case Material::TextureID::Custom1: return "Texture 1";
+        case Material::TextureID::Custom2: return "Texture 2";
+        case Material::TextureID::Custom3: return "Texture 3";
+        case Material::TextureID::Custom4: return "Texture 4";
+        case Material::TextureID::Custom5: return "Texture 5";
+        case Material::TextureID::Custom6: return "Texture 6";
+        case Material::TextureID::Custom7: return "Texture 7";
+        case Material::TextureID::Custom8: return "Texture 8";
+        case Material::TextureID::Custom9: return "Texture 9";
+        case Material::TextureID::Custom10: return "Texture 10";
+        case Material::TextureID::Custom11: return "Texture 11";
+        case Material::TextureID::Custom12: return "Texture 12";
+        case Material::TextureID::Custom13: return "Texture 13";
+        case Material::TextureID::Custom14: return "Texture 14";
+        case Material::TextureID::Custom15: return "Texture 15";
+        case Material::TextureID::Custom16: return "Texture 16";
+        case Material::TextureID::Custom17: return "Texture 17";
+        case Material::TextureID::Custom18: return "Texture 18";
+        case Material::TextureID::Custom19: return "Texture 19";
+        case Material::TextureID::Custom20: return "Texture 20";
+        case Material::TextureID::Custom21: return "Texture 21";
+        case Material::TextureID::Custom22: return "Texture 22";
+        case Material::TextureID::Custom23: return "Texture 23";
+        case Material::TextureID::Custom24: return "Texture 24";
+        case Material::TextureID::Custom25: return "Texture 25";
+        case Material::TextureID::Custom26: return "Texture 26";
+        case Material::TextureID::Custom27: return "Texture 27";
+        case Material::TextureID::Custom28: return "Texture 28";
+        case Material::TextureID::Custom29: return "Texture 29";
+        case Material::TextureID::Custom30: return "Texture 30";
+        case Material::TextureID::Custom31: return "Texture 31";
+        case Material::TextureID::Custom32: return "Texture 32";
+        case Material::TextureID::Custom33: return "Texture 33";
+        case Material::TextureID::Custom34: return "Texture 34";
+        case Material::TextureID::Custom35: return "Texture 35";
+        case Material::TextureID::Custom36: return "Texture 36";
+        case Material::TextureID::Custom37: return "Texture 37";
+        case Material::TextureID::Custom38: return "Texture 38";
+        case Material::TextureID::Custom39: return "Texture 39";
+        case Material::TextureID::Custom40: return "Texture 40";
+        case Material::TextureID::Custom41: return "Texture 41";
+        case Material::TextureID::Custom42: return "Texture 42";
+        case Material::TextureID::Custom43: return "Texture 43";
+        case Material::TextureID::Custom44: return "Texture 44";
+        case Material::TextureID::Custom45: return "Texture 45";
+        case Material::TextureID::Custom46: return "Texture 46";
+        case Material::TextureID::Custom47: return "Texture 47";
+        case Material::TextureID::Custom48: return "Texture 48";
+        case Material::TextureID::Custom49: return "Texture 49";
+        case Material::TextureID::Custom50: return "Texture 50";
+        case Material::TextureID::Custom51: return "Texture 51";
+        case Material::TextureID::Custom52: return "Texture 52";
+        case Material::TextureID::Custom53: return "Texture 53";
+        case Material::TextureID::Custom54: return "Texture 54";
+        case Material::TextureID::Custom55: return "Texture 55";
+        case Material::TextureID::Custom56: return "Texture 56";
+        case Material::TextureID::Custom57: return "Texture 57";
+        case Material::TextureID::Custom58: return "Texture 58";
+        default: return "UNKNOWN TEXTURE ID";
+        }
+    }
+}
+
 Material::Material() noexcept
 : _textures(CustomTextureIndexSlotOffset, nullptr) {
     auto&& rs = ServiceLocator::get<IRendererService>();
@@ -106,176 +184,30 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
     }
 
     if(const auto* xml_textures = element.FirstChildElement("textures")) {
-        auto& rs = ServiceLocator::get<IRendererService>();
-        auto* const invalid_tex = rs.GetTexture("__invalid");
-
-        if(const auto* xml_diffuse = xml_textures->FirstChildElement("diffuse")) {
-            const auto file = DataUtils::ParseXmlAttribute(*xml_diffuse, "src", "");
-            FS::path p(file);
-            bool bad_path = false;
-            if(!StringUtils::StartsWith(p.string(), "__")) {
-                std::error_code ec{};
-                p = FS::canonical(p, ec);
-                if(ec) {
-                    bad_path = true;
-                    _textures[0] = invalid_tex;
-                    DebuggerPrintf("Diffuse texture referenced in Material file \"%s\" could not be found. The filesystem returned an error: %s\n", _name.c_str(), ec.message().c_str());
-                }
-            }
-            if(!bad_path) {
-                p.make_preferred();
-                const auto& p_str = p.string();
-                bool empty_path = p.empty();
-                bool texture_not_loaded = rs.IsTextureNotLoaded(p_str);
-                if(texture_not_loaded) {
-                    texture_not_loaded = rs.CreateTexture(p.string(), IntVector3::XY_AXIS) ? false : true;
-                }
-                bool texture_not_exist = !empty_path && texture_not_loaded;
-                bool invalid_src = empty_path || texture_not_exist;
-                auto* tex = invalid_src ? invalid_tex : (rs.GetTexture(p_str));
-                _textures[0] = tex;
-            }
+        if(const auto* xml_diffuse = xml_textures->FirstChildElement("diffuse"); xml_diffuse) {
+            LoadTexture(Material::TextureID::Diffuse, FS::path{DataUtils::ParseXmlAttribute(*xml_diffuse, "src", "")});
         }
 
-        if(const auto* xml_normal = xml_textures->FirstChildElement("normal")) {
-            const auto file = DataUtils::ParseXmlAttribute(*xml_normal, "src", "");
-            FS::path p(file);
-            bool bad_path = false;
-            if(!StringUtils::StartsWith(p.string(), "__")) {
-                std::error_code ec{};
-                p = FS::canonical(p, ec);
-                if(ec) {
-                    bad_path = true;
-                    _textures[1] = invalid_tex;
-                    DebuggerPrintf("Normal texture referenced in Material file \"%s\" could not be found. The filesystem returned an error: %s\n", _name.c_str(), ec.message().c_str());
-                }
-            }
-            if(!bad_path) {
-                p.make_preferred();
-                const auto& p_str = p.string();
-                bool empty_path = p.empty();
-                bool texture_not_loaded = rs.IsTextureNotLoaded(p_str);
-                if(texture_not_loaded) {
-                    texture_not_loaded = rs.CreateTexture(p.string(), IntVector3::XY_AXIS) ? false : true;
-                }
-                bool texture_not_exist = !empty_path && texture_not_loaded;
-                bool invalid_src = empty_path || texture_not_exist;
-                auto* tex = invalid_src ? invalid_tex : (rs.GetTexture(p_str));
-                _textures[1] = tex;
-            }
+        if(const auto* xml_normal = xml_textures->FirstChildElement("normal"); xml_normal) {
+            LoadTexture(Material::TextureID::Normal, FS::path{DataUtils::ParseXmlAttribute(*xml_normal, "src", "")});
         }
 
-        if(const auto* xml_displacement = xml_textures->FirstChildElement("displacement")) {
-            const auto file = DataUtils::ParseXmlAttribute(*xml_displacement, "src", "");
-            FS::path p(file);
-            bool bad_path = false;
-            if(!StringUtils::StartsWith(p.string(), "__")) {
-                std::error_code ec{};
-                p = FS::canonical(p, ec);
-                if(ec) {
-                    bad_path = true;
-                    _textures[2] = invalid_tex;
-                    DebuggerPrintf("Displacement texture referenced in Material file \"%s\" could not be found. The filesystem returned an error: %s\n", _name.c_str(), ec.message().c_str());
-                }
-            }
-            if(!bad_path) {
-                p.make_preferred();
-                const auto& p_str = p.string();
-                bool empty_path = p.empty();
-                bool texture_not_loaded = rs.IsTextureNotLoaded(p_str);
-                if(texture_not_loaded) {
-                    texture_not_loaded = rs.CreateTexture(p.string(), IntVector3::XY_AXIS) ? false : true;
-                }
-                bool texture_not_exist = !empty_path && texture_not_loaded;
-                bool invalid_src = empty_path || texture_not_exist;
-                auto* tex = invalid_src ? invalid_tex : (rs.GetTexture(p_str));
-                _textures[2] = tex;
-            }
+        if(const auto* xml_displacement = xml_textures->FirstChildElement("displacement"); xml_displacement) {
+            LoadTexture(Material::TextureID::Displacement, FS::path{DataUtils::ParseXmlAttribute(*xml_displacement, "src", "")});
         }
 
-        if(const auto* xml_specular = xml_textures->FirstChildElement("specular")) {
-            const auto file = DataUtils::ParseXmlAttribute(*xml_specular, "src", "");
-            FS::path p(file);
-            bool bad_path = false;
-            if(!StringUtils::StartsWith(p.string(), "__")) {
-                std::error_code ec{};
-                p = FS::canonical(p, ec);
-                if(ec) {
-                    bad_path = true;
-                    _textures[3] = invalid_tex;
-                    DebuggerPrintf("Specular texture referenced in Material file \"%s\" could not be found. The filesystem returned an error: %s\n", _name.c_str(), ec.message().c_str());
-                }
-            }
-            if(!bad_path) {
-                p.make_preferred();
-                const auto& p_str = p.string();
-                bool empty_path = p.empty();
-                bool texture_not_loaded = rs.IsTextureNotLoaded(p_str);
-                if(texture_not_loaded) {
-                    texture_not_loaded = rs.CreateTexture(p.string(), IntVector3::XY_AXIS) ? false : true;
-                }
-                bool texture_not_exist = !empty_path && texture_not_loaded;
-                bool invalid_src = empty_path || texture_not_exist;
-                auto* tex = invalid_src ? invalid_tex : (rs.GetTexture(p_str));
-                _textures[3] = tex;
-            }
+        if(const auto* xml_specular = xml_textures->FirstChildElement("specular"); xml_specular) {
+            LoadTexture(Material::TextureID::Specular, FS::path{DataUtils::ParseXmlAttribute(*xml_specular, "src", "")});
         }
 
-        if(const auto* xml_occlusion = xml_textures->FirstChildElement("occlusion")) {
-            const auto file = DataUtils::ParseXmlAttribute(*xml_occlusion, "src", "");
-            FS::path p(file);
-            bool bad_path = false;
-            if(!StringUtils::StartsWith(p.string(), "__")) {
-                std::error_code ec{};
-                p = FS::canonical(p, ec);
-                if(ec) {
-                    bad_path = true;
-                    _textures[4] = invalid_tex;
-                    DebuggerPrintf("Occlusion texture referenced in Material file \"%s\" could not be found. The filesystem returned an error: %s\n", _name.c_str(), ec.message().c_str());
-                }
-            }
-            if(!bad_path) {
-                p.make_preferred();
-                const auto& p_str = p.string();
-                bool empty_path = p.empty();
-                bool texture_not_loaded = rs.IsTextureNotLoaded(p_str);
-                if(texture_not_loaded) {
-                    texture_not_loaded = rs.CreateTexture(p.string(), IntVector3::XY_AXIS) ? false : true;
-                }
-                bool texture_not_exist = !empty_path && texture_not_loaded;
-                bool invalid_src = empty_path || texture_not_exist;
-                auto* tex = invalid_src ? invalid_tex : (rs.GetTexture(p_str));
-                _textures[4] = tex;
-            }
+        if(const auto* xml_occlusion = xml_textures->FirstChildElement("occlusion"); xml_occlusion) {
+            LoadTexture(Material::TextureID::Occlusion, FS::path{DataUtils::ParseXmlAttribute(*xml_occlusion, "src", "")});
         }
 
         if(const auto* xml_emissive = xml_textures->FirstChildElement("emissive")) {
-            const auto file = DataUtils::ParseXmlAttribute(*xml_emissive, "src", "");
-            FS::path p(file);
-            bool bad_path = false;
-            if(!StringUtils::StartsWith(p.string(), "__")) {
-                std::error_code ec{};
-                p = FS::canonical(p, ec);
-                if(ec) {
-                    bad_path = true;
-                    _textures[5] = invalid_tex;
-                    DebuggerPrintf("Emissive texture referenced in Material file \"%s\" could not be found. The filesystem returned an error: %s\n", _name.c_str(), ec.message().c_str());
-                }
-            }
-            if(!bad_path) {
-                p.make_preferred();
-                const auto& p_str = p.string();
-                bool empty_path = p.empty();
-                bool texture_not_loaded = rs.IsTextureNotLoaded(p_str);
-                if(texture_not_loaded) {
-                    texture_not_loaded = rs.CreateTexture(p.string(), IntVector3::XY_AXIS) ? false : true;
-                }
-                bool texture_not_exist = !empty_path && texture_not_loaded;
-                bool invalid_src = empty_path || texture_not_exist;
-                auto* tex = invalid_src ? invalid_tex : (rs.GetTexture(p_str));
-                _textures[5] = tex;
-            }
+            LoadTexture(Material::TextureID::Emissive, FS::path{DataUtils::ParseXmlAttribute(*xml_emissive, "src", "")});
         }
+
         {
             const auto numTextures = DataUtils::GetChildElementCount(*xml_textures, "texture");
             if(numTextures >= MaxCustomTextureSlotCount) {
@@ -284,41 +216,50 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
             AddTextureSlots(numTextures);
         }
 
-        DataUtils::ForEachChildElement(*xml_textures, "texture", [this, &invalid_tex](const XMLElement& elem) {
+        DataUtils::ForEachChildElement(*xml_textures, "texture", [this](const XMLElement& elem) {
             DataUtils::ValidateXmlElement(elem, "texture", "", "index,src");
-            std::size_t index = CustomTextureIndexSlotOffset + DataUtils::ParseXmlAttribute(elem, std::string("index"), 0u);
+            const std::size_t index = CustomTextureIndexSlotOffset + DataUtils::ParseXmlAttribute(elem, std::string("index"), std::size_t{0u});
             if(index >= CustomTextureIndexSlotOffset + MaxCustomTextureSlotCount) {
                 return;
             }
-            auto file = DataUtils::ParseXmlAttribute(elem, "src", "");
-            FS::path p(file);
-            bool bad_path = false;
-            if(!StringUtils::StartsWith(p.string(), "__")) {
-                std::error_code ec{};
-                p = FS::canonical(p, ec);
-                if(ec) {
-                    bad_path = true;
-                    _textures[index] = invalid_tex;
-                    DebuggerPrintf("Custom texture at index %lu referenced in Material file \"%s\" could not be found. The filesystem returned an error: %s\n", index, _name.c_str(), ec.message().c_str());
-                }
-            }
-            if(!bad_path) {
-                p.make_preferred();
-                const auto& p_str = p.string();
-                bool empty_path = p.empty();
-                auto& rs = ServiceLocator::get<IRendererService>();
-                bool texture_not_loaded = rs.IsTextureNotLoaded(p_str);
-                if(texture_not_loaded) {
-                    texture_not_loaded = rs.CreateTexture(p.string(), IntVector3::XY_AXIS) ? false : true;
-                }
-                bool texture_not_exist = !empty_path && texture_not_loaded;
-                bool invalid_src = empty_path || texture_not_exist;
-                auto* tex = invalid_src ? invalid_tex : (rs.GetTexture(p_str));
-                _textures[index] = tex;
-            }
+            LoadTexture(static_cast<TextureID>(index), FS::path{DataUtils::ParseXmlAttribute(elem, "src", "")});
         });
     }
     return true;
+}
+
+void Material::LoadTexture(const TextureID& slotId, std::filesystem::path p) noexcept {
+    SetTextureSlotToInvalid(slotId);
+    if(!IsIntrinsic(p)) {
+        std::error_code ec{};
+        p = std::filesystem::canonical(p, ec);
+        if(ec) {
+            const auto texIdAsStr = StringUtils::to_string(slotId);
+            static const std::string err_msg{" texture referenced in Material file \"%s\" could not be found. The filesystem returned an error: %s\n"};
+            DebuggerPrintf((texIdAsStr + err_msg).c_str(), _name.c_str(), ec.message().c_str());
+            return;
+        }
+    }
+    p.make_preferred();
+    const auto& p_str = p.string();
+    bool empty_path = p.empty();
+    auto& rs = ServiceLocator::get<IRendererService>();
+    bool texture_not_loaded = rs.IsTextureNotLoaded(p_str);
+    if(texture_not_loaded) {
+        texture_not_loaded = rs.CreateTexture(p.string(), IntVector3::XY_AXIS) ? false : true;
+    }
+    bool texture_not_exist = !empty_path && texture_not_loaded;
+    bool invalid_src = empty_path || texture_not_exist;
+    auto* tex = invalid_src ? rs.GetTexture("__invalid") : (rs.GetTexture(p_str));
+    SetTextureSlot(slotId, tex);
+}
+
+void Material::SetTextureSlotToInvalid(const TextureID& slotId) noexcept {
+    auto& rs = ServiceLocator::get<IRendererService>();
+    auto* const invalid_tex = rs.GetTexture("__invalid");
+    using underlying = std::underlying_type_t<TextureID>;
+    const auto slotAsIndex = static_cast<underlying>(slotId);
+    _textures[slotAsIndex] = invalid_tex;
 }
 
 void Material::AddTextureSlots(std::size_t count) noexcept {

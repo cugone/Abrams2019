@@ -4,6 +4,7 @@
 #include "Engine/Renderer/DirectX/DX11.hpp"
 
 #include <filesystem>
+#include <string>
 
 class Renderer;
 class Shader;
@@ -104,8 +105,12 @@ public:
 protected:
 private:
     [[nodiscard]] bool LoadFromXml(const XMLElement& element) noexcept;
+    void SetTextureSlotToInvalid(const TextureID& slotId) noexcept;
+    void LoadTexture(const TextureID& slotId, std::filesystem::path p) noexcept;
+
     void AddTextureSlots(std::size_t count) noexcept;
     void AddTextureSlot() noexcept;
+
 
     constexpr static std::size_t CustomTextureIndexSlotOffset = 6u;
     constexpr static std::size_t MaxCustomTextureSlotCount = (D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT / 2) - CustomTextureIndexSlotOffset;
@@ -119,3 +124,7 @@ private:
     static inline std::size_t _defaultNameId{0};
     friend class FileUtils::MtlReader;
 };
+
+namespace StringUtils {
+    std::string to_string(const Material::TextureID& slot) noexcept;
+}
