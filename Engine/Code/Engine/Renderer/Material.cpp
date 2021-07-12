@@ -46,7 +46,6 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
     DataUtils::ValidateXmlElement(element, "material", "shader", "name", "lighting,textures");
 
     _name = DataUtils::ParseXmlAttribute(element, "name", _name);
-    auto& rs = ServiceLocator::get<IRendererService>();
     {
         const auto xml_shader = element.FirstChildElement("shader");
         DataUtils::ValidateXmlElement(*xml_shader, "shader", "", "src");
@@ -67,7 +66,7 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
             GUARANTEE_OR_DIE(!ec, error_msg.c_str());
         }
         shader_src.make_preferred();
-
+        auto& rs = ServiceLocator::get<IRendererService>();
         if(auto shader = rs.GetShader(shader_src.string())) {
             _shader = shader;
         } else {
@@ -107,6 +106,7 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
     }
 
     if(const auto xml_textures = element.FirstChildElement("textures")) {
+        auto& rs = ServiceLocator::get<IRendererService>();
         const auto invalid_tex = rs.GetTexture("__invalid");
 
         if(const auto xml_diffuse = xml_textures->FirstChildElement("diffuse")) {
@@ -285,7 +285,6 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
         }
 
         DataUtils::ForEachChildElement(*xml_textures, "texture", [this, &invalid_tex](const XMLElement& elem) {
-            auto& rs = ServiceLocator::get<IRendererService>();
             DataUtils::ValidateXmlElement(elem, "texture", "", "index,src");
             std::size_t index = CustomTextureIndexSlotOffset + DataUtils::ParseXmlAttribute(elem, std::string("index"), 0u);
             if(index >= CustomTextureIndexSlotOffset + MaxCustomTextureSlotCount) {
@@ -307,6 +306,7 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
                 p.make_preferred();
                 const auto& p_str = p.string();
                 bool empty_path = p.empty();
+                auto& rs = ServiceLocator::get<IRendererService>();
                 bool texture_not_loaded = rs.IsTextureNotLoaded(p_str);
                 if(texture_not_loaded) {
                     texture_not_loaded = rs.CreateTexture(p.string(), IntVector3::XY_AXIS) ? false : true;
