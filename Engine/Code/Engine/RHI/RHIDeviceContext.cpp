@@ -35,7 +35,7 @@ void RHIDeviceContext::Flush() noexcept {
 }
 
 void RHIDeviceContext::ClearColorTarget(Texture* output, const Rgba& color) noexcept {
-    const auto [r, g, b, a] = color.GetAsFloats();
+    const auto&& [r, g, b, a] = color.GetAsFloats();
     _dx_context->ClearRenderTargetView(output->GetRenderTargetView(), Vector4{r, g, b, a}.GetAsFloatArray());
 }
 
@@ -219,8 +219,8 @@ void RHIDeviceContext::SetShaderProgram(ShaderProgram* shaderProgram /*= nullptr
         _dx_context->HSSetShader(nullptr, nullptr, 0);
         _dx_context->GSSetShader(nullptr, nullptr, 0);
     } else {
-        auto il = shaderProgram->GetInputLayout();
-        auto dx_il = il ? il->GetDxInputLayout() : nullptr;
+        auto* il = shaderProgram->GetInputLayout();
+        auto* dx_il = il ? il->GetDxInputLayout() : nullptr;
         _dx_context->IASetInputLayout(dx_il);
         _dx_context->VSSetShader(shaderProgram->GetVS(), nullptr, 0);
         _dx_context->PSSetShader(shaderProgram->GetPS(), nullptr, 0);

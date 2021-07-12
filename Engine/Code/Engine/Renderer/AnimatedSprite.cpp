@@ -115,7 +115,7 @@ void AnimatedSprite::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
 }
 
 AABB2 AnimatedSprite::GetCurrentTexCoords() const noexcept {
-    const auto [x, y] = GetCurrentSpriteCoords();
+    const auto&& [x, y] = GetCurrentSpriteCoords();
     if(!_sheet.expired()) {
         return _sheet.lock()->GetTexCoordsFromSpriteCoords(x, y);
     }
@@ -301,12 +301,12 @@ int AnimatedSprite::GetIndexFromCoords(const IntVector2& coords) noexcept {
 
 void AnimatedSprite::LoadFromXml(const XMLElement& elem) noexcept {
     DataUtils::ValidateXmlElement(elem, "animation", "animationset", "", "spritesheet", "name");
-    if(const auto xml_sheet = elem.FirstChildElement("spritesheet")) {
+    if(const auto* xml_sheet = elem.FirstChildElement("spritesheet")) {
         DataUtils::ValidateXmlElement(*xml_sheet, "spritesheet", "", "src,dimensions");
         _sheet = ServiceLocator::get<IRendererService>().CreateSpriteSheet(*xml_sheet);
     }
 
-    const auto xml_animset = elem.FirstChildElement("animationset");
+    const auto* xml_animset = elem.FirstChildElement("animationset");
     DataUtils::ValidateXmlElement(*xml_animset, "animationset", "", "startindex,framelength,duration", "", "loop,reverse,pingpong");
 
     _start_index = DataUtils::ParseXmlAttribute(*xml_animset, "startindex", -1);

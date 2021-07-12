@@ -66,7 +66,7 @@ bool UIWidget::LoadFromXML(const std::filesystem::path& path) {
         return false;
     }
     if(tinyxml2::XMLDocument doc; tinyxml2::XML_SUCCESS == doc.LoadFile(path.string().c_str())) {
-        if(auto xml_ui = doc.RootElement()) {
+        if(auto* xml_ui = doc.RootElement()) {
             if(!HasPanelChild(*xml_ui)) {
                 return false;
             }

@@ -41,7 +41,7 @@ void FileLogger::Log_worker() noexcept {
         //Condition to wake up: not running or queue has jobs.
         _signal.wait(lock, [this]() -> bool { return !_is_running || !_queue.empty(); });
         if(!_queue.empty()) {
-            const auto str = _queue.front();
+            const auto& str = _queue.front();
             _queue.pop();
             _stream << str;
             RequestFlush();
@@ -73,8 +73,8 @@ struct copy_log_job_t {
 
 void FileLogger::DoCopyLog() noexcept {
     if(IsRunning()) {
-        auto job_data = new copy_log_job_t;
-        auto from_p = _current_log_path;
+        auto* job_data = new copy_log_job_t;
+        std::filesystem::path from_p = _current_log_path;
         from_p = FS::canonical(from_p);
         from_p.make_preferred();
         auto to_p = from_p.parent_path();
@@ -90,9 +90,9 @@ void FileLogger::DoCopyLog() noexcept {
 
 void FileLogger::CopyLog(void* user_data) noexcept {
     if(IsRunning()) {
-        auto job_data = static_cast<copy_log_job_t*>(user_data);
-        auto from = job_data->from;
-        auto to = job_data->to;
+        auto* job_data = static_cast<copy_log_job_t*>(user_data);
+        std::filesystem::path from = job_data->from;
+        std::filesystem::path to = job_data->to;
         std::scoped_lock<std::mutex> lock(_cs);
         _stream.flush();
         _stream.close();
@@ -104,10 +104,10 @@ void FileLogger::CopyLog(void* user_data) noexcept {
 }
 
 void FileLogger::FinalizeLog() noexcept {
-    auto from_p = _current_log_path;
+    std::filesystem::path from_p = _current_log_path;
     from_p = FS::canonical(from_p);
     from_p.make_preferred();
-    auto to_p = from_p;
+    std::filesystem::path to_p = from_p;
     auto logname = to_p.filename().stem().string();
     TimeUtils::DateTimeStampOptions opts;
     opts.use_separator = true;

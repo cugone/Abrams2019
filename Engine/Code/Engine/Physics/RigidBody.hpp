@@ -52,7 +52,7 @@ struct RigidBodyDesc {
     , initialAcceleration(other.initialAcceleration)
     , physicsMaterial(other.physicsMaterial)
     , physicsDesc(other.physicsDesc) {
-        auto new_collider = other.collider->Clone();
+        auto* new_collider = other.collider->Clone();
         delete collider;
         collider = new_collider;
     }
@@ -65,7 +65,7 @@ struct RigidBodyDesc {
         initialAcceleration = other.initialAcceleration;
         physicsMaterial = other.physicsMaterial;
         physicsDesc = other.physicsDesc;
-        auto new_collider = other.collider->Clone();
+        auto* new_collider = other.collider->Clone();
         delete collider;
         collider = new_collider;
         return *this;

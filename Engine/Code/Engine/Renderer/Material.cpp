@@ -47,7 +47,7 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
 
     _name = DataUtils::ParseXmlAttribute(element, "name", _name);
     {
-        const auto xml_shader = element.FirstChildElement("shader");
+        const auto* xml_shader = element.FirstChildElement("shader");
         DataUtils::ValidateXmlElement(*xml_shader, "shader", "", "src");
         const auto file = DataUtils::ParseXmlAttribute(*xml_shader, "src", "");
         FS::path shader_src(file);
@@ -67,7 +67,7 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
         }
         shader_src.make_preferred();
         auto& rs = ServiceLocator::get<IRendererService>();
-        if(auto shader = rs.GetShader(shader_src.string())) {
+        if(auto* shader = rs.GetShader(shader_src.string())) {
             _shader = shader;
         } else {
             DebuggerPrintf("Shader: %s\n referenced in Material file \"%s\" did not already exist. Attempting to create from source...", shader_src.string().c_str(), _name.c_str());
@@ -84,32 +84,32 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
         }
     }
 
-    if(const auto xml_lighting = element.FirstChildElement("lighting")) {
+    if(const auto* xml_lighting = element.FirstChildElement("lighting")) {
         DataUtils::ValidateXmlElement(*xml_lighting, "lighting", "", "", "specularIntensity,specularFactor,specularPower,glossFactor,emissiveFactor");
         //specularIntensity and specularFactor are synonyms
-        if(const auto xml_specInt = xml_lighting->FirstChildElement("specularIntensity")) {
+        if(const auto* xml_specInt = xml_lighting->FirstChildElement("specularIntensity")) {
             _specularIntensity = DataUtils::ParseXmlElementText(*xml_specInt, _specularIntensity);
         }
-        if(const auto xml_specFactor = xml_lighting->FirstChildElement("specularFactor")) {
+        if(const auto* xml_specFactor = xml_lighting->FirstChildElement("specularFactor")) {
             _specularIntensity = DataUtils::ParseXmlElementText(*xml_specFactor, _specularIntensity);
         }
         //specularPower and glossFactor are synonyms
-        if(const auto xml_specPower = xml_lighting->FirstChildElement("specularPower")) {
+        if(const auto* xml_specPower = xml_lighting->FirstChildElement("specularPower")) {
             _specularPower = DataUtils::ParseXmlElementText(*xml_specPower, _specularPower);
         }
-        if(const auto xml_glossFactor = xml_lighting->FirstChildElement("glossFactor")) {
+        if(const auto* xml_glossFactor = xml_lighting->FirstChildElement("glossFactor")) {
             _specularPower = DataUtils::ParseXmlElementText(*xml_glossFactor, _specularPower);
         }
-        if(const auto xml_emissiveFactor = xml_lighting->FirstChildElement("emissiveFactor")) {
+        if(const auto* xml_emissiveFactor = xml_lighting->FirstChildElement("emissiveFactor")) {
             _emissiveFactor = DataUtils::ParseXmlElementText(*xml_emissiveFactor, _emissiveFactor);
         }
     }
 
-    if(const auto xml_textures = element.FirstChildElement("textures")) {
+    if(const auto* xml_textures = element.FirstChildElement("textures")) {
         auto& rs = ServiceLocator::get<IRendererService>();
-        const auto invalid_tex = rs.GetTexture("__invalid");
+        auto* const invalid_tex = rs.GetTexture("__invalid");
 
-        if(const auto xml_diffuse = xml_textures->FirstChildElement("diffuse")) {
+        if(const auto* xml_diffuse = xml_textures->FirstChildElement("diffuse")) {
             const auto file = DataUtils::ParseXmlAttribute(*xml_diffuse, "src", "");
             FS::path p(file);
             bool bad_path = false;
@@ -132,12 +132,12 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
                 }
                 bool texture_not_exist = !empty_path && texture_not_loaded;
                 bool invalid_src = empty_path || texture_not_exist;
-                auto tex = invalid_src ? invalid_tex : (rs.GetTexture(p_str));
+                auto* tex = invalid_src ? invalid_tex : (rs.GetTexture(p_str));
                 _textures[0] = tex;
             }
         }
 
-        if(const auto xml_normal = xml_textures->FirstChildElement("normal")) {
+        if(const auto* xml_normal = xml_textures->FirstChildElement("normal")) {
             const auto file = DataUtils::ParseXmlAttribute(*xml_normal, "src", "");
             FS::path p(file);
             bool bad_path = false;
@@ -160,12 +160,12 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
                 }
                 bool texture_not_exist = !empty_path && texture_not_loaded;
                 bool invalid_src = empty_path || texture_not_exist;
-                auto tex = invalid_src ? invalid_tex : (rs.GetTexture(p_str));
+                auto* tex = invalid_src ? invalid_tex : (rs.GetTexture(p_str));
                 _textures[1] = tex;
             }
         }
 
-        if(const auto xml_displacement = xml_textures->FirstChildElement("displacement")) {
+        if(const auto* xml_displacement = xml_textures->FirstChildElement("displacement")) {
             const auto file = DataUtils::ParseXmlAttribute(*xml_displacement, "src", "");
             FS::path p(file);
             bool bad_path = false;
@@ -188,12 +188,12 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
                 }
                 bool texture_not_exist = !empty_path && texture_not_loaded;
                 bool invalid_src = empty_path || texture_not_exist;
-                auto tex = invalid_src ? invalid_tex : (rs.GetTexture(p_str));
+                auto* tex = invalid_src ? invalid_tex : (rs.GetTexture(p_str));
                 _textures[2] = tex;
             }
         }
 
-        if(const auto xml_specular = xml_textures->FirstChildElement("specular")) {
+        if(const auto* xml_specular = xml_textures->FirstChildElement("specular")) {
             const auto file = DataUtils::ParseXmlAttribute(*xml_specular, "src", "");
             FS::path p(file);
             bool bad_path = false;
@@ -216,12 +216,12 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
                 }
                 bool texture_not_exist = !empty_path && texture_not_loaded;
                 bool invalid_src = empty_path || texture_not_exist;
-                auto tex = invalid_src ? invalid_tex : (rs.GetTexture(p_str));
+                auto* tex = invalid_src ? invalid_tex : (rs.GetTexture(p_str));
                 _textures[3] = tex;
             }
         }
 
-        if(const auto xml_occlusion = xml_textures->FirstChildElement("occlusion")) {
+        if(const auto* xml_occlusion = xml_textures->FirstChildElement("occlusion")) {
             const auto file = DataUtils::ParseXmlAttribute(*xml_occlusion, "src", "");
             FS::path p(file);
             bool bad_path = false;
@@ -244,12 +244,12 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
                 }
                 bool texture_not_exist = !empty_path && texture_not_loaded;
                 bool invalid_src = empty_path || texture_not_exist;
-                auto tex = invalid_src ? invalid_tex : (rs.GetTexture(p_str));
+                auto* tex = invalid_src ? invalid_tex : (rs.GetTexture(p_str));
                 _textures[4] = tex;
             }
         }
 
-        if(const auto xml_emissive = xml_textures->FirstChildElement("emissive")) {
+        if(const auto* xml_emissive = xml_textures->FirstChildElement("emissive")) {
             const auto file = DataUtils::ParseXmlAttribute(*xml_emissive, "src", "");
             FS::path p(file);
             bool bad_path = false;
@@ -272,7 +272,7 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
                 }
                 bool texture_not_exist = !empty_path && texture_not_loaded;
                 bool invalid_src = empty_path || texture_not_exist;
-                auto tex = invalid_src ? invalid_tex : (rs.GetTexture(p_str));
+                auto* tex = invalid_src ? invalid_tex : (rs.GetTexture(p_str));
                 _textures[5] = tex;
             }
         }
@@ -313,7 +313,7 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
                 }
                 bool texture_not_exist = !empty_path && texture_not_loaded;
                 bool invalid_src = empty_path || texture_not_exist;
-                auto tex = invalid_src ? invalid_tex : (rs.GetTexture(p_str));
+                auto* tex = invalid_src ? invalid_tex : (rs.GetTexture(p_str));
                 _textures[index] = tex;
             }
         });

@@ -64,7 +64,7 @@ void KeyValueParser::Parse(const std::string& input) noexcept {
             continue;
         }
 
-        auto [key, value] = StringUtils::SplitOnFirst(cur_line, '=');
+        auto&& [key, value] = StringUtils::SplitOnFirst(cur_line, '=');
 
         key = StringUtils::TrimWhitespace(key);
         value = StringUtils::TrimWhitespace(value);

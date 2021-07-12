@@ -134,7 +134,7 @@ std::unique_ptr<Texture> RHIOutput::CreateDepthStencil() noexcept {
     Microsoft::WRL::ComPtr<ID3D11Texture2D> depthstencil{};
 
     D3D11_TEXTURE2D_DESC descDepth{};
-    const auto dims = GetBackBuffer()->GetDimensions();
+    const IntVector3& dims = GetBackBuffer()->GetDimensions();
     const auto width = dims.x;
     const auto height = dims.y;
     descDepth.Width = width;
@@ -163,7 +163,7 @@ std::unique_ptr<Texture> RHIOutput::CreateDepthStencil() noexcept {
 std::unique_ptr<Texture> RHIOutput::CreateFullscreenTexture() noexcept {
     D3D11_TEXTURE2D_DESC tex_desc{};
 
-    const auto dims = GetBackBuffer()->GetDimensions();
+    const IntVector3& dims = GetBackBuffer()->GetDimensions();
     const auto width = dims.x;
     const auto height = dims.y;
     tex_desc.Width = width;

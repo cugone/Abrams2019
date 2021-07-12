@@ -133,7 +133,7 @@ void RigidBody::Update(TimeUtils::FPSeconds deltaSeconds) {
     prev_orientationDegrees = orientationDegrees;
     orientationDegrees = new_orientationDegrees;
 
-    if(const auto collider = GetCollider(); collider != nullptr) {
+    if(auto* const collider = GetCollider(); collider != nullptr) {
         const auto S = Matrix4::CreateScaleMatrix(collider->GetHalfExtents());
         const auto R = Matrix4::Create2DRotationDegreesMatrix(orientationDegrees);
         const auto T = Matrix4::CreateTranslationMatrix(position);
@@ -163,7 +163,7 @@ void RigidBody::Update(TimeUtils::FPSeconds deltaSeconds) {
 
 void RigidBody::DebugRender() const {
     auto& renderer = ServiceLocator::get<IRendererService>();
-    if(const auto collider = GetCollider(); collider != nullptr) {
+    if(auto* const collider = GetCollider(); collider != nullptr) {
         const auto he = this->GetBounds().half_extents * 2.0f;
         const auto S = Matrix4::CreateScaleMatrix(he);
         const auto R = Matrix4::Create2DRotationDegreesMatrix(GetOrientationDegrees());
@@ -277,7 +277,7 @@ void RigidBody::ApplyTorqueAt(const Vector2& position_on_object, const Vector2& 
 }
 
 void RigidBody::ApplyTorqueAt(const Vector2& position_on_object, const Vector2& force, const TimeUtils::FPSeconds& duration) {
-    if(const auto collider = GetCollider(); collider != nullptr) {
+    if(auto* const collider = GetCollider(); collider != nullptr) {
         const auto point_of_collision = MathUtils::CalcClosestPoint(position_on_object, *collider);
         const auto r = position - point_of_collision;
         const auto torque = MathUtils::CrossProduct(force, r);
@@ -294,13 +294,13 @@ void RigidBody::ApplyForceAt(const Vector2& position_on_object, const Vector2& d
 }
 
 void RigidBody::ApplyForceAt(const Vector2& position_on_object, const Vector2& force, const TimeUtils::FPSeconds& duration) {
-    if(const auto collider = GetCollider(); collider != nullptr) {
+    if(auto* const collider = GetCollider(); collider != nullptr) {
         const auto point_of_collision = MathUtils::CalcClosestPoint(position_on_object, *collider);
         auto r = position - point_of_collision;
         if(MathUtils::IsEquivalentToZero(r)) {
             r = position;
         }
-        const auto [parallel, perpendicular] = MathUtils::DivideIntoProjectAndReject(force, r);
+        const auto&& [parallel, perpendicular] = MathUtils::DivideIntoProjectAndReject(force, r);
         const auto angular_result = force - parallel;
         const auto linear_result = force - perpendicular;
         ApplyTorqueAt(position_on_object, angular_result, duration);
@@ -313,10 +313,10 @@ void RigidBody::ApplyImpulseAt(const Vector2& position_on_object, const Vector2&
 }
 
 void RigidBody::ApplyImpulseAt(const Vector2& position_on_object, const Vector2& force) {
-    if(const auto collider = GetCollider(); collider != nullptr) {
+    if(auto* const collider = GetCollider(); collider != nullptr) {
         const auto point_of_collision = MathUtils::CalcClosestPoint(position_on_object, *collider);
         const auto r = position - point_of_collision;
-        const auto [parallel, perpendicular] = MathUtils::DivideIntoProjectAndReject(force, r);
+        const auto&& [parallel, perpendicular] = MathUtils::DivideIntoProjectAndReject(force, r);
         const auto angular_result = force - parallel;
         const auto linear_result = force - perpendicular;
         ApplyTorqueAt(position_on_object, angular_result.GetNormalize(), angular_result.CalcLength(), TimeUtils::FPSeconds::zero());
@@ -325,7 +325,7 @@ void RigidBody::ApplyImpulseAt(const Vector2& position_on_object, const Vector2&
 }
 
 const OBB2 RigidBody::GetBounds() const {
-    const auto center = GetPosition();
+    const auto& center = GetPosition();
     const auto dims = CalcDimensions();
     const auto orientation = GetOrientationDegrees();
     return OBB2(center, dims * 0.5f, orientation);
@@ -357,7 +357,7 @@ const Vector2& RigidBody::GetAcceleration() const {
 }
 
 Vector2 RigidBody::CalcDimensions() const {
-    if(const auto collider = GetCollider(); collider != nullptr) {
+    if(auto* const collider = GetCollider(); collider != nullptr) {
         return collider->CalcDimensions();
     }
     return Vector2::ZERO;

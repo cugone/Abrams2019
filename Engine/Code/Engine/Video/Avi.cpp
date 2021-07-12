@@ -23,7 +23,7 @@ unsigned int Avi::Load(std::filesystem::path filepath) noexcept {
         return AVI_ERROR_NOT_A_AVI;
     }
 
-    if(auto next_chunk = riff_data.GetNextChunk()) {
+    if(auto* next_chunk = riff_data.GetNextChunk()) {
         if(!next_chunk->data) {
             return AVI_SUCCESS; //Successfully read an empty file!
         }

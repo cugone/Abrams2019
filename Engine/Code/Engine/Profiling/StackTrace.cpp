@@ -145,7 +145,7 @@ void StackTrace::GetLines([[maybe_unused]] StackTrace* st,
         }
         if(got_line) {
             const auto name_length_plus_one = static_cast<std::size_t>(symbol->NameLen) + 1u;
-            auto s = static_cast<char*>(std::malloc(name_length_plus_one));
+            auto* s = static_cast<char*>(std::malloc(name_length_plus_one));
             if(s) {
                 ::strcpy_s(s, name_length_plus_one, symbol->Name);
                 s[symbol->NameLen] = '\0';
@@ -154,7 +154,7 @@ void StackTrace::GetLines([[maybe_unused]] StackTrace* st,
             }
         } else {
             const auto name_length_plus_one = static_cast<std::size_t>(symbol->NameLen) + 1u;
-            auto s = static_cast<char*>(std::malloc(name_length_plus_one));
+            auto* s = static_cast<char*>(std::malloc(name_length_plus_one));
             if(s) {
                 ::strcpy_s(s, name_length_plus_one, symbol->Name);
                 s[symbol->NameLen] = '\0';

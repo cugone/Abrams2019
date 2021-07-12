@@ -25,17 +25,17 @@ IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARA
 
 namespace ImGui {
 void Image(const Texture* texture, const Vector2& size, const Vector2& uv0, const Vector2& uv1, const Rgba& tint_col, const Rgba& border_col) noexcept {
-    const auto [tr, tg, tb, ta] = tint_col.GetAsFloats();
-    const auto [br, bg, bb, ba] = border_col.GetAsFloats();
+    const auto&& [tr, tg, tb, ta] = tint_col.GetAsFloats();
+    const auto&& [br, bg, bb, ba] = border_col.GetAsFloats();
     ImGui::Image(static_cast<void*>(texture->GetShaderResourceView()), size, uv0, uv1, Vector4{tr, tg, tb, ta}, Vector4{br, bg, bb, ba});
 }
 void Image(Texture* texture, const Vector2& size, const Vector2& uv0, const Vector2& uv1, const Rgba& tint_col, const Rgba& border_col) noexcept {
-    const auto [tr, tg, tb, ta] = tint_col.GetAsFloats();
-    const auto [br, bg, bb, ba] = border_col.GetAsFloats();
+    const auto&& [tr, tg, tb, ta] = tint_col.GetAsFloats();
+    const auto&& [br, bg, bb, ba] = border_col.GetAsFloats();
     ImGui::Image(static_cast<void*>(texture->GetShaderResourceView()), size, uv0, uv1, Vector4{tr, tg, tb, ta}, Vector4{br, bg, bb, ba});
 }
 bool ColorEdit3(const char* label, Rgba& color, ImGuiColorEditFlags flags /*= 0*/) noexcept {
-    const auto [r, g, b, _] = color.GetAsFloats();
+    const auto&& [r, g, b, _] = color.GetAsFloats();
     Vector4 colorAsFloats{r, g, b, 1.0f};
     if(ImGui::ColorEdit3(label, colorAsFloats.GetAsFloatArray(), flags)) {
         color.SetFromFloats({colorAsFloats.x,colorAsFloats.y,colorAsFloats.z, 1.0f});
@@ -44,7 +44,7 @@ bool ColorEdit3(const char* label, Rgba& color, ImGuiColorEditFlags flags /*= 0*
     return false;
 }
 bool ColorEdit4(const char* label, Rgba& color, ImGuiColorEditFlags flags /*= 0*/) noexcept {
-    const auto [r, g, b, a] = color.GetAsFloats();
+    const auto&& [r, g, b, a] = color.GetAsFloats();
     Vector4 colorAsFloats{r, g, b, a};
     if(ImGui::ColorEdit4(label, colorAsFloats.GetAsFloatArray(), flags)) {
         color.SetFromFloats({colorAsFloats.x,colorAsFloats.y,colorAsFloats.z, colorAsFloats.w});
@@ -53,7 +53,7 @@ bool ColorEdit4(const char* label, Rgba& color, ImGuiColorEditFlags flags /*= 0*
     return false;
 }
 bool ColorPicker3(const char* label, Rgba& color, ImGuiColorEditFlags flags /*= 0*/) noexcept {
-    const auto [r, g, b, _] = color.GetAsFloats();
+    const auto&& [r, g, b, _] = color.GetAsFloats();
     Vector4 colorAsFloats{r, g, b, 1.0f};
     if(ImGui::ColorPicker3(label, colorAsFloats.GetAsFloatArray(), flags)) {
         color.SetFromFloats({colorAsFloats.x,colorAsFloats.y,colorAsFloats.z});
@@ -64,10 +64,10 @@ bool ColorPicker3(const char* label, Rgba& color, ImGuiColorEditFlags flags /*= 
 bool ColorPicker4(const char* label, Rgba& color, ImGuiColorEditFlags flags /*= 0*/, Rgba* refColor /*= nullptr*/) noexcept {
     Vector4 refColorAsFloats{};
     if(refColor) {
-        const auto [rr, rg, rb, ra] = refColor->GetAsFloats();
+        const auto&& [rr, rg, rb, ra] = refColor->GetAsFloats();
         refColorAsFloats = Vector4{rr, rg, rb, ra};
     }
-    const auto [r, g, b, a] = color.GetAsFloats();
+    const auto&& [r, g, b, a] = color.GetAsFloats();
     Vector4 colorAsFloats{r, g, b, a};
     if(ImGui::ColorPicker4(label, colorAsFloats.GetAsFloatArray(), flags, refColor ? refColorAsFloats.GetAsFloatArray() : nullptr)) {
         color.SetFromFloats({colorAsFloats.x,colorAsFloats.y,colorAsFloats.z, colorAsFloats.w});
@@ -79,12 +79,12 @@ bool ColorPicker4(const char* label, Rgba& color, ImGuiColorEditFlags flags /*= 
     return false;
 }
 bool ColorButton(const char* desc_id, const Rgba& color, ImGuiColorEditFlags flags /*= 0*/, Vector2 size /*= Vector2::ZERO*/) noexcept {
-    const auto [r, g, b, a] = color.GetAsFloats();
+    const auto&& [r, g, b, a] = color.GetAsFloats();
     return ImGui::ColorButton(desc_id, Vector4{r, g, b, a}, flags, size);
 }
 
 void TextColored(const Rgba& color, const char* fmt, ...) noexcept {
-    auto [r, g, b, a] = color.GetAsFloats();
+    auto&& [r, g, b, a] = color.GetAsFloats();
     va_list args;
     va_start(args, fmt);
     ImGui::TextColoredV(Vector4{r, g, b, a}, fmt, args);
@@ -250,7 +250,7 @@ bool UISystem::IsAnyImguiDebugWindowVisible() const noexcept {
 void UISystem::RegisterUiWidgetsFromFolder(std::filesystem::path folderpath, bool recursive /*= false*/) {
     const auto widgets_lambda = [this](const std::filesystem::path& path) {
         auto newWidget = std::make_unique<UIWidget>(path);
-        const auto name = newWidget->name;
+        const std::string name = newWidget->name;
         _widgets.try_emplace(name, std::move(newWidget));
     };
     FileUtils::ForEachFileInFolder(folderpath, ".ui", widgets_lambda, recursive);

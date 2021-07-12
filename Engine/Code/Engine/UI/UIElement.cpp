@@ -302,13 +302,13 @@ void UIElement::CalcBounds() noexcept {
 
 void UIElement::CalcBoundsAndPivot() noexcept {
     DirtyElement(UIInvalidateElementReason::Layout);
-    const auto slot = GetSlot();
+    auto* const slot = GetSlot();
     CalcBounds();
     slot->CalcPivot();
 }
 
 AABB2 UIElement::CalcBoundsRelativeToParent() const noexcept {
-    const auto parent = GetParent();
+    const auto* parent = GetParent();
     AABB2 parent_bounds = parent ? parent->CalcLocalBounds() : CalcLocalBounds();
     Vector2 parent_size = parent_bounds.CalcDimensions();
 
@@ -433,12 +433,12 @@ bool UIElement::HasParent() const {
 }
 
 float UIElement::GetParentOrientationRadians() const {
-    const auto parent = GetParent();
+    const auto* parent = GetParent();
     return parent ? parent->GetOrientationRadians() : 0.0f;
 }
 
 float UIElement::GetParentOrientationDegrees() const {
-    const auto parent = GetParent();
+    const auto* parent = GetParent();
     return parent ? parent->GetOrientationDegrees() : 0.0f;
 }
 

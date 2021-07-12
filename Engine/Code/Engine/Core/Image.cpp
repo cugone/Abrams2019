@@ -33,7 +33,7 @@ Image::Image(std::filesystem::path filepath) noexcept
     if(const auto& buf = FileUtils::ReadBinaryBufferFromFile(filepath); buf.has_value()) {
         int comp = 0;
         int req_comp = 4;
-        auto texel_bytes = stbi_load_from_memory(buf->data(), static_cast<int>(buf->size()), &m_dimensions.x, &m_dimensions.y, &comp, req_comp);
+        auto* texel_bytes = stbi_load_from_memory(buf->data(), static_cast<int>(buf->size()), &m_dimensions.x, &m_dimensions.y, &comp, req_comp);
         m_bytesPerTexel = req_comp;
         m_texelBytes = std::vector<unsigned char>(texel_bytes, texel_bytes + (static_cast<std::size_t>(m_dimensions.x) * m_dimensions.y * m_bytesPerTexel));
         stbi_image_free(texel_bytes);

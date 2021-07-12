@@ -67,7 +67,7 @@ void RHIDevice::CreateInputLayout(InputLayout& layout, RHIDevice& device, void* 
         layout._dx_input_layout->Release();
         layout._dx_input_layout = nullptr;
     }
-    auto dx_device = device.GetDxDevice();
+    auto* dx_device = device.GetDxDevice();
     HRESULT hr = dx_device->CreateInputLayout(layout._elements.data(), static_cast<unsigned int>(layout._elements.size()), byte_code, byte_code_length, layout._dx_input_layout.GetAddressOf());
     bool succeeded = SUCCEEDED(hr);
     GUARANTEE_OR_DIE(succeeded, "Create Input Layout failed.");
@@ -436,7 +436,7 @@ std::vector<std::unique_ptr<ConstantBuffer>> RHIDevice::CreateConstantBuffersUsi
                 }
                 std::size_t variable_size = variable_desc.Size;
                 std::size_t offset = variable_desc.StartOffset;
-                if(auto shader_reflection_type = reflected_variable->GetType()) {
+                if(auto* shader_reflection_type = reflected_variable->GetType()) {
                     D3D11_SHADER_TYPE_DESC type_desc{};
                     if(FAILED(shader_reflection_type->GetDesc(&type_desc))) {
                         continue;

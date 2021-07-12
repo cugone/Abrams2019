@@ -102,7 +102,7 @@ bool Shader::LoadFromXml(const XMLElement& element) noexcept {
 
     _name = DataUtils::ParseXmlAttribute(element, std::string("name"), _name);
 
-    auto xml_SP = element.FirstChildElement("shaderprogram");
+    auto* xml_SP = element.FirstChildElement("shaderprogram");
     DataUtils::ValidateXmlElement(*xml_SP, "shaderprogram", "", "src", "pipelinestages");
 
     FS::path p;
@@ -186,9 +186,9 @@ bool Shader::LoadFromXml(const XMLElement& element) noexcept {
     _blend_state = std::make_unique<BlendState>(renderer.GetDevice(), element);
 
     _raster_state = renderer.GetRasterState("__default");
-    if(auto xml_raster = element.FirstChildElement("raster")) {
+    if(auto* xml_raster = element.FirstChildElement("raster")) {
         std::string rs_src = DataUtils::ParseXmlAttribute(*xml_raster, "src", "");
-        if(auto found_raster = renderer.GetRasterState(rs_src)) {
+        if(auto* found_raster = renderer.GetRasterState(rs_src)) {
             _raster_state = found_raster;
         } else {
             CreateAndRegisterNewRasterFromXml(element);
@@ -196,9 +196,9 @@ bool Shader::LoadFromXml(const XMLElement& element) noexcept {
     }
 
     _sampler = renderer.GetSampler("__default");
-    if(auto xml_sampler = element.FirstChildElement("sampler")) {
+    if(auto* xml_sampler = element.FirstChildElement("sampler")) {
         std::string s_src = DataUtils::ParseXmlAttribute(*xml_sampler, "src", "");
-        if(auto found_sampler = renderer.GetSampler(s_src)) {
+        if(auto* found_sampler = renderer.GetSampler(s_src)) {
             _sampler = found_sampler;
         } else {
             CreateAndRegisterNewSamplerFromXml(element);

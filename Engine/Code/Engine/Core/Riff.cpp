@@ -79,7 +79,7 @@ bool Riff::ParseDataIntoChunks(std::vector<unsigned char>& buffer) noexcept {
             if(!stream.read(reinterpret_cast<char*>(subdata_head), subdata->subdata_length)) {
                 return false;
             }
-            auto list_chunk = std::move(ReadListChunk(stream));
+            auto&& list_chunk = std::move(ReadListChunk(stream));
             if(list_chunk) {
                 cur_chunk = std::move(list_chunk.value());
             }
@@ -143,7 +143,7 @@ Riff::RiffChunk* Riff::GetNextChunk() const noexcept {
     if(_current_chunk == _chunks.end()) {
         return nullptr;
     }
-    auto chunk = (*_current_chunk).get();
+    auto* chunk = (*_current_chunk).get();
     _current_chunk++;
     return chunk;
 }

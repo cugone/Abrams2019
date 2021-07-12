@@ -119,7 +119,7 @@ void JobSystem::SetCategorySignal(const JobType& category_id, std::condition_var
 }
 
 Job* JobSystem::Create(const JobType& category, const std::function<void(void*)>& cb, void* user_data) noexcept {
-    auto j = new Job();
+    auto* j = new Job();
     j->type = category;
     j->state = JobState::Created;
     j->work_cb = cb;
@@ -139,7 +139,7 @@ void JobSystem::Dispatch(Job* job) noexcept {
     ++job->num_dependencies;
     const auto jobtype = TypeUtils::GetUnderlyingValue<JobType>(job->type);
     _queues[jobtype]->push(job);
-    const auto signal = _signals[jobtype];
+    auto* signal = _signals[jobtype];
     if(signal) {
         signal->notify_all();
     }

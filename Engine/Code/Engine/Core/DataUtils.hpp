@@ -230,7 +230,7 @@ void ValidateXmlElement(const XMLElement& element,
 template<typename UnaryFunction>
 UnaryFunction ForEachChildElement(const XMLElement& element, const std::string& childname, UnaryFunction&& f) noexcept {
     auto childNameAsCStr = childname.empty() ? nullptr : childname.c_str();
-    for(auto xml_iter = element.FirstChildElement(childNameAsCStr); xml_iter != nullptr; xml_iter = xml_iter->NextSiblingElement(childNameAsCStr)) {
+    for(auto* xml_iter = element.FirstChildElement(childNameAsCStr); xml_iter != nullptr; xml_iter = xml_iter->NextSiblingElement(childNameAsCStr)) {
         std::invoke(f, *xml_iter);
     }
     return f;
@@ -247,7 +247,7 @@ UnaryFunction ForEachChildElement(const XMLElement& element, const std::string& 
 //************************************
 template<typename UnaryFunction>
 UnaryFunction ForEachAttribute(const XMLElement& element, UnaryFunction&& f) noexcept {
-    for(auto attribute = element.FirstAttribute(); attribute != nullptr; attribute = attribute->Next()) {
+    for(auto* attribute = element.FirstAttribute(); attribute != nullptr; attribute = attribute->Next()) {
         std::invoke(f, *attribute);
     }
     return f;

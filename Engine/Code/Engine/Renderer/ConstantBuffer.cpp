@@ -40,7 +40,7 @@ ConstantBuffer::~ConstantBuffer() noexcept {
 
 void ConstantBuffer::Update(RHIDeviceContext& context, const buffer_t& buffer) noexcept {
     D3D11_MAPPED_SUBRESOURCE resource{};
-    auto dx_context = context.GetDxContext();
+    auto* dx_context = context.GetDxContext();
     HRESULT hr = dx_context->Map(_dx_buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0U, &resource);
     bool succeeded = SUCCEEDED(hr);
     if(succeeded) {

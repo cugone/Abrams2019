@@ -157,7 +157,7 @@ void AudioSystem::AddSoundToChannelGroup(const std::string& channelGroupName, So
 }
 
 void AudioSystem::AddSoundToChannelGroup(const std::string& channelGroupName, const std::filesystem::path& filepath) noexcept {
-    if(auto group = GetChannelGroup(channelGroupName); group != nullptr) {
+    if(auto* group = GetChannelGroup(channelGroupName); group != nullptr) {
         auto* snd = CreateSound(filepath);
         AddSoundToChannelGroup(channelGroupName, snd);
     }
@@ -167,7 +167,7 @@ void AudioSystem::RemoveSoundFromChannelGroup(const std::string& channelGroupNam
     if(!snd) {
         return;
     }
-    if(auto group = GetChannelGroup(channelGroupName); group != nullptr) {
+    if(auto* group = GetChannelGroup(channelGroupName); group != nullptr) {
         for(auto* channel : snd->GetChannels()) {
             group->RemoveChannel(channel);
         }
@@ -178,7 +178,7 @@ void AudioSystem::RemoveSoundFromChannelGroup(const std::string& channelGroupNam
 }
 
 void AudioSystem::RemoveSoundFromChannelGroup(const std::string& channelGroupName, const std::filesystem::path& filepath) noexcept {
-    if(const auto group = GetChannelGroup(channelGroupName); group != nullptr) {
+    if(const auto* group = GetChannelGroup(channelGroupName); group != nullptr) {
         if(const auto found_iter = std::find_if(std::begin(_sounds), std::end(_sounds), [&filepath](const auto& a) { return a.first == filepath;  }); found_iter != std::end(_sounds)) {
             auto* snd = found_iter->second.get();
             RemoveSoundFromChannelGroup(channelGroupName, snd);
@@ -244,7 +244,7 @@ void AudioSystem::SetFormat(const WAVEFORMATEXTENSIBLE& format) noexcept {
 }
 
 void AudioSystem::SetFormat(const FileUtils::Wav::WavFormatChunk& format) noexcept {
-    auto fmt_buffer = reinterpret_cast<const unsigned char*>(&format);
+    auto* fmt_buffer = reinterpret_cast<const unsigned char*>(&format);
     std::memcpy(&_audio_format_ex, fmt_buffer, sizeof(_audio_format_ex));
 }
 
@@ -444,7 +444,7 @@ AudioSystem::Channel::Channel(AudioSystem& audioSystem, const ChannelDesc& desc)
 , _desc{desc} {
     static VoiceCallback vcb;
     _buffer.pContext = this;
-    auto fmt = reinterpret_cast<const WAVEFORMATEX*>(&(_audio_system->GetFormat()));
+    auto* fmt = reinterpret_cast<const WAVEFORMATEX*>(&(_audio_system->GetFormat()));
     _audio_system->_xaudio2->CreateSourceVoice(&_voice, fmt, 0, _desc.frequency_max, &vcb);
     //if(auto* group = _audio_system->GetChannelGroup(desc.groupName); group != nullptr) {
     //    group->AddChannel(this);

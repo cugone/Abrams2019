@@ -28,8 +28,8 @@ std::vector<LineSegment2> Polygon2::GetEdges() const noexcept {
 }
 
 AABB2 Polygon2::GetBounds() const noexcept {
-    const auto [min_x, max_x] = std::minmax_element(std::cbegin(_verts), std::cend(_verts), [](const Vector2& a, const Vector2& b) { return a.x < b.x; });
-    const auto [min_y, max_y] = std::minmax_element(std::cbegin(_verts), std::cend(_verts), [](const Vector2& a, const Vector2& b) { return a.y < b.y; });
+    const auto&& [min_x, max_x] = std::minmax_element(std::cbegin(_verts), std::cend(_verts), [](const Vector2& a, const Vector2& b) { return a.x < b.x; });
+    const auto&& [min_y, max_y] = std::minmax_element(std::cbegin(_verts), std::cend(_verts), [](const Vector2& a, const Vector2& b) { return a.y < b.y; });
     return AABB2{(*min_x).x, (*min_y).y, (*max_x).x, (*max_y).y};
 }
 

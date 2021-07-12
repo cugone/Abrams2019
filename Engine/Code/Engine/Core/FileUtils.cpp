@@ -170,7 +170,7 @@ std::optional<std::string> ReadStringBufferFromFile(std::filesystem::path filepa
 
 bool CreateFolders(const std::filesystem::path& filepath) noexcept {
     namespace FS = std::filesystem;
-    auto p = filepath;
+    std::filesystem::path p = filepath;
     p.make_preferred();
     std::error_code ec{};
     return FS::create_directories(p, ec);
@@ -515,8 +515,8 @@ bool IsParentOf(const std::filesystem::path& p, const std::filesystem::path& chi
     const auto p_canon = FS::canonical(p);
     const auto child_canon = FS::canonical(child);
     for(auto iter = FS::recursive_directory_iterator{p_canon}; iter != FS::recursive_directory_iterator{}; ++iter) {
-        const auto entry = *iter;
-        const auto sub_p = entry.path();
+        const auto& entry = *iter;
+        const std::filesystem::path sub_p = entry.path();
         if(sub_p == child_canon) {
             return true;
         }
@@ -536,8 +536,8 @@ bool IsChildOf(const std::filesystem::path& p, const std::filesystem::path& pare
     const auto parent_canon = FS::canonical(parent);
     const auto p_canon = FS::canonical(p);
     for(auto iter = FS::recursive_directory_iterator{parent_canon}; iter != FS::recursive_directory_iterator{}; ++iter) {
-        const auto entry = *iter;
-        const auto sub_p = entry.path();
+        const auto& entry = *iter;
+        const std::filesystem::path sub_p = entry.path();
         if(sub_p == p_canon) {
             return true;
         }

@@ -204,7 +204,7 @@ bool HasChild(const XMLElement& elem, const std::string& name) noexcept {
 }
 
 std::string GetElementTextAsString(const XMLElement& element) {
-    const auto txtAsCStr = element.GetText();
+    const auto* txtAsCStr = element.GetText();
     return std::string{txtAsCStr ? txtAsCStr : ""};
 }
 
@@ -529,7 +529,7 @@ bool ParseXmlAttribute(const XMLElement& element, const std::string& attributeNa
 }
 
 std::string GetAttributeAsString(const XMLElement& element, const std::string& attributeName) {
-    const auto attrAsCStr = element.Attribute(attributeName.c_str());
+    const auto* attrAsCStr = element.Attribute(attributeName.c_str());
     return std::string{attrAsCStr ? attrAsCStr : ""};
 }
 
@@ -562,7 +562,7 @@ char ParseXmlAttribute(const XMLElement& element, const std::string& attributeNa
     const auto attr = GetAttributeAsString(element, attributeName);
     const auto is_range = attr.find('~') != std::string::npos;
     if(!is_range) {
-        const auto attrValue = element.Attribute(attributeName.c_str());
+        const auto* attrValue = element.Attribute(attributeName.c_str());
         const auto value = std::string{attrValue ? attrValue : ""};
         if(value.empty()) {
             return retVal;
@@ -878,7 +878,7 @@ std::string ParseXmlAttribute(const XMLElement& element, const std::string& attr
 }
 
 std::string ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const std::string& defaultValue) noexcept {
-    auto s = element.Attribute(attributeName.c_str()); //returns nullptr when Attribute not found!
+    const auto* s = element.Attribute(attributeName.c_str()); //returns nullptr when Attribute not found!
     return (s ? s : defaultValue);
 }
 

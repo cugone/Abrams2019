@@ -371,7 +371,7 @@ void QuadTree<T>::ClearChildren() {
 template<typename T>
 void QuadTree<T>::GiveElementsToChildren() {
     PROFILE_LOG_SCOPE_FUNCTION();
-    for(auto elem : m_elements) {
+    for(auto& elem : m_elements) {
         for(auto& child : m_children) {
             if(child) {
                 if(MathUtils::Contains(child->GetBounds(), elem->GetBounds())) {

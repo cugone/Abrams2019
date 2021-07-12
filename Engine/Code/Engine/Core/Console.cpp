@@ -614,8 +614,8 @@ void Console::UpdateSelectedRange(std::string::difference_type distance) noexcep
             _cursor_position = std::end(_entryline);
         }
 
-        auto rangeStart = _cursor_position;
-        auto rangeEnd = _selection_position;
+        std::string::const_iterator rangeStart = _cursor_position;
+        std::string::const_iterator rangeEnd = _selection_position;
         if(!_highlight_mode && _selection_position < _cursor_position) {
             rangeStart = _selection_position;
             rangeEnd = _cursor_position;
@@ -630,8 +630,8 @@ void Console::UpdateSelectedRange(std::string::difference_type distance) noexcep
             _cursor_position = std::begin(_entryline);
         }
 
-        auto rangeStart = _cursor_position;
-        auto rangeEnd = _selection_position;
+        std::string::const_iterator rangeStart = _cursor_position;
+        std::string::const_iterator rangeEnd = _selection_position;
         if(!_highlight_mode && _selection_position < _cursor_position) {
             rangeStart = _selection_position;
             rangeEnd = _cursor_position;
@@ -812,7 +812,7 @@ void Console::DrawOutput(const Vector2& view_half_extents) const noexcept {
     std::vector<Vertex3D> vbo{};
     std::vector<unsigned int> ibo{};
     auto&& renderer = ServiceLocator::get<IRendererService>();
-    auto font = renderer.GetFont("System32");
+    auto* font = renderer.GetFont("System32");
     const auto max_vertical_start_position = (_output_buffer.size() * (1 + font->GetLineHeight()) - view_half_extents.y * 2.0f);
     if(_outputStartPosition.y <= max_vertical_start_position && WasMouseWheelJustScrolledUp()) {
         _outputStartPosition.y += font->GetLineHeight();
@@ -915,8 +915,8 @@ void Console::DrawEntryLine(const Vector2& view_half_extents) const noexcept {
     if(_cursor_position != _selection_position) {
         auto xPosOffsetToCaret = font->CalculateTextWidth(std::string(std::begin(_entryline), _cursor_position));
         auto xPosOffsetToSelect = font->CalculateTextWidth(std::string(std::begin(_entryline), _selection_position));
-        auto rangeStart = _cursor_position;
-        auto rangeEnd = _selection_position;
+        std::string::const_iterator rangeStart = _cursor_position;
+        std::string::const_iterator rangeEnd = _selection_position;
         if(_selection_position < _cursor_position) {
             std::swap(rangeStart, rangeEnd);
             std::swap(xPosOffsetToCaret, xPosOffsetToSelect);

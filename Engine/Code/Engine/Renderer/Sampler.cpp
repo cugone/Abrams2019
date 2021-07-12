@@ -55,7 +55,7 @@ bool Sampler::CreateSamplerState(const RHIDevice* device, const SamplerDesc& des
 
     dx_desc.ComparisonFunc = ComparisonFunctionToD3DComparisonFunction(desc.compareFunc);
 
-    const auto [r, g, b, a] = desc.borderColor.GetAsFloats();
+    const auto&& [r, g, b, a] = desc.borderColor.GetAsFloats();
     dx_desc.BorderColor[0] = r;
     dx_desc.BorderColor[1] = g;
     dx_desc.BorderColor[2] = b;
@@ -66,7 +66,7 @@ bool Sampler::CreateSamplerState(const RHIDevice* device, const SamplerDesc& des
 }
 
 SamplerDesc::SamplerDesc(const XMLElement& element) noexcept {
-    if(auto xml_sampler = element.FirstChildElement("sampler")) {
+    if(auto* xml_sampler = element.FirstChildElement("sampler")) {
         DataUtils::ValidateXmlElement(*xml_sampler, "sampler", "", "", "filter,textureAddress,lod", "borderColor,test,maxAF");
 
         borderColor = DataUtils::ParseXmlAttribute(*xml_sampler, "borderColor", borderColor);
@@ -77,7 +77,7 @@ SamplerDesc::SamplerDesc(const XMLElement& element) noexcept {
 
         maxAnisotropicLevel = DataUtils::ParseXmlAttribute(*xml_sampler, "maxAF", maxAnisotropicLevel);
 
-        if(auto xml_filter = xml_sampler->FirstChildElement("filter")) {
+        if(auto* xml_filter = xml_sampler->FirstChildElement("filter")) {
             DataUtils::ValidateXmlElement(*xml_filter, "filter", "", "min,mag,mip,mode");
 
             std::string filter_str = "point";
@@ -96,7 +96,7 @@ SamplerDesc::SamplerDesc(const XMLElement& element) noexcept {
             compare_str = DataUtils::ParseXmlAttribute(*xml_filter, "mode", compare_str);
             compare_mode = FilterComparisonModeFromString(compare_str);
         }
-        if(auto xml_textureAddress = xml_sampler->FirstChildElement("textureAddress")) {
+        if(auto* xml_textureAddress = xml_sampler->FirstChildElement("textureAddress")) {
             DataUtils::ValidateXmlElement(*xml_textureAddress, "textureAddress", "", "", "", "u,v,w");
 
             std::string str = "wrap";
@@ -111,7 +111,7 @@ SamplerDesc::SamplerDesc(const XMLElement& element) noexcept {
             str = DataUtils::ParseXmlAttribute(*xml_textureAddress, "w", str);
             WaddressMode = TextureAddressModeFromString(str);
         }
-        if(auto xml_lod = xml_sampler->FirstChildElement("lod")) {
+        if(auto* xml_lod = xml_sampler->FirstChildElement("lod")) {
             DataUtils::ValidateXmlElement(*xml_lod, "lod", "", "", "", "min,max,mipmapbias");
             minLOD = DataUtils::ParseXmlAttribute(*xml_lod, "min", minLOD);
             maxLOD = DataUtils::ParseXmlAttribute(*xml_lod, "max", maxLOD);

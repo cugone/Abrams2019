@@ -159,7 +159,7 @@ PhysicsSystem::CollisionDataSet PhysicsSystem::NarrowPhaseCollision(const std::v
                 DebuggerPrintf("cdResult.collides calls: %i\n", (++i));
                 const auto crResult = std::invoke(cr, cdResult, *cur_body->GetCollider(), *next_body->GetCollider());
                 const auto contact = CollisionData{cur_body, next_body, crResult.distance, crResult.normal};
-                const auto [_, was_inserted] = result.insert(contact);
+                const auto&& [_, was_inserted] = result.insert(contact);
                 if(!was_inserted) {
                     DebuggerPrintf("Physics System: Attempting to insert already existing element.");
                 } else {

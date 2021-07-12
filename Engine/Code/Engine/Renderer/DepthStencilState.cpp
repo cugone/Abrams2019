@@ -68,7 +68,7 @@ bool DepthStencilState::CreateDepthStencilState(const RHIDevice* device, const D
 }
 
 DepthStencilDesc::DepthStencilDesc(const XMLElement& element) noexcept {
-    if(const auto xml_depth = element.FirstChildElement("depth")) {
+    if(const auto* xml_depth = element.FirstChildElement("depth")) {
         DataUtils::ValidateXmlElement(*xml_depth, "depth", "", "", "", "enable,writable,test");
         depth_enabled = DataUtils::ParseXmlAttribute(*xml_depth, "enable", depth_enabled);
         depth_write = DataUtils::ParseXmlAttribute(*xml_depth, "writable", depth_write);
@@ -77,14 +77,14 @@ DepthStencilDesc::DepthStencilDesc(const XMLElement& element) noexcept {
         depth_comparison = ComparisonFunctionFromString(comp_func_str);
     }
 
-    if(const auto xml_stencil = element.FirstChildElement("stencil")) {
+    if(const auto* xml_stencil = element.FirstChildElement("stencil")) {
         DataUtils::ValidateXmlElement(*xml_stencil, "stencil", "", "", "front,back", "enable,writable,readable");
 
         stencil_read = DataUtils::ParseXmlAttribute(*xml_stencil, "readable", stencil_read);
         stencil_write = DataUtils::ParseXmlAttribute(*xml_stencil, "writable", stencil_write);
         stencil_enabled = DataUtils::ParseXmlAttribute(*xml_stencil, "enable", stencil_enabled);
 
-        if(const auto xml_stencilfront = xml_stencil->FirstChildElement("front")) {
+        if(const auto* xml_stencilfront = xml_stencil->FirstChildElement("front")) {
             DataUtils::ValidateXmlElement(*xml_stencilfront, "front", "", "fail,depthfail,pass,test");
 
             std::string failFront_str = "keep";
@@ -104,7 +104,7 @@ DepthStencilDesc::DepthStencilDesc(const XMLElement& element) noexcept {
             stencil_testFront = ComparisonFunctionFromString(compareFront_str);
         }
 
-        if(const auto xml_stencilback = xml_stencil->FirstChildElement("back")) {
+        if(const auto* xml_stencilback = xml_stencil->FirstChildElement("back")) {
             DataUtils::ValidateXmlElement(*xml_stencilback, "back", "", "fail,depthfail,pass,test");
 
             std::string failBack_str = "keep";

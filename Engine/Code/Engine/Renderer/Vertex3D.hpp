@@ -20,7 +20,7 @@ struct Vertex3D {
     , normal(normal)
     , tangent(tangent)
     , bitangent(bitangent) {
-        const auto [r, g, b, a] = color.GetAsFloats();
+        const auto&& [r, g, b, a] = color.GetAsFloats();
         this->color.x = r;
         this->color.y = g;
         this->color.z = b;

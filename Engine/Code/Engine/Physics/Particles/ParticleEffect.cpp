@@ -118,7 +118,7 @@ void ParticleEffect::LoadFromXml(const XMLElement& element) {
 
     _emitters.reserve(definition->_emitter_names.size());
     for(auto& emitter_name : definition->_emitter_names) {
-        auto emitter_def = ParticleEmitterDefinition::GetParticleEmitterDefinition(emitter_name);
+        auto* emitter_def = ParticleEmitterDefinition::GetParticleEmitterDefinition(emitter_name);
         GUARANTEE_OR_DIE(emitter_def, "ParticleEffect: Referenced particle emitter does not already exist.");
     }
 }

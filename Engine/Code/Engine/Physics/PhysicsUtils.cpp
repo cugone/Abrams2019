@@ -25,8 +25,8 @@ GJKResult PhysicsUtils::GJK(const Collider& a, const Collider& b) {
     Simplex simplex{Vector3{A}};
     auto D = Vector3{-A};
     const auto doSimplexLine = [&](Simplex& simplex, Vector3& D) {
-        const auto pointA = simplex[0];
-        const auto pointB = simplex[1];
+        const auto& pointA = simplex[0];
+        const auto& pointB = simplex[1];
         const auto lineAB = pointB - pointA;
         const auto lineAO = -pointA;
         if(MathUtils::DotProduct(lineAB, lineAO) > 0.0f) {
@@ -38,9 +38,9 @@ GJKResult PhysicsUtils::GJK(const Collider& a, const Collider& b) {
         return false;
     };
     const auto doSimplexTriangle = [&](Simplex& simplex, Vector3& D) {
-        const auto pointA = simplex[0];
-        const auto pointB = simplex[1];
-        const auto pointC = simplex[2];
+        const auto& pointA = simplex[0];
+        const auto& pointB = simplex[1];
+        const auto& pointC = simplex[2];
         const auto lineAB = pointB - pointA;
         const auto lineAC = pointC - pointA;
         const auto lineAO = (-pointA);
@@ -91,8 +91,8 @@ GJKResult PhysicsUtils::GJK(const Collider& a, const Collider& b) {
             const auto no_new_point = [&]() -> bool {
                 if(simplex.size() < 2)
                     return false;
-                const auto previous1 = *simplex.rbegin();
-                const auto previous2 = *(simplex.rbegin() + 1);
+                const Vector3 previous1 = *simplex.rbegin();
+                const Vector3 previous2 = *(simplex.rbegin() + 1);
                 return MathUtils::IsEquivalent(previous1, previous2);
             }();
             if(no_new_point) {

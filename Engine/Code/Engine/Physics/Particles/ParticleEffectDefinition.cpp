@@ -85,7 +85,7 @@ float ParticleEffectDefinition::GetLongestLifetime() {
 float ParticleEffectDefinition::GetLongestLifetime(const ParticleEffectDefinition& def) {
     float longest_lifetime = def._lifetime;
     for(auto& emitter_name : def._emitter_names) {
-        auto emitter = ParticleEmitterDefinition::GetParticleEmitterDefinition(emitter_name);
+        auto* emitter = ParticleEmitterDefinition::GetParticleEmitterDefinition(emitter_name);
         if(longest_lifetime < emitter->_lifetime) {
             longest_lifetime = emitter->_lifetime;
         }

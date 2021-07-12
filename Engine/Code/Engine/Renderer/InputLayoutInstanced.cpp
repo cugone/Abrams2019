@@ -31,7 +31,7 @@ void InputLayoutInstanced::CreateInputLayout(void* byte_code, std::size_t byte_c
         _dx_input_layout->Release();
         _dx_input_layout = nullptr;
     }
-    auto dx_device = _parent_device.GetDxDevice();
+    auto* dx_device = _parent_device.GetDxDevice();
     HRESULT hr = dx_device->CreateInputLayout(_elements.data(), static_cast<unsigned int>(_elements.size()), byte_code, byte_code_length, _dx_input_layout.GetAddressOf());
     bool succeeded = SUCCEEDED(hr);
     GUARANTEE_OR_DIE(succeeded, "Create Input Layout failed.");

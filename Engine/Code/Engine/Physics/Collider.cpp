@@ -66,11 +66,11 @@ void ColliderPolygon::SetHalfExtents(const Vector2& newHalfExtents) {
 }
 
 Vector2 ColliderPolygon::CalcDimensions() const noexcept {
-    const auto verts = _polygon.GetVerts();
-    const auto [min_x, max_x] = std::minmax_element(std::cbegin(verts), std::cend(verts), [](const Vector2& a, const Vector2& b) {
+    const auto& verts = _polygon.GetVerts();
+    const auto&& [min_x, max_x] = std::minmax_element(std::cbegin(verts), std::cend(verts), [](const Vector2& a, const Vector2& b) {
         return a.x < b.x;
     });
-    const auto [min_y, max_y] = std::minmax_element(std::cbegin(verts), std::cend(verts), [](const Vector2& a, const Vector2& b) {
+    const auto&& [min_y, max_y] = std::minmax_element(std::cbegin(verts), std::cend(verts), [](const Vector2& a, const Vector2& b) {
         return a.y < b.y;
     });
     const float width = (*max_x).x - (*min_x).x;
@@ -80,7 +80,7 @@ Vector2 ColliderPolygon::CalcDimensions() const noexcept {
 
 float ColliderPolygon::CalcArea() const noexcept {
     float A = 0.0f;
-    const auto verts = _polygon.GetVerts();
+    const auto& verts = _polygon.GetVerts();
     auto s = verts.size();
     for(std::size_t i = 0; i < s; ++i) {
         std::size_t j = (i + 1) % s;
@@ -166,7 +166,7 @@ ColliderCircle::ColliderCircle(const Position& position, float radius)
 }
 
 float ColliderCircle::CalcArea() const noexcept {
-    const auto half_extents = _polygon.GetHalfExtents();
+    const auto& half_extents = _polygon.GetHalfExtents();
     return MathUtils::M_PI * half_extents.x * half_extents.x;
 }
 

@@ -130,7 +130,7 @@ void PhysicsSystem::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
 }
 
 void PhysicsSystem::UpdateBodiesInBounds(TimeUtils::FPSeconds deltaSeconds) noexcept {
-    for(auto body : _rigidBodies) {
+    for(auto* body : _rigidBodies) {
         if(!body) {
             continue;
         }
@@ -162,8 +162,8 @@ std::vector<RigidBody*> PhysicsSystem::BroadPhaseCollision(const AABB2& /*query_
     std::vector<RigidBody*> potential_collisions{};
     for(auto iterA = std::begin(_rigidBodies); iterA != std::end(_rigidBodies); ++iterA) {
         for(auto iterB = iterA + 1; iterB != std::end(_rigidBodies); ++iterB) {
-            const auto bodyA = *iterA;
-            const auto bodyB = *iterB;
+            auto* bodyA = *iterA;
+            auto* bodyB = *iterB;
             if(!bodyA || !bodyB) {
                 continue;
             }

@@ -13,7 +13,7 @@ ParticleEmitterDefinition::ParticleEmitterDefinition(const XMLElement& element) 
 
     _name = DataUtils::ParseXmlAttribute(element, "name", "UNNAMED_PARTICLE_EMITTER");
 
-    if(auto xml_lifetime = element.FirstChildElement("lifetime"); xml_lifetime) {
+    if(auto* xml_lifetime = element.FirstChildElement("lifetime"); xml_lifetime) {
         std::string lifetime_as_str = "undefined";
         lifetime_as_str = DataUtils::ParseXmlElementText(*xml_lifetime, lifetime_as_str);
         if(StringUtils::ToUpperCase(lifetime_as_str) == "INFINITY") {
@@ -23,32 +23,32 @@ ParticleEmitterDefinition::ParticleEmitterDefinition(const XMLElement& element) 
         }
     }
 
-    if(auto xml_position = element.FirstChildElement("position"); xml_position) {
+    if(auto* xml_position = element.FirstChildElement("position"); xml_position) {
         DataUtils::ValidateXmlElement(*xml_position, "position", "", "", "in_line,in_disc,in_cone,in_sphere");
         if(bool has_children = xml_position->FirstChildElement() != nullptr; !has_children) {
             _emitterPositionDefinition.type = EmitterType::Point;
             _position = DataUtils::ParseXmlElementText(*xml_position, _position);
         } else {
-            if(auto xml_inline = xml_position->FirstChildElement("in_line"); xml_inline) {
+            if(auto* xml_inline = xml_position->FirstChildElement("in_line"); xml_inline) {
                 DataUtils::ValidateXmlElement(*xml_inline, "in_line", "", "start,end");
                 _emitterPositionDefinition.type = EmitterType::Line;
                 _emitterPositionDefinition.start = DataUtils::ParseXmlAttribute(*xml_inline, "start", _emitterPositionDefinition.start);
                 _emitterPositionDefinition.end = DataUtils::ParseXmlAttribute(*xml_inline, "end", _emitterPositionDefinition.end);
             }
-            if(auto xml_indisc = xml_position->FirstChildElement("in_disc"); xml_indisc) {
+            if(auto* xml_indisc = xml_position->FirstChildElement("in_disc"); xml_indisc) {
                 DataUtils::ValidateXmlElement(*xml_indisc, "in_disc", "", "normal,radius");
                 _emitterPositionDefinition.type = EmitterType::Disc;
                 _emitterPositionDefinition.normal = DataUtils::ParseXmlAttribute(*xml_indisc, "normal", _emitterPositionDefinition.normal);
                 _emitterPositionDefinition.radius = DataUtils::ParseXmlAttribute(*xml_indisc, "radius", _emitterPositionDefinition.radius);
             }
-            if(auto xml_incone = xml_position->FirstChildElement("in_cone"); xml_incone) {
+            if(auto* xml_incone = xml_position->FirstChildElement("in_cone"); xml_incone) {
                 DataUtils::ValidateXmlElement(*xml_incone, "in_cone", "", "normal,length,theta");
                 _emitterPositionDefinition.type = EmitterType::Cone;
                 _emitterPositionDefinition.normal = DataUtils::ParseXmlAttribute(*xml_incone, "normal", _emitterPositionDefinition.normal);
                 _emitterPositionDefinition.length = DataUtils::ParseXmlAttribute(*xml_incone, "length", _emitterPositionDefinition.length);
                 _emitterPositionDefinition.theta = DataUtils::ParseXmlAttribute(*xml_incone, "theta", _emitterPositionDefinition.theta);
             }
-            if(auto xml_insphere = xml_position->FirstChildElement("in_sphere"); xml_insphere) {
+            if(auto* xml_insphere = xml_position->FirstChildElement("in_sphere"); xml_insphere) {
                 DataUtils::ValidateXmlElement(*xml_insphere, "in_sphere", "", "position,radius");
                 _emitterPositionDefinition.type = EmitterType::Sphere;
                 _emitterPositionDefinition.start = DataUtils::ParseXmlAttribute(*xml_insphere, "position", _emitterPositionDefinition.start);
@@ -56,32 +56,32 @@ ParticleEmitterDefinition::ParticleEmitterDefinition(const XMLElement& element) 
             }
         }
     }
-    if(auto xml_velocity = element.FirstChildElement("velocity"); xml_velocity) {
+    if(auto* xml_velocity = element.FirstChildElement("velocity"); xml_velocity) {
         DataUtils::ValidateXmlElement(*xml_velocity, "velocity", "", "", "in_line,in_disc,in_cone,in_sphere");
         if(bool has_children = xml_velocity->FirstChildElement() != nullptr; !has_children) {
             _emitterVelocityDefinition.type = EmitterType::Point;
             _velocity = DataUtils::ParseXmlElementText(*xml_velocity, _position);
         } else {
-            if(auto xml_inline = xml_velocity->FirstChildElement("in_line"); xml_inline) {
+            if(auto* xml_inline = xml_velocity->FirstChildElement("in_line"); xml_inline) {
                 DataUtils::ValidateXmlElement(*xml_inline, "in_line", "", "start,end");
                 _emitterVelocityDefinition.type = EmitterType::Line;
                 _emitterVelocityDefinition.start = DataUtils::ParseXmlAttribute(*xml_inline, "start", _emitterVelocityDefinition.start);
                 _emitterVelocityDefinition.end = DataUtils::ParseXmlAttribute(*xml_inline, "end", _emitterVelocityDefinition.end);
             }
-            if(auto xml_indisc = xml_velocity->FirstChildElement("in_disc"); xml_indisc) {
+            if(auto* xml_indisc = xml_velocity->FirstChildElement("in_disc"); xml_indisc) {
                 DataUtils::ValidateXmlElement(*xml_indisc, "in_disc", "", "normal,radius");
                 _emitterVelocityDefinition.type = EmitterType::Disc;
                 _emitterVelocityDefinition.normal = DataUtils::ParseXmlAttribute(*xml_indisc, "normal", _emitterVelocityDefinition.normal);
                 _emitterVelocityDefinition.radius = DataUtils::ParseXmlAttribute(*xml_indisc, "radius", _emitterVelocityDefinition.radius);
             }
-            if(auto xml_incone = xml_velocity->FirstChildElement("in_cone"); xml_incone) {
+            if(auto* xml_incone = xml_velocity->FirstChildElement("in_cone"); xml_incone) {
                 DataUtils::ValidateXmlElement(*xml_incone, "in_cone", "", "normal,length,theta");
                 _emitterVelocityDefinition.type = EmitterType::Cone;
                 _emitterVelocityDefinition.normal = DataUtils::ParseXmlAttribute(*xml_incone, "normal", _emitterVelocityDefinition.normal);
                 _emitterVelocityDefinition.length = DataUtils::ParseXmlAttribute(*xml_incone, "length", _emitterVelocityDefinition.length);
                 _emitterVelocityDefinition.theta = DataUtils::ParseXmlAttribute(*xml_incone, "theta", _emitterVelocityDefinition.theta);
             }
-            if(auto xml_insphere = xml_velocity->FirstChildElement("in_sphere"); xml_insphere) {
+            if(auto* xml_insphere = xml_velocity->FirstChildElement("in_sphere"); xml_insphere) {
                 DataUtils::ValidateXmlElement(*xml_insphere, "in_sphere", "", "position,radius");
                 _emitterVelocityDefinition.type = EmitterType::Sphere;
                 _emitterVelocityDefinition.start = DataUtils::ParseXmlAttribute(*xml_insphere, "position", _emitterVelocityDefinition.start);
@@ -90,23 +90,23 @@ ParticleEmitterDefinition::ParticleEmitterDefinition(const XMLElement& element) 
         }
     }
 
-    if(auto xml_acceleration = element.FirstChildElement("acceleration"); xml_acceleration) {
+    if(auto* xml_acceleration = element.FirstChildElement("acceleration"); xml_acceleration) {
         _acceleration = DataUtils::ParseXmlElementText(*xml_acceleration, _acceleration);
     }
 
-    if(auto xml_initial_burst = element.FirstChildElement("initial_burst"); xml_initial_burst) {
+    if(auto* xml_initial_burst = element.FirstChildElement("initial_burst"); xml_initial_burst) {
         _initialBurst = DataUtils::ParseXmlElementText(*xml_initial_burst, _initialBurst);
     }
 
-    if(auto xml_spawn_per_second = element.FirstChildElement("per_second"); xml_spawn_per_second) {
+    if(auto* xml_spawn_per_second = element.FirstChildElement("per_second"); xml_spawn_per_second) {
         _spawnPerSecond = DataUtils::ParseXmlElementText(*xml_spawn_per_second, _spawnPerSecond);
     }
 
-    if(auto xml_particle_lifetime = element.FirstChildElement("particle_lifetime"); xml_particle_lifetime) {
+    if(auto* xml_particle_lifetime = element.FirstChildElement("particle_lifetime"); xml_particle_lifetime) {
         _particleLifetime = DataUtils::ParseXmlElementText(*xml_particle_lifetime, _particleLifetime);
     }
 
-    if(auto xml_color = element.FirstChildElement("color"); xml_color) {
+    if(auto* xml_color = element.FirstChildElement("color"); xml_color) {
         DataUtils::ValidateXmlElement(*xml_color, "color", "", "", "linear");
         if(bool has_children = DataUtils::GetChildElementCount(*xml_color, "linear"); !has_children) {
             Rgba color = DataUtils::ParseXmlElementText(*xml_color, Rgba::White);
@@ -120,7 +120,7 @@ ParticleEmitterDefinition::ParticleEmitterDefinition(const XMLElement& element) 
         }
     }
 
-    if(auto xml_scale = element.FirstChildElement("scale"); xml_scale) {
+    if(auto* xml_scale = element.FirstChildElement("scale"); xml_scale) {
         DataUtils::ValidateXmlElement(*xml_scale, "scale", "", "", "linear");
         if(bool has_children = DataUtils::GetChildElementCount(*xml_scale, "linear"); !has_children) {
             Vector3 scale = DataUtils::ParseXmlElementText(*xml_scale, Vector3::ONE);
@@ -136,12 +136,12 @@ ParticleEmitterDefinition::ParticleEmitterDefinition(const XMLElement& element) 
         }
     }
 
-    if(auto xml_prewarm = element.FirstChildElement("prewarm"); xml_prewarm) {
+    if(auto* xml_prewarm = element.FirstChildElement("prewarm"); xml_prewarm) {
         DataUtils::ValidateXmlElement(*xml_prewarm, "prewarm", "", "");
         _isPrewarmed = DataUtils::ParseXmlElementText(*xml_prewarm, _isPrewarmed);
     }
 
-    if(auto xml_material = element.FirstChildElement("material"); xml_material) {
+    if(auto* xml_material = element.FirstChildElement("material"); xml_material) {
         DataUtils::ValidateXmlElement(*xml_material, "material", "", "src");
         std::string material_src = DataUtils::ParseXmlAttribute(*xml_material, "src", "__2D");
         _materialName = material_src;

@@ -83,7 +83,7 @@ ComputeJob::ComputeJob(Renderer& renderer,
 }
 
 ComputeJob::~ComputeJob() noexcept {
-    auto dc = renderer.GetDeviceContext();
+    auto* dc = renderer.GetDeviceContext();
     dc->UnbindAllComputeConstantBuffers();
     dc->UnbindComputeShaderResources();
     dc->UnbindAllComputeUAVs();
@@ -403,8 +403,8 @@ void Renderer::UnbindWorkingVboAndIbo() noexcept {
 }
 
 void Renderer::SetDepthComparison(ComparisonFunction cf) noexcept {
-    auto dx = GetDeviceContext();
-    auto dx_dc = dx->GetDxContext();
+    auto* dx = GetDeviceContext();
+    auto* dx_dc = dx->GetDxContext();
     unsigned int stencil_value = 0;
     Microsoft::WRL::ComPtr<ID3D11DepthStencilState> state{};
     dx_dc->OMGetDepthStencilState(state.GetAddressOf(), &stencil_value);
@@ -416,8 +416,8 @@ void Renderer::SetDepthComparison(ComparisonFunction cf) noexcept {
 }
 
 ComparisonFunction Renderer::GetDepthComparison() const noexcept {
-    auto dx = GetDeviceContext();
-    auto dx_dc = dx->GetDxContext();
+    auto* dx = GetDeviceContext();
+    auto* dx_dc = dx->GetDxContext();
     unsigned int stencil_value = 0;
     Microsoft::WRL::ComPtr<ID3D11DepthStencilState> state{};
     dx_dc->OMGetDepthStencilState(state.GetAddressOf(), &stencil_value);
@@ -427,8 +427,8 @@ ComparisonFunction Renderer::GetDepthComparison() const noexcept {
 }
 
 void Renderer::SetStencilFrontComparison(ComparisonFunction cf) noexcept {
-    auto dx = GetDeviceContext();
-    auto dx_dc = dx->GetDxContext();
+    auto* dx = GetDeviceContext();
+    auto* dx_dc = dx->GetDxContext();
     unsigned int stencil_value = 0;
     Microsoft::WRL::ComPtr<ID3D11DepthStencilState> state{};
     dx_dc->OMGetDepthStencilState(state.GetAddressOf(), &stencil_value);
@@ -440,8 +440,8 @@ void Renderer::SetStencilFrontComparison(ComparisonFunction cf) noexcept {
 }
 
 void Renderer::SetStencilBackComparison(ComparisonFunction cf) noexcept {
-    auto dx = GetDeviceContext();
-    auto dx_dc = dx->GetDxContext();
+    auto* dx = GetDeviceContext();
+    auto* dx_dc = dx->GetDxContext();
     unsigned int stencil_value = 0;
     Microsoft::WRL::ComPtr<ID3D11DepthStencilState> state{};
     dx_dc->OMGetDepthStencilState(state.GetAddressOf(), &stencil_value);
@@ -453,8 +453,8 @@ void Renderer::SetStencilBackComparison(ComparisonFunction cf) noexcept {
 }
 
 void Renderer::EnableStencilWrite() noexcept {
-    auto dx = GetDeviceContext();
-    auto dx_dc = dx->GetDxContext();
+    auto* dx = GetDeviceContext();
+    auto* dx_dc = dx->GetDxContext();
     unsigned int stencil_value = 0;
     Microsoft::WRL::ComPtr<ID3D11DepthStencilState> state{};
     dx_dc->OMGetDepthStencilState(state.GetAddressOf(), &stencil_value);
@@ -466,8 +466,8 @@ void Renderer::EnableStencilWrite() noexcept {
 }
 
 void Renderer::DisableStencilWrite() noexcept {
-    auto dx = GetDeviceContext();
-    auto dx_dc = dx->GetDxContext();
+    auto* dx = GetDeviceContext();
+    auto* dx_dc = dx->GetDxContext();
     unsigned int stencil_value = 0;
     Microsoft::WRL::ComPtr<ID3D11DepthStencilState> state{};
     dx_dc->OMGetDepthStencilState(state.GetAddressOf(), &stencil_value);
@@ -859,7 +859,7 @@ void Renderer::DrawDebugSphere(const Rgba& color) noexcept {
     vbo.resize(verts.size());
     for(std::size_t i = 0; i < vbo.size(); ++i) {
         vbo[i].position = verts[i];
-        const auto [r, g, b, a] = color.GetAsFloats();
+        const auto&& [r, g, b, a] = color.GetAsFloats();
         vbo[i].color = Vector4{r, g, b, a};
     }
 
@@ -932,7 +932,7 @@ void Renderer::SetAmbientLight(const Rgba& ambient) noexcept {
 }
 
 void Renderer::SetAmbientLight(const Rgba& color, float intensity) noexcept {
-    const auto [r, g, b, _] = color.GetAsFloats();
+    const auto&& [r, g, b, _] = color.GetAsFloats();
     _lighting_data.ambient = Vector4{r, g, b, intensity};
     _lighting_cb->Update(*_rhi_context, &_lighting_data);
     SetConstantBuffer(GetLightingBufferIndex(), _lighting_cb.get());
@@ -966,7 +966,7 @@ void Renderer::SetPointLight(unsigned int index, const PointLightDesc& desc) noe
     l.attenuation = Vector4(desc.attenuation, 0.0f);
     l.specAttenuation = l.attenuation;
     l.position = Vector4(desc.position, 1.0f);
-    const auto [r, g, b, _] = desc.color.GetAsFloats();
+    const auto&& [r, g, b, _] = desc.color.GetAsFloats();
     l.color = Vector4{r, g, b, desc.intensity};
     SetPointLight(index, l);
 }
@@ -976,7 +976,7 @@ void Renderer::SetDirectionalLight(unsigned int index, const DirectionalLightDes
     l.direction = Vector4(desc.direction, 0.0f);
     l.attenuation = Vector4(desc.attenuation, 1.0f);
     l.specAttenuation = l.attenuation;
-    const auto [r, g, b, _] = desc.color.GetAsFloats();
+    const auto&& [r, g, b, _] = desc.color.GetAsFloats();
     l.color = Vector4{r, g, b, desc.intensity};
     SetDirectionalLight(index, l);
 }
@@ -986,7 +986,7 @@ void Renderer::SetSpotlight(unsigned int index, const SpotLightDesc& desc) noexc
     l.attenuation = Vector4(desc.attenuation, 0.0f);
     l.specAttenuation = l.attenuation;
     l.position = Vector4(desc.position, 1.0f);
-    const auto [r, g, b, _] = desc.color.GetAsFloats();
+    const auto&& [r, g, b, _] = desc.color.GetAsFloats();
     l.color = Vector4{r, g, b, desc.intensity};
     l.direction = Vector4(desc.direction, 0.0f);
 
@@ -1030,7 +1030,7 @@ std::unique_ptr<AnimatedSprite> Renderer::CreateAnimatedSprite(std::filesystem::
     tinyxml2::XMLDocument doc;
     auto xml_result = doc.LoadFile(filepath.string().c_str());
     if(xml_result == tinyxml2::XML_SUCCESS) {
-        auto xml_root = doc.RootElement();
+        auto* xml_root = doc.RootElement();
         return std::make_unique<AnimatedSprite>(*xml_root);
     }
     return nullptr;
@@ -1072,7 +1072,7 @@ std::shared_ptr<SpriteSheet> Renderer::CreateSpriteSheet(const std::filesystem::
     tinyxml2::XMLDocument doc;
     auto xml_load = doc.LoadFile(p.string().c_str());
     if(xml_load == tinyxml2::XML_SUCCESS) {
-        auto xml_root = doc.RootElement();
+        auto* xml_root = doc.RootElement();
         return CreateSpriteSheet(*xml_root);
     }
     return std::shared_ptr<SpriteSheet>(new SpriteSheet(p, width, height));
@@ -1639,8 +1639,8 @@ std::vector<std::unique_ptr<ConstantBuffer>> Renderer::CreateComputeConstantBuff
 }
 
 void Renderer::SetWinProc(const std::function<bool(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)>& windowProcedure) noexcept {
-    if(auto output = GetOutput()) {
-        if(auto window = output->GetWindow()) {
+    if(auto* output = GetOutput()) {
+        if(auto* window = output->GetWindow()) {
             window->custom_message_handler = windowProcedure;
         }
     }
@@ -1648,8 +1648,8 @@ void Renderer::SetWinProc(const std::function<bool(HWND hwnd, UINT msg, WPARAM w
 
 void Renderer::CopyTexture(const Texture* src, Texture* dst) const noexcept {
     if((src && dst) && src != dst) {
-        auto dc = GetDeviceContext();
-        auto dx_dc = dc->GetDxContext();
+        auto* dc = GetDeviceContext();
+        auto* dx_dc = dc->GetDxContext();
         dx_dc->CopyResource(dst->GetDxResource(), src->GetDxResource());
     }
 }
@@ -1779,8 +1779,8 @@ Texture* Renderer::GetFullscreenTexture() const noexcept {
 
 void Renderer::DispatchComputeJob(const ComputeJob& job) noexcept {
     SetComputeShader(job.computeShader);
-    auto dc = GetDeviceContext();
-    auto dx_dc = dc->GetDxContext();
+    auto* dc = GetDeviceContext();
+    auto* dx_dc = dc->GetDxContext();
     for(auto i = 0u; i < job.uavCount; ++i) {
         dc->SetUnorderedAccessView(i, job.uavTextures[i]);
     }
@@ -1800,16 +1800,16 @@ void Renderer::SetFullscreen(bool isFullscreen) noexcept {
 }
 
 void Renderer::SetFullscreenMode() noexcept {
-    if(auto output = GetOutput()) {
-        if(auto window = output->GetWindow()) {
+    if(auto* output = GetOutput()) {
+        if(auto* window = output->GetWindow()) {
             window->SetDisplayMode(RHIOutputMode::Borderless_Fullscreen);
         }
     }
 }
 
 void Renderer::SetWindowedMode() noexcept {
-    if(auto output = GetOutput()) {
-        if(auto window = output->GetWindow()) {
+    if(auto* output = GetOutput()) {
+        if(auto* window = output->GetWindow()) {
             window->SetDisplayMode(RHIOutputMode::Windowed);
         }
     }
@@ -3000,7 +3000,7 @@ std::unique_ptr<KerningFont> Renderer::CreateDefaultSystem32Font() noexcept {
         std::string material_string = material_stream.str();
         const auto result = doc.Parse(material_string.c_str(), material_string.size());
         GUARANTEE_OR_DIE(result == tinyxml2::XML_SUCCESS, "Failed to create default system32 font: Invalid XML file.\n");
-        const auto xml_root = doc.RootElement();
+        const auto* xml_root = doc.RootElement();
         auto mat = std::make_unique<Material>(*xml_root);
         font_system32->SetMaterial(mat.get());
         this->RegisterMaterial(std::move(mat));
@@ -3052,24 +3052,24 @@ void Renderer::UnbindComputeConstantBuffers() noexcept {
 }
 
 void Renderer::SetWindowIcon(void* /*iconResource*/) noexcept {
-    //if(auto output = GetOutput()) {
-        //if(auto window = output->GetWindow()) {
+    //if(auto* output = GetOutput()) {
+        //if(auto* window = output->GetWindow()) {
             //window->SetIcon(iconResource);
         //}
     //}
 }
 
 void Renderer::SetWindowTitle(const std::string& newTitle) noexcept {
-    if(auto output = GetOutput()) {
-        if(auto window = output->GetWindow()) {
+    if(auto* output = GetOutput()) {
+        if(auto* window = output->GetWindow()) {
             window->SetTitle(newTitle);
         }
     }
 }
 
 std::string Renderer::GetWindowTitle() const noexcept {
-    if(auto output = GetOutput()) {
-        if(auto window = output->GetWindow()) {
+    if(auto* output = GetOutput()) {
+        if(auto* window = output->GetWindow()) {
             return window->GetTitle();
         }
     }
@@ -4363,8 +4363,8 @@ void Renderer::SetViewportAndScissorAsPercent(float x /*= 0.0f*/, float y /*= 0.
 
 void Renderer::EnableScissorTest() {
     Microsoft::WRL::ComPtr<ID3D11RasterizerState> state{};
-    auto dc = GetDeviceContext();
-    auto dx_dc = dc->GetDxContext();
+    auto* dc = GetDeviceContext();
+    auto* dx_dc = dc->GetDxContext();
     dx_dc->RSGetState(state.GetAddressOf());
 
     D3D11_RASTERIZER_DESC desc{};
@@ -4381,8 +4381,8 @@ void Renderer::EnableScissorTest() {
 
 void Renderer::DisableScissorTest() {
     Microsoft::WRL::ComPtr<ID3D11RasterizerState> state{};
-    auto dc = GetDeviceContext();
-    auto dx_dc = dc->GetDxContext();
+    auto* dc = GetDeviceContext();
+    auto* dx_dc = dc->GetDxContext();
     dx_dc->RSGetState(state.GetAddressOf());
 
     D3D11_RASTERIZER_DESC desc{};
@@ -4549,8 +4549,8 @@ void Renderer::EnableDepth(bool isDepthEnabled) noexcept {
 }
 
 void Renderer::EnableDepth() noexcept {
-    auto dx = GetDeviceContext();
-    auto dx_dc = dx->GetDxContext();
+    auto* dx = GetDeviceContext();
+    auto* dx_dc = dx->GetDxContext();
     unsigned int stencil_value = 0;
     Microsoft::WRL::ComPtr<ID3D11DepthStencilState> state{};
     dx_dc->OMGetDepthStencilState(state.GetAddressOf(), &stencil_value);
@@ -4563,8 +4563,8 @@ void Renderer::EnableDepth() noexcept {
 }
 
 void Renderer::DisableDepth() noexcept {
-    auto dx = GetDeviceContext();
-    auto dx_dc = dx->GetDxContext();
+    auto* dx = GetDeviceContext();
+    auto* dx_dc = dx->GetDxContext();
     unsigned int stencil_value = 0;
     Microsoft::WRL::ComPtr<ID3D11DepthStencilState> state{};
     dx_dc->OMGetDepthStencilState(state.GetAddressOf(), &stencil_value);
@@ -4581,8 +4581,8 @@ void Renderer::EnableDepthWrite(bool isDepthWriteEnabled) noexcept {
 }
 
 void Renderer::EnableDepthWrite() noexcept {
-    auto dx = GetDeviceContext();
-    auto dx_dc = dx->GetDxContext();
+    auto* dx = GetDeviceContext();
+    auto* dx_dc = dx->GetDxContext();
     unsigned int stencil_value = 0;
     Microsoft::WRL::ComPtr<ID3D11DepthStencilState> state{};
     dx_dc->OMGetDepthStencilState(state.GetAddressOf(), &stencil_value);
@@ -4594,8 +4594,8 @@ void Renderer::EnableDepthWrite() noexcept {
 }
 
 void Renderer::DisableDepthWrite() noexcept {
-    auto dx = GetDeviceContext();
-    auto dx_dc = dx->GetDxContext();
+    auto* dx = GetDeviceContext();
+    auto* dx_dc = dx->GetDxContext();
     unsigned int stencil_value = 0;
     Microsoft::WRL::ComPtr<ID3D11DepthStencilState> state{};
     dx_dc->OMGetDepthStencilState(state.GetAddressOf(), &stencil_value);
@@ -4683,7 +4683,7 @@ Texture* Renderer::Create1DTexture(std::filesystem::path filepath, const BufferU
         auto tex = std::make_unique<Texture1D>(*_rhi_device, dx_tex);
         tex->SetDebugName(filepath.string().c_str());
         tex->IsLoaded(true);
-        auto tex_ptr = tex.get();
+        auto* tex_ptr = tex.get();
         if(RegisterTexture(filepath.string(), std::move(tex))) {
             return tex_ptr;
         } else {
@@ -4844,7 +4844,7 @@ Texture* Renderer::Create2DTexture(std::filesystem::path filepath, const BufferU
         auto tex = std::make_unique<Texture2D>(*_rhi_device, dx_tex);
         tex->SetDebugName(filepath.string().c_str());
         tex->IsLoaded(true);
-        auto tex_ptr = tex.get();
+        auto* tex_ptr = tex.get();
         if(RegisterTexture(filepath.string(), std::move(tex))) {
             return tex_ptr;
         } else {
@@ -5106,7 +5106,7 @@ Texture* Renderer::Create3DTexture(std::filesystem::path filepath, const IntVect
         auto tex = std::make_unique<Texture3D>(*_rhi_device, dx_tex);
         tex->SetDebugName(filepath.string().c_str());
         tex->IsLoaded(true);
-        auto tex_ptr = tex.get();
+        auto* tex_ptr = tex.get();
         if(RegisterTexture(filepath.string(), std::move(tex))) {
             return tex_ptr;
         } else {

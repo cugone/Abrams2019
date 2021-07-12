@@ -12,7 +12,7 @@ void JobConsumer::AddCategory(const JobType& category) noexcept {
     if(categoryAsSizeT >= JobSystem::_queues.size()) {
         return;
     }
-    if(const auto q = JobSystem::_queues[categoryAsSizeT]; q) {
+    if(auto* q = JobSystem::_queues[categoryAsSizeT]; q) {
         _consumables.push_back(q);
     }
 }
@@ -29,7 +29,7 @@ bool JobConsumer::ConsumeJob() noexcept {
         if(queue.empty()) {
             return false;
         }
-        const auto job = queue.front();
+        auto* job = queue.front();
         queue.pop();
         std::invoke(job->work_cb, job->user_data);
         job->OnFinish();

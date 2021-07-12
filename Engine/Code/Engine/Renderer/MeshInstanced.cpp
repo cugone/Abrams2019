@@ -66,7 +66,7 @@ void MeshInstanced::Builder::SetAlpha(float value) noexcept {
 }
 
 void MeshInstanced::Builder::SetColor(const Rgba& color) noexcept {
-    auto [r, g, b, a] = color.GetAsFloats();
+    auto&& [r, g, b, a] = color.GetAsFloats();
     SetColor(Vector4{r, g, b, a});
 }
 

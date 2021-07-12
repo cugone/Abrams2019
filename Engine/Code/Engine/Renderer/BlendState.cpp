@@ -36,7 +36,7 @@ bool BlendState::CreateBlendState(const RHIDevice* device, const std::vector<Ble
 }
 
 BlendState::BlendState(const RHIDevice* device, const XMLElement& element) noexcept {
-    if(auto xml_blends = element.FirstChildElement("blends")) {
+    if(auto* xml_blends = element.FirstChildElement("blends")) {
         DataUtils::ValidateXmlElement(*xml_blends, "blends", "blend", "", "", "alphacoverage,independantblend");
         _alpha_to_coverage_enable = DataUtils::ParseXmlAttribute(element, "alphacoverage", _alpha_to_coverage_enable);
         _independant_blend_enable = DataUtils::ParseXmlAttribute(element, "independantblend", _independant_blend_enable);
@@ -89,7 +89,7 @@ BlendDesc::BlendDesc(const XMLElement& element) noexcept {
     DataUtils::ValidateXmlElement(element, "blend", "", "", "color,alpha,enablemask", "enable");
     enable = DataUtils::ParseXmlAttribute(element, "enable", enable);
 
-    if(const auto xml_color = element.FirstChildElement("color")) {
+    if(const auto* xml_color = element.FirstChildElement("color")) {
         DataUtils::ValidateXmlElement(*xml_color, "color", "", "src,dest,op");
         std::string source_factor_str = "one";
         source_factor_str = DataUtils::ParseXmlAttribute(*xml_color, "src", source_factor_str);
@@ -103,7 +103,7 @@ BlendDesc::BlendDesc(const XMLElement& element) noexcept {
         blend_op = BlendOperationFromString(op_str);
     }
 
-    if(const auto xml_alpha = element.FirstChildElement("alpha")) {
+    if(const auto* xml_alpha = element.FirstChildElement("alpha")) {
         DataUtils::ValidateXmlElement(*xml_alpha, "alpha", "", "src,dest,op");
         std::string source_factor_str = "one";
         source_factor_str = DataUtils::ParseXmlAttribute(*xml_alpha, "src", source_factor_str);
@@ -117,7 +117,7 @@ BlendDesc::BlendDesc(const XMLElement& element) noexcept {
         blend_op_alpha = BlendOperationFromString(op_str);
     }
 
-    if(const auto xml_mask = element.FirstChildElement("enablemask")) {
+    if(const auto* xml_mask = element.FirstChildElement("enablemask")) {
         DataUtils::ValidateXmlElement(*xml_mask, "enablemask", "", "value");
         std::string mask_str = "all";
         mask_str = DataUtils::ParseXmlAttribute(*xml_mask, "value", mask_str);

@@ -16,7 +16,7 @@
 UICanvas::UICanvas(UIWidget* owner)
 : UIPanel(owner)
 {
-    const auto [dimensions, aspect_ratio] = CalcDimensionsAndAspectRatio();
+    const auto&& [dimensions, aspect_ratio] = CalcDimensionsAndAspectRatio();
     const auto desired_size = CalcDesiredSize();
     _bounds.mins = desired_size.GetXY();
     _bounds.maxs = desired_size.GetZW();
@@ -168,7 +168,7 @@ Vector4 UICanvas::AnchorTextToAnchorValues(const std::string& text) noexcept {
 UICanvasSlot* UICanvas::AddChild(UIElement* child) {
     DirtyElement(UIInvalidateElementReason::Layout);
     auto newSlot = std::make_shared<UICanvasSlot>(child, this);
-    auto ptr = newSlot.get();
+    auto* ptr = newSlot.get();
     _slots.emplace_back(newSlot);
     child->SetSlot(ptr);
     return ptr;
@@ -178,7 +178,7 @@ UICanvasSlot* UICanvas::AddChildAt(UIElement* child, std::size_t index) {
     DirtyElement(UIInvalidateElementReason::Layout);
     auto newSlot = std::make_shared<UICanvasSlot>(child, this);
     CalcBoundsForMeThenMyChildren();
-    auto ptr = newSlot.get();
+    auto* ptr = newSlot.get();
     _slots[index] = std::move(newSlot);
     if(IsDirty(UIInvalidateElementReason::Layout)) {
         ReorderAllChildren();
@@ -189,7 +189,7 @@ UICanvasSlot* UICanvas::AddChildAt(UIElement* child, std::size_t index) {
 UICanvasSlot* UICanvas::AddChildFromXml(const XMLElement& elem, UIElement* child) {
     DirtyElement(UIInvalidateElementReason::Layout);
     auto newSlot = std::make_shared<UICanvasSlot>(elem, child, this);
-    auto ptr = newSlot.get();
+    auto* ptr = newSlot.get();
     _slots.emplace_back(newSlot);
     child->SetSlot(ptr);
     if(IsDirty(UIInvalidateElementReason::Layout)) {
@@ -202,7 +202,7 @@ UICanvasSlot* UICanvas::AddChildFromXml(const XMLElement& elem, UIElement* child
     DirtyElement(UIInvalidateElementReason::Layout);
     auto newSlot = std::make_shared<UICanvasSlot>(elem, child, this);
     CalcBoundsForMeThenMyChildren();
-    auto ptr = newSlot.get();
+    auto* ptr = newSlot.get();
     _slots[index] = std::move(newSlot);
     if(IsDirty(UIInvalidateElementReason::Layout)) {
         ReorderAllChildren();
