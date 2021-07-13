@@ -374,6 +374,24 @@ template<typename T>
         try {
             if constexpr(std::is_same_v<T, bool>) {
                 element.QueryBoolAttribute(attributeName.c_str(), &retVal);
+            } else if constexpr(std::is_same_v<T, unsigned char>) {
+                auto ucharVal = static_cast<unsigned int>(retVal);
+                element.QueryUnsignedAttribute(attributeName.c_str(), &ucharVal);
+                return static_cast<T>(ucharVal);
+            } else if constexpr(std::is_same_v<T, char>) {
+                auto charVal = static_cast<int>(retVal);
+                element.QueryIntAttribute(attributeName.c_str(), &charVal);
+                return static_cast<T>(charVal);
+            } else if constexpr(std::is_same_v<T, signed char>) {
+                auto scharVal = static_cast<signed int>(retVal);
+                element.QueryIntAttribute(attributeName.c_str(), &scharVal);
+                return static_cast<T>(scharVal);
+            } else if constexpr(std::is_same_v<T, std::string>) {
+                const auto* s = element.Attribute(attributeName.c_str());
+                return T(s ? s : defaultValue);
+            } else if constexpr(std::is_same_v<T, const char*>) {
+                const auto* s = element.Attribute(attributeName.c_str());
+                return s ? s : "";
             } else if constexpr(std::is_unsigned_v<T> && std::is_same_v<T, std::uint64_t>) {
                 element.QueryUnsigned64Attribute(attributeName.c_str(), &retVal);
             } else if constexpr(std::is_unsigned_v<T> && std::is_same_v<T, std::uint32_t>) {
@@ -392,12 +410,6 @@ template<typename T>
                 element.QueryDoubleAttribute(attributeName.c_str(), &retVal);
             } else if constexpr(std::is_floating_point_v<T> && std::is_same_v<T, long double>) {
                 element.QueryDoubleAttribute(attributeName.c_str(), &retVal);
-            } else if constexpr(std::is_same_v<T, std::string>) {
-                const auto* s = element.Attribute(attributeName.c_str());
-                return T(s ? s : defaultValue);
-            } else if constexpr(std::is_same_v<T, const char*>) {
-                const auto* s = element.Attribute(attributeName.c_str());
-                return s ? s : "";
             } else {
                 if(attr.empty()) {
                     return defaultValue;
