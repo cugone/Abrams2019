@@ -107,7 +107,7 @@ bool Shader::LoadFromXml(const XMLElement& element) noexcept {
 
     FS::path p;
     {
-        const std::string sp_src = DataUtils::ParseXmlAttribute(*xml_SP, "src", "");
+        const std::string sp_src = DataUtils::ParseXmlAttribute(*xml_SP, "src", std::string{});
         GUARANTEE_OR_DIE(!sp_src.empty(), "shaderprogram element has empty src attribute.");
         p = FS::path(sp_src);
     }
@@ -133,7 +133,7 @@ bool Shader::LoadFromXml(const XMLElement& element) noexcept {
             desc.name = _name;
             auto& device = *renderer.GetDevice();
             DataUtils::ForEachChildElement(element, "shaderprogram", [this, &desc, &device](const XMLElement& elem) {
-                const auto sp_src = DataUtils::ParseXmlAttribute(elem, "src", "");
+                const auto sp_src = DataUtils::ParseXmlAttribute(elem, "src", std::string{});
                 auto p = FS::path(sp_src);
                 std::error_code ec;
                 p = FS::canonical(p, ec);
@@ -187,7 +187,7 @@ bool Shader::LoadFromXml(const XMLElement& element) noexcept {
 
     _raster_state = renderer.GetRasterState("__default");
     if(auto* xml_raster = element.FirstChildElement("raster")) {
-        std::string rs_src = DataUtils::ParseXmlAttribute(*xml_raster, "src", "");
+        std::string rs_src = DataUtils::ParseXmlAttribute(*xml_raster, "src", std::string{});
         if(auto* found_raster = renderer.GetRasterState(rs_src)) {
             _raster_state = found_raster;
         } else {
@@ -197,7 +197,7 @@ bool Shader::LoadFromXml(const XMLElement& element) noexcept {
 
     _sampler = renderer.GetSampler("__default");
     if(auto* xml_sampler = element.FirstChildElement("sampler")) {
-        std::string s_src = DataUtils::ParseXmlAttribute(*xml_sampler, "src", "");
+        std::string s_src = DataUtils::ParseXmlAttribute(*xml_sampler, "src", std::string{});
         if(auto* found_sampler = renderer.GetSampler(s_src)) {
             _sampler = found_sampler;
         } else {
@@ -234,42 +234,42 @@ PipelineStage Shader::ParseTargets(const XMLElement& element) noexcept {
 std::string Shader::ParseEntrypointList(const XMLElement& element) noexcept {
     std::string entrypointList{};
     if(auto* xml_vertex = element.FirstChildElement("vertex")) {
-        auto entrypoint = DataUtils::ParseXmlAttribute(*xml_vertex, "entrypoint", "");
+        auto entrypoint = DataUtils::ParseXmlAttribute(*xml_vertex, "entrypoint", std::string{});
         entrypoint += ",";
         entrypointList += entrypoint;
     } else {
         entrypointList += ",";
     }
     if(auto* xml_hull = element.FirstChildElement("hull")) {
-        auto entrypoint = DataUtils::ParseXmlAttribute(*xml_hull, "entrypoint", "");
+        auto entrypoint = DataUtils::ParseXmlAttribute(*xml_hull, "entrypoint", std::string{});
         entrypoint += ",";
         entrypointList += entrypoint;
     } else {
         entrypointList += ",";
     }
     if(auto* xml_domain = element.FirstChildElement("domain")) {
-        auto entrypoint = DataUtils::ParseXmlAttribute(*xml_domain, "entrypoint", "");
+        auto entrypoint = DataUtils::ParseXmlAttribute(*xml_domain, "entrypoint", std::string{});
         entrypoint += ",";
         entrypointList += entrypoint;
     } else {
         entrypointList += ",";
     }
     if(auto* xml_geometry = element.FirstChildElement("geometry")) {
-        auto entrypoint = DataUtils::ParseXmlAttribute(*xml_geometry, "entrypoint", "");
+        auto entrypoint = DataUtils::ParseXmlAttribute(*xml_geometry, "entrypoint", std::string{});
         entrypoint += ",";
         entrypointList += entrypoint;
     } else {
         entrypointList += ",";
     }
     if(auto* xml_pixel = element.FirstChildElement("pixel")) {
-        auto entrypoint = DataUtils::ParseXmlAttribute(*xml_pixel, "entrypoint", "");
+        auto entrypoint = DataUtils::ParseXmlAttribute(*xml_pixel, "entrypoint", std::string{});
         entrypoint += ",";
         entrypointList += entrypoint;
     } else {
         entrypointList += ",";
     }
     if(auto* xml_compute = element.FirstChildElement("compute")) {
-        auto entrypoint = DataUtils::ParseXmlAttribute(*xml_compute, "entrypoint", "");
+        auto entrypoint = DataUtils::ParseXmlAttribute(*xml_compute, "entrypoint", std::string{});
         entrypoint += ",";
         entrypointList += entrypoint;
     } else {

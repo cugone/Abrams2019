@@ -127,7 +127,7 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
     {
         const auto* xml_shader = element.FirstChildElement("shader");
         DataUtils::ValidateXmlElement(*xml_shader, "shader", "", "src");
-        const auto file = DataUtils::ParseXmlAttribute(*xml_shader, "src", "");
+        const auto file = DataUtils::ParseXmlAttribute(*xml_shader, "src", std::string{});
         FS::path shader_src(file);
         if(!StringUtils::StartsWith(shader_src.string(), "__")) {
             std::error_code ec{};
@@ -185,27 +185,27 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
 
     if(const auto* xml_textures = element.FirstChildElement("textures")) {
         if(const auto* xml_diffuse = xml_textures->FirstChildElement("diffuse"); xml_diffuse) {
-            LoadTexture(Material::TextureID::Diffuse, FS::path{DataUtils::ParseXmlAttribute(*xml_diffuse, "src", "")});
+            LoadTexture(Material::TextureID::Diffuse, FS::path{DataUtils::ParseXmlAttribute(*xml_diffuse, "src", std::string{})});
         }
 
         if(const auto* xml_normal = xml_textures->FirstChildElement("normal"); xml_normal) {
-            LoadTexture(Material::TextureID::Normal, FS::path{DataUtils::ParseXmlAttribute(*xml_normal, "src", "")});
+            LoadTexture(Material::TextureID::Normal, FS::path{DataUtils::ParseXmlAttribute(*xml_normal, "src", std::string{})});
         }
 
         if(const auto* xml_displacement = xml_textures->FirstChildElement("displacement"); xml_displacement) {
-            LoadTexture(Material::TextureID::Displacement, FS::path{DataUtils::ParseXmlAttribute(*xml_displacement, "src", "")});
+            LoadTexture(Material::TextureID::Displacement, FS::path{DataUtils::ParseXmlAttribute(*xml_displacement, "src", std::string{})});
         }
 
         if(const auto* xml_specular = xml_textures->FirstChildElement("specular"); xml_specular) {
-            LoadTexture(Material::TextureID::Specular, FS::path{DataUtils::ParseXmlAttribute(*xml_specular, "src", "")});
+            LoadTexture(Material::TextureID::Specular, FS::path{DataUtils::ParseXmlAttribute(*xml_specular, "src", std::string{})});
         }
 
         if(const auto* xml_occlusion = xml_textures->FirstChildElement("occlusion"); xml_occlusion) {
-            LoadTexture(Material::TextureID::Occlusion, FS::path{DataUtils::ParseXmlAttribute(*xml_occlusion, "src", "")});
+            LoadTexture(Material::TextureID::Occlusion, FS::path{DataUtils::ParseXmlAttribute(*xml_occlusion, "src", std::string{})});
         }
 
         if(const auto* xml_emissive = xml_textures->FirstChildElement("emissive")) {
-            LoadTexture(Material::TextureID::Emissive, FS::path{DataUtils::ParseXmlAttribute(*xml_emissive, "src", "")});
+            LoadTexture(Material::TextureID::Emissive, FS::path{DataUtils::ParseXmlAttribute(*xml_emissive, "src", std::string{})});
         }
 
         {
@@ -222,7 +222,7 @@ bool Material::LoadFromXml(const XMLElement& element) noexcept {
             if(index >= CustomTextureIndexSlotOffset + MaxCustomTextureSlotCount) {
                 return;
             }
-            LoadTexture(static_cast<TextureID>(index), FS::path{DataUtils::ParseXmlAttribute(elem, "src", "")});
+            LoadTexture(static_cast<TextureID>(index), FS::path{DataUtils::ParseXmlAttribute(elem, "src", std::string{})});
         });
     }
     return true;

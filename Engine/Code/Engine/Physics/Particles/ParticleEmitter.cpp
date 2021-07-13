@@ -147,7 +147,7 @@ bool ParticleEmitter::HasAliveParticles() const {
 
 void ParticleEmitter::LoadFromXML(const XMLElement& element) {
     DataUtils::ValidateXmlElement(element, "emitter", "", "name");
-    const auto name = DataUtils::ParseXmlAttribute(element, "name", "");
+    const auto name = DataUtils::ParseXmlAttribute(element, "name", std::string{});
     _spawnClock.SetFrequency(static_cast<unsigned int>(ParticleEmitterDefinition::GetParticleEmitterDefinition(name)->_spawnPerSecond));
 }
 

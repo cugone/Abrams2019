@@ -264,7 +264,7 @@ void UISystem::LoadUiWidgetsFromFolder(std::filesystem::path path, bool recursiv
     const auto widgets_lambda = [this](const std::filesystem::path& path) {
         if(tinyxml2::XMLDocument doc; tinyxml2::XML_SUCCESS == doc.LoadFile(path.string().c_str())) {
             if(const auto* root = doc.RootElement(); DataUtils::HasAttribute(*root, "name")) {
-                if(const auto name = DataUtils::ParseXmlAttribute(*root, "name", ""); !name.empty()) {
+                if(const auto name = DataUtils::ParseXmlAttribute(*root, "name", std::string{}); !name.empty()) {
                     LoadUiWidget(name);
                 }
             }

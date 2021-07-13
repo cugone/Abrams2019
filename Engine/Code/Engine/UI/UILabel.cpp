@@ -126,7 +126,7 @@ bool UILabel::LoadFromXml(const XMLElement& elem) noexcept {
     _name = DataUtils::ParseXmlAttribute(elem, "name", _name);
     _fontname = DataUtils::ParseXmlAttribute(elem, "font", _fontname);
     _font = ServiceLocator::get<IRendererService>().GetFont(_fontname);
-    _text = DataUtils::ParseXmlAttribute(elem, "value", "TEXT");
+    _text = DataUtils::ParseXmlAttribute(elem, "value", std::string{"TEXT"});
 
     if(auto* xml_slot = elem.FirstChildElement("slot")) {
         if(auto* parent = GetParent()) {

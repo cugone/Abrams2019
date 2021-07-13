@@ -62,7 +62,7 @@ Vector4 UIPictureBox::CalcDesiredSize() const noexcept {
 bool UIPictureBox::LoadFromXml(const XMLElement& elem) noexcept {
     DataUtils::ValidateXmlElement(elem, "picturebox", "", "name,src", "");
     _name = DataUtils::ParseXmlAttribute(elem, "name", _name);
-    if(const auto src = DataUtils::ParseXmlAttribute(elem, "src", ""); FileUtils::IsSafeReadPath(src)) {
+    if(const auto src = DataUtils::ParseXmlAttribute(elem, "src", std::string{}); FileUtils::IsSafeReadPath(src)) {
         auto&& renderer = ServiceLocator::get<IRendererService>();
         _sprite = renderer.CreateAnimatedSprite(src);
         return true;

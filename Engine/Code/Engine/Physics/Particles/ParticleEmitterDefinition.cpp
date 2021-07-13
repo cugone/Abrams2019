@@ -11,7 +11,7 @@
 ParticleEmitterDefinition::ParticleEmitterDefinition(const XMLElement& element) noexcept {
     DataUtils::ValidateXmlElement(element, "emitter", "", "name", "lifetime,position,velocity,acceleration,initial_burst,per_second,particle_lifetime,color,scale,prewarm,material");
 
-    _name = DataUtils::ParseXmlAttribute(element, "name", "UNNAMED_PARTICLE_EMITTER");
+    _name = DataUtils::ParseXmlAttribute(element, "name", std::string{"UNNAMED_PARTICLE_EMITTER"});
 
     if(auto* xml_lifetime = element.FirstChildElement("lifetime"); xml_lifetime) {
         std::string lifetime_as_str = "undefined";
@@ -143,7 +143,7 @@ ParticleEmitterDefinition::ParticleEmitterDefinition(const XMLElement& element) 
 
     if(auto* xml_material = element.FirstChildElement("material"); xml_material) {
         DataUtils::ValidateXmlElement(*xml_material, "material", "", "src");
-        std::string material_src = DataUtils::ParseXmlAttribute(*xml_material, "src", "__2D");
+        std::string material_src = DataUtils::ParseXmlAttribute(*xml_material, "src", std::string{"__2D"});
         _materialName = material_src;
     }
 }

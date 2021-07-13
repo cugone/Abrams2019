@@ -41,7 +41,7 @@ bool ParticleEffectDefinition::LoadDefinition(const XMLElement& element) {
         std::vector<std::string> emitter_names{};
         emitter_names.reserve(emitter_count);
         DataUtils::ForEachChildElement(element, "emitter", [&emitter_names](const XMLElement& elem) {
-            std::string name = DataUtils::ParseXmlAttribute(elem, "name", "UNNAMED_PARTICLE_EMITTER");
+            std::string name = DataUtils::ParseXmlAttribute(elem, "name", std::string{"UNNAMED_PARTICLE_EMITTER"});
             ParticleEmitterDefinition::CreateAndRegisterParticleEmitterDefinition(elem);
             emitter_names.push_back(name);
             });
@@ -50,7 +50,7 @@ bool ParticleEffectDefinition::LoadDefinition(const XMLElement& element) {
 
     if(auto xml_sound = element.FirstChildElement("sound"); xml_sound) {
         DataUtils::ValidateXmlElement(*xml_sound, "sound", "", "src");
-        std::string sound_src = DataUtils::ParseXmlAttribute(*xml_sound, "src", "");
+        std::string sound_src = DataUtils::ParseXmlAttribute(*xml_sound, "src", std::string{});
         if(!sound_src.empty()) {
             definition->_soundSrc = sound_src;
             definition->_hasSound = true;

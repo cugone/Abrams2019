@@ -100,7 +100,7 @@ std::shared_ptr<UIElement> UIWidget::CreateWigetTypeFromTypename(std::string nam
         return c;
     } else if(childname == "label") {
         if(const auto* parent = elem.Parent(); parent->ToElement()) {
-            const auto parent_name = DataUtils::ParseXmlAttribute(*parent->ToElement(), "name", "");
+            const auto parent_name = DataUtils::ParseXmlAttribute(*parent->ToElement(), "name", std::string{});
             const auto found = std::find_if(std::begin(_elements), std::end(_elements), [&parent_name](std::shared_ptr<UIElement>& element) { return element->GetName() == parent_name; });
             if(found != std::end(_elements)) {
                 if(auto* foundAsPanel = dynamic_cast<UIPanel*>(found->get())) {
@@ -112,7 +112,7 @@ std::shared_ptr<UIElement> UIWidget::CreateWigetTypeFromTypename(std::string nam
         return std::make_shared<UILabel>(elem);
     } else if(childname == "picturebox") {
         if(const auto* parent = elem.Parent(); parent->ToElement()) {
-            const auto parent_name = DataUtils::ParseXmlAttribute(*parent->ToElement(), "name", "");
+            const auto parent_name = DataUtils::ParseXmlAttribute(*parent->ToElement(), "name", std::string{});
             const auto found = std::find_if(std::begin(_elements), std::end(_elements), [&parent_name](std::shared_ptr<UIElement>& element) { return element->GetName() == parent_name; });
             if(found != std::end(_elements)) {
                 if(auto* foundAsPanel = dynamic_cast<UIPanel*>(found->get())) {

@@ -128,6 +128,9 @@ void ValidateXmlElement(const XMLElement& element,
                         const std::string& optionalChildElements = std::string{},
                         const std::string& optionalAttributes = std::string{}) noexcept;
 
+std::string GetElementTextAsString(const XMLElement& element);
+std::string GetAttributeAsString(const XMLElement& element, const std::string& attributeName);
+
 [[nodiscard]] std::size_t GetAttributeCount(const XMLElement& element) noexcept;
 [[nodiscard]] std::size_t GetChildElementCount(const XMLElement& element, const std::string& elementName = std::string{}) noexcept;
 
@@ -140,82 +143,6 @@ void ValidateXmlElement(const XMLElement& element,
 [[nodiscard]] std::vector<std::string> GetAttributeNames(const XMLElement& element) noexcept;
 [[nodiscard]] bool HasAttribute(const XMLElement& element) noexcept;
 [[nodiscard]] bool HasAttribute(const XMLElement& element, const std::string& name);
-
-[[nodiscard]] bool ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, bool defaultValue) noexcept;
-
-[[nodiscard]] unsigned char ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, unsigned char defaultValue) noexcept;
-[[nodiscard]] signed char ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, signed char defaultValue) noexcept;
-[[nodiscard]] char ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, char defaultValue) noexcept;
-
-[[nodiscard]] unsigned short ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, unsigned short defaultValue) noexcept;
-[[nodiscard]] short ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, short defaultValue) noexcept;
-
-[[nodiscard]] unsigned int ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, unsigned int defaultValue) noexcept;
-[[nodiscard]] int ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, int defaultValue) noexcept;
-
-[[nodiscard]] unsigned long ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, unsigned long defaultValue) noexcept;
-[[nodiscard]] long ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, long defaultValue) noexcept;
-
-[[nodiscard]] unsigned long long ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, unsigned long long defaultValue) noexcept;
-[[nodiscard]] long long ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, long long defaultValue) noexcept;
-
-[[nodiscard]] float ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, float defaultValue) noexcept;
-[[nodiscard]] double ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, double defaultValue) noexcept;
-[[nodiscard]] long double ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, long double defaultValue) noexcept;
-
-[[nodiscard]] Rgba ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const Rgba& defaultValue) noexcept;
-
-[[nodiscard]] Vector2 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const Vector2& defaultValue) noexcept;
-[[nodiscard]] IntVector2 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const IntVector2& defaultValue) noexcept;
-
-[[nodiscard]] Vector3 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const Vector3& defaultValue) noexcept;
-[[nodiscard]] IntVector3 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const IntVector3& defaultValue) noexcept;
-
-[[nodiscard]] Vector4 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const Vector4& defaultValue) noexcept;
-[[nodiscard]] IntVector4 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const IntVector4& defaultValue) noexcept;
-
-[[nodiscard]] Matrix4 ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const Matrix4& defaultValue) noexcept;
-
-[[nodiscard]] std::string ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const std::string& defaultValue) noexcept;
-[[nodiscard]] std::string ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const char* defaultValue) noexcept;
-
-[[nodiscard]] bool ParseXmlElementText(const XMLElement& element, bool defaultValue) noexcept;
-
-[[nodiscard]] unsigned char ParseXmlElementText(const XMLElement& element, unsigned char defaultValue) noexcept;
-[[nodiscard]] signed char ParseXmlElementText(const XMLElement& element, signed char defaultValue) noexcept;
-[[nodiscard]] char ParseXmlElementText(const XMLElement& element, char defaultValue) noexcept;
-
-[[nodiscard]] unsigned short ParseXmlElementText(const XMLElement& element, unsigned short defaultValue) noexcept;
-[[nodiscard]] short ParseXmlElementText(const XMLElement& element, short defaultValue) noexcept;
-
-[[nodiscard]] unsigned int ParseXmlElementText(const XMLElement& element, unsigned int defaultValue) noexcept;
-[[nodiscard]] int ParseXmlElementText(const XMLElement& element, int defaultValue) noexcept;
-
-[[nodiscard]] unsigned long ParseXmlElementText(const XMLElement& element, unsigned long defaultValue) noexcept;
-[[nodiscard]] long ParseXmlElementText(const XMLElement& element, long defaultValue) noexcept;
-
-[[nodiscard]] unsigned long long ParseXmlElementText(const XMLElement& element, unsigned long long defaultValue) noexcept;
-[[nodiscard]] long long ParseXmlElementText(const XMLElement& element, long long defaultValue) noexcept;
-
-[[nodiscard]] float ParseXmlElementText(const XMLElement& element, float defaultValue) noexcept;
-[[nodiscard]] double ParseXmlElementText(const XMLElement& element, double defaultValue) noexcept;
-[[nodiscard]] long double ParseXmlElementText(const XMLElement& element, long double defaultValue) noexcept;
-
-[[nodiscard]] Rgba ParseXmlElementText(const XMLElement& element, const Rgba& defaultValue) noexcept;
-
-[[nodiscard]] Vector2 ParseXmlElementText(const XMLElement& element, const Vector2& defaultValue) noexcept;
-[[nodiscard]] IntVector2 ParseXmlElementText(const XMLElement& element, const IntVector2& defaultValue) noexcept;
-
-[[nodiscard]] Vector3 ParseXmlElementText(const XMLElement& element, const Vector3& defaultValue) noexcept;
-[[nodiscard]] IntVector3 ParseXmlElementText(const XMLElement& element, const IntVector3& defaultValue) noexcept;
-
-[[nodiscard]] Vector4 ParseXmlElementText(const XMLElement& element, const Vector4& defaultValue) noexcept;
-[[nodiscard]] IntVector4 ParseXmlElementText(const XMLElement& element, const IntVector4& defaultValue) noexcept;
-
-[[nodiscard]] Matrix4 ParseXmlElementText(const XMLElement& element, const Matrix4& defaultValue) noexcept;
-
-[[nodiscard]] std::string ParseXmlElementText(const XMLElement& element, const char* defaultValue) noexcept;
-[[nodiscard]] std::string ParseXmlElementText(const XMLElement& element, const std::string& defaultValue) noexcept;
 
 //************************************
 // Method:    ForEachChildElement
@@ -437,5 +364,125 @@ template<typename T>
 }
 
 } // namespace detail
+
+template<typename T>
+[[nodiscard]] T ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, T defaultValue) noexcept {
+    auto retVal = defaultValue;
+    const auto attr = GetAttributeAsString(element, attributeName);
+    const auto is_range = attr.find('~') != std::string::npos;
+    if(!is_range) {
+        try {
+            if constexpr(std::is_same_v<T, bool>) {
+                element.QueryBoolAttribute(attributeName.c_str(), &retVal);
+            } else if constexpr(std::is_unsigned_v<T> && std::is_same_v<T, std::uint64_t>) {
+                element.QueryUnsigned64Attribute(attributeName.c_str(), &retVal);
+            } else if constexpr(std::is_unsigned_v<T> && std::is_same_v<T, std::uint32_t>) {
+                element.QueryUnsignedAttribute(attributeName.c_str(), &retVal);
+            } else if constexpr(std::is_unsigned_v<T>) {
+                element.QueryUnsignedAttribute(attributeName.c_str(), &retVal);
+            } else if constexpr(std::is_signed_v<T> && std::is_same_v<T, std::int64_t>) {
+                element.QueryInt64Attribute(attributeName.c_str(), &retVal);
+            } else if constexpr(std::is_signed_v<T> && std::is_same_v<T, std::int32_t>) {
+                element.QueryIntAttribute(attributeName.c_str(), &retVal);
+            } else if constexpr(std::is_signed_v<T> && !std::is_floating_point_v<T>) {
+                element.QueryIntAttribute(attributeName.c_str(), &retVal);
+            } else if constexpr(std::is_floating_point_v<T> && std::is_same_v<T, float>) {
+                element.QueryFloatAttribute(attributeName.c_str(), &retVal);
+            } else if constexpr(std::is_floating_point_v<T> && std::is_same_v<T, double>) {
+                element.QueryDoubleAttribute(attributeName.c_str(), &retVal);
+            } else if constexpr(std::is_floating_point_v<T> && std::is_same_v<T, long double>) {
+                element.QueryDoubleAttribute(attributeName.c_str(), &retVal);
+            } else if constexpr(std::is_same_v<T, std::string>) {
+                const auto* s = element.Attribute(attributeName.c_str());
+                return T(s ? s : defaultValue);
+            } else if constexpr(std::is_same_v<T, const char*>) {
+                const auto* s = element.Attribute(attributeName.c_str());
+                return s ? s : "";
+            } else {
+                if(attr.empty()) {
+                    return defaultValue;
+                } else {
+                    return T{attr};
+                }
+            }
+        } catch(...) {
+            return defaultValue;
+        }
+    } else {
+        const auto values = StringUtils::Split(attr, '~');
+        if(values.size() == 1) {
+            if constexpr(std::is_unsigned_v<T>) {
+                return static_cast<T>(std::stoul(values[0]));
+            } else if constexpr(std::is_signed_v<T> && !std::is_floating_point_v<T>) {
+                return static_cast<T>(std::stoll(values[0]));
+            } else if constexpr(std::is_signed_v<T> && std::is_floating_point_v<T>) {
+                return static_cast<T>(std::stold(values[0]));
+            } else {
+                if(attr.empty()) {
+                    return defaultValue;
+                } else {
+                    return T(attr);
+                }
+            }
+        }
+        if constexpr(std::is_unsigned_v<T>) {
+            retVal = static_cast<T>(detail::CalculateUnsignedLongLongRangeResult<decltype(retVal)>(attr));
+        } else if constexpr(std::is_signed_v<T> && !std::is_floating_point_v<T>) {
+            retVal = static_cast<T>(detail::CalculateLongLongRangeResult<decltype(retVal)>(attr));
+        } else if constexpr(std::is_floating_point_v<T>) {
+            retVal = static_cast<T>(detail::CalculateLongDoubleRangeResult<decltype(retVal)>(attr));
+        }
+    }
+    return retVal;
+}
+
+template<typename T>
+[[nodiscard]] T ParseXmlElementText(const XMLElement& element, T defaultValue) noexcept {
+    auto retVal = defaultValue;
+    using R = decltype(retVal);
+    const auto txt = GetElementTextAsString(element);
+    const auto is_range = txt.find('~') != std::string::npos;
+    if(!is_range) {
+        try {
+            if constexpr(std::is_same_v<T, bool>) {
+                const auto txt_bool = StringUtils::ToLowerCase(txt);
+                if(txt_bool == "true") {
+                    return true;
+                } else if(txt_bool == "false") {
+                    return false;
+                } else {
+                    try {
+                        return static_cast<R>(std::stoi(txt_bool));
+                    } catch(...) {
+                        return defaultValue;
+                    }
+                }
+            } else if constexpr(std::is_unsigned_v<T>) {
+                retVal = static_cast<R>(std::stoul(txt));
+            } else if constexpr(std::is_signed_v<T> && !std::is_floating_point_v<T>) {
+                retVal = static_cast<R>(std::stoll(txt));
+            } else if constexpr(std::is_signed_v<T> && std::is_floating_point_v<T>) {
+                retVal = static_cast<R>(std::stold(txt));
+            }
+        } catch(...) {
+            return defaultValue;
+        }
+    } else {
+        if constexpr(std::is_unsigned_v<T>) {
+            retVal = static_cast<R>(detail::CalculateUnsignedLongLongRangeResult<R>(txt));
+        } else if constexpr(std::is_signed_v<T> && !std::is_floating_point_v<T>) {
+            retVal = static_cast<R>(detail::CalculateLongLongRangeResult<R>(txt));
+        } else if constexpr(std::is_signed_v<T> && std::is_floating_point_v<T>) {
+            retVal = static_cast<R>(detail::CalculateLongDoubleRangeResult<R>(txt));
+        } else {
+            if(txt.empty()) {
+                return defaultValue;
+            } else {
+                return T{txt};
+            }
+        }
+    }
+    return retVal;
+}
 
 } // namespace DataUtils
