@@ -101,7 +101,7 @@ void ValidateXmlElement(const XMLElement& element,
         GUARANTEE_OR_DIE(missingRequiredChildren.empty(), err_ss.c_str());
     }
 
-#ifdef _DEBUG
+#ifdef DEBUG_BUILD
     //Find extra attributes
     std::vector<std::string> extraOptionalAttributes;
     std::set_difference(actualOptionalAttributeNames.begin(), actualOptionalAttributeNames.end(),
@@ -129,7 +129,7 @@ void ValidateXmlElement(const XMLElement& element,
         }
         DebuggerPrintf(err_ss.c_str());
     }
-#endif //#if _DEBUG
+#endif //#if DEBUG_BUILD
 }
 
 std::size_t GetAttributeCount(const XMLElement& element) noexcept {
