@@ -520,8 +520,8 @@
     <ClCompile Include="Physics\Particles\ParticleEffect.cpp">
       <Filter>Physics\Particles</Filter>
     </ClCompile>
-    <ClCompile Include="Core\EngineCommon.cpp">
-      <Filter>Core</Filter>
+    <ClCompile Include="Game\GameSettings.cpp">
+      <Filter>Game</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1022,9 +1022,6 @@
     </ClInclude>
     <ClInclude Include="Physics\Particles\ParticleEffect.hpp">
       <Filter>Physics\Particles</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\EngineCommon.hpp">
-      <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Game\GameSettings.hpp">
       <Filter>Game</Filter>
