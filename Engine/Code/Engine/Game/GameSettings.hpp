@@ -4,8 +4,14 @@
 
 class GameSettings {
 public:
-    [[nodiscard]] float GetWindowWidth() const noexcept;
-    [[nodiscard]] float GetWindowHeight() const noexcept;
+    GameSettings() noexcept = default;
+    GameSettings(const GameSettings& other) noexcept = default;
+    GameSettings(GameSettings&& other) noexcept = default;
+    virtual ~GameSettings() noexcept = default;
+
+    GameSettings& operator=(const GameSettings& rhs) noexcept = default;
+    GameSettings& operator=(GameSettings&& rhs) noexcept = default;
+
     [[nodiscard]] IntVector2 GetWindowResolution() const noexcept;
     [[nodiscard]] int GetWindowWidth() const noexcept;
     [[nodiscard]] int GetWindowHeight() const noexcept;
