@@ -1697,6 +1697,7 @@ void Renderer::RequestScreenShot() {
     RequestScreenShot(_last_screenshot_location);
 }
 #if __cplusplus > 201703L
+#error C++20 now available!
 constexpr unsigned int Renderer::GetMatrixBufferIndex() const noexcept override {
     return 0;
 }
