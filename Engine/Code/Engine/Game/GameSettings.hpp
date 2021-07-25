@@ -4,11 +4,14 @@ class GameSettings {
 public:
     [[nodiscard]] float GetWindowWidth() const noexcept;
     [[nodiscard]] float GetWindowHeight() const noexcept;
+    [[nodiscard]] int GetWindowWidth() const noexcept;
+    [[nodiscard]] int GetWindowHeight() const noexcept;
 
     [[nodiscard]] float GetVerticalFov() const noexcept;
 
     void SetWindowWidth(float newWidth) noexcept;
-    void SetWindowHeight(float newHeight) noexcept;
+    void SetWindowWidth(int newWidth) noexcept;
+    void SetWindowHeight(int newHeight) noexcept;
 
     void SetVerticalFov(float newFov) noexcept;
 
@@ -16,8 +19,8 @@ public:
     [[nodiscard]] bool IsMouseInvertedY() const noexcept;
     [[nodiscard]] bool IsVsyncEnabled() const noexcept;
 
-    [[nodiscard]] float DefaultWindowWidth() const noexcept;
-    [[nodiscard]] float DefaultWindowHeight() const noexcept;
+    [[nodiscard]] int DefaultWindowWidth() const noexcept;
+    [[nodiscard]] int DefaultWindowHeight() const noexcept;
 
     [[nodiscard]] float DefaultVerticalFov() const noexcept;
 
@@ -26,10 +29,10 @@ public:
     [[nodiscard]] bool DefaultVsyncEnabled() const noexcept;
 
 protected:
-    float _windowWidth = 1600.0f;
-    float _defaultWindowWidth = 1600.0f;
-    float _windowHeight = 900.0f;
-    float _defaultWindowHeight = 900.0f;
+    int _windowWidth = 1600;
+    int _defaultWindowWidth = 1600;
+    int _windowHeight = 900;
+    int _defaultWindowHeight = 900;
     float _fov = 70.0f;
     float _defaultFov = 70.0f;
     bool _invertMouseY = false;

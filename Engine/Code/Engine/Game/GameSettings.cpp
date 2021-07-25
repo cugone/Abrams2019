@@ -1,10 +1,11 @@
 #include "Engine/Game/GameSettings.hpp"
 
 float GameSettings::GetWindowWidth() const noexcept {
+int GameSettings::GetWindowWidth() const noexcept {
     return _windowWidth;
 }
 
-float GameSettings::GetWindowHeight() const noexcept {
+int GameSettings::GetWindowHeight() const noexcept {
     return _windowHeight;
 }
 
@@ -13,10 +14,11 @@ float GameSettings::GetVerticalFov() const noexcept {
 }
 
 void GameSettings::SetWindowWidth(float newWidth) noexcept {
+void GameSettings::SetWindowWidth(int newWidth) noexcept {
     _windowWidth = newWidth;
 }
 
-void GameSettings::SetWindowHeight(float newHeight) noexcept {
+void GameSettings::SetWindowHeight(int newHeight) noexcept {
     _windowHeight = newHeight;
 }
 
@@ -36,11 +38,11 @@ bool GameSettings::IsVsyncEnabled() const noexcept {
     return _vsync;
 }
 
-float GameSettings::DefaultWindowWidth() const noexcept {
+int GameSettings::DefaultWindowWidth() const noexcept {
     return _defaultWindowWidth;
 }
 
-float GameSettings::DefaultWindowHeight() const noexcept {
+int GameSettings::DefaultWindowHeight() const noexcept {
     return _defaultWindowHeight;
 }
 
