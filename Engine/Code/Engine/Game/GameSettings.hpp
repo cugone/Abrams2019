@@ -40,6 +40,8 @@ public:
     [[nodiscard]] bool DefaultVsyncEnabled() const noexcept;
 
     virtual void SaveToConfig(Config& config) noexcept;
+    virtual void SetToDefault() noexcept;
+
 protected:
     int _windowWidth = 1600;
     int _defaultWindowWidth = 1600;

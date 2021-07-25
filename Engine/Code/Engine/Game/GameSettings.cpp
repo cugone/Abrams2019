@@ -79,3 +79,12 @@ void GameSettings::SaveToConfig(Config& config) noexcept {
     config.SetValue("invertY", _invertMouseX);
     config.SetValue("vsync", _vsync);
 }
+
+void GameSettings::SetToDefault() noexcept {
+    _windowWidth = _defaultWindowWidth;
+    _windowHeight = _defaultWindowHeight;
+    _fov = _defaultFov;
+    _invertMouseY = _defaultInvertMouseY;
+    _invertMouseX = _defaultInvertMouseX;
+    _vsync = _defaultvsync;
+}
