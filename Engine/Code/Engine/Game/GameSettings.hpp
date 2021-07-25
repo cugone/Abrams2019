@@ -2,6 +2,8 @@
 
 #include "Engine/Math/IntVector2.hpp"
 
+class Config;
+
 class GameSettings {
 public:
     GameSettings() noexcept = default;
@@ -37,6 +39,7 @@ public:
     [[nodiscard]] bool DefaultMouseInvertedY() const noexcept;
     [[nodiscard]] bool DefaultVsyncEnabled() const noexcept;
 
+    virtual void SaveToConfig(Config& config) noexcept;
 protected:
     int _windowWidth = 1600;
     int _defaultWindowWidth = 1600;

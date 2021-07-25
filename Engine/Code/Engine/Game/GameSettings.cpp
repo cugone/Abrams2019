@@ -1,5 +1,7 @@
 #include "Engine/Game/GameSettings.hpp"
 
+#include "Engine/Core/Config.hpp"
+
 IntVector2 GameSettings::GetWindowResolution() const noexcept {
     return IntVector2{GetWindowWidth(), GetWindowHeight()};
 }
@@ -67,4 +69,13 @@ bool GameSettings::DefaultMouseInvertedY() const noexcept {
 
 bool GameSettings::DefaultVsyncEnabled() const noexcept {
     return _defaultvsync;
+}
+
+void GameSettings::SaveToConfig(Config& config) noexcept {
+    config.SetValue("width", _windowWidth);
+    config.SetValue("height", _windowHeight);
+    config.SetValue("vfov", _fov);
+    config.SetValue("invertY", _invertMouseY);
+    config.SetValue("invertY", _invertMouseX);
+    config.SetValue("vsync", _vsync);
 }
