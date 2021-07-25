@@ -1,6 +1,9 @@
 #include "Engine/Game/GameSettings.hpp"
 
-float GameSettings::GetWindowWidth() const noexcept {
+IntVector2 GameSettings::GetWindowResolution() const noexcept {
+    return IntVector2{GetWindowWidth(), GetWindowHeight()};
+}
+
 int GameSettings::GetWindowWidth() const noexcept {
     return _windowWidth;
 }
@@ -13,7 +16,11 @@ float GameSettings::GetVerticalFov() const noexcept {
     return _fov;
 }
 
-void GameSettings::SetWindowWidth(float newWidth) noexcept {
+void GameSettings::SetWindowResolution(const IntVector2& newResolution) noexcept {
+    SetWindowWidth(newResolution.x);
+    SetWindowHeight(newResolution.y);
+}
+
 void GameSettings::SetWindowWidth(int newWidth) noexcept {
     _windowWidth = newWidth;
 }

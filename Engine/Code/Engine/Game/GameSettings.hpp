@@ -1,15 +1,18 @@
 #pragma once
 
+#include "Engine/Math/IntVector2.hpp"
+
 class GameSettings {
 public:
     [[nodiscard]] float GetWindowWidth() const noexcept;
     [[nodiscard]] float GetWindowHeight() const noexcept;
+    [[nodiscard]] IntVector2 GetWindowResolution() const noexcept;
     [[nodiscard]] int GetWindowWidth() const noexcept;
     [[nodiscard]] int GetWindowHeight() const noexcept;
 
     [[nodiscard]] float GetVerticalFov() const noexcept;
 
-    void SetWindowWidth(float newWidth) noexcept;
+    void SetWindowResolution(const IntVector2& newResolution) noexcept;
     void SetWindowWidth(int newWidth) noexcept;
     void SetWindowHeight(int newHeight) noexcept;
 
