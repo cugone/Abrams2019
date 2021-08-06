@@ -379,9 +379,8 @@ template<typename T>
                 element.QueryUnsignedAttribute(attributeName.c_str(), &ucharVal);
                 return static_cast<T>(ucharVal);
             } else if constexpr(std::is_same_v<T, char>) {
-                auto charVal = static_cast<int>(retVal);
-                element.QueryIntAttribute(attributeName.c_str(), &charVal);
-                return static_cast<T>(charVal);
+                const auto* s = element.Attribute(attributeName.c_str());
+                return T(s ? s[0] : defaultValue);
             } else if constexpr(std::is_same_v<T, signed char>) {
                 auto scharVal = static_cast<signed int>(retVal);
                 element.QueryIntAttribute(attributeName.c_str(), &scharVal);
