@@ -44,9 +44,9 @@ void OrthographicCameraController::Update([[maybe_unused]] TimeUtils::FPSeconds 
     m_zoomLevel = std::clamp(m_zoomLevel, m_minZoomLevel, m_maxZoomLevel);
     m_Camera.Update(deltaSeconds);
     m_ShakyCamera = m_Camera;
-    m_ShakyCamera.position.x += m_Camera.GetShake() * m_maxShakeOffsetHorizontal * MathUtils::GetRandomFloatNegOneToOne();
-    m_ShakyCamera.position.y += m_Camera.GetShake() * m_maxShakeOffsetVertical * MathUtils::GetRandomFloatNegOneToOne();
-    m_ShakyCamera.orientation_degrees += m_Camera.GetShake() * m_maxShakeAngle * MathUtils::GetRandomFloatNegOneToOne();
+    m_ShakyCamera.position.x += m_Camera.GetShake() * m_maxShakeOffsetHorizontal * MathUtils::GetRandomNegOneToOne<float>();
+    m_ShakyCamera.position.y += m_Camera.GetShake() * m_maxShakeOffsetVertical * MathUtils::GetRandomNegOneToOne<float>();
+    m_ShakyCamera.orientation_degrees += m_Camera.GetShake() * m_maxShakeAngle * MathUtils::GetRandomNegOneToOne<float>();
     m_Camera.SetupView(Vector2{-m_aspectRatio * m_zoomLevel, m_zoomLevel}, Vector2{m_aspectRatio * m_zoomLevel, -m_zoomLevel}, Vector2{0.0f, 1.0f}, m_aspectRatio);
     m_ShakyCamera.SetupView(Vector2{-m_aspectRatio * m_zoomLevel, m_zoomLevel}, Vector2{m_aspectRatio * m_zoomLevel, -m_zoomLevel}, Vector2{0.0f, 1.0f}, m_aspectRatio);
     ServiceLocator::get<IRendererService>().SetCamera(m_ShakyCamera);

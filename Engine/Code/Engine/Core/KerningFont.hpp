@@ -101,7 +101,7 @@ public:
     [[nodiscard]] const std::vector<std::string>& GetImagePaths() const noexcept;
     [[nodiscard]] const std::filesystem::path& GetFilePath() const noexcept;
     [[nodiscard]] bool LoadFromFile(std::filesystem::path filepath) noexcept;
-    [[nodiscard]] bool LoadFromBuffer(const std::vector<unsigned char>& buffer) noexcept;
+    [[nodiscard]] bool LoadFromBuffer(const std::vector<uint8_t>& buffer) noexcept;
 
     [[nodiscard]] Material* GetMaterial() const noexcept;
     void SetMaterial(Material* mat) noexcept;
@@ -142,7 +142,7 @@ private:
     KerningMap _kernmap{};
     InfoDef _info{};
     CommonDef _common{};
-    std::size_t _char_count = 0;
-    std::size_t _kerns_count = 0;
+    std::size_t _char_count{0u};
+    std::size_t _kerns_count{0u};
     bool _is_loaded = false;
 };

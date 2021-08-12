@@ -27,6 +27,10 @@ namespace {
 static thread_local unsigned int MT_RANDOM_SEED = 0u;
 }
 
+const unsigned int GetRandomSeed() noexcept {
+    return MT_RANDOM_SEED;
+}
+
 void SetRandomEngineSeed(unsigned int seed) noexcept {
     MT_RANDOM_SEED = seed;
     if(MT_RANDOM_SEED) {
@@ -81,40 +85,40 @@ std::mt19937_64& GetMT64RandomEngine(unsigned int seed /*= 0*/) noexcept {
 }
 
 bool GetRandomBool() noexcept {
-    return MathUtils::GetRandomIntLessThan(2) == 0;
+    return MathUtils::GetRandomLessThan(2) == 0;
 }
 
-int GetRandomIntLessThan(int maxValueNotInclusive) noexcept {
+int GetRandomIntLessThan(const int maxValueNotInclusive) noexcept {
     std::uniform_int_distribution<int> d(0, maxValueNotInclusive - 1);
     return d(GetMTRandomEngine(MT_RANDOM_SEED));
 }
 
-int GetRandomIntInRange(int minInclusive, int maxInclusive) noexcept {
+int GetRandomIntInRange(const int minInclusive, const int maxInclusive) noexcept {
     std::uniform_int_distribution<int> d(minInclusive, maxInclusive);
     return d(GetMTRandomEngine(MT_RANDOM_SEED));
 }
 
-long GetRandomLongLessThan(long maxValueNotInclusive) noexcept {
+long GetRandomLongLessThan(const long maxValueNotInclusive) noexcept {
     std::uniform_int_distribution<long> d(0L, maxValueNotInclusive - 1L);
     return d(GetMTRandomEngine(MT_RANDOM_SEED));
 }
 
-long GetRandomLongInRange(long minInclusive, long maxInclusive) noexcept {
+long GetRandomLongInRange(const long minInclusive, const long maxInclusive) noexcept {
     std::uniform_int_distribution<long> d(minInclusive, maxInclusive);
     return d(GetMTRandomEngine(MT_RANDOM_SEED));
 }
 
-long long GetRandomLongLongLessThan(long long maxValueNotInclusive) noexcept {
+long long GetRandomLongLongLessThan(const long long maxValueNotInclusive) noexcept {
     std::uniform_int_distribution<long long> d(0LL, maxValueNotInclusive - 1LL);
     return d(GetMTRandomEngine(MT_RANDOM_SEED));
 }
 
-long long GetRandomLongLongInRange(long long minInclusive, long long maxInclusive) noexcept {
+long long GetRandomLongLongInRange(const long long minInclusive, const long long maxInclusive) noexcept {
     std::uniform_int_distribution<long long> d(minInclusive, maxInclusive);
     return d(GetMTRandomEngine(MT_RANDOM_SEED));
 }
 
-float GetRandomFloatInRange(float minInclusive, float maxInclusive) noexcept {
+float GetRandomFloatInRange(const float minInclusive, const float maxInclusive) noexcept {
     std::uniform_real_distribution<float> d(minInclusive, std::nextafter(maxInclusive, maxInclusive + 1.0f));
     return d(GetMTRandomEngine(MT_RANDOM_SEED));
 }
@@ -133,7 +137,7 @@ float GetRandomFloatNegOneToOne() noexcept {
     return GetRandomFloatInRange(-1.0f, 1.0f);
 }
 
-double GetRandomDoubleInRange(double minInclusive, double maxInclusive) noexcept {
+double GetRandomDoubleInRange(const double minInclusive, const double maxInclusive) noexcept {
     std::uniform_real_distribution<double> d(minInclusive, std::nextafter(maxInclusive, maxInclusive + 1.0));
     return d(GetMTRandomEngine(MT_RANDOM_SEED));
 }
@@ -152,7 +156,7 @@ double GetRandomDoubleNegOneToOne() noexcept {
     return GetRandomDoubleInRange(-1.0, 1.0);
 }
 
-long double GetRandomLongDoubleInRange(long double minInclusive, long double maxInclusive) noexcept {
+long double GetRandomLongDoubleInRange(const long double minInclusive, const long double maxInclusive) noexcept {
     std::uniform_real_distribution<long double> d(minInclusive, std::nextafter(maxInclusive, maxInclusive + 1.0L));
     return d(GetMTRandomEngine(MT_RANDOM_SEED));
 }
@@ -181,15 +185,15 @@ bool IsPercentChance(double probability) noexcept {
     return d(GetMTRandomEngine(MT_RANDOM_SEED));
 }
 
-double nCr(int n, int k) noexcept {
+double nCr(const int n, const int k) noexcept {
     return 1.0 / ((n + 1.0) * std::beta(static_cast<double>(n) - k + 1.0, k + 1.0));
 }
 
-double Combination(int n, int k) noexcept {
+double Combination(const int n, const int k) noexcept {
     return nCr(n, k);
 }
 
-double Combination_multiset(int n, int k) noexcept {
+double Combination_multiset(const int n, const int k) noexcept {
     return Combination(n + k - 1, k);
 }
 
