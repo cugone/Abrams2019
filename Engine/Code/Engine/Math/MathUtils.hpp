@@ -75,7 +75,6 @@ constexpr const std::ratio<1073741824, 1> BYTES_GIB_RATIO;       // Bytes/Gigaby
 const unsigned int GetRandomSeed() noexcept;
 void SetRandomEngineSeed(unsigned int seed) noexcept;
 [[nodiscard]] std::random_device& GetRandomDevice() noexcept;
-[[nodiscard]] std::mt19937& GetMTRandomEngine(unsigned int seed = 0) noexcept;
 [[nodiscard]] std::mt19937_64& GetMT64RandomEngine(unsigned int seed = 0) noexcept;
 
 template<typename T>
@@ -101,7 +100,7 @@ template<typename T>
             return std::uniform_int_distribution<T>{minInclusive, maxInclusive};
         }
     }();
-    return d(GetMTRandomEngine(GetRandomSeed()));
+    return d(GetMT64RandomEngine(GetRandomSeed()));
 }
 
 template<typename T>
@@ -114,13 +113,13 @@ template<typename T>
             return std::uniform_int_distribution<T>{T{0}, maxValueNotInclusive - T{1}};
         }
     }();
-    return d(GetMTRandomEngine(GetRandomSeed()));
+    return d(GetMT64RandomEngine(GetRandomSeed()));
 }
 
 template<typename T>
 [[nodiscard]] bool IsPercentChance(const T& probability) noexcept {
     auto d = std::bernoulli_distribution(std::clamp(probability, T{0}, T{1}));
-    return d(GetMTRandomEngine(GetRandomSeed()));
+    return d(GetMT64RandomEngine(GetRandomSeed()));
 }
 
 template<typename T>

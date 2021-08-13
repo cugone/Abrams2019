@@ -34,11 +34,9 @@ const unsigned int GetRandomSeed() noexcept {
 void SetRandomEngineSeed(unsigned int seed) noexcept {
     MT_RANDOM_SEED = seed;
     if(MT_RANDOM_SEED) {
-        GetMTRandomEngine(MT_RANDOM_SEED).seed(MT_RANDOM_SEED);
         GetMT64RandomEngine(MT_RANDOM_SEED).seed(MT_RANDOM_SEED);
     } else {
         MT_RANDOM_SEED = GetRandomDevice()();
-        GetMTRandomEngine().seed(MT_RANDOM_SEED);
         GetMT64RandomEngine().seed(MT_RANDOM_SEED);
     }
 }
@@ -56,11 +54,6 @@ std::random_device& GetRandomDevice() noexcept {
     return rd;
 }
 
-std::mt19937& GetMTRandomEngine(unsigned int seed /*= 0*/) noexcept {
-    static thread_local std::mt19937 e = std::mt19937(!seed ? GetRandomDevice()() : seed);
-    return e;
-}
-
 std::mt19937_64& GetMT64RandomEngine(unsigned int seed /*= 0*/) noexcept {
     static thread_local std::mt19937_64 e = std::mt19937_64(!seed ? GetRandomDevice()() : seed);
     return e;
@@ -72,47 +65,47 @@ bool GetRandomBool() noexcept {
 
 int GetRandomIntLessThan(const int maxValueNotInclusive) noexcept {
     std::uniform_int_distribution<int> d(0, maxValueNotInclusive - 1);
-    return d(GetMTRandomEngine(MT_RANDOM_SEED));
+    return d(GetMT64RandomEngine(MT_RANDOM_SEED));
 }
 
 int GetRandomIntInRange(const int minInclusive, const int maxInclusive) noexcept {
     std::uniform_int_distribution<int> d(minInclusive, maxInclusive);
-    return d(GetMTRandomEngine(MT_RANDOM_SEED));
+    return d(GetMT64RandomEngine(MT_RANDOM_SEED));
 }
 
 long GetRandomLongLessThan(const long maxValueNotInclusive) noexcept {
     std::uniform_int_distribution<long> d(0L, maxValueNotInclusive - 1L);
-    return d(GetMTRandomEngine(MT_RANDOM_SEED));
+    return d(GetMT64RandomEngine(MT_RANDOM_SEED));
 }
 
 long GetRandomLongInRange(const long minInclusive, const long maxInclusive) noexcept {
     std::uniform_int_distribution<long> d(minInclusive, maxInclusive);
-    return d(GetMTRandomEngine(MT_RANDOM_SEED));
+    return d(GetMT64RandomEngine(MT_RANDOM_SEED));
 }
 
 long long GetRandomLongLongLessThan(const long long maxValueNotInclusive) noexcept {
     std::uniform_int_distribution<long long> d(0LL, maxValueNotInclusive - 1LL);
-    return d(GetMTRandomEngine(MT_RANDOM_SEED));
+    return d(GetMT64RandomEngine(MT_RANDOM_SEED));
 }
 
 long long GetRandomLongLongInRange(const long long minInclusive, const long long maxInclusive) noexcept {
     std::uniform_int_distribution<long long> d(minInclusive, maxInclusive);
-    return d(GetMTRandomEngine(MT_RANDOM_SEED));
+    return d(GetMT64RandomEngine(MT_RANDOM_SEED));
 }
 
 float GetRandomFloatInRange(const float minInclusive, const float maxInclusive) noexcept {
     std::uniform_real_distribution<float> d(minInclusive, std::nextafter(maxInclusive, maxInclusive + 1.0f));
-    return d(GetMTRandomEngine(MT_RANDOM_SEED));
+    return d(GetMT64RandomEngine(MT_RANDOM_SEED));
 }
 
 float GetRandomFloatZeroToOne() noexcept {
     std::uniform_real_distribution<float> d(0.0f, std::nextafter(1.0f, 2.0f));
-    return d(GetMTRandomEngine(MT_RANDOM_SEED));
+    return d(GetMT64RandomEngine(MT_RANDOM_SEED));
 }
 
 float GetRandomFloatZeroUpToOne() noexcept {
     std::uniform_real_distribution<float> d(0.0f, 1.0f);
-    return d(GetMTRandomEngine(MT_RANDOM_SEED));
+    return d(GetMT64RandomEngine(MT_RANDOM_SEED));
 }
 
 float GetRandomFloatNegOneToOne() noexcept {
@@ -121,17 +114,17 @@ float GetRandomFloatNegOneToOne() noexcept {
 
 double GetRandomDoubleInRange(const double minInclusive, const double maxInclusive) noexcept {
     std::uniform_real_distribution<double> d(minInclusive, std::nextafter(maxInclusive, maxInclusive + 1.0));
-    return d(GetMTRandomEngine(MT_RANDOM_SEED));
+    return d(GetMT64RandomEngine(MT_RANDOM_SEED));
 }
 
 double GetRandomDoubleZeroToOne() noexcept {
     std::uniform_real_distribution<double> d(0.0, std::nextafter(1.0, 2.0));
-    return d(GetMTRandomEngine(MT_RANDOM_SEED));
+    return d(GetMT64RandomEngine(MT_RANDOM_SEED));
 }
 
 double GetRandomDoubleZeroUpToOne() noexcept {
     std::uniform_real_distribution<double> d(0.0, 1.0);
-    return d(GetMTRandomEngine(MT_RANDOM_SEED));
+    return d(GetMT64RandomEngine(MT_RANDOM_SEED));
 }
 
 double GetRandomDoubleNegOneToOne() noexcept {
@@ -140,17 +133,17 @@ double GetRandomDoubleNegOneToOne() noexcept {
 
 long double GetRandomLongDoubleInRange(const long double minInclusive, const long double maxInclusive) noexcept {
     std::uniform_real_distribution<long double> d(minInclusive, std::nextafter(maxInclusive, maxInclusive + 1.0L));
-    return d(GetMTRandomEngine(MT_RANDOM_SEED));
+    return d(GetMT64RandomEngine(MT_RANDOM_SEED));
 }
 
 long double GetRandomLongDoubleZeroToOne() noexcept {
     std::uniform_real_distribution<long double> d(0.0L, std::nextafter(1.0L, 2.0L));
-    return d(GetMTRandomEngine(MT_RANDOM_SEED));
+    return d(GetMT64RandomEngine(MT_RANDOM_SEED));
 }
 
 long double GetRandomLongDoubleZeroUpToOne() noexcept {
     std::uniform_real_distribution<long double> d(0.0L, 1.0L);
-    return d(GetMTRandomEngine(MT_RANDOM_SEED));
+    return d(GetMT64RandomEngine(MT_RANDOM_SEED));
 }
 
 long double GetRandomLongDoubleNegOneToOne() noexcept {
@@ -159,12 +152,12 @@ long double GetRandomLongDoubleNegOneToOne() noexcept {
 
 bool IsPercentChance(float probability) noexcept {
     auto d = std::bernoulli_distribution(std::clamp(probability, 0.0f, 1.0f));
-    return d(GetMTRandomEngine(MT_RANDOM_SEED));
+    return d(GetMT64RandomEngine(MT_RANDOM_SEED));
 }
 
 bool IsPercentChance(double probability) noexcept {
     auto d = std::bernoulli_distribution(std::clamp(probability, 0.0, 1.0));
-    return d(GetMTRandomEngine(MT_RANDOM_SEED));
+    return d(GetMT64RandomEngine(MT_RANDOM_SEED));
 }
 
 double nCr(const int n, const int k) noexcept {
