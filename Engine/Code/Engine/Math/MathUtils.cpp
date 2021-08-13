@@ -43,24 +43,6 @@ void SetRandomEngineSeed(unsigned int seed) noexcept {
     }
 }
 
-std::pair<float, float> SplitFloatingPointValue(float value) noexcept {
-    auto int_part = 0.0f;
-    const float frac = std::modf(value, &int_part);
-    return std::make_pair(int_part, frac);
-}
-
-std::pair<double, double> SplitFloatingPointValue(double value) noexcept {
-    auto int_part = 0.0;
-    const auto frac = std::modf(value, &int_part);
-    return std::make_pair(int_part, frac);
-}
-
-std::pair<long double, long double> SplitFloatingPointValue(long double value) noexcept {
-    auto int_part = 0.0L;
-    const auto frac = std::modf(value, &int_part);
-    return std::make_pair(int_part, frac);
-}
-
 float ConvertDegreesToRadians(float degrees) noexcept {
     return degrees * (MathUtils::M_PI / 180.0f);
 }

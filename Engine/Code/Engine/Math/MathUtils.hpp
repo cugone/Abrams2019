@@ -82,6 +82,14 @@ void SetRandomEngineSeed(unsigned int seed) noexcept;
 [[nodiscard]] std::pair<double, double> SplitFloatingPointValue(double value) noexcept;
 [[nodiscard]] std::pair<long double, long double> SplitFloatingPointValue(long double value) noexcept;
 
+template<typename T>
+[[nodiscard]] std::pair<T, T> SplitFloatingPointValue(T value) noexcept {
+    static_assert(std::is_floating_point_v<T>, "Template argument must be a floating-point type.");
+    auto int_part = T{};
+    const auto frac = std::modf(value, &int_part);
+    return std::make_pair(int_part, frac);
+}
+
 [[nodiscard]] float ConvertDegreesToRadians(float degrees) noexcept;
 [[nodiscard]] float ConvertRadiansToDegrees(float radians) noexcept;
 
@@ -89,7 +97,7 @@ void SetRandomEngineSeed(unsigned int seed) noexcept;
 
 template<typename T>
 [[nodiscard]] T GetRandomInRange(const T& minInclusive, const T& maxInclusive) noexcept {
-    static_assert(!std::is_same_v<T, bool>, "GetRandom functions cannot take bool types as an argument.");
+    static_assert(!std::is_same_v<T, bool>, "GetRandom functions cannot take bool types as an argument. Use GetRandomBool instead.");
     auto d = [&]() {
         if constexpr(std::is_floating_point_v<T>) {
             return std::uniform_real_distribution<T>{minInclusive, std::nextafter(maxInclusive, maxInclusive + T{1.0})};
@@ -102,7 +110,7 @@ template<typename T>
 
 template<typename T>
 [[nodiscard]] T GetRandomLessThan(const T& maxValueNotInclusive) noexcept {
-    static_assert(!std::is_same_v<T, bool>, "GetRandom functions cannot take bool types as an argument.");
+    static_assert(!std::is_same_v<T, bool>, "GetRandom functions cannot take bool types as an argument. Use GetRandomBool instead.");
     auto d = [&]() {
         if constexpr(std::is_floating_point_v<T>) {
             return std::uniform_real_distribution<T>{T{0}, maxValueNotInclusive};
