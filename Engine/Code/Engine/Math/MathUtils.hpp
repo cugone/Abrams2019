@@ -78,10 +78,6 @@ void SetRandomEngineSeed(unsigned int seed) noexcept;
 [[nodiscard]] std::mt19937& GetMTRandomEngine(unsigned int seed = 0) noexcept;
 [[nodiscard]] std::mt19937_64& GetMT64RandomEngine(unsigned int seed = 0) noexcept;
 
-[[nodiscard]] std::pair<float, float> SplitFloatingPointValue(float value) noexcept;
-[[nodiscard]] std::pair<double, double> SplitFloatingPointValue(double value) noexcept;
-[[nodiscard]] std::pair<long double, long double> SplitFloatingPointValue(long double value) noexcept;
-
 template<typename T>
 [[nodiscard]] std::pair<T, T> SplitFloatingPointValue(T value) noexcept {
     static_assert(std::is_floating_point_v<T>, "Template argument must be a floating-point type.");
