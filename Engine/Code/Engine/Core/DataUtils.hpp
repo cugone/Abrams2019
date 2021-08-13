@@ -182,26 +182,13 @@ UnaryFunction ForEachAttribute(const XMLElement& element, UnaryFunction&& f) noe
 
 namespace detail {
 
-const auto to_bool(const std::string& value) {
-    if(const auto lowercase = StringUtils::ToLowerCase(StringUtils::TrimWhitespace(value)); lowercase == "false" || lowercase == "true") {
-        if(lowercase == "false")
-            return false;
-        if(lowercase == "true")
-            return true;
-    }
-    try {
-        if(const auto asInt = std::stoi(value); !asInt) {
-            return false;
-        }
-        return true;
-    } catch(...) {
-        return false;
-    }
-}
+const bool to_bool(const std::string& value) noexcept;
 
 template<typename T>
 [[nodiscard]] const T CalculateUnboundedIntegerRangeResult() noexcept {
-    if constexpr(!std::is_unsigned_v<T>) {
+    if constexpr(std::is_same_v<T, bool>) {
+        return static_cast<T>(MathUtils::GetRandomLessThan(2));
+    } else if constexpr(!std::is_unsigned_v<T>) {
         constexpr auto lower = (std::numeric_limits<T>::min)();
         constexpr auto upper = (std::numeric_limits<T>::max)();
         return static_cast<T>(MathUtils::GetRandomInRange(lower, upper));
@@ -212,36 +199,36 @@ template<typename T>
 }
 
 template<typename T>
-[[nodiscard]] const typename std::enable_if_t<std::is_same_v<T, bool>> CalculateUnboundedIntegerRangeResult() noexcept {
-    return MathUtils::GetRandomLessThan(2);
-}
-
-template<typename T>
 [[nodiscard]] const T CalculateUpperBoundedIntegerRangeResult(const std::vector<std::string>& values) noexcept {
-    if constexpr(!std::is_unsigned_v<T>) {
+    if constexpr (std::is_same_v<T, bool>) {
+        constexpr auto lower = (std::numeric_limits<const bool>::min)();
+        const auto upper = to_bool(values[1]);
+        if(lower == upper) {
+            return lower;
+        } else {
+            return static_cast<T>(MathUtils::GetRandomLessThan(2));
+        }
+    } else if constexpr(!std::is_unsigned_v<T>) {
         constexpr auto lower = (std::numeric_limits<T>::min)();
         const auto upper = static_cast<T>(std::stoll(values[1]));
         return static_cast<T>(MathUtils::GetRandomInRange(lower, upper));
     } else {
         const auto upper = static_cast<T>(std::stoull(values[1]));
         return static_cast<T>(MathUtils::GetRandomLessThan(upper));
-    }
-}
-
-template<typename T>
-[[nodiscard]] const typename std::enable_if_t<std::is_same_v<T, bool>> CalculateUpperBoundedIntegerRangeResult(const std::vector<std::string>& values) noexcept {
-    constexpr auto lower = (std::numeric_limits<const bool>::min)();
-    const auto upper = to_bool(values[1]);
-    if(lower == upper) {
-        return lower;
-    } else {
-        return MathUtils::GetRandomLessThan(2);
     }
 }
 
 template<typename T>
 [[nodiscard]] const T CalculateLowerBoundedIntegerRangeResult(const std::vector<std::string>& values) noexcept {
-    if constexpr(!std::is_unsigned_v<T>) {
+    if constexpr(std::is_same_v<T, bool>) {
+        const auto lower = to_bool(values[0]);
+        constexpr auto upper = (std::numeric_limits<const bool>::max)();
+        if(lower == upper) {
+            return lower;
+        } else {
+            return static_cast<T>(MathUtils::GetRandomLessThan(2));
+        }
+    } else if constexpr(!std::is_unsigned_v<T>) {
         const auto lower = static_cast<T>(std::stoll(values[0]));
         constexpr auto upper = (std::numeric_limits<T>::max)();
         return static_cast<T>(MathUtils::GetRandomInRange(lower, upper));
@@ -253,20 +240,16 @@ template<typename T>
 }
 
 template<typename T>
-[[nodiscard]] const typename std::enable_if_t<std::is_same_v<T, bool>> CalculateLowerBoundedIntegerRangeResult(const std::vector<std::string>& values) noexcept {
-    const auto lower = to_bool(values[0]);
-    constexpr auto upper = (std::numeric_limits<const bool>::max)();
-    if(lower == upper) {
-        return lower;
-    } else {
-        return MathUtils::GetRandomLessThan(2);
-    }
-}
-
-
-template<typename T>
 [[nodiscard]] const T CalculateClosedIntegerRangeResult(const std::vector<std::string>& values) noexcept {
-    if constexpr(!std::is_unsigned_v<T>) {
+    if constexpr(std::is_same_v<T, bool>) {
+        const auto lower = to_bool(values[0]);
+        const auto upper = to_bool(values[1]);
+        if(lower == upper) {
+            return lower;
+        } else {
+            return static_cast<T>(MathUtils::GetRandomLessThan(2));
+        }
+    } else if constexpr(!std::is_unsigned_v<T>) {
         const auto lower = static_cast<T>(std::stoll(values[0]));
         const auto upper = static_cast<T>(std::stoll(values[1]));
         return static_cast<T>(MathUtils::GetRandomInRange(lower, upper));
@@ -278,18 +261,8 @@ template<typename T>
 }
 
 template<typename T>
-[[nodiscard]] const typename std::enable_if_t<std::is_same_v<T, bool>> CalculateClosedIntegerRangeResult(const std::vector<std::string>& values) noexcept {
-    const auto lower = to_bool(values[0]);
-    const auto upper = to_bool(values[1]);
-    if(lower == upper) {
-        return lower;
-    } else {
-        return MathUtils::GetRandomLessThan(2);
-    }
-}
-
-template<typename T>
 [[nodiscard]] const T CalculateUnboundedFloatRangeResult() noexcept {
+    static_assert(std::is_floating_point_v<T>, "Template argument must be a floating-point type.");
     constexpr auto lower = (std::numeric_limits<T>::min)();
     constexpr auto upper = (std::numeric_limits<T>::max)();
     return static_cast<T>(MathUtils::GetRandomInRange(lower, upper));
@@ -297,6 +270,7 @@ template<typename T>
 
 template<typename T>
 [[nodiscard]] const T CalculateUpperBoundedFloatRangeResult(const std::vector<std::string>& values) noexcept {
+    static_assert(std::is_floating_point_v<T>, "Template argument must be a floating-point type.");
     constexpr auto lower = (std::numeric_limits<T>::min)();
     const auto upper = static_cast<T>(std::stold(values[1]));
     return static_cast<T>(MathUtils::GetRandomInRange(lower, upper));
@@ -304,6 +278,7 @@ template<typename T>
 
 template<typename T>
 [[nodiscard]] const T CalculateLowerBoundedFloatRangeResult(const std::vector<std::string>& values) noexcept {
+    static_assert(std::is_floating_point_v<T>, "Template argument must be a floating-point type.");
     const auto lower = static_cast<T>(std::stold(values[0]));
     constexpr auto upper = (std::numeric_limits<T>::max)();
     return static_cast<T>(MathUtils::GetRandomInRange(lower, upper));
@@ -311,6 +286,7 @@ template<typename T>
 
 template<typename T>
 [[nodiscard]] const T CalculateClosedFloatRangeResult(const std::vector<std::string>& values) noexcept {
+    static_assert(std::is_floating_point_v<T>, "Template argument must be a floating-point type.");
     const auto lower = static_cast<T>(std::stold(values[0]));
     const auto upper = static_cast<T>(std::stold(values[1]));
     return static_cast<T>(MathUtils::GetRandomInRange(lower, upper));
@@ -335,8 +311,8 @@ template<typename T>
 }
 
 
-template<typename T>
-[[nodiscard]] const typename std::enable_if_t<std::is_same_v<T, bool>> CalculateIntegerRangeResult(const std::string& txt) noexcept {
+template<>
+[[nodiscard]] const bool CalculateIntegerRangeResult(const std::string& txt) noexcept {
     const auto values = StringUtils::Split(txt, '~');
     if(values.empty() && !txt.empty()) {
         return CalculateUnboundedIntegerRangeResult<bool>();
