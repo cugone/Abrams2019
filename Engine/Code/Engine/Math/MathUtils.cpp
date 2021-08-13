@@ -63,103 +63,6 @@ bool GetRandomBool() noexcept {
     return MathUtils::GetRandomLessThan(2) == 0;
 }
 
-int GetRandomIntLessThan(const int maxValueNotInclusive) noexcept {
-    std::uniform_int_distribution<int> d(0, maxValueNotInclusive - 1);
-    return d(GetMT64RandomEngine(MT_RANDOM_SEED));
-}
-
-int GetRandomIntInRange(const int minInclusive, const int maxInclusive) noexcept {
-    std::uniform_int_distribution<int> d(minInclusive, maxInclusive);
-    return d(GetMT64RandomEngine(MT_RANDOM_SEED));
-}
-
-long GetRandomLongLessThan(const long maxValueNotInclusive) noexcept {
-    std::uniform_int_distribution<long> d(0L, maxValueNotInclusive - 1L);
-    return d(GetMT64RandomEngine(MT_RANDOM_SEED));
-}
-
-long GetRandomLongInRange(const long minInclusive, const long maxInclusive) noexcept {
-    std::uniform_int_distribution<long> d(minInclusive, maxInclusive);
-    return d(GetMT64RandomEngine(MT_RANDOM_SEED));
-}
-
-long long GetRandomLongLongLessThan(const long long maxValueNotInclusive) noexcept {
-    std::uniform_int_distribution<long long> d(0LL, maxValueNotInclusive - 1LL);
-    return d(GetMT64RandomEngine(MT_RANDOM_SEED));
-}
-
-long long GetRandomLongLongInRange(const long long minInclusive, const long long maxInclusive) noexcept {
-    std::uniform_int_distribution<long long> d(minInclusive, maxInclusive);
-    return d(GetMT64RandomEngine(MT_RANDOM_SEED));
-}
-
-float GetRandomFloatInRange(const float minInclusive, const float maxInclusive) noexcept {
-    std::uniform_real_distribution<float> d(minInclusive, std::nextafter(maxInclusive, maxInclusive + 1.0f));
-    return d(GetMT64RandomEngine(MT_RANDOM_SEED));
-}
-
-float GetRandomFloatZeroToOne() noexcept {
-    std::uniform_real_distribution<float> d(0.0f, std::nextafter(1.0f, 2.0f));
-    return d(GetMT64RandomEngine(MT_RANDOM_SEED));
-}
-
-float GetRandomFloatZeroUpToOne() noexcept {
-    std::uniform_real_distribution<float> d(0.0f, 1.0f);
-    return d(GetMT64RandomEngine(MT_RANDOM_SEED));
-}
-
-float GetRandomFloatNegOneToOne() noexcept {
-    return GetRandomFloatInRange(-1.0f, 1.0f);
-}
-
-double GetRandomDoubleInRange(const double minInclusive, const double maxInclusive) noexcept {
-    std::uniform_real_distribution<double> d(minInclusive, std::nextafter(maxInclusive, maxInclusive + 1.0));
-    return d(GetMT64RandomEngine(MT_RANDOM_SEED));
-}
-
-double GetRandomDoubleZeroToOne() noexcept {
-    std::uniform_real_distribution<double> d(0.0, std::nextafter(1.0, 2.0));
-    return d(GetMT64RandomEngine(MT_RANDOM_SEED));
-}
-
-double GetRandomDoubleZeroUpToOne() noexcept {
-    std::uniform_real_distribution<double> d(0.0, 1.0);
-    return d(GetMT64RandomEngine(MT_RANDOM_SEED));
-}
-
-double GetRandomDoubleNegOneToOne() noexcept {
-    return GetRandomDoubleInRange(-1.0, 1.0);
-}
-
-long double GetRandomLongDoubleInRange(const long double minInclusive, const long double maxInclusive) noexcept {
-    std::uniform_real_distribution<long double> d(minInclusive, std::nextafter(maxInclusive, maxInclusive + 1.0L));
-    return d(GetMT64RandomEngine(MT_RANDOM_SEED));
-}
-
-long double GetRandomLongDoubleZeroToOne() noexcept {
-    std::uniform_real_distribution<long double> d(0.0L, std::nextafter(1.0L, 2.0L));
-    return d(GetMT64RandomEngine(MT_RANDOM_SEED));
-}
-
-long double GetRandomLongDoubleZeroUpToOne() noexcept {
-    std::uniform_real_distribution<long double> d(0.0L, 1.0L);
-    return d(GetMT64RandomEngine(MT_RANDOM_SEED));
-}
-
-long double GetRandomLongDoubleNegOneToOne() noexcept {
-    return GetRandomDoubleInRange(-1.0L, 1.0L);
-}
-
-bool IsPercentChance(float probability) noexcept {
-    auto d = std::bernoulli_distribution(std::clamp(probability, 0.0f, 1.0f));
-    return d(GetMT64RandomEngine(MT_RANDOM_SEED));
-}
-
-bool IsPercentChance(double probability) noexcept {
-    auto d = std::bernoulli_distribution(std::clamp(probability, 0.0, 1.0));
-    return d(GetMT64RandomEngine(MT_RANDOM_SEED));
-}
-
 double nCr(const int n, const int k) noexcept {
     return 1.0 / ((n + 1.0) * std::beta(static_cast<double>(n) - k + 1.0, k + 1.0));
 }
@@ -586,7 +489,7 @@ unsigned int CalculateChessboardDistance(const IntVector4& start, const IntVecto
 
 Vector2 GetRandomPointOn(const AABB2& aabb) noexcept {
     float result[2]{0.0f, 0.0f};
-    const auto s = MathUtils::GetRandomIntLessThan(4);
+    const auto s = MathUtils::GetRandomLessThan(4);
     const auto c = s % 2;
     result[(c + 0) % 2] = s > 1 ? 1.0f : 0.0f;
     result[(c + 1) % 2] = s > 1 ? 1.0f : 0.0f;
@@ -596,31 +499,31 @@ Vector2 GetRandomPointOn(const AABB2& aabb) noexcept {
 
 Vector2 GetRandomPointOn(const Disc2& disc) noexcept {
     Vector2 point{};
-    point.SetLengthAndHeadingDegrees(MathUtils::GetRandomFloatZeroToOne() * 360.0f, disc.radius);
+    point.SetLengthAndHeadingDegrees(MathUtils::GetRandomZeroToOne<float>() * 360.0f, disc.radius);
     return disc.center + point;
 }
 
 Vector2 GetRandomPointOn(const LineSegment2& line) noexcept {
     const auto dir = line.CalcDirection();
-    const auto len = line.CalcLength() * MathUtils::GetRandomFloatZeroToOne();
+    const auto len = line.CalcLength() * MathUtils::GetRandomZeroToOne<float>();
     return line.start + (dir * len);
 }
 
 Vector3 GetRandomPointOn(const AABB3& aabb) noexcept {
     float result[3]{0.0f, 0.0f, 0.0f};
-    const auto s = MathUtils::GetRandomIntLessThan(6);
+    const auto s = MathUtils::GetRandomLessThan(6);
     const auto c = s % 3;
     result[(c + 0) % 3] = s > 2 ? 1.0f : 0.0f;
-    result[(c + 1) % 3] = MathUtils::GetRandomFloatZeroToOne();
-    result[(c + 2) % 3] = MathUtils::GetRandomFloatZeroToOne();
+    result[(c + 1) % 3] = MathUtils::GetRandomZeroToOne<float>();
+    result[(c + 2) % 3] = MathUtils::GetRandomZeroToOne<float>();
     Vector3 point{result[0], result[1], result[2]};
     return aabb.CalcCenter() + (point * aabb.CalcDimensions());
 }
 
 Vector3 GetRandomPointOn(const Sphere3& sphere) noexcept {
     //See: https://karthikkaranth.me/blog/generating-random-points-in-a-sphere/
-    const auto u = MathUtils::GetRandomFloatZeroToOne();
-    const auto v = MathUtils::GetRandomFloatZeroToOne();
+    const auto u = MathUtils::GetRandomZeroToOne<float>();
+    const auto v = MathUtils::GetRandomZeroToOne<float>();
     const auto theta = MathUtils::M_2PI * u;
     const auto phi = std::acos(2.0f * v - 1.0f);
     const auto r = sphere.radius;
@@ -636,31 +539,31 @@ Vector3 GetRandomPointOn(const Sphere3& sphere) noexcept {
 
 Vector3 GetRandomPointOn(const LineSegment3& line) noexcept {
     const auto dir = line.CalcDirection();
-    const auto len = line.CalcLength() * MathUtils::GetRandomFloatZeroToOne();
+    const auto len = line.CalcLength() * MathUtils::GetRandomZeroToOne<float>();
     return line.start + (dir * len);
 }
 
 Vector2 GetRandomPointInside(const AABB2& aabb) noexcept {
-    return Vector2{MathUtils::GetRandomFloatInRange(aabb.mins.x, aabb.maxs.x), MathUtils::GetRandomFloatInRange(aabb.mins.y, aabb.maxs.y)};
+    return Vector2{MathUtils::GetRandomInRange(aabb.mins.x, aabb.maxs.x), MathUtils::GetRandomInRange(aabb.mins.y, aabb.maxs.y)};
 }
 
 Vector2 GetRandomPointInside(const Disc2& disc) noexcept {
     Vector2 point{};
-    point.SetLengthAndHeadingDegrees(MathUtils::GetRandomFloatZeroToOne() * 360.0f, std::sqrt(MathUtils::GetRandomFloatZeroToOne()) * disc.radius);
+    point.SetLengthAndHeadingDegrees(MathUtils::GetRandomZeroToOne<float>() * 360.0f, std::sqrt(MathUtils::GetRandomZeroToOne<float>()) * disc.radius);
     return disc.center + point;
 }
 
 Vector3 GetRandomPointInside(const AABB3& aabb) noexcept {
-    return Vector3{MathUtils::GetRandomFloatInRange(aabb.mins.x, aabb.maxs.x), MathUtils::GetRandomFloatInRange(aabb.mins.y, aabb.maxs.y), MathUtils::GetRandomFloatInRange(aabb.mins.z, aabb.maxs.z)};
+    return Vector3{MathUtils::GetRandomInRange(aabb.mins.x, aabb.maxs.x), MathUtils::GetRandomInRange(aabb.mins.y, aabb.maxs.y), MathUtils::GetRandomInRange(aabb.mins.z, aabb.maxs.z)};
 }
 
 Vector3 GetRandomPointInside(const Sphere3& sphere) noexcept {
     //See: https://karthikkaranth.me/blog/generating-random-points-in-a-sphere/
-    const auto u = MathUtils::GetRandomFloatZeroToOne();
-    const auto v = MathUtils::GetRandomFloatZeroToOne();
+    const auto u = MathUtils::GetRandomZeroToOne<float>();
+    const auto v = MathUtils::GetRandomZeroToOne<float>();
     const auto theta = MathUtils::M_2PI * u;
     const auto phi = std::acos(2.0f * v - 1.0f);
-    const auto r = sphere.radius * std::pow(MathUtils::GetRandomFloatZeroToOne(), 1.0f / 3.0f);
+    const auto r = sphere.radius * std::pow(MathUtils::GetRandomZeroToOne<float>(), 1.0f / 3.0f);
     const auto sin_theta = std::sin(theta);
     const auto cos_theta = std::cos(theta);
     const auto sin_phi = std::sin(phi);
@@ -691,7 +594,7 @@ Vector3 GetRandomPointInsidePlane(const Plane3& p, float r) noexcept {
     // rotate the vector around n by a random angle
     // using Rodrigues' rotation formula
     // http://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula
-    float theta = MathUtils::GetRandomFloatZeroToOne() * MathUtils::M_PI;
+    float theta = MathUtils::GetRandomZeroToOne<float>() * MathUtils::M_PI;
     Vector3 k = n.GetNormalize();
     w = w * std::cos(theta) + CrossProduct(k, w) * std::sin(theta);
 
@@ -700,7 +603,7 @@ Vector3 GetRandomPointInsidePlane(const Plane3& p, float r) noexcept {
     if(r == 0.0f) {
         w *= (r / w.CalcLength());
     } else {
-        r = MathUtils::GetRandomFloatZeroToOne() * r;
+        r = MathUtils::GetRandomZeroToOne<float>() * r;
         w *= (r / w.CalcLength());
     }
 
@@ -725,9 +628,9 @@ Vector3 GetRandomPointInsidePlane(const Vector3& pos, const Vector3& normal, flo
 }
 
 Vector3 GetRandomPointInsideCube(float radius) noexcept {
-    float x = GetRandomFloatNegOneToOne() * radius;
-    float y = GetRandomFloatNegOneToOne() * radius;
-    float z = GetRandomFloatNegOneToOne() * radius;
+    float x = GetRandomNegOneToOne<float>() * radius;
+    float y = GetRandomNegOneToOne<float>() * radius;
+    float z = GetRandomNegOneToOne<float>() * radius;
     return Vector3(x, y, z);
 }
 
