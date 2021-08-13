@@ -128,8 +128,8 @@ bool KerningFont::LoadFromFile(std::filesystem::path filepath) noexcept {
     }
 }
 
-bool KerningFont::LoadFromBuffer(const std::vector<unsigned char>& buffer) noexcept {
-    std::vector<unsigned char> out_buffer(buffer);
+bool KerningFont::LoadFromBuffer(const std::vector<uint8_t>& buffer) noexcept {
+    std::vector<uint8_t> out_buffer(buffer);
     const auto is_binary = out_buffer[0] == 66 && out_buffer[1] == 77 && out_buffer[2] == 70;
     const auto is_text = out_buffer[0] == 105 && out_buffer[1] == 110 && out_buffer[2] == 102 && out_buffer[3] == 111;
     if(is_binary) {

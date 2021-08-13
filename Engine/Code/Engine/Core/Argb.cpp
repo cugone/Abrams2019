@@ -49,11 +49,11 @@ std::string to_string(const Argb& clr) noexcept {
 } // namespace StringUtils
 
 Argb Argb::Random() noexcept {
-    return Argb(255, static_cast<unsigned char>(MathUtils::GetRandomIntLessThan(256)), static_cast<unsigned char>(MathUtils::GetRandomIntLessThan(256)), static_cast<unsigned char>(MathUtils::GetRandomIntLessThan(256)));
+    return Argb(255, static_cast<unsigned char>(MathUtils::GetRandomLessThan(256)), static_cast<unsigned char>(MathUtils::GetRandomLessThan(256)), static_cast<unsigned char>(MathUtils::GetRandomLessThan(256)));
 }
 
 Argb Argb::RandomGreyscale() noexcept {
-    auto r = static_cast<unsigned char>(MathUtils::GetRandomIntLessThan(256));
+    auto r = static_cast<unsigned char>(MathUtils::GetRandomLessThan(256));
     return Argb(255, r, r, r);
 }
 
@@ -62,11 +62,11 @@ Argb Argb::RandomGrayscale() noexcept {
 }
 
 Argb Argb::RandomWithAlpha() noexcept {
-    return Argb(static_cast<unsigned char>(MathUtils::GetRandomIntLessThan(256)), static_cast<unsigned char>(MathUtils::GetRandomIntLessThan(256)), static_cast<unsigned char>(MathUtils::GetRandomIntLessThan(256)), static_cast<unsigned char>(MathUtils::GetRandomIntLessThan(256)));
+    return Argb(static_cast<unsigned char>(MathUtils::GetRandomLessThan(256)), static_cast<unsigned char>(MathUtils::GetRandomLessThan(256)), static_cast<unsigned char>(MathUtils::GetRandomLessThan(256)), static_cast<unsigned char>(MathUtils::GetRandomLessThan(256)));
 }
 
 Argb Argb::RandomLessThan(const Argb& color) noexcept {
-    return Argb(static_cast<unsigned char>(MathUtils::GetRandomIntLessThan(color.a + 1)), static_cast<unsigned char>(MathUtils::GetRandomIntLessThan(color.r + 1)), static_cast<unsigned char>(MathUtils::GetRandomIntLessThan(color.g + 1)), static_cast<unsigned char>(MathUtils::GetRandomIntLessThan(color.b + 1)));
+    return Argb(static_cast<unsigned char>(MathUtils::GetRandomLessThan(color.a + 1)), static_cast<unsigned char>(MathUtils::GetRandomLessThan(color.r + 1)), static_cast<unsigned char>(MathUtils::GetRandomLessThan(color.g + 1)), static_cast<unsigned char>(MathUtils::GetRandomLessThan(color.b + 1)));
 }
 
 std::ostream& operator<<(std::ostream& os, const Argb& rhs) noexcept {

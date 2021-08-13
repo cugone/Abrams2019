@@ -12,6 +12,27 @@
 
 namespace DataUtils {
 
+namespace detail {
+
+const bool to_bool(const std::string& value) noexcept {
+    if(const auto lowercase = StringUtils::ToLowerCase(StringUtils::TrimWhitespace(value)); lowercase == "false" || lowercase == "true") {
+        if(lowercase == "false")
+            return false;
+        if(lowercase == "true")
+            return true;
+    }
+    try {
+        if(const auto asInt = std::stoi(value); !asInt) {
+            return false;
+        }
+        return true;
+    } catch(...) {
+        return false;
+    }
+}
+
+} // namespace detail
+
 void ValidateXmlElement(const XMLElement& element,
                         const std::string& name,
                         const std::string& requiredChildElements,

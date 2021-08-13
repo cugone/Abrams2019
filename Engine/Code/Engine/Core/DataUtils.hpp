@@ -2,6 +2,7 @@
 
 #include "Engine/Core/Rgba.hpp"
 #include "Engine/Core/StringUtils.hpp"
+#include "Engine/Core/TypeUtils.hpp"
 #include "Engine/Math/IntVector2.hpp"
 #include "Engine/Math/IntVector3.hpp"
 #include "Engine/Math/IntVector4.hpp"
@@ -181,192 +182,175 @@ UnaryFunction ForEachAttribute(const XMLElement& element, UnaryFunction&& f) noe
 }
 
 namespace detail {
+
+const bool to_bool(const std::string& value) noexcept;
+
 template<typename T>
-[[nodiscard]] const T CalculateIntegerRangeResult(const std::string& txt) {
-    const auto values = StringUtils::Split(txt, '~');
-    if(values.empty() && !txt.empty()) {
+[[nodiscard]] const T CalculateUnboundedIntegerRangeResult() noexcept {
+    if constexpr(std::is_same_v<T, bool>) {
+        return static_cast<T>(MathUtils::GetRandomLessThan(2));
+    } else if constexpr(!std::is_unsigned_v<T>) {
         constexpr auto lower = (std::numeric_limits<T>::min)();
         constexpr auto upper = (std::numeric_limits<T>::max)();
-        return static_cast<T>(MathUtils::GetRandomIntInRange(lower, upper));
+        return static_cast<T>(MathUtils::GetRandomInRange(lower, upper));
+    } else {
+        constexpr auto upper = (std::numeric_limits<T>::max)();
+        return static_cast<T>(MathUtils::GetRandomLessThan(upper));
     }
-    if(values.size() == 1) {
-        if(txt.front() == '~') {
-            constexpr auto lower = (std::numeric_limits<T>::min)();
-            const auto upper = static_cast<T>(std::stoi(values[1]));
-            return static_cast<T>(MathUtils::GetRandomIntInRange(lower, upper));
-        }
-        if(txt.back() == '~') {
-            const auto lower = static_cast<T>(std::stoi(values[0]));
-            constexpr auto upper = (std::numeric_limits<T>::max)();
-            return static_cast<T>(MathUtils::GetRandomIntInRange(lower, upper));
-        }
-        return static_cast<T>(std::stoi(values[0]));
-    }
-    const auto lower = static_cast<T>(std::stoi(values[0]));
-    const auto upper = static_cast<T>(std::stoi(values[1]));
-    return static_cast<T>(MathUtils::GetRandomIntInRange(lower, upper));
 }
 
 template<typename T>
-[[nodiscard]] const T CalculateUnsignedIntegerRangeResult(const std::string& txt) {
-    const auto values = StringUtils::Split(txt, '~');
-    if(values.empty() && !txt.empty()) {
+[[nodiscard]] const T CalculateUpperBoundedIntegerRangeResult(const std::vector<std::string>& values) noexcept {
+    if constexpr (std::is_same_v<T, bool>) {
+        constexpr auto lower = (std::numeric_limits<const bool>::min)();
+        const auto upper = to_bool(values[1]);
+        if(lower == upper) {
+            return lower;
+        } else {
+            return static_cast<T>(MathUtils::GetRandomLessThan(2));
+        }
+    } else if constexpr(!std::is_unsigned_v<T>) {
         constexpr auto lower = (std::numeric_limits<T>::min)();
-        constexpr auto upper = (std::numeric_limits<T>::max)();
-        return static_cast<T>(MathUtils::GetRandomIntInRange(lower, upper));
+        const auto upper = static_cast<T>(std::stoll(values[1]));
+        return static_cast<T>(MathUtils::GetRandomInRange(lower, upper));
+    } else {
+        const auto upper = static_cast<T>(std::stoull(values[1]));
+        return static_cast<T>(MathUtils::GetRandomLessThan(upper));
     }
-    if(values.size() == 1) {
-        if(txt.front() == '~') {
-            constexpr auto lower = (std::numeric_limits<T>::min)();
-            const auto upper = static_cast<T>(std::stoul(values[1]));
-            return static_cast<T>(MathUtils::GetRandomIntInRange(lower, upper));
-        }
-        if(txt.back() == '~') {
-            const auto lower = static_cast<T>(std::stoul(values[0]));
-            constexpr auto upper = (std::numeric_limits<T>::max)();
-            return static_cast<T>(MathUtils::GetRandomIntInRange(lower, upper));
-        }
-        return static_cast<T>(std::stoul(values[0]));
-    }
-    const auto lower = static_cast<T>(std::stoul(values[0]));
-    const auto upper = static_cast<T>(std::stoul(values[1]));
-    return static_cast<T>(MathUtils::GetRandomIntInRange(lower, upper));
 }
 
 template<typename T>
-[[nodiscard]] const T CalculateLongLongRangeResult(const std::string& txt) {
+[[nodiscard]] const T CalculateLowerBoundedIntegerRangeResult(const std::vector<std::string>& values) noexcept {
+    if constexpr(std::is_same_v<T, bool>) {
+        const auto lower = to_bool(values[0]);
+        constexpr auto upper = (std::numeric_limits<const bool>::max)();
+        if(lower == upper) {
+            return lower;
+        } else {
+            return static_cast<T>(MathUtils::GetRandomLessThan(2));
+        }
+    } else if constexpr(!std::is_unsigned_v<T>) {
+        const auto lower = static_cast<T>(std::stoll(values[0]));
+        constexpr auto upper = (std::numeric_limits<T>::max)();
+        return static_cast<T>(MathUtils::GetRandomInRange(lower, upper));
+    } else {
+        const auto lower = static_cast<T>(std::stoull(values[0]));
+        constexpr auto upper = (std::numeric_limits<T>::max)();
+        return static_cast<T>(MathUtils::GetRandomInRange(lower, upper));
+    }
+}
+
+template<typename T>
+[[nodiscard]] const T CalculateClosedIntegerRangeResult(const std::vector<std::string>& values) noexcept {
+    if constexpr(std::is_same_v<T, bool>) {
+        const auto lower = to_bool(values[0]);
+        const auto upper = to_bool(values[1]);
+        if(lower == upper) {
+            return lower;
+        } else {
+            return static_cast<T>(MathUtils::GetRandomLessThan(2));
+        }
+    } else if constexpr(!std::is_unsigned_v<T>) {
+        const auto lower = static_cast<T>(std::stoll(values[0]));
+        const auto upper = static_cast<T>(std::stoll(values[1]));
+        return static_cast<T>(MathUtils::GetRandomInRange(lower, upper));
+    } else {
+        const auto lower = static_cast<T>(std::stoull(values[0]));
+        const auto upper = static_cast<T>(std::stoull(values[1]));
+        return static_cast<T>(MathUtils::GetRandomInRange(lower, upper));
+    }
+}
+
+template<typename T>
+[[nodiscard]] const T CalculateUnboundedFloatRangeResult() noexcept {
+    static_assert(std::is_floating_point_v<T>, "Template argument must be a floating-point type.");
+    constexpr auto lower = (std::numeric_limits<T>::min)();
+    constexpr auto upper = (std::numeric_limits<T>::max)();
+    return static_cast<T>(MathUtils::GetRandomInRange(lower, upper));
+}
+
+template<typename T>
+[[nodiscard]] const T CalculateUpperBoundedFloatRangeResult(const std::vector<std::string>& values) noexcept {
+    static_assert(std::is_floating_point_v<T>, "Template argument must be a floating-point type.");
+    constexpr auto lower = (std::numeric_limits<T>::min)();
+    const auto upper = static_cast<T>(std::stold(values[1]));
+    return static_cast<T>(MathUtils::GetRandomInRange(lower, upper));
+}
+
+template<typename T>
+[[nodiscard]] const T CalculateLowerBoundedFloatRangeResult(const std::vector<std::string>& values) noexcept {
+    static_assert(std::is_floating_point_v<T>, "Template argument must be a floating-point type.");
+    const auto lower = static_cast<T>(std::stold(values[0]));
+    constexpr auto upper = (std::numeric_limits<T>::max)();
+    return static_cast<T>(MathUtils::GetRandomInRange(lower, upper));
+}
+
+template<typename T>
+[[nodiscard]] const T CalculateClosedFloatRangeResult(const std::vector<std::string>& values) noexcept {
+    static_assert(std::is_floating_point_v<T>, "Template argument must be a floating-point type.");
+    const auto lower = static_cast<T>(std::stold(values[0]));
+    const auto upper = static_cast<T>(std::stold(values[1]));
+    return static_cast<T>(MathUtils::GetRandomInRange(lower, upper));
+}
+
+template<typename T>
+[[nodiscard]] const T CalculateIntegerRangeResult(const std::string& txt) noexcept {
     const auto values = StringUtils::Split(txt, '~');
     if(values.empty() && !txt.empty()) {
-        constexpr auto lower = (std::numeric_limits<T>::min)();
-        constexpr auto upper = (std::numeric_limits<T>::max)();
-        return static_cast<T>(MathUtils::GetRandomLongLongInRange(lower, upper));
+        return CalculateUnboundedIntegerRangeResult<T>();
     }
     if(values.size() == 1) {
         if(txt.front() == '~') {
-            constexpr auto lower = (std::numeric_limits<T>::min)();
-            const auto upper = static_cast<T>(std::stoll(values[1]));
-            return static_cast<T>(MathUtils::GetRandomLongLongInRange(lower, upper));
+            return CalculateUpperBoundedIntegerRangeResult<T>(values);
         }
         if(txt.back() == '~') {
-            const auto lower = static_cast<T>(std::stoll(values[0]));
-            constexpr auto upper = (std::numeric_limits<T>::max)();
-            return static_cast<T>(MathUtils::GetRandomLongLongInRange(lower, upper));
+            return CalculateLowerBoundedIntegerRangeResult<T>(values);
         }
         return static_cast<T>(std::stoll(values[0]));
     }
-    const auto lower = static_cast<T>(std::stoll(values[0]));
-    const auto upper = static_cast<T>(std::stoll(values[1]));
-    return static_cast<T>(MathUtils::GetRandomLongLongInRange(lower, upper));
+    return CalculateClosedIntegerRangeResult<T>(values);
 }
 
 template<typename T>
-[[nodiscard]] const T CalculateUnsignedLongLongRangeResult(const std::string& txt) {
+[[nodiscard]] const T CalculateFloatRangeResult(const std::string& txt) noexcept {
+    static_assert(std::is_floating_point_v<T>, "Template argument must be a floating-point type.");
     const auto values = StringUtils::Split(txt, '~');
     if(values.empty() && !txt.empty()) {
-        constexpr auto lower = (std::numeric_limits<T>::min)();
-        constexpr auto upper = (std::numeric_limits<T>::max)();
-        return static_cast<T>(MathUtils::GetRandomLongLongInRange(lower, upper));
+        return detail::CalculateUnboundedFloatRangeResult<T>();
     }
     if(values.size() == 1) {
         if(txt.front() == '~') {
-            constexpr auto lower = (std::numeric_limits<T>::min)();
-            const auto upper = static_cast<T>(std::stoul(values[1]));
-            return static_cast<T>(MathUtils::GetRandomLongLongInRange(lower, upper));
+            return detail::CalculateUpperBoundedFloatRangeResult<T>(values);
         }
         if(txt.back() == '~') {
-            const auto lower = static_cast<T>(std::stoul(values[0]));
-            constexpr auto upper = (std::numeric_limits<T>::max)();
-            return static_cast<T>(MathUtils::GetRandomLongLongInRange(lower, upper));
-        }
-        return static_cast<T>(std::stoul(values[0]));
-    }
-    const auto lower = static_cast<T>(std::stoul(values[0]));
-    const auto upper = static_cast<T>(std::stoul(values[1]));
-    return static_cast<T>(MathUtils::GetRandomLongLongInRange(lower, upper));
-}
-
-template<typename T>
-[[nodiscard]] const T CalculateFloatRangeResult(const std::string& txt) {
-    const auto values = StringUtils::Split(txt, '~');
-    if(values.empty() && !txt.empty()) {
-        constexpr auto lower = (std::numeric_limits<T>::min)();
-        constexpr auto upper = (std::numeric_limits<T>::max)();
-        return static_cast<T>(MathUtils::GetRandomFloatInRange(lower, upper));
-    }
-    if(values.size() == 1) {
-        if(txt.front() == '~') {
-            constexpr auto lower = (std::numeric_limits<T>::min)();
-            const auto upper = static_cast<T>(std::stof(values[1]));
-            return static_cast<T>(MathUtils::GetRandomFloatInRange(lower, upper));
-        }
-        if(txt.back() == '~') {
-            const auto lower = static_cast<T>(std::stof(values[0]));
-            constexpr auto upper = (std::numeric_limits<T>::max)();
-            return static_cast<T>(MathUtils::GetRandomFloatInRange(lower, upper));
-        }
-        return static_cast<T>(std::stof(values[0]));
-    }
-    const auto lower = static_cast<T>(std::stof(values[0]));
-    const auto upper = static_cast<T>(std::stof(values[1]));
-    return static_cast<T>(MathUtils::GetRandomFloatInRange(lower, upper));
-}
-
-template<typename T>
-[[nodiscard]] const T CalculateDoubleRangeResult(const std::string& txt) {
-    const auto values = StringUtils::Split(txt, '~');
-    if(values.empty() && !txt.empty()) {
-        constexpr auto lower = (std::numeric_limits<T>::min)();
-        constexpr auto upper = (std::numeric_limits<T>::max)();
-        return static_cast<T>(MathUtils::GetRandomDoubleInRange(lower, upper));
-    }
-    if(values.size() == 1) {
-        if(txt.front() == '~') {
-            constexpr auto lower = (std::numeric_limits<T>::min)();
-            const auto upper = static_cast<T>(std::stod(values[1]));
-            return static_cast<T>(MathUtils::GetRandomDoubleInRange(lower, upper));
-        }
-        if(txt.back() == '~') {
-            const auto lower = static_cast<T>(std::stod(values[0]));
-            constexpr auto upper = (std::numeric_limits<T>::max)();
-            return static_cast<T>(MathUtils::GetRandomDoubleInRange(lower, upper));
-        }
-        return static_cast<T>(std::stod(values[0]));
-    }
-    const auto lower = static_cast<T>(std::stod(values[0]));
-    const auto upper = static_cast<T>(std::stod(values[1]));
-    return static_cast<T>(MathUtils::GetRandomDoubleInRange(lower, upper));
-}
-
-template<typename T>
-[[nodiscard]] const T CalculateLongDoubleRangeResult(const std::string& txt) {
-    const auto values = StringUtils::Split(txt, '~');
-    if(values.empty() && !txt.empty()) {
-        constexpr auto lower = (std::numeric_limits<T>::min)();
-        constexpr auto upper = (std::numeric_limits<T>::max)();
-        return static_cast<T>(MathUtils::GetRandomLongDoubleInRange(lower, upper));
-    }
-    if(values.size() == 1) {
-        if(txt.front() == '~') {
-            constexpr auto lower = (std::numeric_limits<T>::min)();
-            const auto upper = static_cast<T>(std::stold(values[1]));
-            return static_cast<T>(MathUtils::GetRandomLongDoubleInRange(lower, upper));
-        }
-        if(txt.back() == '~') {
-            const auto lower = static_cast<T>(std::stold(values[0]));
-            constexpr auto upper = (std::numeric_limits<T>::max)();
-            return static_cast<T>(MathUtils::GetRandomLongDoubleInRange(lower, upper));
+            return detail::CalculateLowerBoundedFloatRangeResult<T>(values);
         }
         return static_cast<T>(std::stold(values[0]));
     }
-    const auto lower = static_cast<T>(std::stold(values[0]));
-    const auto upper = static_cast<T>(std::stold(values[1]));
-    return static_cast<T>(MathUtils::GetRandomLongDoubleInRange(lower, upper));
+    return detail::CalculateClosedFloatRangeResult<T>(values);
+}
+
+template<typename T>
+[[nodiscard]] const T CalculateRangeResult(const std::string& txt) noexcept {
+    //std::uniform_int_distribution doesn't allow 8-bit types or bool.
+    constexpr auto is_invalid_type_v = TypeUtils::is_any_of_v<std::remove_cv_t<T>, unsigned char, signed char, char, int8_t, uint8_t>;
+    if constexpr(!is_invalid_type_v && std::is_integral_v<T>) {
+        return CalculateIntegerRangeResult<T>(txt);
+    } else if constexpr(std::is_floating_point_v<T>) {
+        return CalculateFloatRangeResult<T>(txt);
+    } else {
+        if constexpr (is_invalid_type_v) {
+            return static_cast<std::add_const_t<std::remove_cv_t<T>>>(CalculateIntegerRangeResult<int>(txt));
+        } else {
+            return T{txt};
+        }
+    }
 }
 
 } // namespace detail
 
 template<typename T>
-[[nodiscard]] T ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, T defaultValue) noexcept {
+[[nodiscard]] T ParseXmlAttribute(const XMLElement& element, const std::string& attributeName, const T defaultValue) noexcept {
     auto retVal = defaultValue;
     const auto attr = GetAttributeAsString(element, attributeName);
     const auto is_range = attr.find('~') != std::string::npos;
@@ -391,6 +375,12 @@ template<typename T>
             } else if constexpr(std::is_same_v<T, const char*>) {
                 const auto* s = element.Attribute(attributeName.c_str());
                 return s ? s : "";
+            } else if constexpr(std::is_same_v<T, std::size_t>) {
+                if constexpr(std::is_same_v<T, std::uint64_t>) {
+                    element.QueryUnsigned64Attribute(attributeName.c_str(), &retVal);
+                } else {
+                    element.QueryUnsignedAttribute(attributeName.c_str(), &retVal);
+                }
             } else if constexpr(std::is_unsigned_v<T> && std::is_same_v<T, std::uint64_t>) {
                 element.QueryUnsigned64Attribute(attributeName.c_str(), &retVal);
             } else if constexpr(std::is_unsigned_v<T> && std::is_same_v<T, std::uint32_t>) {
@@ -423,7 +413,7 @@ template<typename T>
         const auto values = StringUtils::Split(attr, '~');
         if(values.size() == 1) {
             if constexpr(std::is_unsigned_v<T>) {
-                return static_cast<T>(std::stoul(values[0]));
+                return static_cast<T>(std::stoull(values[0]));
             } else if constexpr(std::is_signed_v<T> && !std::is_floating_point_v<T>) {
                 return static_cast<T>(std::stoll(values[0]));
             } else if constexpr(std::is_signed_v<T> && std::is_floating_point_v<T>) {
@@ -436,13 +426,7 @@ template<typename T>
                 }
             }
         }
-        if constexpr(std::is_unsigned_v<T>) {
-            retVal = static_cast<T>(detail::CalculateUnsignedLongLongRangeResult<decltype(retVal)>(attr));
-        } else if constexpr(std::is_signed_v<T> && !std::is_floating_point_v<T>) {
-            retVal = static_cast<T>(detail::CalculateLongLongRangeResult<decltype(retVal)>(attr));
-        } else if constexpr(std::is_floating_point_v<T>) {
-            retVal = static_cast<T>(detail::CalculateLongDoubleRangeResult<decltype(retVal)>(attr));
-        }
+        retVal = static_cast<T>(detail::CalculateRangeResult<decltype(retVal)>(attr));
     }
     return retVal;
 }
@@ -479,18 +463,10 @@ template<typename T>
             return defaultValue;
         }
     } else {
-        if constexpr(std::is_unsigned_v<T>) {
-            retVal = static_cast<R>(detail::CalculateUnsignedLongLongRangeResult<R>(txt));
-        } else if constexpr(std::is_signed_v<T> && !std::is_floating_point_v<T>) {
-            retVal = static_cast<R>(detail::CalculateLongLongRangeResult<R>(txt));
-        } else if constexpr(std::is_signed_v<T> && std::is_floating_point_v<T>) {
-            retVal = static_cast<R>(detail::CalculateLongDoubleRangeResult<R>(txt));
+        if(!txt.empty()) {
+            retVal = detail::CalculateRangeResult<R>(txt);
         } else {
-            if(txt.empty()) {
-                return defaultValue;
-            } else {
-                return T{txt};
-            }
+            return defaultValue;
         }
     }
     return retVal;

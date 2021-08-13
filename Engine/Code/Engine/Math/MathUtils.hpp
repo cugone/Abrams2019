@@ -72,49 +72,78 @@ constexpr const std::ratio<1024, 1> BYTES_KIB_RATIO;             // Bytes/Kiloby
 constexpr const std::ratio<1048576, 1> BYTES_MIB_RATIO;          // Bytes/Megabytes
 constexpr const std::ratio<1073741824, 1> BYTES_GIB_RATIO;       // Bytes/Gigabytes
 
+const unsigned int GetRandomSeed() noexcept;
 void SetRandomEngineSeed(unsigned int seed) noexcept;
 [[nodiscard]] std::random_device& GetRandomDevice() noexcept;
 [[nodiscard]] std::mt19937& GetMTRandomEngine(unsigned int seed = 0) noexcept;
 [[nodiscard]] std::mt19937_64& GetMT64RandomEngine(unsigned int seed = 0) noexcept;
 
-[[nodiscard]] std::pair<float, float> SplitFloatingPointValue(float value) noexcept;
-[[nodiscard]] std::pair<double, double> SplitFloatingPointValue(double value) noexcept;
-[[nodiscard]] std::pair<long double, long double> SplitFloatingPointValue(long double value) noexcept;
+template<typename T>
+[[nodiscard]] std::pair<T, T> SplitFloatingPointValue(T value) noexcept {
+    static_assert(std::is_floating_point_v<T>, "Template argument must be a floating-point type.");
+    auto int_part = T{};
+    const auto frac = std::modf(value, &int_part);
+    return std::make_pair(int_part, frac);
+}
 
 [[nodiscard]] float ConvertDegreesToRadians(float degrees) noexcept;
 [[nodiscard]] float ConvertRadiansToDegrees(float radians) noexcept;
 
 [[nodiscard]] bool GetRandomBool() noexcept;
 
-[[nodiscard]] int GetRandomIntLessThan(int maxValueNotInclusive) noexcept;
-[[nodiscard]] int GetRandomIntInRange(int minInclusive, int maxInclusive) noexcept;
+template<typename T>
+[[nodiscard]] T GetRandomInRange(const T& minInclusive, const T& maxInclusive) noexcept {
+    static_assert(!std::is_same_v<T, bool>, "GetRandom functions cannot take bool types as an argument. Use GetRandomBool instead.");
+    auto d = [&]() {
+        if constexpr(std::is_floating_point_v<T>) {
+            return std::uniform_real_distribution<T>{minInclusive, std::nextafter(maxInclusive, maxInclusive + T{1.0})};
+        } else if constexpr(std::is_integral_v<T>) {
+            return std::uniform_int_distribution<T>{minInclusive, maxInclusive};
+        }
+    }();
+    return d(GetMTRandomEngine(GetRandomSeed()));
+}
 
-[[nodiscard]] long GetRandomLongLessThan(long maxValueNotInclusive) noexcept;
-[[nodiscard]] long GetRandomLongInRange(long minInclusive, long maxInclusive) noexcept;
+template<typename T>
+[[nodiscard]] T GetRandomLessThan(const T& maxValueNotInclusive) noexcept {
+    static_assert(!std::is_same_v<T, bool>, "GetRandom functions cannot take bool types as an argument. Use GetRandomBool instead.");
+    auto d = [&]() {
+        if constexpr(std::is_floating_point_v<T>) {
+            return std::uniform_real_distribution<T>{T{0}, maxValueNotInclusive};
+        } else if constexpr(std::is_integral_v<T>) {
+            return std::uniform_int_distribution<T>{T{0}, maxValueNotInclusive - T{1}};
+        }
+    }();
+    return d(GetMTRandomEngine(GetRandomSeed()));
+}
 
-[[nodiscard]] long long GetRandomLongLongLessThan(long long maxValueNotInclusive) noexcept;
-[[nodiscard]] long long GetRandomLongLongInRange(long long minInclusive, long long maxInclusive) noexcept;
+template<typename T>
+[[nodiscard]] bool IsPercentChance(const T& probability) noexcept {
+    auto d = std::bernoulli_distribution(std::clamp(probability, T{0}, T{1}));
+    return d(GetMTRandomEngine(GetRandomSeed()));
+}
 
-[[nodiscard]] float GetRandomFloatInRange(float minInclusive, float maxInclusive) noexcept;
-[[nodiscard]] float GetRandomFloatZeroToOne() noexcept;
-[[nodiscard]] float GetRandomFloatZeroUpToOne() noexcept;
-[[nodiscard]] float GetRandomFloatNegOneToOne() noexcept;
-[[nodiscard]] bool IsPercentChance(float probability) noexcept;
+template<typename T>
+[[nodiscard]] T GetRandomZeroToOne() noexcept {
+    static_assert(std::is_floating_point_v<T>, "T must be a floating-point type.");
+    return GetRandomInRange(T{0}, std::nextafter(T{1}, T{2}));
+}
 
-[[nodiscard]] double GetRandomDoubleInRange(double minInclusive, double maxInclusive) noexcept;
-[[nodiscard]] double GetRandomDoubleZeroToOne() noexcept;
-[[nodiscard]] double GetRandomDoubleZeroUpToOne() noexcept;
-[[nodiscard]] double GetRandomDoubleNegOneToOne() noexcept;
-[[nodiscard]] bool IsPercentChance(double probability) noexcept;
+template<typename T>
+[[nodiscard]] T GetRandomZeroUpToOne() noexcept {
+    static_assert(std::is_floating_point_v<T>, "T must be a floating-point type.");
+    return GetRandomLessThan(T{1});
+}
 
-[[nodiscard]] long double GetRandomLongDoubleInRange(long double minInclusive, long double maxInclusive) noexcept;
-[[nodiscard]] long double GetRandomLongDoubleZeroToOne() noexcept;
-[[nodiscard]] long double GetRandomLongDoubleZeroUpToOne() noexcept;
-[[nodiscard]] long double GetRandomLongDoubleNegOneToOne() noexcept;
+template<typename T>
+[[nodiscard]] T GetRandomNegOneToOne() noexcept {
+    static_assert(std::is_floating_point_v<T>, "T must be a floating-point type.");
+    return GetRandomInRange(T{-1}, T{1});
+}
 
-[[nodiscard]] double nCr(int n, int k) noexcept;
-[[nodiscard]] double Combination(int n, int k) noexcept;
-[[nodiscard]] double Combination_multiset(int n, int k) noexcept;
+[[nodiscard]] double nCr(const int n, const int k) noexcept;
+[[nodiscard]] double Combination(const int n, const int k) noexcept;
+[[nodiscard]] double Combination_multiset(const int n, const int k) noexcept;
 
 template<size_t N>
 [[nodiscard]] constexpr unsigned long long Permutation() noexcept {

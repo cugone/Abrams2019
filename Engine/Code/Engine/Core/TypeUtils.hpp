@@ -5,6 +5,9 @@
 
 namespace TypeUtils {
 
+template<class T, class... Types>
+inline constexpr bool is_any_of_v = std::disjunction_v<std::is_same<T, Types>...>;
+
 template<typename E>
 struct is_bitflag_enum_type : std::false_type {};
 
