@@ -2,6 +2,7 @@
 
 #include "Engine/Core/Rgba.hpp"
 #include "Engine/Core/StringUtils.hpp"
+#include "Engine/Core/TypeUtils.hpp"
 #include "Engine/Math/IntVector2.hpp"
 #include "Engine/Math/IntVector3.hpp"
 #include "Engine/Math/IntVector4.hpp"
@@ -310,27 +311,9 @@ template<typename T>
     return CalculateClosedIntegerRangeResult<T>(values);
 }
 
-
-template<>
-[[nodiscard]] const bool CalculateIntegerRangeResult(const std::string& txt) noexcept {
-    const auto values = StringUtils::Split(txt, '~');
-    if(values.empty() && !txt.empty()) {
-        return CalculateUnboundedIntegerRangeResult<bool>();
-    }
-    if(values.size() == 1) {
-        if(txt.front() == '~') {
-            return CalculateUpperBoundedIntegerRangeResult<bool>(values);
-        }
-        if(txt.back() == '~') {
-            return CalculateLowerBoundedIntegerRangeResult<bool>(values);
-        }
-        return std::stoll(values[0]);
-    }
-    return CalculateClosedIntegerRangeResult<bool>(values);
-}
-
 template<typename T>
 [[nodiscard]] const T CalculateFloatRangeResult(const std::string& txt) noexcept {
+    static_assert(std::is_floating_point_v<T>, "Template argument must be a floating-point type.");
     const auto values = StringUtils::Split(txt, '~');
     if(values.empty() && !txt.empty()) {
         return detail::CalculateUnboundedFloatRangeResult<T>();
@@ -350,18 +333,14 @@ template<typename T>
 template<typename T>
 [[nodiscard]] const T CalculateRangeResult(const std::string& txt) noexcept {
     //std::uniform_int_distribution doesn't allow 8-bit types or bool.
-    constexpr auto is_invalid_type_v = std::is_same_v<T, bool> || std::is_same_v<T, unsigned char> || std::is_same_v<T, signed char> || std::is_same_v<T, char> || std::is_same_v<T, int8_t> || std::is_same_v<T, uint8_t>;
+    constexpr auto is_invalid_type_v = TypeUtils::is_any_of_v<std::remove_cv_t<T>, unsigned char, signed char, char, int8_t, uint8_t>;
     if constexpr(!is_invalid_type_v && std::is_integral_v<T>) {
         return CalculateIntegerRangeResult<T>(txt);
     } else if constexpr(std::is_floating_point_v<T>) {
         return CalculateFloatRangeResult<T>(txt);
     } else {
         if constexpr (is_invalid_type_v) {
-            if constexpr(std::is_same_v<T, bool>) {
-                return CalculateIntegerRangeResult<bool>(txt);
-            } else {
-                return static_cast<const T>(CalculateIntegerRangeResult<const unsigned int>(txt));
-            }
+            return static_cast<std::add_const_t<std::remove_cv_t<T>>>(CalculateIntegerRangeResult<int>(txt));
         } else {
             return T{txt};
         }
