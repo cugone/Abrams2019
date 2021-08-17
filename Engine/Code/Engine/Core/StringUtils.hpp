@@ -54,8 +54,8 @@ namespace StringUtils {
 [[nodiscard]] std::vector<std::size_t> FindAll(std::string string, const std::string& sequence) noexcept;
 [[nodiscard]] std::vector<std::size_t> FindAll(std::wstring string, const std::wstring& sequence) noexcept;
 
-[[nodiscard]] std::string TrimWhitespace(std::string string) noexcept;
-[[nodiscard]] std::wstring TrimWhitespace(std::wstring string) noexcept;
+[[nodiscard]] std::string TrimWhitespace(const std::string& string) noexcept;
+[[nodiscard]] std::wstring TrimWhitespace(const std::wstring& string) noexcept;
 
 [[nodiscard]] constexpr const uint32_t FourCC(const char* id) noexcept {
     return static_cast<uint32_t>((((id[0] << 24) & 0xFF000000) | ((id[1] << 16) & 0x00FF0000) | ((id[2] << 8) & 0x0000FF00) | ((id[3] << 0) & 0x000000FF)));

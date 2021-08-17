@@ -452,7 +452,7 @@ std::vector<std::size_t> FindAll(std::wstring string, const std::wstring& sequen
     return results;
 }
 
-std::string TrimWhitespace(std::string string) noexcept {
+std::string TrimWhitespace(const std::string& string) noexcept {
     auto first_non_wspace = string.find_first_not_of(" \r\n\t\v\f");
     if(first_non_wspace == std::string::npos) {
         return {};
@@ -461,7 +461,7 @@ std::string TrimWhitespace(std::string string) noexcept {
     return string.substr(first_non_wspace, last_non_wspace - first_non_wspace + 1);
 }
 
-std::wstring TrimWhitespace(std::wstring string) noexcept {
+std::wstring TrimWhitespace(const std::wstring& string) noexcept {
     auto first_non_wspace = string.find_first_not_of(L" \r\n\t\v\f");
     if(first_non_wspace == std::wstring::npos) {
         return {};
