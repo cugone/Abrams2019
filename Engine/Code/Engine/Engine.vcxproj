@@ -31,10 +31,13 @@
     <ClCompile Include="..\Thirdparty\TinyXML2\tinyxml2.cpp" />
     <ClCompile Include="Audio\AudioSystem.cpp" />
     <ClCompile Include="Audio\Wav.cpp" />
+    <ClCompile Include="Core\App.cpp" />
     <ClCompile Include="Core\Argb.cpp" />
     <ClCompile Include="Core\ArgumentParser.cpp" />
     <ClCompile Include="Core\Base64.cpp" />
     <ClCompile Include="Core\BuildConfig.hpp" />
+    <ClCompile Include="Core\EngineCommon.cpp" />
+    <ClCompile Include="Core\EngineConfig.cpp" />
     <ClCompile Include="Core\JobTypes.cpp" />
     <ClCompile Include="Core\MtlReader.cpp" />
     <ClCompile Include="Core\OrthographicCameraController.cpp" />
@@ -60,6 +63,7 @@
     <ClCompile Include="Core\TimeUtils.cpp" />
     <ClCompile Include="Core\Utilities.cpp" />
     <ClCompile Include="Core\Win.cpp" />
+    <ClCompile Include="Game\GameBase.cpp" />
     <ClCompile Include="Game\GameSettings.cpp" />
     <ClCompile Include="Input\InputSystem.cpp" />
     <ClCompile Include="Input\KeyCode.cpp" />
@@ -186,9 +190,12 @@
     <ClInclude Include="..\Thirdparty\TinyXML2\tinyxml2.h" />
     <ClInclude Include="Audio\AudioSystem.hpp" />
     <ClInclude Include="Audio\Wav.hpp" />
+    <ClInclude Include="Core\App.hpp" />
     <ClInclude Include="Core\Argb.hpp" />
     <ClInclude Include="Core\ArgumentParser.hpp" />
     <ClInclude Include="Core\Base64.hpp" />
+    <ClInclude Include="Core\EngineCommon.hpp" />
+    <ClInclude Include="Core\EngineConfig.hpp" />
     <ClInclude Include="Core\JobTypes.hpp" />
     <ClInclude Include="Core\MtlReader.hpp" />
     <ClInclude Include="Core\OrthographicCameraController.hpp" />
@@ -217,6 +224,7 @@
     <ClInclude Include="Core\TypeUtils.hpp" />
     <ClInclude Include="Core\Utilities.hpp" />
     <ClInclude Include="Core\Win.hpp" />
+    <ClInclude Include="Game\GameBase.hpp" />
     <ClInclude Include="Game\GameSettings.hpp" />
     <ClInclude Include="Input\InputSystem.hpp" />
     <ClInclude Include="Input\KeyCode.hpp" />
@@ -315,8 +323,10 @@
     <ClInclude Include="RHI\RHIInstance.hpp" />
     <ClInclude Include="RHI\RHIOutput.hpp" />
     <ClInclude Include="RHI\RHITypes.hpp" />
+    <ClInclude Include="Services\IAppService.hpp" />
     <ClInclude Include="Services\IAudioService.hpp" />
     <ClInclude Include="Services\IConfigService.hpp" />
+    <ClInclude Include="Services\IConsoleService.hpp" />
     <ClInclude Include="Services\IFileLoggerService.hpp" />
     <ClInclude Include="Services\IInputService.hpp" />
     <ClInclude Include="Services\IJobSystemService.hpp" />

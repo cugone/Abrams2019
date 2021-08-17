@@ -474,16 +474,23 @@ void Console::RunCommand(std::string name_and_args) noexcept {
         ErrorMsg("INVALID COMMAND");
         return;
     }
-    iter->second.command_function(args);
+    auto* asConsoleCommand = dynamic_cast<Console::Command*>(iter->second.get());
+    asConsoleCommand->command_function(args);
 }
 
-void Console::RegisterCommand(const Command& command) noexcept {
-    if(command.command_name.empty()) {
+void Console::RegisterCommand(const ConsoleCommand& command) noexcept {
+    const auto& asConsoleCommand = static_cast<const Console::Command&>(command);
+    if(asConsoleCommand.command_name.empty()) {
         return;
     }
-    const auto iter = _commands.find(command.command_name);
+    const auto iter = _commands.find(asConsoleCommand.command_name);
     if(iter == _commands.end()) {
-        _commands.insert_or_assign(command.command_name, command);
+        auto newConsoleCommand = std::make_unique<Console::Command>();
+        newConsoleCommand->command_name = asConsoleCommand.command_name;
+        newConsoleCommand->help_text_short = asConsoleCommand.help_text_short;
+        newConsoleCommand->help_text_long = asConsoleCommand.help_text_long;
+        newConsoleCommand->command_function = asConsoleCommand.command_function;
+        _commands.insert_or_assign(asConsoleCommand.command_name, std::move(newConsoleCommand));
     }
 }
 
@@ -494,14 +501,16 @@ void Console::UnregisterCommand(const std::string& command_name) noexcept {
     }
 }
 
-void Console::PushCommandList(const CommandList& list) noexcept {
-    for(const auto& command : list.GetCommands()) {
+void Console::PushCommandList(const ConsoleCommandList& list) noexcept {
+    const auto& asConsoleCommandList = static_cast<const Console::CommandList&>(list);
+    for(const auto& command : asConsoleCommandList.GetCommands()) {
         RegisterCommand(command);
     }
 }
 
-void Console::PopCommandList(const CommandList& list) noexcept {
-    for(const auto& command : list.GetCommands()) {
+void Console::PopCommandList(const ConsoleCommandList& list) noexcept {
+    const auto& asConsoleCommandList = static_cast<const Console::CommandList&>(list);
+    for(const auto& command : asConsoleCommandList.GetCommands()) {
         UnregisterCommand(command.command_name);
     }
 }
@@ -719,17 +728,20 @@ void Console::RegisterDefaultCommands() noexcept {
             cur_arg = StringUtils::TrimWhitespace(cur_arg);
             const auto found_iter = _commands.find(cur_arg);
             if(found_iter != _commands.end()) {
-                PrintMsg(std::string{found_iter->second.command_name + ": " + found_iter->second.help_text_short});
+                const auto* asCommand = dynamic_cast<const Console::Command*>(found_iter->second.get());
+                PrintMsg(std::string{asCommand->command_name + ": " + asCommand->help_text_short});
                 return;
             }
             for(auto& [key, value] : _commands) {
                 if(StringUtils::StartsWith(key, cur_arg)) {
-                    PrintMsg(std::string{value.command_name + ": " + value.help_text_short});
+                    const auto* asCommand = dynamic_cast<const Console::Command*>(value.get());
+                    PrintMsg(std::string{asCommand->command_name + ": " + asCommand->help_text_short});
                 }
             }
         } else {
             for(auto& [_, value] : _commands) {
-                PrintMsg(std::string{value.command_name + ": " + value.help_text_short});
+                const auto* asCommand = dynamic_cast<const Console::Command*>(value.get());
+                PrintMsg(std::string{asCommand->command_name + ": " + asCommand->help_text_short});
             }
         }
     };

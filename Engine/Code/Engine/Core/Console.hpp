@@ -7,6 +7,8 @@
 #include "Engine/Renderer/Vertex3D.hpp"
 #include "Engine/Math/Vector2.hpp"
 
+#include "Engine/Services/IConsoleService.hpp"
+
 #include <functional>
 #include <map>
 #include <string>
@@ -16,19 +18,20 @@ class Camera2D;
 class KerningFont;
 class Renderer;
 
-class Console : public EngineSubsystem {
+class Console : public EngineSubsystem, public IConsoleService {
 public:
-    struct Command {
+    struct Command : public ConsoleCommand {
+        virtual ~Command() noexcept = default;
         std::string command_name{};
         std::string help_text_short{};
         std::string help_text_long{};
         std::function<void(const std::string& args)> command_function = [](const std::string& /*args*/) {};
     };
-    class CommandList {
+    class CommandList : public ConsoleCommandList {
     public:
         explicit CommandList(Console* console = nullptr) noexcept;
         CommandList(Console* console, const std::vector<Command>& commands) noexcept;
-        ~CommandList() noexcept;
+        virtual ~CommandList() noexcept;
         void AddCommand(const Command& command);
         void RemoveCommand(const std::string& name);
         void RemoveAllCommands() noexcept;
@@ -52,20 +55,20 @@ public:
     virtual void EndFrame() override;
     [[nodiscard]] virtual bool ProcessSystemMessage(const EngineMessage& msg) noexcept override;
 
-    void RunCommand(std::string name_and_args) noexcept;
-    void RegisterCommand(const Console::Command& command) noexcept;
-    void UnregisterCommand(const std::string& command_name) noexcept;
+    void RunCommand(std::string name_and_args) noexcept override;
+    void RegisterCommand(const ConsoleCommand& command) noexcept override;
+    void UnregisterCommand(const std::string& command_name) noexcept override;
 
-    void PushCommandList(const Console::CommandList& list) noexcept;
-    void PopCommandList(const Console::CommandList& list) noexcept;
+    void PushCommandList(const ConsoleCommandList& list) noexcept override;
+    void PopCommandList(const ConsoleCommandList& list) noexcept override;
 
-    void PrintMsg(const std::string& msg) noexcept;
-    void WarnMsg(const std::string& msg) noexcept;
-    void ErrorMsg(const std::string& msg) noexcept;
+    void PrintMsg(const std::string& msg) noexcept override;
+    void WarnMsg(const std::string& msg) noexcept override;
+    void ErrorMsg(const std::string& msg) noexcept override;
 
-    [[nodiscard]] void* GetAcceleratorTable() const noexcept;
-    [[nodiscard]] bool IsOpen() const noexcept;
-    [[nodiscard]] bool IsClosed() const noexcept;
+    [[nodiscard]] void* GetAcceleratorTable() const noexcept override;
+    [[nodiscard]] bool IsOpen() const noexcept override;
+    [[nodiscard]] bool IsClosed() const noexcept override;
 
 protected:
 private:
@@ -140,7 +143,7 @@ private:
     [[nodiscard]] bool WasMouseWheelJustScrolledDown() const noexcept;
 
     std::unique_ptr<Camera2D> _camera{};
-    std::map<std::string, Console::Command> _commands{};
+    std::map<std::string, std::unique_ptr<ConsoleCommand>> _commands{};
     std::vector<std::string> _entryline_buffer{};
     std::vector<OutputEntry> _output_buffer{};
     std::string _entryline{};

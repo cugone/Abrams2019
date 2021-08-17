@@ -523,6 +523,18 @@
     <ClCompile Include="Game\GameSettings.cpp">
       <Filter>Game</Filter>
     </ClCompile>
+    <ClCompile Include="Core\App.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\EngineCommon.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\GameBase.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\EngineConfig.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vector2.hpp">
@@ -1025,6 +1037,24 @@
     </ClInclude>
     <ClInclude Include="Game\GameSettings.hpp">
       <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\App.hpp">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\EngineCommon.hpp">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Services\IAppService.hpp">
+      <Filter>Services</Filter>
+    </ClInclude>
+    <ClInclude Include="Services\IConsoleService.hpp">
+      <Filter>Services</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\GameBase.hpp">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\EngineConfig.hpp">
+      <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

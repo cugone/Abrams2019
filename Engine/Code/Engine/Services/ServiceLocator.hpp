@@ -44,7 +44,11 @@ public:
         static_assert(std::is_base_of_v<IService, ServiceInterface>, "Provided type is not a Service.");
         std::scoped_lock lock(_cs);
         auto provided_typeindex = std::type_index(typeid(ServiceInterface));
-        m_services.try_emplace(provided_typeindex, &service);
+        if(auto [it, result] = m_services.try_emplace(provided_typeindex, &service); !result) {
+            m_services.erase(it);
+            m_services.try_emplace(provided_typeindex, &service);
+        }
+
     }
 protected:
 private:

@@ -57,3 +57,9 @@ protected:
     bool _defaultvsync = false;
 private:
 };
+
+template<typename T>
+T* GetGameSettingsAs() {
+    static GameSettings* currentGameSettings{nullptr};
+    return dynamic_cast<T*>(currentGameSettings);
+}
