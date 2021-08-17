@@ -55,7 +55,7 @@ public:
     virtual void EndFrame() override;
     [[nodiscard]] virtual bool ProcessSystemMessage(const EngineMessage& msg) noexcept override;
 
-    void RunCommand(std::string name_and_args) noexcept override;
+    void RunCommand(const std::string& name_and_args) noexcept override;
     void RegisterCommand(const ConsoleCommand& command) noexcept override;
     void UnregisterCommand(const std::string& command_name) noexcept override;
 

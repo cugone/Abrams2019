@@ -12,7 +12,7 @@ class IConsoleService : public IService {
 public:
     virtual ~IConsoleService() noexcept {};
 
-    virtual void RunCommand([[maybe_unused]] std::string name_and_args) noexcept = 0;
+    virtual void RunCommand([[maybe_unused]] const std::string& name_and_args) noexcept = 0;
     virtual void RegisterCommand([[maybe_unused]] const ConsoleCommand& command) noexcept = 0;
     virtual void UnregisterCommand([[maybe_unused]] const std::string& command_name) noexcept = 0;
     virtual void PushCommandList([[maybe_unused]] const ConsoleCommandList& list) noexcept = 0;
@@ -33,7 +33,7 @@ private:
 class NullConsoleService : public IConsoleService {
 public:
     ~NullConsoleService() noexcept override {};
-    void RunCommand([[maybe_unused]] std::string name_and_args) noexcept override {};
+    void RunCommand([[maybe_unused]] const std::string& name_and_args) noexcept override {};
     void RegisterCommand([[maybe_unused]] const ConsoleCommand& command) noexcept override {};
     void UnregisterCommand([[maybe_unused]] const std::string& command_name) noexcept override {};
     void PushCommandList([[maybe_unused]] const ConsoleCommandList& list) noexcept override {};

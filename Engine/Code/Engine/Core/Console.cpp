@@ -463,12 +463,12 @@ bool Console::HandleLeftKey() noexcept {
     return true;
 }
 
-void Console::RunCommand(std::string name_and_args) noexcept {
+void Console::RunCommand(const std::string& name_and_args) noexcept {
     if(name_and_args.empty()) {
         return;
     }
-    name_and_args = StringUtils::TrimWhitespace(name_and_args);
-    const auto [command, args] = StringUtils::SplitOnFirst(name_and_args, ' ');
+    const auto trimmed_name_and_args = StringUtils::TrimWhitespace(name_and_args);
+    const auto [command, args] = StringUtils::SplitOnFirst(trimmed_name_and_args, ' ');
     const auto iter = _commands.find(command);
     if(iter == _commands.end()) {
         ErrorMsg("INVALID COMMAND");
