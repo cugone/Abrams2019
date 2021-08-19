@@ -2,6 +2,8 @@
 
 #include "Engine/Core/TimeUtils.hpp"
 
+#include "Engine/Game/GameSettings.hpp"
+
 class GameBase {
 public:
     GameBase() noexcept = default;
@@ -17,7 +19,10 @@ public:
     virtual void Render() const noexcept;
     virtual void EndFrame() noexcept;
 
+    virtual GameSettings& GetSettings() noexcept;
+
 protected:
+    static inline GameSettings defaultSettings{};
 private:
     
 };

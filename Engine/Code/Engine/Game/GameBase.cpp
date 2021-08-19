@@ -23,3 +23,7 @@ void GameBase::Render() const noexcept {
 void GameBase::EndFrame() noexcept {
     /* DO NOTHING */
 }
+
+GameSettings& GameBase::GetSettings() noexcept {
+    return defaultSettings;
+}
