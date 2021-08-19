@@ -11,19 +11,24 @@ class UISystem;
 class InputSystem;
 class AudioSystem;
 class EngineSubsystem;
-
 class GameBase;
 
-extern JobSystem* g_theJobSystem;
-extern FileLogger* g_theFileLogger;
-extern Renderer* g_theRenderer;
-extern Console* g_theConsole;
-extern Config* g_theConfig;
-extern UISystem* g_theUISystem;
-extern InputSystem* g_theInputSystem;
-extern AudioSystem* g_theAudioSystem;
-extern GameBase* g_theGame;
-extern EngineSubsystem* g_theSubsystemHead;
+template<typename GameType>
+class App;
+
+inline JobSystem* g_theJobSystem = nullptr;
+inline FileLogger* g_theFileLogger = nullptr;
+inline Renderer* g_theRenderer = nullptr;
+inline Console* g_theConsole = nullptr;
+inline Config* g_theConfig = nullptr;
+inline UISystem* g_theUISystem = nullptr;
+inline InputSystem* g_theInputSystem = nullptr;
+inline AudioSystem* g_theAudioSystem = nullptr;
+inline GameBase* g_theGame = nullptr;
+inline EngineSubsystem* g_theSubsystemHead = nullptr;
+
+template<typename GameType>
+inline App<GameType>* g_theApp = nullptr;
 
 template<typename GameDerived>
 GameDerived* GetGameAs() noexcept {

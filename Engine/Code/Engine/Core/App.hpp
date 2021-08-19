@@ -63,7 +63,6 @@ public:
     static_assert(std::is_base_of_v<std::remove_cv_t<std::remove_reference_t<std::remove_pointer_t<GameBase>>>, std::remove_cv_t<std::remove_reference_t<std::remove_pointer_t<GameType>>>>);
 
     virtual ~App() noexcept;
-    static App<T>* GetInstance() noexcept;
 
     static void CreateApp(const std::string& title, const std::string& cmdString) noexcept;
     static void DestroyApp() noexcept;
@@ -110,7 +109,7 @@ private:
     std::unique_ptr<AudioSystem> _theAudioSystem{};
     std::unique_ptr<GameType> _theGame{};
 
-    static inline App<GameType>* _theApp{nullptr};
+    static inline std::unique_ptr<App<GameType>> _theApp{};
 
     static inline NullAppService _nullApp{};
 };
@@ -125,8 +124,8 @@ template<typename T>
     if(_theApp) {
         return;
     }
-    _theApp = new App<T>(title, cmdString);
-    ServiceLocator::provide(*static_cast<IAppService*>(_theApp));
+    _theApp = std::make_unique<App<T>>(title, cmdString);
+    ServiceLocator::provide(*static_cast<IAppService*>(_theApp.get()));
 }
 
 template<typename T>
@@ -134,9 +133,7 @@ template<typename T>
     if(!_theApp) {
         return;
     }
-    delete _theApp;
-    _theApp = nullptr;
-    ServiceLocator::provide<NullAppService>(_nullApp);
+    _theApp.reset(nullptr);
 }
 
 template<typename T>
@@ -151,15 +148,9 @@ App<T>::App(const std::string& title, const std::string& cmdString)
 
 template<typename T>
 App<T>::~App() noexcept {
-    if(_theApp) {
-        g_theSubsystemHead = _theApp;
+    if(g_theApp<T>) {
+        g_theSubsystemHead = g_theApp<T>;
     }
-}
-
-template<typename T>
-/*static*/
-App<T>* App<T>::GetInstance() noexcept {
-    return _theApp;
 }
 
 template<typename T>
@@ -194,6 +185,7 @@ void App<T>::SetupEngineSystemPointers() {
     g_theInputSystem = _theInputSystem.get();
     g_theAudioSystem = _theAudioSystem.get();
     g_theGame = _theGame.get();
+    g_theApp<T> = this;
 }
 
 template<typename T>
@@ -201,16 +193,39 @@ void App<T>::SetupEngineSystemChainOfResponsibility() {
     g_theConsole->SetNextHandler(g_theUISystem);
     g_theUISystem->SetNextHandler(g_theInputSystem);
     g_theInputSystem->SetNextHandler(g_theRenderer);
-    g_theRenderer->SetNextHandler(this);
-    this->SetNextHandler(nullptr);
+    g_theRenderer->SetNextHandler(g_theApp<T>);
+    g_theApp<T>->SetNextHandler(nullptr);
     g_theSubsystemHead = g_theConsole;
 }
 
 template<typename T>
 void App<T>::Initialize() {
-    g_theConfig->GetValue(std::string{"vsync"}, currentGraphicsOptions.vsync);
+    auto& settings = g_theGame->GetSettings();
+
+    bool vsync = settings.DefaultVsyncEnabled();
+    if(g_theConfig->HasKey("vsync")) {
+        g_theConfig->GetValue(std::string{"vsync"}, vsync);
+    } else {
+        g_theConfig->SetValue(std::string{"vsync"}, vsync);
+    }
+    settings.SetVsyncEnabled(vsync);
+
+    int width = settings.DefaultWindowWidth();
+    int height = settings.DefaultWindowHeight();
+    if(g_theConfig->HasKey("width")) {
+        g_theConfig->GetValue(std::string{"width"}, width);
+    } else {
+        g_theConfig->SetValue(std::string{"width"}, width);
+    }
+    if(g_theConfig->HasKey("height")) {
+        g_theConfig->GetValue(std::string{"height"}, height);
+    } else {
+        g_theConfig->SetValue(std::string{"height"}, height);
+    }
+    settings.SetWindowResolution(IntVector2{width, height});
+
     g_theRenderer->Initialize();
-    g_theRenderer->SetVSync(currentGraphicsOptions.vsync);
+    g_theRenderer->SetVSync(vsync);
     auto* output = g_theRenderer->GetOutput();
     output->SetTitle(_title);
     output->GetWindow()->custom_message_handler = detail::WindowProc;
