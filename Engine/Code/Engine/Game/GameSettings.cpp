@@ -35,6 +35,10 @@ void GameSettings::SetVerticalFov(float newFov) noexcept {
     _fov = newFov;
 }
 
+void GameSettings::SetVsyncEnabled(bool newVsync) noexcept {
+    _vsync = newVsync;
+}
+
 bool GameSettings::IsMouseInvertedX() const noexcept {
     return _invertMouseX;
 }

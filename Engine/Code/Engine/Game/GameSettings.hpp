@@ -26,6 +26,8 @@ public:
 
     void SetVerticalFov(float newFov) noexcept;
 
+    void SetVsyncEnabled(bool newVsync) noexcept;
+
     [[nodiscard]] bool IsMouseInvertedX() const noexcept;
     [[nodiscard]] bool IsMouseInvertedY() const noexcept;
     [[nodiscard]] bool IsVsyncEnabled() const noexcept;
