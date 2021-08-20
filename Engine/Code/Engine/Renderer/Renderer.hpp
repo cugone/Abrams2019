@@ -283,9 +283,9 @@ public:
     [[nodiscard]] unsigned int GetViewportCount() const noexcept override;
     [[nodiscard]] std::vector<ViewportDesc> GetAllViewports() const noexcept override;
     void SetViewport(const ViewportDesc& desc) noexcept override;
-    void SetViewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height) noexcept override;
+    void SetViewport(float x, float y, float width, float height) noexcept override;
     void SetViewport(const AABB2& viewport) noexcept override;
-    void SetViewportAndScissor(unsigned int x, unsigned int y, unsigned int width, unsigned int height) noexcept override;
+    void SetViewportAndScissor(float x, float y, float width, float height) noexcept override;
     void SetViewportAndScissor(const AABB2& viewport_and_scissor) noexcept override;
     void SetViewports(const std::vector<AABB3>& viewports) noexcept override;
     void SetViewportAsPercent(float x = 0.0f, float y = 0.0f, float w = 1.0f, float h = 1.0f) noexcept override;
@@ -297,7 +297,7 @@ public:
     void SetScissor(unsigned int x, unsigned int y, unsigned int width, unsigned int height) noexcept override;
     void SetScissor(const AABB2& scissor) noexcept override;
     void SetScissorAsPercent(float x = 0.0f, float y = 0.0f, float w = 1.0f, float h = 1.0f) noexcept override;
-    void SetScissorAndViewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height) noexcept override;
+    void SetScissorAndViewport(float x, float y, float width, float height) noexcept override;
     void SetScissorAndViewport(const AABB2& scissor_and_viewport) noexcept override;
     void SetScissorAndViewportAsPercent(float x = 0.0f, float y = 0.0f, float w = 1.0f, float h = 1.0f) noexcept override;
     void SetScissors(const std::vector<AABB2>& scissors) noexcept override;

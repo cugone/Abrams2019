@@ -25,10 +25,10 @@ void RenderTargetStack::push(const RenderTargetStack::Node& node) noexcept {
     const auto& top = _stack.top();
     auto& rs = ServiceLocator::get<IRendererService>();
     rs.SetRenderTarget(top.color_target, top.depthstencil_target);
-    const auto x = static_cast<unsigned int>(top.view_desc.x);
-    const auto y = static_cast<unsigned int>(top.view_desc.y);
-    const auto w = static_cast<unsigned int>(top.view_desc.width);
-    const auto h = static_cast<unsigned int>(top.view_desc.height);
+    const auto x = top.view_desc.x;
+    const auto y = top.view_desc.y;
+    const auto w = top.view_desc.width;
+    const auto h = top.view_desc.height;
     rs.SetViewport(x, y, w, h);
 }
 
@@ -37,10 +37,10 @@ void RenderTargetStack::push(RenderTargetStack::Node&& node) noexcept {
     const auto& top = _stack.top();
     auto& rs = ServiceLocator::get<IRendererService>();
     rs.SetRenderTarget(top.color_target, top.depthstencil_target);
-    const auto x = static_cast<unsigned int>(top.view_desc.x);
-    const auto y = static_cast<unsigned int>(top.view_desc.y);
-    const auto w = static_cast<unsigned int>(top.view_desc.width);
-    const auto h = static_cast<unsigned int>(top.view_desc.height);
+    const auto x = top.view_desc.x;
+    const auto y = top.view_desc.y;
+    const auto w = top.view_desc.width;
+    const auto h = top.view_desc.height;
     rs.SetViewport(x, y, w, h);
 }
 
@@ -51,10 +51,10 @@ void RenderTargetStack::pop() noexcept {
     rs.SetRenderTarget(top.color_target, top.depthstencil_target);
     rs.ClearColor(Rgba::Black);
     rs.ClearDepthStencilBuffer();
-    const auto x = static_cast<unsigned int>(top.view_desc.x);
-    const auto y = static_cast<unsigned int>(top.view_desc.y);
-    const auto w = static_cast<unsigned int>(top.view_desc.width);
-    const auto h = static_cast<unsigned int>(top.view_desc.height);
+    const auto x = top.view_desc.x;
+    const auto y = top.view_desc.y;
+    const auto w = top.view_desc.width;
+    const auto h = top.view_desc.height;
     rs.SetViewport(x, y, w, h);
 }
 

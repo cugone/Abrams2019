@@ -337,7 +337,7 @@ void Renderer::Initialize() {
     SetDepthStencilState(GetDepthStencilState("__default"));
     SetRasterState(GetRasterState("__solid"));
     const auto dims = GetOutput()->GetDimensions();
-    SetScissorAndViewport(0, 0, dims.x, dims.y);
+    SetScissorAndViewport(0.0f, 0.0f, static_cast<float>(dims.x), static_cast<float>(dims.y));
     SetSampler(GetSampler("__default"));
     SetRenderTarget(_current_target, _current_depthstencil);
     _current_material = nullptr; //User must explicitly set to avoid defaulting to full lighting material.
@@ -4243,20 +4243,20 @@ std::vector<ViewportDesc> Renderer::GetAllViewports() const noexcept {
 }
 
 void Renderer::SetViewport(const ViewportDesc& desc) noexcept {
-    SetViewport(static_cast<unsigned int>(desc.x),
-                static_cast<unsigned int>(desc.y),
-                static_cast<unsigned int>(desc.width),
-                static_cast<unsigned int>(desc.height));
+    SetViewport(desc.x,
+                desc.y,
+                desc.width,
+                desc.height);
 }
 
-void Renderer::SetViewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height) noexcept {
+void Renderer::SetViewport(float x, float y, float width, float height) noexcept {
     D3D11_VIEWPORT viewport;
     memset(&viewport, 0, sizeof(viewport));
 
-    viewport.TopLeftX = static_cast<float>(x);
-    viewport.TopLeftY = static_cast<float>(y);
-    viewport.Width = static_cast<float>(width);
-    viewport.Height = static_cast<float>(height);
+    viewport.TopLeftX = x;
+    viewport.TopLeftY = y;
+    viewport.Width = width;
+    viewport.Height = height;
     viewport.MinDepth = 0.0f;
     viewport.MaxDepth = 1.0f;
 
@@ -4264,15 +4264,15 @@ void Renderer::SetViewport(unsigned int x, unsigned int y, unsigned int width, u
 }
 
 void Renderer::SetViewport(const AABB2& viewport) noexcept {
-    SetViewport(static_cast<unsigned int>(viewport.mins.x), static_cast<unsigned int>(viewport.mins.y), static_cast<unsigned int>(viewport.maxs.x - viewport.mins.x), static_cast<unsigned int>(viewport.maxs.y - viewport.mins.y));
+    SetViewport(viewport.mins.x, viewport.mins.y, viewport.maxs.x - viewport.mins.x, viewport.maxs.y - viewport.mins.y);
 }
 
-void Renderer::SetViewportAndScissor(unsigned int x, unsigned int y, unsigned int width, unsigned int height) noexcept {
+void Renderer::SetViewportAndScissor(float x, float y, float width, float height) noexcept {
     SetScissorAndViewport(x, y, width, height);
 }
 
 void Renderer::SetViewportAndScissor(const AABB2& viewport_and_scissor) noexcept {
-    SetViewportAndScissor(static_cast<unsigned int>(viewport_and_scissor.mins.x), static_cast<unsigned int>(viewport_and_scissor.mins.y), static_cast<unsigned int>(viewport_and_scissor.maxs.x - viewport_and_scissor.mins.x), static_cast<unsigned int>(viewport_and_scissor.maxs.y - viewport_and_scissor.mins.y));
+    SetViewportAndScissor(viewport_and_scissor.mins.x, viewport_and_scissor.mins.y, viewport_and_scissor.maxs.x - viewport_and_scissor.mins.x, viewport_and_scissor.maxs.y - viewport_and_scissor.mins.y);
 }
 
 void Renderer::SetViewports(const std::vector<AABB3>& viewports) noexcept {
@@ -4300,7 +4300,7 @@ void Renderer::SetScissor(unsigned int x, unsigned int y, unsigned int width, un
 }
 
 void Renderer::SetScissor(const AABB2& scissor) noexcept {
-    SetScissor(static_cast<unsigned int>(scissor.mins.x), static_cast<unsigned int>(scissor.mins.y), static_cast<unsigned int>(scissor.maxs.x - scissor.mins.x), static_cast<unsigned int>(scissor.maxs.y - scissor.mins.y));
+    SetScissor(static_cast<unsigned int>(std::floor(scissor.mins.x)), static_cast<unsigned int>(std::floor(scissor.mins.y)), static_cast<unsigned int>(std::floor(scissor.maxs.x - scissor.mins.x)), static_cast<unsigned int>(std::floor(scissor.maxs.y - scissor.mins.y)));
 }
 
 void Renderer::SetScissorAsPercent(float x /*= 0.0f*/, float y /*= 0.0f*/, float w /*= 1.0f*/, float h /*= 1.0f*/) noexcept {
@@ -4311,19 +4311,19 @@ void Renderer::SetScissorAsPercent(float x /*= 0.0f*/, float y /*= 0.0f*/, float
     auto top = y * window_height;
     auto width = window_width * w;
     auto height = window_height * h;
-    SetScissor(static_cast<unsigned int>(left),
-               static_cast<unsigned int>(top),
-               static_cast<unsigned int>(width),
-               static_cast<unsigned int>(height));
+    SetScissor(static_cast<unsigned int>(std::floor(left)),
+               static_cast<unsigned int>(std::floor(top)),
+               static_cast<unsigned int>(std::floor(width)),
+               static_cast<unsigned int>(std::floor(height)));
 }
 
-void Renderer::SetScissorAndViewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height) noexcept {
+void Renderer::SetScissorAndViewport(float x, float y, float width, float height) noexcept {
     SetViewport(x, y, width, height);
-    SetScissor(x, y, width, height);
+    SetScissor(static_cast<unsigned int>(std::floor(x)), static_cast<unsigned int>(std::floor(y)), static_cast<unsigned int>(std::floor(width)), static_cast<unsigned int>(std::floor(height)));
 }
 
 void Renderer::SetScissorAndViewport(const AABB2& scissor_and_viewport) noexcept {
-    SetScissorAndViewport(static_cast<unsigned int>(scissor_and_viewport.mins.x), static_cast<unsigned int>(scissor_and_viewport.mins.y), static_cast<unsigned int>(scissor_and_viewport.maxs.x - scissor_and_viewport.mins.x), static_cast<unsigned int>(scissor_and_viewport.maxs.y - scissor_and_viewport.mins.y));
+    SetScissorAndViewport(scissor_and_viewport.mins.x, scissor_and_viewport.mins.y, scissor_and_viewport.maxs.x - scissor_and_viewport.mins.x, scissor_and_viewport.maxs.y - scissor_and_viewport.mins.y);
 }
 
 void Renderer::SetScissorAndViewportAsPercent(float x /*= 0.0f*/, float y /*= 0.0f*/, float w /*= 1.0f*/, float h /*= 1.0f*/) noexcept {
@@ -4335,10 +4335,10 @@ void Renderer::SetScissors(const std::vector<AABB2>& scissors) noexcept {
     dxScissors.resize(scissors.size());
 
     for(std::size_t i = 0; i < scissors.size(); ++i) {
-        dxScissors[i].left = static_cast<long>(scissors[i].mins.x);
-        dxScissors[i].top = static_cast<long>(scissors[i].mins.y);
-        dxScissors[i].right = static_cast<long>(scissors[i].maxs.x);
-        dxScissors[i].bottom = static_cast<long>(scissors[i].maxs.y);
+        dxScissors[i].left = static_cast<long>(std::floor(scissors[i].mins.x));
+        dxScissors[i].top = static_cast<long>(std::floor(scissors[i].mins.y));
+        dxScissors[i].right = static_cast<long>(std::floor(scissors[i].maxs.x));
+        dxScissors[i].bottom = static_cast<long>(std::floor(scissors[i].maxs.y));
     }
     _rhi_context->GetDxContext()->RSSetScissorRects(static_cast<unsigned int>(dxScissors.size()), dxScissors.data());
 }
@@ -4351,10 +4351,10 @@ void Renderer::SetViewportAsPercent(float x /*= 0.0f*/, float y /*= 0.0f*/, floa
     auto top = y * window_height;
     auto width = window_width * w;
     auto height = window_height * h;
-    SetViewport(static_cast<unsigned int>(left),
-                static_cast<unsigned int>(top),
-                static_cast<unsigned int>(width),
-                static_cast<unsigned int>(height));
+    SetViewport(left,
+                top,
+                width,
+                height);
 }
 
 void Renderer::SetViewportAndScissorAsPercent(float x /*= 0.0f*/, float y /*= 0.0f*/, float w /*= 1.0f*/, float h /*= 1.0f*/) noexcept {
@@ -4794,20 +4794,20 @@ Texture* Renderer::Create2DTexture(std::filesystem::path filepath, const BufferU
     filepath.make_preferred();
     Image img = Image(filepath.string());
 
+    const auto is_gif = filepath.has_extension() && StringUtils::ToLowerCase(filepath.extension().string()) == ".gif";
     D3D11_TEXTURE2D_DESC tex_desc{};
-
     tex_desc.Width = img.GetDimensions().x;                        // width...
     tex_desc.Height = img.GetDimensions().y;                       // ...and height of image in pixels.
     tex_desc.MipLevels = 1;                                        // setting to 0 means there's a full chain (or can generate a full chain) - we're immutable, so not allowed
-    tex_desc.ArraySize = 1;                                        // only one texture (
+    tex_desc.ArraySize = img.GetDepth();
     tex_desc.Usage = BufferUsageToD3DUsage(bufferUsage);           // data is set at creation time and won't change
     tex_desc.Format = ImageFormatToDxgiFormat(imageFormat);        // R8G8B8A8 texture
     tex_desc.BindFlags = BufferBindUsageToD3DBindFlags(bindUsage); // we're going to be using this texture as a shader resource
-                                                                   //Make every texture a shader resource
+                                                                    //Make every texture a shader resource
     tex_desc.BindFlags |= BufferBindUsageToD3DBindFlags(BufferBindUsage::Shader_Resource);
     tex_desc.CPUAccessFlags = CPUAccessFlagFromUsage(bufferUsage); // Determines how I can access this resource CPU side (IMMUTABLE, So none)
     tex_desc.MiscFlags = 0;                                        // Extra Flags, of note is;
-                                                                   // D3D11_RESOURCE_MISC_GENERATE_MIPS - if we want to use this to be able to generate mips (not compatible with IMMUTABLE)
+                                                                    // D3D11_RESOURCE_MISC_GENERATE_MIPS - if we want to use this to be able to generate mips (not compatible with IMMUTABLE)
 
     // If Multisampling - set this up - we're not multisampling, so 1 and 0
     // (MSAA as far as I know only makes sense for Render Targets, not shader resource textures)
@@ -4842,7 +4842,12 @@ Texture* Renderer::Create2DTexture(std::filesystem::path filepath, const BufferU
     HRESULT hr = _rhi_device->GetDxDevice()->CreateTexture2D(&tex_desc, (mustUseInitialData ? &subresource_data : nullptr), &dx_tex);
     bool succeeded = SUCCEEDED(hr);
     if(succeeded) {
-        auto tex = std::make_unique<Texture2D>(*_rhi_device, dx_tex);
+        std::unique_ptr<Texture> tex{};
+        if(is_gif) {
+            tex = std::make_unique<TextureArray2D>(*_rhi_device, dx_tex);
+        } else {
+            tex = std::make_unique<Texture2D>(*_rhi_device, dx_tex);
+        }
         tex->SetDebugName(filepath.string().c_str());
         tex->IsLoaded(true);
         auto* tex_ptr = tex.get();

@@ -130,9 +130,9 @@ public:
     [[nodiscard]] virtual unsigned int GetViewportCount() const noexcept = 0;
     [[nodiscard]] virtual std::vector<ViewportDesc> GetAllViewports() const noexcept = 0;
     virtual void SetViewport(const ViewportDesc& desc) noexcept = 0;
-    virtual void SetViewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height) noexcept = 0;
+    virtual void SetViewport(float x, float y, float width, float height) noexcept = 0;
     virtual void SetViewport(const AABB2& viewport) noexcept = 0;
-    virtual void SetViewportAndScissor(unsigned int x, unsigned int y, unsigned int width, unsigned int height) noexcept = 0;
+    virtual void SetViewportAndScissor(float x, float y, float width, float height) noexcept = 0;
     virtual void SetViewportAndScissor(const AABB2& viewport_and_scissor) noexcept = 0;
     virtual void SetViewports(const std::vector<AABB3>& viewports) noexcept = 0;
     virtual void SetViewportAsPercent(float x = 0.0f, float y = 0.0f, float w = 1.0f, float h = 1.0f) noexcept = 0;
@@ -144,7 +144,7 @@ public:
     virtual void SetScissor(unsigned int x, unsigned int y, unsigned int width, unsigned int height) noexcept = 0;
     virtual void SetScissor(const AABB2& scissor) noexcept = 0;
     virtual void SetScissorAsPercent(float x = 0.0f, float y = 0.0f, float w = 1.0f, float h = 1.0f) noexcept = 0;
-    virtual void SetScissorAndViewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height) noexcept = 0;
+    virtual void SetScissorAndViewport(float x, float y, float width, float height) noexcept = 0;
     virtual void SetScissorAndViewport(const AABB2& scissor_and_viewport) noexcept = 0;
     virtual void SetScissorAndViewportAsPercent(float x = 0.0f, float y = 0.0f, float w = 1.0f, float h = 1.0f) noexcept = 0;
     virtual void SetScissors(const std::vector<AABB2>& scissors) noexcept = 0;
@@ -429,9 +429,9 @@ public:
     [[nodiscard]] std::vector<ViewportDesc> GetAllViewports() const noexcept override {}
 
     void SetViewport([[maybe_unused]] const ViewportDesc& desc) noexcept override {}
-    void SetViewport([[maybe_unused]] unsigned int x, [[maybe_unused]] unsigned int y, [[maybe_unused]] unsigned int width, [[maybe_unused]] unsigned int height) noexcept override {}
+    void SetViewport([[maybe_unused]] float x, [[maybe_unused]] float y, [[maybe_unused]] float width, [[maybe_unused]] float height) noexcept override {}
     void SetViewport([[maybe_unused]] const AABB2& viewport) noexcept override {}
-    void SetViewportAndScissor([[maybe_unused]] unsigned int x, [[maybe_unused]] unsigned int y, [[maybe_unused]] unsigned int width, [[maybe_unused]] unsigned int height) noexcept override {}
+    void SetViewportAndScissor([[maybe_unused]] float x, [[maybe_unused]] float y, [[maybe_unused]] float width, [[maybe_unused]] float height) noexcept override {}
     void SetViewportAndScissor([[maybe_unused]] const AABB2& viewport_and_scissor) noexcept override {}
     void SetViewports([[maybe_unused]] const std::vector<AABB3>& viewports) noexcept override {}
     void SetViewportAsPercent([[maybe_unused]] float x = 0.0f, [[maybe_unused]] float y = 0.0f, [[maybe_unused]] float w = 1.0f, [[maybe_unused]] float h = 1.0f) noexcept override {}
@@ -443,7 +443,7 @@ public:
     void SetScissor([[maybe_unused]] unsigned int x, [[maybe_unused]] unsigned int y, [[maybe_unused]] unsigned int width, [[maybe_unused]] unsigned int height) noexcept override {}
     void SetScissor([[maybe_unused]] const AABB2& scissor) noexcept override {}
     void SetScissorAsPercent([[maybe_unused]] float x = 0.0f, [[maybe_unused]] float y = 0.0f, [[maybe_unused]] float w = 1.0f, [[maybe_unused]] float h = 1.0f) noexcept override {}
-    void SetScissorAndViewport([[maybe_unused]] unsigned int x, [[maybe_unused]] unsigned int y, [[maybe_unused]] unsigned int width, [[maybe_unused]] unsigned int height) noexcept override {}
+    void SetScissorAndViewport([[maybe_unused]] float x, [[maybe_unused]] float y, [[maybe_unused]] float width, [[maybe_unused]] float height) noexcept override {}
     void SetScissorAndViewport([[maybe_unused]] const AABB2& scissor_and_viewport) noexcept override {}
     void SetScissorAndViewportAsPercent([[maybe_unused]] float x = 0.0f, [[maybe_unused]] float y = 0.0f, [[maybe_unused]] float w = 1.0f, [[maybe_unused]] float h = 1.0f) noexcept override {}
     void SetScissors([[maybe_unused]] const std::vector<AABB2>& scissors) noexcept override {}
