@@ -4799,7 +4799,7 @@ Texture* Renderer::Create2DTexture(std::filesystem::path filepath, const BufferU
     tex_desc.Width = img.GetDimensions().x;                        // width...
     tex_desc.Height = img.GetDimensions().y;                       // ...and height of image in pixels.
     tex_desc.MipLevels = 1;                                        // setting to 0 means there's a full chain (or can generate a full chain) - we're immutable, so not allowed
-    tex_desc.ArraySize = img.GetDepth();
+    tex_desc.ArraySize = 1;
     tex_desc.Usage = BufferUsageToD3DUsage(bufferUsage);           // data is set at creation time and won't change
     tex_desc.Format = ImageFormatToDxgiFormat(imageFormat);        // R8G8B8A8 texture
     tex_desc.BindFlags = BufferBindUsageToD3DBindFlags(bindUsage); // we're going to be using this texture as a shader resource
