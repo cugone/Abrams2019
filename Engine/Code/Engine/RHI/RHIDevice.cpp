@@ -18,6 +18,7 @@
 
 #include "Engine/Services/ServiceLocator.hpp"
 #include "Engine/Services/IRendererService.hpp"
+#include "Engine/Services/IFileLoggerService.hpp"
 
 #include <array>
 #include <sstream>
@@ -115,6 +116,7 @@ std::pair<std::unique_ptr<RHIOutput>, std::unique_ptr<RHIDeviceContext>> RHIDevi
             window.reset();
             ERROR_AND_DIE("RHIDevice: Graphics card not found.")
         }
+        DebuggerPrintf((std::string{"Adapter count: "} + std::to_string(adapters.size()) + std::string{'\n'}).c_str());
         OutputAdapterInfo(adapters);
         GetDisplayModes(adapters);
         DeviceInfo device_info = CreateDeviceFromFirstAdapter(adapters);
@@ -179,11 +181,16 @@ DeviceInfo RHIDevice::CreateDeviceFromFirstAdapter(const std::vector<AdapterInfo
 void RHIDevice::OutputAdapterInfo(const std::vector<AdapterInfo>& adapters) const noexcept {
     std::ostringstream ss;
     ss << "ADAPTERS\n";
+    std::size_t monitor_count{0u};
     for(const auto& adapter : adapters) {
         ss << std::right << std::setw(60) << std::setfill('-') << '\n'
            << std::setfill(' ');
         ss << AdapterInfoToGraphicsCardDesc(adapter) << '\n';
+        const auto outputs = GetOutputsFromAdapter(adapter);
+        monitor_count += outputs.size();
+        ss << "Monitors connected to this adapter: " << std::left << std::setw(22) << std::to_string(outputs.size()) + '\n';
     }
+    ss << "Total Monitor count: " << std::to_string(monitor_count) << '\n';
     ss << std::right << std::setw(60) << std::setfill('-') << '\n';
     ss << std::flush;
     DebuggerPrintf(ss.str().c_str());
@@ -191,7 +198,7 @@ void RHIDevice::OutputAdapterInfo(const std::vector<AdapterInfo>& adapters) cons
 
 void RHIDevice::GetDisplayModes(const std::vector<AdapterInfo>& adapters) const noexcept {
     for(auto& a : adapters) {
-        auto outputs = GetOutputsFromAdapter(a);
+        const auto outputs = GetOutputsFromAdapter(a);
         for(const auto& o : outputs) {
             GetDisplayModeDescriptions(a, o, displayModes);
         }
