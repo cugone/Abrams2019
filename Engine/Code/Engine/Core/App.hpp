@@ -15,6 +15,7 @@
 
 #include "Engine/Input/InputSystem.hpp"
 
+#include "Engine/Physics/PhysicsSystem.hpp"
 #include "Engine/Profiling/Memory.hpp"
 
 #include "Engine/Renderer/Renderer.hpp"
@@ -27,6 +28,7 @@
 #include "Engine/Services/IInputService.hpp"
 #include "Engine/Services/IJobSystemService.hpp"
 #include "Engine/Services/IRendererService.hpp"
+#include "Engine/Services/IPhysicsService.hpp"
 #include "Engine/Services/ServiceLocator.hpp"
 
 #include "Engine/System/System.hpp"
@@ -39,15 +41,6 @@
 #include <condition_variable>
 #include <iomanip>
 #include <memory>
-
-class JobSystem;
-class FileLogger;
-class Config;
-class Renderer;
-class Console;
-class InputSystem;
-class AudioSystem;
-class UISystem;
 
 template<typename T>
 class App : public EngineSubsystem, public IAppService {
@@ -104,6 +97,7 @@ private:
     std::unique_ptr<Config> _theConfig{};
     std::unique_ptr<Renderer> _theRenderer{};
     std::unique_ptr<Console> _theConsole{};
+    std::unique_ptr<PhysicsSystem> _thePhysicsSystem{};
     std::unique_ptr<InputSystem> _theInputSystem{};
     std::unique_ptr<UISystem> _theUI{};
     std::unique_ptr<AudioSystem> _theAudioSystem{};
@@ -163,6 +157,9 @@ void App<T>::SetupEngineSystemPointers() {
     _theFileLogger = std::make_unique<FileLogger>("game");
     ServiceLocator::provide(*static_cast<IFileLoggerService*>(_theFileLogger.get()));
 
+    _thePhysicsSystem = std::make_unique<PhysicsSystem>();
+    ServiceLocator::provide(*static_cast<IPhysicsService*>(_thePhysicsSystem.get()));
+
     _theRenderer = std::make_unique<Renderer>();
     ServiceLocator::provide(*static_cast<IRendererService*>(_theRenderer.get()));
 
@@ -182,6 +179,7 @@ void App<T>::SetupEngineSystemPointers() {
     g_theRenderer = _theRenderer.get();
     g_theUISystem = _theUI.get();
     g_theConsole = _theConsole.get();
+    g_thePhysicsSystem = _thePhysicsSystem.get();
     g_theInputSystem = _theInputSystem.get();
     g_theAudioSystem = _theAudioSystem.get();
     g_theGame = _theGame.get();
@@ -192,7 +190,8 @@ template<typename T>
 void App<T>::SetupEngineSystemChainOfResponsibility() {
     g_theConsole->SetNextHandler(g_theUISystem);
     g_theUISystem->SetNextHandler(g_theInputSystem);
-    g_theInputSystem->SetNextHandler(g_theRenderer);
+    g_theInputSystem->SetNextHandler(g_thePhysicsSystem);
+    g_thePhysicsSystem->SetNextHandler(g_theRenderer);
     g_theRenderer->SetNextHandler(g_theApp<T>);
     g_theApp<T>->SetNextHandler(nullptr);
     g_theSubsystemHead = g_theConsole;
@@ -234,6 +233,7 @@ void App<T>::Initialize() noexcept {
     g_theInputSystem->Initialize();
     g_theConsole->Initialize();
     g_theAudioSystem->Initialize();
+    g_thePhysicsSystem->Initialize();
     g_theGame->Initialize();
 }
 
@@ -249,6 +249,7 @@ void App<T>::BeginFrame() noexcept {
     g_theInputSystem->BeginFrame();
     g_theConsole->BeginFrame();
     g_theAudioSystem->BeginFrame();
+    g_thePhysicsSystem->BeginFrame();
     g_theGame->BeginFrame();
     g_theRenderer->BeginFrame();
 }
@@ -259,6 +260,7 @@ void App<T>::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
     g_theInputSystem->Update(deltaSeconds);
     g_theConsole->Update(deltaSeconds);
     g_theAudioSystem->Update(deltaSeconds);
+    g_thePhysicsSystem->Update(deltaSeconds);
     g_theGame->Update(deltaSeconds);
     g_theRenderer->Update(deltaSeconds);
 }
@@ -270,6 +272,7 @@ void App<T>::Render() const noexcept {
     g_theConsole->Render();
     g_theAudioSystem->Render();
     g_theInputSystem->Render();
+    g_thePhysicsSystem->Render();
     g_theRenderer->Render();
 }
 
@@ -280,6 +283,7 @@ void App<T>::EndFrame() noexcept {
     g_theConsole->EndFrame();
     g_theAudioSystem->EndFrame();
     g_theInputSystem->EndFrame();
+    g_thePhysicsSystem->EndFrame();
     g_theRenderer->EndFrame();
 }
 

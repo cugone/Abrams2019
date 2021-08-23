@@ -12,8 +12,11 @@
 #include "Engine/Physics/RigidBody.hpp"
 #include "Engine/Physics/RodJoint.hpp"
 #include "Engine/Physics/SpringJoint.hpp"
+#include "Engine/Physics/QuadTree.hpp"
 #include "Engine/Profiling/ProfileLogScope.hpp"
 #include "Engine/Renderer/Renderer.hpp"
+
+#include "Engine/Services/IPhysicsService.hpp"
 
 #include <atomic>
 #include <condition_variable>
@@ -35,49 +38,62 @@ struct PhysicsSystemDesc {
     int velocity_solver_iterations{8};
 };
 
-class PhysicsSystem {
+class PhysicsSystem : public EngineSubsystem, public IPhysicsService {
 public:
     explicit PhysicsSystem(const PhysicsSystemDesc& desc = PhysicsSystemDesc{});
-    ~PhysicsSystem();
+    virtual ~PhysicsSystem() noexcept;
 
-    void Initialize() noexcept;
-    void BeginFrame() noexcept;
-    void Update(TimeUtils::FPSeconds deltaSeconds) noexcept;
-    void Render() const noexcept;
-    void EndFrame() noexcept;
+    /************************************************************************/
+    /* BEGIN ENGINE SUBSYSTEM INTERFACE                                     */
+    /************************************************************************/
 
-    void AddObject(RigidBody* body);
-    void AddObjects(std::vector<RigidBody*> bodies);
-    void RemoveObject(RigidBody* body);
-    void RemoveObjects(std::vector<RigidBody*> bodies);
-    void RemoveAllObjects() noexcept;
-    void RemoveAllObjectsImmediately() noexcept;
+    void Initialize() noexcept override;
+    void BeginFrame() noexcept override;
+    void Update(TimeUtils::FPSeconds deltaSeconds) noexcept override;
+    void Render() const noexcept override;
+    void EndFrame() noexcept override;
 
-    void Enable(bool enable);
-    void SetGravity(const Vector2& new_gravity);
-    [[nodiscard]] Vector2 GetGravity() const noexcept;
-    void SetDragCoefficients(const Vector2& k1k2);
-    void SetDragCoefficients(float linearCoefficient, float squareCoefficient);
-    [[nodiscard]] std::pair<float, float> GetDragCoefficients() const noexcept;
-    [[nodiscard]] const PhysicsSystemDesc& GetWorldDescription() const noexcept;
-    void SetWorldDescription(const PhysicsSystemDesc& new_desc);
-    void EnableGravity(bool isGravityEnabled) noexcept;
-    void EnableDrag(bool isDragEnabled) noexcept;
-    void EnablePhysics(bool isPhysicsEnabled) noexcept;
+    [[nodiscard]] bool ProcessSystemMessage([[maybe_unused]] const EngineMessage& msg) noexcept override;
 
-    template<typename JointDefType>
-    Joint* CreateJoint(const JointDefType& defType) noexcept;
+    /************************************************************************/
+    /* END ENGINE SUBSYSTEM INTERFACE                                       */
+    /************************************************************************/
 
-    template<typename ForceGeneratorType>
-    ForceGeneratorType* CreateForceGenerator();
 
-    [[nodiscard]] const std::vector<std::unique_ptr<Joint>>& Debug_GetJoints() const noexcept;
-    [[nodiscard]] const std::vector<RigidBody*>& Debug_GetBodies() const noexcept;
+    /************************************************************************/
+    /* BEGIN SERVICE LOCATOR INTERFACE                                      */
+    /************************************************************************/
 
-    void Debug_ShowCollision(bool show);
-    void Debug_ShowWorldPartition(bool show);
-    void Debug_ShowContacts(bool show);
-    void Debug_ShowJoints(bool show);
+    void AddObject(RigidBody* body) override;
+    void AddObjects(std::vector<RigidBody*> bodies) override;
+    void RemoveObject(RigidBody* body) override;
+    void RemoveObjects(std::vector<RigidBody*> bodies) override;
+    void RemoveAllObjects() noexcept override;
+    void RemoveAllObjectsImmediately() noexcept override;
+
+    void Enable(bool enable) override;
+    void SetGravity(const Vector2& new_gravity) override;
+    [[nodiscard]] Vector2 GetGravity() const noexcept override;
+    void SetDragCoefficients(const Vector2& k1k2) override;
+    void SetDragCoefficients(float linearCoefficient, float squareCoefficient) override;
+    [[nodiscard]] std::pair<float, float> GetDragCoefficients() const noexcept override;
+    [[nodiscard]] const PhysicsSystemDesc& GetWorldDescription() const noexcept override;
+    void SetWorldDescription(const PhysicsSystemDesc& new_desc) override;
+    void EnableGravity(bool isGravityEnabled) noexcept override;
+    void EnableDrag(bool isDragEnabled) noexcept override;
+    void EnablePhysics(bool isPhysicsEnabled) noexcept override;
+
+    [[nodiscard]] const std::vector<std::unique_ptr<Joint>>& Debug_GetJoints() const noexcept override;
+    [[nodiscard]] const std::vector<RigidBody*>& Debug_GetBodies() const noexcept override;
+
+    void Debug_ShowCollision(bool show) override;
+    void Debug_ShowWorldPartition(bool show) override;
+    void Debug_ShowContacts(bool show) override;
+    void Debug_ShowJoints(bool show) override;
+
+    /************************************************************************/
+    /* END SERVICE LOCATOR INTERFACE                                        */
+    /************************************************************************/
 
 protected:
 private:
@@ -103,9 +119,7 @@ private:
     std::vector<RigidBody*> _pending_addition{};
     GravityForceGenerator _gravityFG{Vector2::ZERO};
     DragForceGenerator _dragFG{Vector2::ZERO};
-    std::vector<std::unique_ptr<ForceGenerator>> _forceGenerators{};
-    std::vector<std::unique_ptr<Joint>> _joints{};
-    //QuadTree<RigidBody> _world_partition{};
+    QuadTree<RigidBody> _world_partition{};
     TimeUtils::FPSeconds _deltaSeconds = TimeUtils::FPSeconds::zero();
     bool _show_colliders = false;
     bool _show_object_bounds = false;
@@ -113,31 +127,6 @@ private:
     bool _show_contacts = false;
     bool _show_joints = false;
 };
-
-template<typename JointDefType>
-Joint* PhysicsSystem::CreateJoint(const JointDefType& defType) noexcept {
-    static_assert(std::is_base_of_v<JointDef, JointDefType>, "CreateJoint received type not derived from Joint.");
-    std::unique_ptr<Joint> newJoint{};
-    if constexpr(std::is_same_v<JointDefType, SpringJointDef>) {
-        newJoint.reset(new SpringJoint(defType));
-    } else if constexpr(std::is_same_v<JointDefType, RodJointDef>) {
-        newJoint.reset(new RodJoint(defType));
-    } else if constexpr(std::is_same_v<JointDefType, CableJointDef>) {
-        newJoint.reset(new CableJoint(defType));
-    } else {
-        static_assert(false, "CreateJoint received type not in if-else chain.");
-    }
-    auto* joint_ptr = newJoint.get();
-    _joints.emplace_back(std::move(newJoint));
-    return joint_ptr;
-}
-
-template<typename ForceGeneratorType>
-ForceGeneratorType* PhysicsSystem::CreateForceGenerator() {
-    auto* newFG = new ForceGeneratorType();
-    _forceGenerators.emplace_back(newFG);
-    return newFG;
-}
 
 template<typename CollisionDetectionFunction, typename CollisionResolutionFunction>
 PhysicsSystem::CollisionDataSet PhysicsSystem::NarrowPhaseCollision(const std::vector<RigidBody*>& potential_collisions, CollisionDetectionFunction&& cd, CollisionResolutionFunction&& cr) noexcept {

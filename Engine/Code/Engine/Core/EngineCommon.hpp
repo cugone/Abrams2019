@@ -9,6 +9,7 @@ class Console;
 class Config;
 class UISystem;
 class InputSystem;
+class PhysicsSystem;
 class AudioSystem;
 class EngineSubsystem;
 class GameBase;
@@ -24,6 +25,7 @@ inline Config* g_theConfig = nullptr;
 inline UISystem* g_theUISystem = nullptr;
 inline InputSystem* g_theInputSystem = nullptr;
 inline AudioSystem* g_theAudioSystem = nullptr;
+inline PhysicsSystem* g_thePhysicsSystem = nullptr;
 inline GameBase* g_theGame = nullptr;
 inline EngineSubsystem* g_theSubsystemHead = nullptr;
 

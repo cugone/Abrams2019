@@ -8,14 +8,14 @@
 
 #include "Engine/Services/ServiceLocator.hpp"
 #include "Engine/Services/IRendererService.hpp"
+#include "Engine/Services/IPhysicsService.hpp"
 
 #include <cmath>
 #include <numeric>
 #include <type_traits>
 
-RigidBody::RigidBody(PhysicsSystem* physicsSystem, const RigidBodyDesc& desc /*= RigidBodyDesc{}*/)
-: parentPhysicsSystem(physicsSystem)
-, rigidbodyDesc(desc)
+RigidBody::RigidBody(const RigidBodyDesc& desc /*= RigidBodyDesc{}*/)
+: rigidbodyDesc(desc)
 , velocity(rigidbodyDesc.initialVelocity)
 , position(rigidbodyDesc.initialPosition)
 , acceleration(rigidbodyDesc.initialAcceleration) {
@@ -177,7 +177,8 @@ void RigidBody::DebugRender() const {
 
 void RigidBody::Endframe() {
     if(should_kill) {
-        parentPhysicsSystem->RemoveObject(this);
+        auto& physics = ServiceLocator::get<IPhysicsService>();
+        physics.RemoveObject(this);
     }
 }
 

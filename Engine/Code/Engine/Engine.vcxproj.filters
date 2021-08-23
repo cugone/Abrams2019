@@ -1056,5 +1056,8 @@
     <ClInclude Include="Core\EngineConfig.hpp">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="Services\IPhysicsService.hpp">
+      <Filter>Services</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

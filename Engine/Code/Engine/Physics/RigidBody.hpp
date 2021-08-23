@@ -81,7 +81,7 @@ class PhysicsSystem;
 
 class RigidBody {
 public:
-    explicit RigidBody(PhysicsSystem* physicsSystem, const RigidBodyDesc& desc = RigidBodyDesc{});
+    explicit RigidBody(const RigidBodyDesc& desc = RigidBodyDesc{});
 
     RigidBody() = delete;
     RigidBody(RigidBody&& other) noexcept = default;
@@ -162,7 +162,6 @@ protected:
 private:
     void SetAcceleration(const Vector2& newAccleration) noexcept;
 
-    PhysicsSystem* parentPhysicsSystem{nullptr};
     RigidBodyDesc rigidbodyDesc{};
     RigidBody* parent = nullptr;
     std::vector<RigidBody*> children{};

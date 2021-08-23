@@ -330,6 +330,7 @@
     <ClInclude Include="Services\IFileLoggerService.hpp" />
     <ClInclude Include="Services\IInputService.hpp" />
     <ClInclude Include="Services\IJobSystemService.hpp" />
+    <ClInclude Include="Services\IPhysicsService.hpp" />
     <ClInclude Include="Services\IRendererService.hpp" />
     <ClInclude Include="Services\IService.hpp" />
     <ClInclude Include="Services\ServiceLocator.hpp" />

@@ -277,6 +277,10 @@ void PhysicsSystem::EndFrame() noexcept {
     _joints.erase(std::remove_if(std::begin(_joints), std::end(_joints), [](auto&& joint) -> bool { return joint->IsNotAttached(); }), std::end(_joints));
 }
 
+bool PhysicsSystem::ProcessSystemMessage([[maybe_unused]] const EngineMessage& msg) noexcept {
+    return false;
+}
+
 void PhysicsSystem::AddObject(RigidBody* body) {
     _pending_addition.push_back(body);
     //_world_partition.Add(body);
