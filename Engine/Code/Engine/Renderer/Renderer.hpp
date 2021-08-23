@@ -187,11 +187,11 @@ public:
     /************************************/
 
     [[nodiscard]] bool ProcessSystemMessage(const EngineMessage& msg) noexcept override;
-    void Initialize() override;
-    void BeginFrame() override;
-    void Update(TimeUtils::FPSeconds deltaSeconds) override;
-    void Render() const override;
-    void EndFrame() override;
+    void Initialize() noexcept override;
+    void BeginFrame() noexcept override;
+    void Update(TimeUtils::FPSeconds deltaSeconds) noexcept override;
+    void Render() const noexcept override;
+    void EndFrame() noexcept override;
 
     /**********************************/
     /* END ENGINE SUBSYSTEM INTERFACE */

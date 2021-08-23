@@ -300,7 +300,7 @@ bool Renderer::ProcessSystemMessage(const EngineMessage& msg) noexcept {
     return false;
 }
 
-void Renderer::Initialize() {
+void Renderer::Initialize() noexcept {
     _rhi_instance = RHIInstance::CreateInstance();
     _rhi_device = _rhi_instance->CreateDevice();
 
@@ -478,11 +478,11 @@ void Renderer::DisableStencilWrite() noexcept {
     dx_dc->OMSetDepthStencilState(state.Get(), stencil_value);
 }
 
-void Renderer::BeginFrame() {
+void Renderer::BeginFrame() noexcept {
     UnbindAllShaderResources();
 }
 
-void Renderer::Update(TimeUtils::FPSeconds deltaSeconds) {
+void Renderer::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
     UpdateSystemTime(deltaSeconds);
 }
 
@@ -500,11 +500,11 @@ void Renderer::UpdateSystemTime(TimeUtils::FPSeconds deltaSeconds) noexcept {
     SetConstantBuffer(GetTimeBufferIndex(), _time_cb.get());
 }
 
-void Renderer::Render() const {
+void Renderer::Render() const noexcept {
     /* DO NOTHING */
 }
 
-void Renderer::EndFrame() {
+void Renderer::EndFrame() noexcept {
     Present();
     FulfillScreenshotRequest();
 }

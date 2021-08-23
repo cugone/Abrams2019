@@ -70,7 +70,7 @@ AudioSystem::~AudioSystem() noexcept {
     ::CoUninitialize();
 }
 
-void AudioSystem::Initialize() {
+void AudioSystem::Initialize() noexcept {
 #ifdef AUDIO_DEBUG
     XAUDIO2_DEBUG_CONFIGURATION config{};
     config.LogFileline = true;
@@ -207,19 +207,19 @@ FileUtils::Wav::WavFormatChunk AudioSystem::GetLoadedWavFileFormat() const noexc
     return _wave_files.begin()->second->GetFormatChunk();
 }
 
-void AudioSystem::BeginFrame() {
+void AudioSystem::BeginFrame() noexcept {
     /* DO NOTHING */
 }
 
-void AudioSystem::Update([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) {
+void AudioSystem::Update([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept {
     /* DO NOTHING */
 }
 
-void AudioSystem::Render() const {
+void AudioSystem::Render() const noexcept {
     /* DO NOTHING */
 }
 
-void AudioSystem::EndFrame() {
+void AudioSystem::EndFrame() noexcept {
     /* DO NOTHING */
 }
 

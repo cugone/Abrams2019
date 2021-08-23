@@ -971,13 +971,13 @@ InputSystem::~InputSystem() noexcept {
     ::ClipCursor(&result);
 }
 
-void InputSystem::Initialize() {
+void InputSystem::Initialize() noexcept {
     UpdateXboxConnectedState();
     auto ss = std::to_string(_connected_controller_count) + " Xbox controllers detected!";
     ServiceLocator::get<IFileLoggerService>().LogLineAndFlush(ss);
 }
 
-void InputSystem::BeginFrame() {
+void InputSystem::BeginFrame() noexcept {
     if(_connection_poll.CheckAndReset()) {
         UpdateXboxConnectedState();
     }
@@ -986,15 +986,15 @@ void InputSystem::BeginFrame() {
     }
 }
 
-void InputSystem::Update([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) {
+void InputSystem::Update([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept {
     /* DO NOTHING */
 }
 
-void InputSystem::Render() const {
+void InputSystem::Render() const noexcept {
     /* DO NOTHING */
 }
 
-void InputSystem::EndFrame() {
+void InputSystem::EndFrame() noexcept {
     _mouseDelta = Vector2::ZERO;
     _mousePrevCoords = _mouseCoords;
     _previousKeys = _currentKeys;

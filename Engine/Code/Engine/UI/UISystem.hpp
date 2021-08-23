@@ -37,11 +37,11 @@ public:
     UISystem& operator=(UISystem&& other) = default;
     virtual ~UISystem() noexcept;
 
-    virtual void Initialize() override;
-    virtual void BeginFrame() override;
-    virtual void Update(TimeUtils::FPSeconds deltaSeconds) override;
-    virtual void Render() const override;
-    virtual void EndFrame() override;
+    virtual void Initialize() noexcept override;
+    virtual void BeginFrame() noexcept override;
+    virtual void Update(TimeUtils::FPSeconds deltaSeconds) noexcept override;
+    virtual void Render() const noexcept override;
+    virtual void EndFrame() noexcept override;
     [[nodiscard]] virtual bool ProcessSystemMessage(const EngineMessage& msg) noexcept override;
 
     [[nodiscard]] bool HasFocus() const noexcept;

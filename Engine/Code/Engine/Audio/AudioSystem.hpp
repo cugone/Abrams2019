@@ -174,11 +174,11 @@ public:
     AudioSystem& operator=(const AudioSystem& rhs) = delete;
     AudioSystem& operator=(AudioSystem&& rhs) = delete;
     virtual ~AudioSystem() noexcept;
-    virtual void Initialize() override;
-    virtual void BeginFrame() override;
-    virtual void Update([[maybe_unused]] TimeUtils::FPSeconds) override;
-    virtual void Render() const override;
-    virtual void EndFrame() override;
+    void Initialize() noexcept override;
+    void BeginFrame() noexcept override;
+    void Update([[maybe_unused]] TimeUtils::FPSeconds) noexcept override;
+    void Render() const noexcept override;
+    void EndFrame() noexcept override;
     [[nodiscard]] virtual bool ProcessSystemMessage(const EngineMessage& msg) noexcept override;
 
     void SuspendAudio() noexcept;

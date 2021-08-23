@@ -48,12 +48,12 @@ public:
     Console& operator=(Console&& other) = delete;
     virtual ~Console() noexcept;
 
-    virtual void Initialize() override;
-    virtual void BeginFrame() override;
-    virtual void Update([[maybe_unused]] TimeUtils::FPSeconds) override;
-    virtual void Render() const override;
-    virtual void EndFrame() override;
-    [[nodiscard]] virtual bool ProcessSystemMessage(const EngineMessage& msg) noexcept override;
+    void Initialize() noexcept override;
+    void BeginFrame() noexcept override;
+    void Update([[maybe_unused]] TimeUtils::FPSeconds) noexcept override;
+    void Render() const noexcept override;
+    void EndFrame() noexcept override;
+    [[nodiscard]] bool ProcessSystemMessage(const EngineMessage& msg) noexcept override;
 
     void RunCommand(const std::string& name_and_args) noexcept override;
     void RegisterCommand(const ConsoleCommand& command) noexcept override;

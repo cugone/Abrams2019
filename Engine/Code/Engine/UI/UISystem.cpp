@@ -110,7 +110,7 @@ UISystem::~UISystem() noexcept {
     _widgets.clear();
 }
 
-void UISystem::Initialize() {
+void UISystem::Initialize() noexcept {
     namespace FS = std::filesystem;
 
     auto&& renderer = ServiceLocator::get<IRendererService>();
@@ -132,13 +132,13 @@ void UISystem::Initialize() {
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableSetMousePos;
 }
 
-void UISystem::BeginFrame() {
+void UISystem::BeginFrame() noexcept {
     ImGui_ImplDX11_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 }
 
-void UISystem::Update(TimeUtils::FPSeconds /*deltaSeconds*/) {
+void UISystem::Update(TimeUtils::FPSeconds /*deltaSeconds*/) noexcept {
 #if !defined(IMGUI_DISABLE_DEMO_WINDOWS)
     if(show_imgui_demo_window) {
         ImGui::ShowDemoWindow(&show_imgui_demo_window);
@@ -149,7 +149,7 @@ void UISystem::Update(TimeUtils::FPSeconds /*deltaSeconds*/) {
 #endif
 }
 
-void UISystem::Render() const {
+void UISystem::Render() const noexcept {
     ImGui::Render();
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
@@ -178,7 +178,7 @@ void UISystem::Render() const {
 #endif
 }
 
-void UISystem::EndFrame() {
+void UISystem::EndFrame() noexcept {
     ImGui::EndFrame();
 }
 

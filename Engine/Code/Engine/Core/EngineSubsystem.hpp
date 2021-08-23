@@ -147,13 +147,13 @@ class EngineSubsystem {
 public:
     virtual ~EngineSubsystem() noexcept = 0;
 
-    virtual void Initialize() = 0;
-    virtual void BeginFrame() = 0;
-    virtual void Update([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) = 0;
-    virtual void Render() const = 0;
-    virtual void EndFrame() = 0;
+    virtual void Initialize() noexcept = 0;
+    virtual void BeginFrame() noexcept = 0;
+    virtual void Update([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept = 0;
+    virtual void Render() const noexcept = 0;
+    virtual void EndFrame() noexcept = 0;
 
-    [[nodiscard]] virtual bool ProcessSystemMessage(const EngineMessage& msg) noexcept;
+    [[nodiscard]] virtual bool ProcessSystemMessage([[maybe_unused]] const EngineMessage& msg) noexcept;
 
     [[nodiscard]] static WindowsSystemMessage GetWindowsSystemMessageFromUintMessage(unsigned int wmMessage) noexcept;
     void SetNextHandler(EngineSubsystem* next_handler) noexcept;

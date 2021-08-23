@@ -30,11 +30,11 @@ public:
     virtual ~InputSystem() noexcept;
 
     [[nodiscard]] virtual bool ProcessSystemMessage(const EngineMessage& msg) noexcept override;
-    virtual void Initialize() override;
-    virtual void BeginFrame() override;
-    virtual void Update([[maybe_unused]] TimeUtils::FPSeconds) override;
-    virtual void Render() const override;
-    virtual void EndFrame() override;
+    void Initialize() noexcept override;
+    void BeginFrame() noexcept override;
+    void Update([[maybe_unused]] TimeUtils::FPSeconds) noexcept override;
+    void Render() const noexcept override;
+    void EndFrame() noexcept override;
 
     [[nodiscard]] bool WasAnyKeyPressed() const noexcept override;
     [[nodiscard]] bool WasAnyMouseButtonPressed() const noexcept override;

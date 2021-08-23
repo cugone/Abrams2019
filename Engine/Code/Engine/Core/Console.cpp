@@ -711,7 +711,7 @@ void Console::PasteText(const std::string& text, std::string::const_iterator loc
     _entryline_changed = true;
 }
 
-void Console::Initialize() {
+void Console::Initialize() noexcept {
     _camera = std::make_unique<Camera2D>();
     RegisterDefaultCommands();
 }
@@ -772,17 +772,17 @@ void Console::RegisterDefaultCommands() noexcept {
     RegisterCommand(clear);
 }
 
-void Console::BeginFrame() {
+void Console::BeginFrame() noexcept {
     if(_cursor_timer.CheckAndReset()) {
         _show_cursor = !_show_cursor;
     }
 }
 
-void Console::Update([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) {
+void Console::Update([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept {
     /* DO NOTHING */
 }
 
-void Console::Render() const {
+void Console::Render() const noexcept {
     if(IsClosed()) {
         return;
     }
@@ -995,7 +995,7 @@ bool Console::WasMouseWheelJustScrolledDown() const noexcept {
     return GetMouseWheelPositionNormalized() < 0;
 }
 
-void Console::EndFrame() {
+void Console::EndFrame() noexcept {
     _mouseWheelPosition = 0;
 }
 

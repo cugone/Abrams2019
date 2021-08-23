@@ -84,11 +84,11 @@ private:
     void SetupEngineSystemPointers();
     void SetupEngineSystemChainOfResponsibility();
 
-    void Initialize() override;
-    void BeginFrame() override;
-    void Update(TimeUtils::FPSeconds deltaSeconds) override;
-    void Render() const override;
-    void EndFrame() override;
+    void Initialize() noexcept override;
+    void BeginFrame() noexcept override;
+    void Update(TimeUtils::FPSeconds deltaSeconds) noexcept override;
+    void Render() const noexcept override;
+    void EndFrame() noexcept override;
     bool ProcessSystemMessage(const EngineMessage& msg) noexcept override;
 
     void LogSystemDescription() const;
@@ -199,7 +199,7 @@ void App<T>::SetupEngineSystemChainOfResponsibility() {
 }
 
 template<typename T>
-void App<T>::Initialize() {
+void App<T>::Initialize() noexcept {
     auto& settings = g_theGame->GetSettings();
 
     bool vsync = settings.DefaultVsyncEnabled();
@@ -243,7 +243,7 @@ void App<T>::InitializeService() {
 }
 
 template<typename T>
-void App<T>::BeginFrame() {
+void App<T>::BeginFrame() noexcept {
     g_theJobSystem->BeginFrame();
     g_theUISystem->BeginFrame();
     g_theInputSystem->BeginFrame();
@@ -254,7 +254,7 @@ void App<T>::BeginFrame() {
 }
 
 template<typename T>
-void App<T>::Update(TimeUtils::FPSeconds deltaSeconds) {
+void App<T>::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
     g_theUISystem->Update(deltaSeconds);
     g_theInputSystem->Update(deltaSeconds);
     g_theConsole->Update(deltaSeconds);
@@ -264,7 +264,7 @@ void App<T>::Update(TimeUtils::FPSeconds deltaSeconds) {
 }
 
 template<typename T>
-void App<T>::Render() const {
+void App<T>::Render() const noexcept {
     g_theGame->Render();
     g_theUISystem->Render();
     g_theConsole->Render();
@@ -274,7 +274,7 @@ void App<T>::Render() const {
 }
 
 template<typename T>
-void App<T>::EndFrame() {
+void App<T>::EndFrame() noexcept {
     g_theUISystem->EndFrame();
     g_theGame->EndFrame();
     g_theConsole->EndFrame();
