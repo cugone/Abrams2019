@@ -5,6 +5,9 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Vector2.hpp"
 #include "Engine/Profiling/ProfileLogScope.hpp"
+
+#include "Engine/Services/ServiceLocator.hpp"
+#include "Engine/Services/IRendererService.hpp"
 #include "Engine/Renderer/Renderer.hpp"
 
 #include <algorithm>
@@ -27,7 +30,7 @@ public:
     void Add(std::add_pointer_t<T> new_element);
     void Add(std::vector<std::add_pointer_t<T>> new_elements);
     void Clear();
-    void DebugRender(Renderer& renderer) const;
+    void DebugRender() const;
 
     void SetWorldBounds(const AABB2& bounds) noexcept;
     [[nodiscard]] std::vector<std::add_pointer_t<T>> Query(const AABB2& area) noexcept;
@@ -44,7 +47,7 @@ private:
         , BottomRight
     };
     // clang-format off
-    void DebugRender_helper(Renderer& renderer) const;
+    void DebugRender_helper() const;
     [[nodiscard]] bool IsParent(const QuadTree<T>* node) const;
     [[nodiscard]] bool IsChild(const QuadTree<T>* node) const;
     [[nodiscard]] bool IsLeaf(const QuadTree<T>* node) const;
@@ -230,10 +233,11 @@ void QuadTree<T>::AddElement(std::add_pointer_t<T> new_element) {
 }
 
 template<typename T>
-void QuadTree<T>::DebugRender(Renderer& renderer) const {
+void QuadTree<T>::DebugRender() const {
+    auto& renderer = ServiceLocator::get<IRendererService>();
     renderer.SetMaterial(renderer.GetMaterial("__2D"));
     renderer.SetModelMatrix(Matrix4::I);
-    DebugRender_helper(renderer);
+    DebugRender_helper();
 }
 
 template<typename T>
@@ -404,11 +408,12 @@ void QuadTree<T>::TakeElementsFromChildren() {
 }
 
 template<typename T>
-void QuadTree<T>::DebugRender_helper(Renderer& renderer) const {
+void QuadTree<T>::DebugRender_helper() const {
+    auto& renderer = ServiceLocator::get<IRendererService>();
     renderer.DrawAABB2(m_bounds, Rgba::Green, Rgba::NoAlpha);
     for(const auto& child : m_children) {
         if(child) {
-            child->DebugRender_helper(renderer);
+            child->DebugRender_helper();
         }
     }
 }

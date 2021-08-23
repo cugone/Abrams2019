@@ -249,7 +249,7 @@ void PhysicsSystem::Render() const noexcept {
         }
     }
     if(_show_world_partition) {
-        //_world_partition.DebugRender();
+        _world_partition.DebugRender();
     }
     if(_show_contacts) {
         renderer.SetModelMatrix(Matrix4::I);
