@@ -458,6 +458,12 @@ template<typename T>
                 retVal = static_cast<R>(std::stoll(txt));
             } else if constexpr(std::is_signed_v<T> && std::is_floating_point_v<T>) {
                 retVal = static_cast<R>(std::stold(txt));
+            } else {
+                if(txt.empty()) {
+                    return defaultValue;
+                } else {
+                    return T(txt);
+                }
             }
         } catch(...) {
             return defaultValue;
