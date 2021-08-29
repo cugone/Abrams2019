@@ -1287,15 +1287,15 @@ void Renderer::DrawAABB2(const AABB2& bounds, const Rgba& edgeColor, const Rgba&
     };
     // clang-format off
     const std::vector<unsigned int> ibo{
-    8, 9, 10,
+    8, 9, 10, //Fill
     8, 10, 11,
-    0, 1, 2,
+    0, 1, 2, //Top
     0, 2, 3,
-    4, 0, 3,
+    4, 0, 3, //Right
     4, 3, 5,
-    6, 4, 5,
+    6, 4, 5, //Bottom
     6, 5, 7,
-    1, 6, 7,
+    1, 6, 7, //Left
     1, 7, 2,
     };
     // clang-format on
@@ -1342,39 +1342,20 @@ void Renderer::DrawOBB2(const OBB2& obb, const Rgba& edgeColor, const Rgba& fill
     Vertex3D(Vector3(lb_inner, 0.0f), fillColor),
     Vertex3D(Vector3(rb_inner, 0.0f), fillColor),
     };
-
+    // clang-format off
     const std::vector<unsigned int> ibo = {
-    8,
-    9,
-    10,
-    8,
-    10,
-    11,
-    0,
-    1,
-    2,
-    0,
-    2,
-    3,
-    4,
-    0,
-    3,
-    4,
-    3,
-    5,
-    6,
-    4,
-    5,
-    6,
-    5,
-    7,
-    1,
-    6,
-    7,
-    1,
-    7,
-    2,
+    8, 9, 10,  //Fill
+    8, 10, 11,
+    0, 1, 2, //Top
+    0, 2, 3,
+    4, 0, 3, //Right
+    4, 3, 5,
+    6, 4, 5, //Bottom
+    6, 5, 7,
+    1, 6, 7, //Left
+    1, 7, 2,
     };
+    // clang-format on
     if(edgeHalfExtents == Vector2::ZERO) {
         DrawIndexed(PrimitiveType::Lines, vbo, ibo, ibo.size() - 6, 6);
     } else {
