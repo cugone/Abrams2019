@@ -369,6 +369,10 @@ void App<T>::RunFrame() {
     FPSeconds deltaSeconds = (currentFrameTime - previousFrameTime);
     previousFrameTime = currentFrameTime;
 
+#ifdef DEBUG_BUILD
+    deltaSeconds = (std::min)(FPSeconds{FPFrames{1}}, deltaSeconds);
+#endif
+
     Update(deltaSeconds);
     Render();
     EndFrame();
