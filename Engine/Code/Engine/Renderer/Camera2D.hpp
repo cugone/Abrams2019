@@ -58,7 +58,7 @@ public:
 
     float trauma = 0.0f;
     float trauma_recovery_rate = 1.0f;
-    Vector2 position = Vector2::ZERO;
+    Vector2 position = Vector2::Zero;
     float orientation_degrees = 0.0f;
 
 protected:

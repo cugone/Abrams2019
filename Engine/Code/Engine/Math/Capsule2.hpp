@@ -5,10 +5,10 @@
 
 class Capsule2 {
 public:
-    static const Capsule2 UNIT_HORIZONTAL;
-    static const Capsule2 UNIT_VERTICAL;
-    static const Capsule2 UNIT_CENTERED_HORIZONTAL;
-    static const Capsule2 UNIT_CENTERED_VERTICAL;
+    static const Capsule2 Unit_Horizontal;
+    static const Capsule2 Unit_Vertical;
+    static const Capsule2 Unit_Centered_Horizontal;
+    static const Capsule2 Unit_Centered_Vertical;
 
     LineSegment2 line{};
     float radius = 0.0f;

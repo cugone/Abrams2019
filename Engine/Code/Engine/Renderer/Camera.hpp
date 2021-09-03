@@ -76,7 +76,7 @@ private:
     float ortho_width = 8.0f;
     float near_distance = 0.01f;
     float far_distance = 1.0f;
-    Vector3 position = Vector3::ZERO;
+    Vector3 position = Vector3::Zero;
 
     Matrix4 view_matrix = Matrix4::I;
     Matrix4 rotation_matrix = Matrix4::I;

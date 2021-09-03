@@ -10,32 +10,32 @@
 #include <cmath>
 #include <sstream>
 
-const IntVector4 IntVector4::ZERO(0, 0, 0, 0);
-const IntVector4 IntVector4::ONE(1, 1, 1, 1);
-const IntVector4 IntVector4::X_AXIS(1, 0, 0, 0);
-const IntVector4 IntVector4::Y_AXIS(0, 1, 0, 0);
-const IntVector4 IntVector4::Z_AXIS(0, 0, 1, 0);
-const IntVector4 IntVector4::W_AXIS(0, 0, 0, 1);
-const IntVector4 IntVector4::XY_AXIS(1, 1, 0, 0);
-const IntVector4 IntVector4::XZ_AXIS(1, 0, 1, 0);
-const IntVector4 IntVector4::XW_AXIS(1, 0, 0, 1);
-const IntVector4 IntVector4::YX_AXIS(1, 1, 0, 0);
-const IntVector4 IntVector4::YZ_AXIS(0, 1, 1, 0);
-const IntVector4 IntVector4::YW_AXIS(0, 1, 0, 1);
-const IntVector4 IntVector4::ZX_AXIS(1, 0, 1, 0);
-const IntVector4 IntVector4::ZY_AXIS(0, 1, 1, 0);
-const IntVector4 IntVector4::ZW_AXIS(0, 0, 1, 1);
-const IntVector4 IntVector4::WX_AXIS(1, 0, 0, 1);
-const IntVector4 IntVector4::WY_AXIS(0, 1, 0, 1);
-const IntVector4 IntVector4::WZ_AXIS(0, 0, 1, 1);
-const IntVector4 IntVector4::XYZ_AXIS(1, 1, 1, 0);
-const IntVector4 IntVector4::XYW_AXIS(1, 1, 0, 1);
-const IntVector4 IntVector4::YXZ_AXIS(1, 1, 1, 0);
-const IntVector4 IntVector4::YZW_AXIS(0, 1, 1, 1);
-const IntVector4 IntVector4::WXY_AXIS(1, 1, 0, 1);
-const IntVector4 IntVector4::WXZ_AXIS(1, 0, 1, 1);
-const IntVector4 IntVector4::WYZ_AXIS(0, 1, 1, 1);
-const IntVector4 IntVector4::XYZW_AXIS(1, 1, 1, 1);
+const IntVector4 IntVector4::Zero(0, 0, 0, 0);
+const IntVector4 IntVector4::One(1, 1, 1, 1);
+const IntVector4 IntVector4::X_Axis(1, 0, 0, 0);
+const IntVector4 IntVector4::Y_Axis(0, 1, 0, 0);
+const IntVector4 IntVector4::Z_Axis(0, 0, 1, 0);
+const IntVector4 IntVector4::W_Axis(0, 0, 0, 1);
+const IntVector4 IntVector4::XY_Axis(1, 1, 0, 0);
+const IntVector4 IntVector4::XZ_Axis(1, 0, 1, 0);
+const IntVector4 IntVector4::XW_Axis(1, 0, 0, 1);
+const IntVector4 IntVector4::YX_Axis(1, 1, 0, 0);
+const IntVector4 IntVector4::YZ_Axis(0, 1, 1, 0);
+const IntVector4 IntVector4::YW_Axis(0, 1, 0, 1);
+const IntVector4 IntVector4::ZX_Axis(1, 0, 1, 0);
+const IntVector4 IntVector4::ZY_Axis(0, 1, 1, 0);
+const IntVector4 IntVector4::ZW_Axis(0, 0, 1, 1);
+const IntVector4 IntVector4::WX_Axis(1, 0, 0, 1);
+const IntVector4 IntVector4::WY_Axis(0, 1, 0, 1);
+const IntVector4 IntVector4::WZ_Axis(0, 0, 1, 1);
+const IntVector4 IntVector4::XYZ_Axis(1, 1, 1, 0);
+const IntVector4 IntVector4::XYW_Axis(1, 1, 0, 1);
+const IntVector4 IntVector4::YXZ_Axis(1, 1, 1, 0);
+const IntVector4 IntVector4::YZW_Axis(0, 1, 1, 1);
+const IntVector4 IntVector4::WXY_Axis(1, 1, 0, 1);
+const IntVector4 IntVector4::WXZ_Axis(1, 0, 1, 1);
+const IntVector4 IntVector4::WYZ_Axis(0, 1, 1, 1);
+const IntVector4 IntVector4::XYZW_Axis(1, 1, 1, 1);
 
 IntVector4::IntVector4(int initialX, int initialY, int initialZ, int initialW) noexcept
 : x(initialX)

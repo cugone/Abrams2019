@@ -77,7 +77,7 @@ private:
     [[nodiscard]] std::vector<QuadTree<T>*> GetNodesByElement(const T& object) const noexcept;
 
     QuadTree<T>* m_parent = nullptr;
-    Vector2 m_half_extents = Vector2::ONE;
+    Vector2 m_half_extents = Vector2::One;
     AABB2 m_bounds = AABB2{-m_half_extents, m_half_extents};
     std::array<std::unique_ptr<QuadTree>, 4> m_children{};
     const int m_maxElementsBeforeSubdivide = 2;

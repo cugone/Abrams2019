@@ -253,7 +253,7 @@ std::pair<Vector2, float> UICanvas::CalcDimensionsAndAspectRatio() const {
     const auto viewport_dims = Vector2{viewport.width, viewport.height};
 
     const auto target_AR = viewport_dims.x / viewport_dims.y;
-    auto dims = Vector2::ZERO;
+    auto dims = Vector2::Zero;
     if(target_AR <= 1.0f) {
         dims.x = viewport_dims.x;
         dims.y = target_AR * viewport_dims.x;
@@ -322,7 +322,7 @@ void UICanvasSlot::LoadFromXml(const XMLElement& elem) {
     anchors = anchorValues;
     CalcPivot();
     autoSize = DataUtils::ParseXmlAttribute(elem, "autosize", autoSize);
-    size = autoSize ? content->CalcDesiredSize().GetZW() : DataUtils::ParseXmlAttribute(elem, "size", Vector2::ZERO);
+    size = autoSize ? content->CalcDesiredSize().GetZW() : DataUtils::ParseXmlAttribute(elem, "size", Vector2::Zero);
     position = DataUtils::ParseXmlAttribute(elem, "position", Vector2{0.5f, 0.5f});
 }
 

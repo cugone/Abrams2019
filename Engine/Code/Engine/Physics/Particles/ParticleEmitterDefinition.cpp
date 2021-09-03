@@ -123,7 +123,7 @@ ParticleEmitterDefinition::ParticleEmitterDefinition(const XMLElement& element) 
     if(auto* xml_scale = element.FirstChildElement("scale"); xml_scale) {
         DataUtils::ValidateXmlElement(*xml_scale, "scale", "", "", "linear");
         if(bool has_children = DataUtils::GetChildElementCount(*xml_scale, "linear"); !has_children) {
-            Vector3 scale = DataUtils::ParseXmlElementText(*xml_scale, Vector3::ONE);
+            Vector3 scale = DataUtils::ParseXmlElementText(*xml_scale, Vector3::One);
             _particleRenderState.SetScales(scale, scale);
         } else {
             auto xml_scale_linear = xml_scale->FirstChildElement("linear");

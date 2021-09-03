@@ -117,9 +117,9 @@ private:
     std::array<XboxController, 4> _xboxControllers{};
     std::bitset<(std::size_t)KeyCode::Max> _previousKeys{};
     std::bitset<(std::size_t)KeyCode::Max> _currentKeys{};
-    Vector2 _mouseCoords = Vector2::ZERO;
-    Vector2 _mousePrevCoords = Vector2::ZERO;
-    Vector2 _mouseDelta = Vector2::ZERO;
+    Vector2 _mouseCoords = Vector2::Zero;
+    Vector2 _mousePrevCoords = Vector2::Zero;
+    Vector2 _mouseDelta = Vector2::Zero;
     mutable AABB2 _initialClippingArea{};
     mutable AABB2 _currentClippingArea{};
     Stopwatch _connection_poll = Stopwatch(TimeUtils::FPSeconds{1.0f});

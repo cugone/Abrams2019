@@ -99,9 +99,9 @@ private:
         , Max
     };
     // clang-format on
-    Vector2 _leftThumbDistance = Vector2::ZERO;
-    Vector2 _rightThumbDistance = Vector2::ZERO;
-    Vector2 _triggerDistances = Vector2::ZERO;
+    Vector2 _leftThumbDistance = Vector2::Zero;
+    Vector2 _rightThumbDistance = Vector2::Zero;
+    Vector2 _triggerDistances = Vector2::Zero;
     unsigned short _leftMotorState = 0;
     unsigned short _rightMotorState = 0;
     unsigned short _previousRawInput = 0;

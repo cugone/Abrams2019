@@ -377,7 +377,7 @@ Vector2 Renderer::GetScreenCenter() const noexcept {
         float center_y = desktopRect.top + (desktopRect.bottom - desktopRect.top) * 0.5f;
         return Vector2{center_x, center_y};
     }
-    return Vector2::ZERO;
+    return Vector2::Zero;
 }
 
 Vector2 Renderer::GetWindowCenter() const noexcept {
@@ -393,7 +393,7 @@ Vector2 Renderer::GetWindowCenter(const Window& window) const noexcept {
         float center_y = rect.top + (rect.bottom - rect.top) * 0.50f;
         return Vector2{center_x, center_y};
     }
-    return Vector2::ZERO;
+    return Vector2::Zero;
 }
 
 void Renderer::UnbindWorkingVboAndIbo() noexcept {
@@ -782,15 +782,15 @@ void Renderer::DrawWorldGrid2D(const IntVector2& dimensions, const Rgba& color /
 
 void Renderer::DrawAxes(float maxlength /*= 1000.0f*/, bool disable_unit_depth /*= true*/) noexcept {
     static std::vector<Vertex3D> vbo{
-    Vertex3D{Vector3::ZERO, Rgba::Red},
-    Vertex3D{Vector3::ZERO, Rgba::Green},
-    Vertex3D{Vector3::ZERO, Rgba::Blue},
-    Vertex3D{Vector3::X_AXIS * maxlength, Rgba::Red},
-    Vertex3D{Vector3::Y_AXIS * maxlength, Rgba::Green},
-    Vertex3D{Vector3::Z_AXIS * maxlength, Rgba::Blue},
-    Vertex3D{Vector3::X_AXIS, Rgba::Red},
-    Vertex3D{Vector3::Y_AXIS, Rgba::Green},
-    Vertex3D{Vector3::Z_AXIS, Rgba::Blue},
+    Vertex3D{Vector3::Zero, Rgba::Red},
+    Vertex3D{Vector3::Zero, Rgba::Green},
+    Vertex3D{Vector3::Zero, Rgba::Blue},
+    Vertex3D{Vector3::X_Axis * maxlength, Rgba::Red},
+    Vertex3D{Vector3::Y_Axis * maxlength, Rgba::Green},
+    Vertex3D{Vector3::Z_Axis * maxlength, Rgba::Blue},
+    Vertex3D{Vector3::X_Axis, Rgba::Red},
+    Vertex3D{Vector3::Y_Axis, Rgba::Green},
+    Vertex3D{Vector3::Z_Axis, Rgba::Blue},
     };
     static std::vector<unsigned int> ibo{
     0, 3, 1, 4, 2, 5,
@@ -1000,7 +1000,7 @@ void Renderer::SetSpotlight(unsigned int index, const SpotLightDesc& desc) noexc
     float outer_half_angle = outer_radians * 0.5f;
     float outer_dot_threshold = std::cos(outer_half_angle);
 
-    l.innerOuterDotThresholds = Vector4(Vector2(inner_dot_threshold, outer_dot_threshold), Vector2::ZERO);
+    l.innerOuterDotThresholds = Vector4(Vector2(inner_dot_threshold, outer_dot_threshold), Vector2::Zero);
 
     SetSpotlight(index, l);
 }
@@ -1147,8 +1147,8 @@ void Renderer::DrawPoint2D(const Vector2& point, const Rgba& color /*= Rgba::WHI
 void Renderer::DrawLine2D(float startX, float startY, float endX, float endY, const Rgba& color /*= Rgba::WHITE*/, float thickness /*= 0.0f*/) noexcept {
     bool use_thickness = thickness > 0.0f;
     if(!use_thickness) {
-        Vertex3D start = Vertex3D(Vector3(Vector2(startX, startY), 0.0f), color, Vector2::ZERO);
-        Vertex3D end = Vertex3D(Vector3(Vector2(endX, endY), 0.0f), color, Vector2::ONE);
+        Vertex3D start = Vertex3D(Vector3(Vector2(startX, startY), 0.0f), color, Vector2::Zero);
+        Vertex3D end = Vertex3D(Vector3(Vector2(endX, endY), 0.0f), color, Vector2::One);
         std::vector<Vertex3D> vbo = {
         start, end};
         std::vector<unsigned int> ibo = {
@@ -1193,7 +1193,7 @@ void Renderer::DrawQuad2D(float left, float bottom, float right, float top, cons
 }
 
 void Renderer::DrawQuad2D(const Rgba& color) noexcept {
-    DrawQuad2D(Vector2::ZERO, Vector2(0.5f, 0.5f), color);
+    DrawQuad2D(Vector2::Zero, Vector2(0.5f, 0.5f), color);
 }
 
 void Renderer::DrawQuad2D(const Vector2& position /*= Vector2::ZERO*/, const Vector2& halfExtents /*= Vector2(0.5f, 0.5f)*/, const Rgba& color /*= Rgba::WHITE*/, const Vector4& texCoords /*= Vector4::ZW_AXIS*/) noexcept {
@@ -1205,16 +1205,16 @@ void Renderer::DrawQuad2D(const Vector2& position /*= Vector2::ZERO*/, const Vec
 }
 
 void Renderer::DrawQuad2D(const Vector4& texCoords) noexcept {
-    DrawQuad2D(Vector2::ZERO, Vector2(0.5f, 0.5f), Rgba::White, texCoords);
+    DrawQuad2D(Vector2::Zero, Vector2(0.5f, 0.5f), Rgba::White, texCoords);
 }
 
 void Renderer::DrawQuad2D(const Rgba& color, const Vector4& texCoords) noexcept {
-    DrawQuad2D(Vector2::ZERO, Vector2(0.5f, 0.5f), color, texCoords);
+    DrawQuad2D(Vector2::Zero, Vector2(0.5f, 0.5f), color, texCoords);
 }
 
 void Renderer::DrawQuad2D(const Matrix4& transform, const Rgba& color /*= Rgba::White*/, const Vector4& texCoords /*= Vector4::ZW_AXIS*/) noexcept {
     SetModelMatrix(transform);
-    DrawQuad2D(Vector2::ZERO, Vector2{0.5f, 0.5f}, color, texCoords);
+    DrawQuad2D(Vector2::Zero, Vector2{0.5f, 0.5f}, color, texCoords);
 }
 
 void Renderer::DrawCircle2D(float centerX, float centerY, float radius, const Rgba& color /*= Rgba::WHITE*/) noexcept {
@@ -1300,7 +1300,7 @@ void Renderer::DrawAABB2(const AABB2& bounds, const Rgba& edgeColor, const Rgba&
     };
     // clang-format on
 
-    if(edgeHalfExtents == Vector2::ZERO) {
+    if(edgeHalfExtents == Vector2::Zero) {
         DrawIndexed(PrimitiveType::Lines, vbo, ibo, ibo.size() - 6, 6);
     } else {
         DrawIndexed(PrimitiveType::Triangles, vbo, ibo);
@@ -1311,7 +1311,7 @@ void Renderer::DrawAABB2(const Rgba& edgeColor, const Rgba& fillColor) noexcept 
     AABB2 bounds;
     bounds.mins = Vector2(-0.5f, -0.5f);
     bounds.maxs = Vector2(0.5f, 0.5f);
-    Vector2 edge_half_extents = Vector2::ZERO;
+    Vector2 edge_half_extents = Vector2::Zero;
     DrawAABB2(bounds, edgeColor, fillColor, edge_half_extents);
 }
 
@@ -1356,7 +1356,7 @@ void Renderer::DrawOBB2(const OBB2& obb, const Rgba& edgeColor, const Rgba& fill
     1, 7, 2,
     };
     // clang-format on
-    if(edgeHalfExtents == Vector2::ZERO) {
+    if(edgeHalfExtents == Vector2::Zero) {
         DrawIndexed(PrimitiveType::Lines, vbo, ibo, ibo.size() - 6, 6);
     } else {
         DrawIndexed(PrimitiveType::Triangles, vbo, ibo);
@@ -1367,7 +1367,7 @@ void Renderer::DrawOBB2(float orientationDegrees, const Rgba& edgeColor, const R
     OBB2 obb;
     obb.half_extents = Vector2(0.5f, 0.5f);
     obb.orientationDegrees = orientationDegrees;
-    auto edge_half_extents = Vector2::ZERO;
+    auto edge_half_extents = Vector2::Zero;
     DrawOBB2(obb, edgeColor, fillColor, edge_half_extents);
 }
 
@@ -1394,7 +1394,7 @@ void Renderer::DrawX2D(const Vector2& position /*= Vector2::ZERO*/, const Vector
 }
 
 void Renderer::DrawX2D(const Rgba& color) noexcept {
-    DrawX2D(Vector2::ZERO, Vector2(0.5f, 0.5f), color);
+    DrawX2D(Vector2::Zero, Vector2(0.5f, 0.5f), color);
 }
 
 void Renderer::DrawPolygon2D(float centerX, float centerY, float radius, std::size_t numSides /*= 3*/, const Rgba& color /*= Rgba::WHITE*/) noexcept {
@@ -3216,7 +3216,7 @@ bool Renderer::RegisterFont(std::filesystem::path filepath) noexcept {
             FS::path texture_path = folderpath / FS::path{texture_filename};
             texture_path = FS::canonical(texture_path);
             texture_path.make_preferred();
-            (void)CreateTexture(texture_path.string(), IntVector3::XY_AXIS); //Don't want to store texture for later use.
+            (void)CreateTexture(texture_path.string(), IntVector3::XY_Axis); //Don't want to store texture for later use.
         }
         if(auto mat = CreateMaterialFromFont(font.get())) {
             font->SetMaterial(mat.get());
@@ -3997,7 +3997,7 @@ Vector2 Renderer::ConvertWorldToScreenCoords(const Camera3D& camera, const Vecto
     const auto clipSpace = Vector4::CalcHomogeneous(WtoS * Vector4{worldCoords, 1.0f});
     const auto ndc = Vector2{clipSpace.x, -clipSpace.y};
     const auto screenDims = Vector2{GetOutput()->GetDimensions()};
-    const auto mouseCoords = (ndc + Vector2::ONE) * screenDims * 0.5f;
+    const auto mouseCoords = (ndc + Vector2::One) * screenDims * 0.5f;
     return mouseCoords;
 }
 
@@ -4006,7 +4006,7 @@ Vector3 Renderer::ConvertScreenToWorldCoords(const Vector2& mouseCoords) const n
 }
 
 Vector3 Renderer::ConvertScreenToWorldCoords(const Camera3D& camera, const Vector2& mouseCoords) const noexcept {
-    const auto ndc = 2.0f * mouseCoords / Vector2(GetOutput()->GetDimensions()) - Vector2::ONE;
+    const auto ndc = 2.0f * mouseCoords / Vector2(GetOutput()->GetDimensions()) - Vector2::One;
     const auto screenCoords4 = Vector4(ndc.x, -ndc.y, 1.0f, 1.0f);
     const auto& sToW = camera.GetInverseViewProjectionMatrix();
     const auto worldPos4 = Vector4::CalcHomogeneous(sToW * screenCoords4);
@@ -4019,7 +4019,7 @@ Vector2 Renderer::ConvertScreenToWorldCoords(const Camera2D& camera, const Vecto
 }
 
 Vector3 Renderer::ConvertScreenToNdcCoords(const Camera3D& /*camera*/, const Vector2& mouseCoords) const noexcept {
-    const auto ndc = 2.0f * mouseCoords / Vector2(GetOutput()->GetDimensions()) - Vector2::ONE;
+    const auto ndc = 2.0f * mouseCoords / Vector2(GetOutput()->GetDimensions()) - Vector2::One;
     const auto ndc3 = Vector3(ndc.x, -ndc.y, 1.0f);
     return ndc3;
 }
@@ -4429,7 +4429,7 @@ void Renderer::RegisterTexturesFromFolder(std::filesystem::path folderpath, bool
 }
 
 bool Renderer::RegisterTexture(const std::filesystem::path& filepath) noexcept {
-    Texture* tex = CreateTexture(filepath, IntVector3::XY_AXIS);
+    Texture* tex = CreateTexture(filepath, IntVector3::XY_Axis);
     if(tex) {
         return true;
     }

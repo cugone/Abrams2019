@@ -35,8 +35,8 @@ public:
     const std::vector<ParticleEmitter>& GetEmitters() const;
     std::vector<ParticleEmitter>& GetEmitters();
 
-    Vector3 position{Vector3::ZERO};
-    Vector3 velocity{Vector3::ZERO};
+    Vector3 position{Vector3::Zero};
+    Vector3 velocity{Vector3::Zero};
 
 protected:
 private:

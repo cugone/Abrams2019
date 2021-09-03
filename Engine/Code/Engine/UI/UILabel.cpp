@@ -109,7 +109,7 @@ void UILabel::SetPositionRatio(const Vector2& ratio) {
 
 Vector4 UILabel::CalcDesiredSize() const noexcept {
     const auto desired_size = CalcBoundsFromFont(_font);
-    return Vector4{Vector2::ZERO, desired_size};
+    return Vector4{Vector2::Zero, desired_size};
 }
 
 Vector2 UILabel::CalcBoundsFromFont(KerningFont* font) const {

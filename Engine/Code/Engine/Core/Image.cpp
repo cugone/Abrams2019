@@ -123,7 +123,7 @@ Image& Image::operator=(Image&& rhs) noexcept {
     m_texelBytes = std::move(rhs.m_texelBytes);
 
     rhs.m_bytesPerTexel = 0;
-    rhs.m_dimensions = IntVector2::ZERO;
+    rhs.m_dimensions = IntVector2::Zero;
     rhs.m_filepath = std::string{};
     rhs.m_texelBytes.clear();
     rhs.m_texelBytes.shrink_to_fit();

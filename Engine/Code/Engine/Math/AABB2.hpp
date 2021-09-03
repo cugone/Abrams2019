@@ -7,11 +7,11 @@ class Vector4;
 
 class AABB2 {
 public:
-    Vector2 mins = Vector2::ZERO;
-    Vector2 maxs = Vector2::ZERO;
+    Vector2 mins = Vector2::Zero;
+    Vector2 maxs = Vector2::Zero;
 
-    static const AABB2 ZERO_TO_ONE;
-    static const AABB2 NEG_ONE_TO_ONE;
+    static const AABB2 Zero_to_One;
+    static const AABB2 Neg_One_to_One;
 
     // clang-format off
     AABB2() = default;

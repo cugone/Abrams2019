@@ -4,11 +4,11 @@
 
 class AABB3 {
 public:
-    Vector3 mins = Vector3::ZERO;
-    Vector3 maxs = Vector3::ZERO;
+    Vector3 mins = Vector3::Zero;
+    Vector3 maxs = Vector3::Zero;
 
-    static const AABB3 ZERO_TO_ONE;
-    static const AABB3 NEG_ONE_TO_ONE;
+    static const AABB3 Zero_to_One;
+    static const AABB3 Neg_One_to_One;
 
     // clang-format off
     AABB3() = default;

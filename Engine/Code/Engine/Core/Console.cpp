@@ -407,7 +407,7 @@ bool Console::HandleTildeKey() noexcept {
     ToggleConsole();
     if(IsOpen()) {
         _mouseWheelPosition = 0;
-        _outputStartPosition = Vector2::ZERO;
+        _outputStartPosition = Vector2::Zero;
         _non_rendering_char = true;
         _entryline.clear();
         _cursor_position = _entryline.begin();

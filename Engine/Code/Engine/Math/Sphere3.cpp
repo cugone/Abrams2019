@@ -2,7 +2,7 @@
 
 #include "Engine/Math/MathUtils.hpp"
 
-const Sphere3 Sphere3::UNIT_SPHERE(0.0f, 0.0f, 0.0f, 1.0f);
+const Sphere3 Sphere3::Unit_Sphere(0.0f, 0.0f, 0.0f, 1.0f);
 
 Sphere3::Sphere3(float initialX, float initialY, float initialZ, float initialRadius) noexcept
 : center(initialX, initialY, initialZ)

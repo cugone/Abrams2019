@@ -21,9 +21,9 @@ enum class EmitterType : unsigned char {
 
 struct EmitterDefinition {
     EmitterType type{EmitterType::Point};
-    Vector3 start{Vector3::ZERO};
-    Vector3 end{Vector3::ZERO};
-    Vector3 normal{Vector3::X_AXIS};
+    Vector3 start{Vector3::Zero};
+    Vector3 end{Vector3::Zero};
+    Vector3 normal{Vector3::X_Axis};
     float radius{0.0f};
     float theta{0.0f};
     float length{0.0f};
@@ -54,9 +54,9 @@ private:
 
     EmitterDefinition _emitterPositionDefinition{};
     EmitterDefinition _emitterVelocityDefinition{};
-    Vector3 _position{Vector3::ZERO};
-    Vector3 _velocity{Vector3::ZERO};
-    Vector3 _acceleration{Vector3::ZERO};
+    Vector3 _position{Vector3::Zero};
+    Vector3 _velocity{Vector3::Zero};
+    Vector3 _acceleration{Vector3::Zero};
     std::size_t _initialBurst{0u};
     float _spawnPerSecond{0.0f};
     float _lifetime{0.0f};

@@ -8,30 +8,30 @@ class IntVector4;
 
 class Vector4 {
 public:
-    static const Vector4 ZERO;
-    static const Vector4 ONE;
-    static const Vector4 ZERO_XYZ_ONE_W;
-    static const Vector4 ONE_XYZ_ZERO_W;
-    static const Vector4 X_AXIS;
-    static const Vector4 XY_AXIS;
-    static const Vector4 XZ_AXIS;
-    static const Vector4 XW_AXIS;
-    static const Vector4 Y_AXIS;
-    static const Vector4 YX_AXIS;
-    static const Vector4 YZ_AXIS;
-    static const Vector4 YW_AXIS;
-    static const Vector4 Z_AXIS;
-    static const Vector4 ZX_AXIS;
-    static const Vector4 ZY_AXIS;
-    static const Vector4 ZW_AXIS;
-    static const Vector4 W_AXIS;
-    static const Vector4 WX_AXIS;
-    static const Vector4 WY_AXIS;
-    static const Vector4 WZ_AXIS;
-    static const Vector4 XYZ_AXIS;
-    static const Vector4 YZW_AXIS;
-    static const Vector4 XZW_AXIS;
-    static const Vector4 XYW_AXIS;
+    static const Vector4 Zero;
+    static const Vector4 One;
+    static const Vector4 Zero_XYZ_One_W;
+    static const Vector4 One_XYZ_Zero_W;
+    static const Vector4 X_Axis;
+    static const Vector4 XY_Axis;
+    static const Vector4 XZ_Axis;
+    static const Vector4 XW_Axis;
+    static const Vector4 Y_Axis;
+    static const Vector4 YX_Axis;
+    static const Vector4 YZ_Axis;
+    static const Vector4 YW_Axis;
+    static const Vector4 Z_Axis;
+    static const Vector4 ZX_Axis;
+    static const Vector4 ZY_Axis;
+    static const Vector4 ZW_Axis;
+    static const Vector4 W_Axis;
+    static const Vector4 WX_Axis;
+    static const Vector4 WY_Axis;
+    static const Vector4 WZ_Axis;
+    static const Vector4 XYZ_Axis;
+    static const Vector4 YZW_Axis;
+    static const Vector4 XZW_Axis;
+    static const Vector4 XYW_Axis;
 
     [[nodiscard]] static Vector4 CalcHomogeneous(const Vector4& v) noexcept;
 

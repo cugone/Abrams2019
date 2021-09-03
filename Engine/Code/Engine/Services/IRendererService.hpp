@@ -117,7 +117,7 @@ public:
     [[nodiscard]] virtual std::shared_ptr<SpriteSheet> CreateSpriteSheet(const XMLElement& elem) noexcept = 0;
     [[nodiscard]] virtual std::unique_ptr<AnimatedSprite> CreateAnimatedSprite(std::filesystem::path filepath) noexcept = 0;
     [[nodiscard]] virtual std::unique_ptr<AnimatedSprite> CreateAnimatedSprite(const AnimatedSpriteDesc& desc) noexcept = 0;
-    [[nodiscard]] virtual std::unique_ptr<AnimatedSprite> CreateAnimatedSprite(std::weak_ptr<SpriteSheet> sheet, const IntVector2& startSpriteCoords = IntVector2::ZERO) noexcept = 0;
+    [[nodiscard]] virtual std::unique_ptr<AnimatedSprite> CreateAnimatedSprite(std::weak_ptr<SpriteSheet> sheet, const IntVector2& startSpriteCoords = IntVector2::Zero) noexcept = 0;
     [[nodiscard]] virtual std::unique_ptr<AnimatedSprite> CreateAnimatedSprite(std::weak_ptr<SpriteSheet> sheet, const XMLElement& elem) noexcept = 0;
     [[nodiscard]] virtual std::unique_ptr<AnimatedSprite> CreateAnimatedSprite(const XMLElement& elem) noexcept = 0;
 
@@ -156,8 +156,8 @@ public:
     virtual void Present() noexcept = 0;
 
     virtual void DrawPoint(const Vertex3D& point) noexcept = 0;
-    virtual void DrawPoint(const Vector3& point, const Rgba& color = Rgba::White, const Vector2& tex_coords = Vector2::ZERO) noexcept = 0;
-    virtual void DrawFrustum(const Frustum& frustum, const Rgba& color = Rgba::Yellow, const Vector2& tex_coords = Vector2::ZERO) noexcept = 0;
+    virtual void DrawPoint(const Vector3& point, const Rgba& color = Rgba::White, const Vector2& tex_coords = Vector2::Zero) noexcept = 0;
+    virtual void DrawFrustum(const Frustum& frustum, const Rgba& color = Rgba::Yellow, const Vector2& tex_coords = Vector2::Zero) noexcept = 0;
     virtual void DrawWorldGridXZ(float radius = 500.0f, float major_gridsize = 20.0f, float minor_gridsize = 5.0f, const Rgba& major_color = Rgba::White, const Rgba& minor_color = Rgba::DarkGray) noexcept = 0;
     virtual void DrawWorldGridXY(float radius = 500.0f, float major_gridsize = 20.0f, float minor_gridsize = 5.0f, const Rgba& major_color = Rgba::White, const Rgba& minor_color = Rgba::DarkGray) noexcept = 0;
     virtual void DrawWorldGrid2D(const IntVector2& dimensions, const Rgba& color = Rgba::White) noexcept = 0;
@@ -273,16 +273,16 @@ public:
     virtual void SetComputeConstantBuffer(unsigned int index, ConstantBuffer* buffer) noexcept = 0;
     virtual void SetComputeStructuredBuffer(unsigned int index, StructuredBuffer* buffer) noexcept = 0;
 
-    virtual void DrawCube(const Vector3& position = Vector3::ZERO, const Vector3& halfExtents = Vector3::ONE * 0.5f, const Rgba& color = Rgba::White) = 0;
-    virtual void DrawQuad(const Vector3& position = Vector3::ZERO, const Vector3& halfExtents = Vector3::XY_AXIS * 0.5f, const Rgba& color = Rgba::White, const Vector4& texCoords = Vector4::ZW_AXIS, const Vector3& normalFront = Vector3::Z_AXIS, const Vector3& worldUp = Vector3::Y_AXIS) noexcept = 0;
-    virtual void DrawQuad(const Rgba& frontColor, const Rgba& backColor, const Vector3& position = Vector3::ZERO, const Vector3& halfExtents = Vector3::XY_AXIS * 0.5f, const Vector4& texCoords = Vector4::ZW_AXIS, const Vector3& normalFront = Vector3::Z_AXIS, const Vector3& worldUp = Vector3::Y_AXIS) noexcept = 0;
+    virtual void DrawCube(const Vector3& position = Vector3::Zero, const Vector3& halfExtents = Vector3::One * 0.5f, const Rgba& color = Rgba::White) = 0;
+    virtual void DrawQuad(const Vector3& position = Vector3::Zero, const Vector3& halfExtents = Vector3::XY_Axis * 0.5f, const Rgba& color = Rgba::White, const Vector4& texCoords = Vector4::ZW_Axis, const Vector3& normalFront = Vector3::Z_Axis, const Vector3& worldUp = Vector3::Y_Axis) noexcept = 0;
+    virtual void DrawQuad(const Rgba& frontColor, const Rgba& backColor, const Vector3& position = Vector3::Zero, const Vector3& halfExtents = Vector3::XY_Axis * 0.5f, const Vector4& texCoords = Vector4::ZW_Axis, const Vector3& normalFront = Vector3::Z_Axis, const Vector3& worldUp = Vector3::Y_Axis) noexcept = 0;
     virtual void DrawPoint2D(float pointX, float pointY, const Rgba& color = Rgba::White) noexcept = 0;
     virtual void DrawPoint2D(const Vector2& point, const Rgba& color = Rgba::White) noexcept = 0;
     virtual void DrawLine2D(float startX, float startY, float endX, float endY, const Rgba& color = Rgba::White, float thickness = 0.0f) noexcept = 0;
     virtual void DrawLine2D(const Vector2& start, const Vector2& end, const Rgba& color = Rgba::White, float thickness = 0.0f) noexcept = 0;
-    virtual void DrawQuad2D(float left, float bottom, float right, float top, const Rgba& color = Rgba::White, const Vector4& texCoords = Vector4::ZW_AXIS) noexcept = 0;
-    virtual void DrawQuad2D(const Vector2& position = Vector2::ZERO, const Vector2& halfExtents = Vector2(0.5f, 0.5f), const Rgba& color = Rgba::White, const Vector4& texCoords = Vector4::ZW_AXIS) noexcept = 0;
-    virtual void DrawQuad2D(const Matrix4& transform, const Rgba& color = Rgba::White, const Vector4& texCoords = Vector4::ZW_AXIS) noexcept = 0;
+    virtual void DrawQuad2D(float left, float bottom, float right, float top, const Rgba& color = Rgba::White, const Vector4& texCoords = Vector4::ZW_Axis) noexcept = 0;
+    virtual void DrawQuad2D(const Vector2& position = Vector2::Zero, const Vector2& halfExtents = Vector2(0.5f, 0.5f), const Rgba& color = Rgba::White, const Vector4& texCoords = Vector4::ZW_Axis) noexcept = 0;
+    virtual void DrawQuad2D(const Matrix4& transform, const Rgba& color = Rgba::White, const Vector4& texCoords = Vector4::ZW_Axis) noexcept = 0;
     virtual void DrawQuad2D(const Rgba& color) noexcept = 0;
     virtual void DrawQuad2D(const Vector4& texCoords) noexcept = 0;
     virtual void DrawQuad2D(const Rgba& color, const Vector4& texCoords) noexcept = 0;
@@ -291,14 +291,14 @@ public:
     virtual void DrawCircle2D(const Disc2& circle, const Rgba& color = Rgba::White) noexcept = 0;
     virtual void DrawFilledCircle2D(const Disc2& circle, const Rgba& color = Rgba::White) noexcept = 0;
     virtual void DrawFilledCircle2D(const Vector2& center, float radius, const Rgba& color = Rgba::White) noexcept = 0;
-    virtual void DrawAABB2(const AABB2& bounds, const Rgba& edgeColor, const Rgba& fillColor, const Vector2& edgeHalfExtents = Vector2::ZERO) noexcept = 0;
+    virtual void DrawAABB2(const AABB2& bounds, const Rgba& edgeColor, const Rgba& fillColor, const Vector2& edgeHalfExtents = Vector2::Zero) noexcept = 0;
     virtual void DrawAABB2(const Rgba& edgeColor, const Rgba& fillColor) noexcept = 0;
     virtual void DrawOBB2(float orientationDegrees, const Rgba& edgeColor, const Rgba& fillColor = Rgba::NoAlpha) noexcept = 0;
-    virtual void DrawOBB2(const OBB2& obb, const Rgba& edgeColor, const Rgba& fillColor = Rgba::NoAlpha, const Vector2& edgeHalfExtents = Vector2::ZERO) noexcept = 0;
+    virtual void DrawOBB2(const OBB2& obb, const Rgba& edgeColor, const Rgba& fillColor = Rgba::NoAlpha, const Vector2& edgeHalfExtents = Vector2::Zero) noexcept = 0;
     virtual void DrawPolygon2D(float centerX, float centerY, float radius, std::size_t numSides = 3, const Rgba& color = Rgba::White) noexcept = 0;
     virtual void DrawPolygon2D(const Vector2& center, float radius, std::size_t numSides = 3, const Rgba& color = Rgba::White) noexcept = 0;
     virtual void DrawPolygon2D(const Polygon2& polygon, const Rgba& color = Rgba::White) = 0;
-    virtual void DrawX2D(const Vector2& position = Vector2::ZERO, const Vector2& half_extents = Vector2(0.5f, 0.5f), const Rgba& color = Rgba::White) noexcept = 0;
+    virtual void DrawX2D(const Vector2& position = Vector2::Zero, const Vector2& half_extents = Vector2(0.5f, 0.5f), const Rgba& color = Rgba::White) noexcept = 0;
     virtual void DrawX2D(const Rgba& color) noexcept = 0;
     virtual void DrawTextLine(const KerningFont* font, const std::string& text, const Rgba& color = Rgba::White) noexcept = 0;
     virtual void DrawMultilineText(KerningFont* font, const std::string& text, const Rgba& color = Rgba::White) noexcept = 0;
@@ -415,7 +415,7 @@ public:
     [[nodiscard]] std::shared_ptr<SpriteSheet> CreateSpriteSheet([[maybe_unused]] const XMLElement& elem) noexcept override {}
     [[nodiscard]] std::unique_ptr<AnimatedSprite> CreateAnimatedSprite([[maybe_unused]] std::filesystem::path filepath) noexcept override {}
     [[nodiscard]] std::unique_ptr<AnimatedSprite> CreateAnimatedSprite([[maybe_unused]] const AnimatedSpriteDesc& desc) noexcept override {}
-    [[nodiscard]] std::unique_ptr<AnimatedSprite> CreateAnimatedSprite([[maybe_unused]] std::weak_ptr<SpriteSheet> sheet, [[maybe_unused]] const IntVector2& startSpriteCoords = IntVector2::ZERO) noexcept override {}
+    [[nodiscard]] std::unique_ptr<AnimatedSprite> CreateAnimatedSprite([[maybe_unused]] std::weak_ptr<SpriteSheet> sheet, [[maybe_unused]] const IntVector2& startSpriteCoords = IntVector2::Zero) noexcept override {}
     [[nodiscard]] std::unique_ptr<AnimatedSprite> CreateAnimatedSprite([[maybe_unused]] std::weak_ptr<SpriteSheet> sheet, [[maybe_unused]] const XMLElement& elem) noexcept override {}
     [[nodiscard]] std::unique_ptr<AnimatedSprite> CreateAnimatedSprite([[maybe_unused]] const XMLElement& elem) noexcept override {}
 
@@ -455,8 +455,8 @@ public:
     void Present() noexcept override {}
 
     void DrawPoint([[maybe_unused]] const Vertex3D& point) noexcept override {}
-    void DrawPoint([[maybe_unused]] const Vector3& point, [[maybe_unused]] const Rgba& color = Rgba::White, [[maybe_unused]] const Vector2& tex_coords = Vector2::ZERO) noexcept override {}
-    void DrawFrustum([[maybe_unused]] const Frustum& frustum, [[maybe_unused]] const Rgba& color = Rgba::Yellow, [[maybe_unused]] const Vector2& tex_coords = Vector2::ZERO) noexcept override {}
+    void DrawPoint([[maybe_unused]] const Vector3& point, [[maybe_unused]] const Rgba& color = Rgba::White, [[maybe_unused]] const Vector2& tex_coords = Vector2::Zero) noexcept override {}
+    void DrawFrustum([[maybe_unused]] const Frustum& frustum, [[maybe_unused]] const Rgba& color = Rgba::Yellow, [[maybe_unused]] const Vector2& tex_coords = Vector2::Zero) noexcept override {}
     void DrawWorldGridXZ([[maybe_unused]] float radius = 500.0f, [[maybe_unused]] float major_gridsize = 20.0f, [[maybe_unused]] float minor_gridsize = 5.0f, [[maybe_unused]] const Rgba& major_color = Rgba::White, [[maybe_unused]] const Rgba& minor_color = Rgba::DarkGray) noexcept override {}
     void DrawWorldGridXY([[maybe_unused]] float radius = 500.0f, [[maybe_unused]] float major_gridsize = 20.0f, [[maybe_unused]] float minor_gridsize = 5.0f, [[maybe_unused]] const Rgba& major_color = Rgba::White, [[maybe_unused]] const Rgba& minor_color = Rgba::DarkGray) noexcept override {}
     void DrawWorldGrid2D([[maybe_unused]] const IntVector2& dimensions, [[maybe_unused]] const Rgba& color = Rgba::White) noexcept override {}
@@ -572,16 +572,16 @@ public:
     void SetComputeConstantBuffer([[maybe_unused]] unsigned int index, [[maybe_unused]] ConstantBuffer* buffer) noexcept override {}
     void SetComputeStructuredBuffer([[maybe_unused]] unsigned int index, [[maybe_unused]] StructuredBuffer* buffer) noexcept override {}
 
-    void DrawCube([[maybe_unused]] const Vector3& position = Vector3::ZERO, [[maybe_unused]] const Vector3& halfExtents = Vector3::ONE * 0.5f, [[maybe_unused]] const Rgba& color = Rgba::White) override {}
-    void DrawQuad([[maybe_unused]] const Vector3& position = Vector3::ZERO, [[maybe_unused]] const Vector3& halfExtents = Vector3::XY_AXIS * 0.5f, [[maybe_unused]] const Rgba& color = Rgba::White, [[maybe_unused]] const Vector4& texCoords = Vector4::ZW_AXIS, [[maybe_unused]] const Vector3& normalFront = Vector3::Z_AXIS, [[maybe_unused]] const Vector3& worldUp = Vector3::Y_AXIS) noexcept override {}
-    void DrawQuad([[maybe_unused]] const Rgba& frontColor, [[maybe_unused]] const Rgba& backColor, [[maybe_unused]] const Vector3& position = Vector3::ZERO, [[maybe_unused]] const Vector3& halfExtents = Vector3::XY_AXIS * 0.5f, [[maybe_unused]] const Vector4& texCoords = Vector4::ZW_AXIS, [[maybe_unused]] const Vector3& normalFront = Vector3::Z_AXIS, [[maybe_unused]] const Vector3& worldUp = Vector3::Y_AXIS) noexcept override {}
+    void DrawCube([[maybe_unused]] const Vector3& position = Vector3::Zero, [[maybe_unused]] const Vector3& halfExtents = Vector3::One * 0.5f, [[maybe_unused]] const Rgba& color = Rgba::White) override {}
+    void DrawQuad([[maybe_unused]] const Vector3& position = Vector3::Zero, [[maybe_unused]] const Vector3& halfExtents = Vector3::XY_Axis * 0.5f, [[maybe_unused]] const Rgba& color = Rgba::White, [[maybe_unused]] const Vector4& texCoords = Vector4::ZW_Axis, [[maybe_unused]] const Vector3& normalFront = Vector3::Z_Axis, [[maybe_unused]] const Vector3& worldUp = Vector3::Y_Axis) noexcept override {}
+    void DrawQuad([[maybe_unused]] const Rgba& frontColor, [[maybe_unused]] const Rgba& backColor, [[maybe_unused]] const Vector3& position = Vector3::Zero, [[maybe_unused]] const Vector3& halfExtents = Vector3::XY_Axis * 0.5f, [[maybe_unused]] const Vector4& texCoords = Vector4::ZW_Axis, [[maybe_unused]] const Vector3& normalFront = Vector3::Z_Axis, [[maybe_unused]] const Vector3& worldUp = Vector3::Y_Axis) noexcept override {}
     void DrawPoint2D([[maybe_unused]] float pointX, [[maybe_unused]] float pointY, [[maybe_unused]] const Rgba& color = Rgba::White) noexcept override {}
     void DrawPoint2D([[maybe_unused]] const Vector2& point, [[maybe_unused]] const Rgba& color = Rgba::White) noexcept override {}
     void DrawLine2D([[maybe_unused]] float startX, [[maybe_unused]] float startY, [[maybe_unused]] float endX, [[maybe_unused]] float endY, [[maybe_unused]] const Rgba& color = Rgba::White, [[maybe_unused]] float thickness = 0.0f) noexcept override {}
     void DrawLine2D([[maybe_unused]] const Vector2& start, [[maybe_unused]] const Vector2& end, [[maybe_unused]] const Rgba& color = Rgba::White, [[maybe_unused]] float thickness = 0.0f) noexcept override {}
-    void DrawQuad2D([[maybe_unused]] float left, [[maybe_unused]] float bottom, [[maybe_unused]] float right, [[maybe_unused]] float top, [[maybe_unused]] const Rgba& color = Rgba::White, [[maybe_unused]] const Vector4& texCoords = Vector4::ZW_AXIS) noexcept override {}
-    void DrawQuad2D([[maybe_unused]] const Vector2& position = Vector2::ZERO, [[maybe_unused]] const Vector2& halfExtents = Vector2(0.5f, 0.5f), [[maybe_unused]] const Rgba& color = Rgba::White, [[maybe_unused]] const Vector4& texCoords = Vector4::ZW_AXIS) noexcept override {}
-    void DrawQuad2D([[maybe_unused]] const Matrix4& transform, [[maybe_unused]] const Rgba& color = Rgba::White, [[maybe_unused]] const Vector4& texCoords = Vector4::ZW_AXIS) noexcept override {}
+    void DrawQuad2D([[maybe_unused]] float left, [[maybe_unused]] float bottom, [[maybe_unused]] float right, [[maybe_unused]] float top, [[maybe_unused]] const Rgba& color = Rgba::White, [[maybe_unused]] const Vector4& texCoords = Vector4::ZW_Axis) noexcept override {}
+    void DrawQuad2D([[maybe_unused]] const Vector2& position = Vector2::Zero, [[maybe_unused]] const Vector2& halfExtents = Vector2(0.5f, 0.5f), [[maybe_unused]] const Rgba& color = Rgba::White, [[maybe_unused]] const Vector4& texCoords = Vector4::ZW_Axis) noexcept override {}
+    void DrawQuad2D([[maybe_unused]] const Matrix4& transform, [[maybe_unused]] const Rgba& color = Rgba::White, [[maybe_unused]] const Vector4& texCoords = Vector4::ZW_Axis) noexcept override {}
     void DrawQuad2D([[maybe_unused]] const Rgba& color) noexcept override {}
     void DrawQuad2D([[maybe_unused]] const Vector4& texCoords) noexcept override {}
     void DrawQuad2D([[maybe_unused]] const Rgba& color, [[maybe_unused]] const Vector4& texCoords) noexcept override {}
@@ -590,14 +590,14 @@ public:
     void DrawCircle2D([[maybe_unused]] const Disc2& circle, [[maybe_unused]] const Rgba& color = Rgba::White) noexcept override {}
     void DrawFilledCircle2D([[maybe_unused]] const Disc2& circle, [[maybe_unused]] const Rgba& color = Rgba::White) noexcept override {}
     void DrawFilledCircle2D([[maybe_unused]] const Vector2& center, [[maybe_unused]] float radius, [[maybe_unused]] const Rgba& color = Rgba::White) noexcept override {}
-    void DrawAABB2([[maybe_unused]] const AABB2& bounds, [[maybe_unused]] const Rgba& edgeColor, [[maybe_unused]] const Rgba& fillColor, [[maybe_unused]] const Vector2& edgeHalfExtents = Vector2::ZERO) noexcept override {}
+    void DrawAABB2([[maybe_unused]] const AABB2& bounds, [[maybe_unused]] const Rgba& edgeColor, [[maybe_unused]] const Rgba& fillColor, [[maybe_unused]] const Vector2& edgeHalfExtents = Vector2::Zero) noexcept override {}
     void DrawAABB2([[maybe_unused]] const Rgba& edgeColor, [[maybe_unused]] const Rgba& fillColor) noexcept override {}
     void DrawOBB2([[maybe_unused]] float orientationDegrees, [[maybe_unused]] const Rgba& edgeColor, [[maybe_unused]] const Rgba& fillColor = Rgba::NoAlpha) noexcept override {}
-    void DrawOBB2([[maybe_unused]] const OBB2& obb, [[maybe_unused]] const Rgba& edgeColor, [[maybe_unused]] const Rgba& fillColor = Rgba::NoAlpha, [[maybe_unused]] const Vector2& edgeHalfExtents = Vector2::ZERO) noexcept override {}
+    void DrawOBB2([[maybe_unused]] const OBB2& obb, [[maybe_unused]] const Rgba& edgeColor, [[maybe_unused]] const Rgba& fillColor = Rgba::NoAlpha, [[maybe_unused]] const Vector2& edgeHalfExtents = Vector2::Zero) noexcept override {}
     void DrawPolygon2D([[maybe_unused]] float centerX, [[maybe_unused]] float centerY, [[maybe_unused]] float radius, [[maybe_unused]] std::size_t numSides = 3, [[maybe_unused]] const Rgba& color = Rgba::White) noexcept override {}
     void DrawPolygon2D([[maybe_unused]] const Vector2& center, [[maybe_unused]] float radius, [[maybe_unused]] std::size_t numSides = 3, [[maybe_unused]] const Rgba& color = Rgba::White) noexcept override {}
     void DrawPolygon2D([[maybe_unused]] const Polygon2& polygon, [[maybe_unused]] const Rgba& color = Rgba::White) override {}
-    void DrawX2D([[maybe_unused]] const Vector2& position = Vector2::ZERO, [[maybe_unused]] const Vector2& half_extents = Vector2(0.5f, 0.5f), [[maybe_unused]] const Rgba& color = Rgba::White) noexcept override {}
+    void DrawX2D([[maybe_unused]] const Vector2& position = Vector2::Zero, [[maybe_unused]] const Vector2& half_extents = Vector2(0.5f, 0.5f), [[maybe_unused]] const Rgba& color = Rgba::White) noexcept override {}
     void DrawX2D([[maybe_unused]] const Rgba& color) noexcept override {}
     void DrawTextLine([[maybe_unused]] const KerningFont* font, [[maybe_unused]] const std::string& text, [[maybe_unused]] const Rgba& color = Rgba::White) noexcept override {}
     void DrawMultilineText([[maybe_unused]] KerningFont* font, [[maybe_unused]] const std::string& text, [[maybe_unused]] const Rgba& color = Rgba::White) noexcept override {}

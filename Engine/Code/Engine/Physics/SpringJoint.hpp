@@ -26,7 +26,7 @@ public:
     void DebugRender() const noexcept override;
 
     [[nodiscard]] bool IsNotAttached() const noexcept override;
-    void Attach(RigidBody* a, RigidBody* b, Vector2 localAnchorA = Vector2::ZERO, Vector2 localAnchorB = Vector2::ZERO) noexcept override;
+    void Attach(RigidBody* a, RigidBody* b, Vector2 localAnchorA = Vector2::Zero, Vector2 localAnchorB = Vector2::Zero) noexcept override;
     void Detach(const RigidBody* body) noexcept override;
     void DetachAll() noexcept override;
 

@@ -88,11 +88,11 @@ void Camera3D::CalcViewMatrix() noexcept {
 void Camera3D::CalcRotationMatrix() noexcept {
     auto rot = Matrix4::CreateRotationYawRollPitchMatrixDegrees(rotationPitch, rotationYaw, rotationRoll);
     rot.OrthoNormalizeKIJ();
-    const auto lookVector = rot.TransformDirection(Vector3::Z_AXIS);
+    const auto lookVector = rot.TransformDirection(Vector3::Z_Axis);
 
     const auto camPos = position;
     const auto camTarget = camPos + lookVector;
-    rotation_matrix = Matrix4::CreateLookAtMatrix(camPos, camTarget, Vector3::Y_AXIS);
+    rotation_matrix = Matrix4::CreateLookAtMatrix(camPos, camTarget, Vector3::Y_Axis);
 
     //float c_x_theta = MathUtils::CosDegrees(rotationPitch);
     //float s_x_theta = MathUtils::SinDegrees(rotationPitch);
@@ -350,7 +350,7 @@ Vector3 Camera3D::GetUpXZ() const noexcept {
 }
 
 Vector3 Camera3D::GetForward() const noexcept {
-    return Vector3::Z_AXIS * Matrix4{rotation};
+    return Vector3::Z_Axis * Matrix4{rotation};
     //float cos_yaw = MathUtils::CosDegrees(rotationYaw);
     //float cos_pitch = MathUtils::CosDegrees(rotationPitch);
 

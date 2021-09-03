@@ -12,7 +12,7 @@
 
 class Polygon2 {
 public:
-    Polygon2(int sides = 3, const Vector2& position = Vector2::ZERO, const Vector2& half_extents = Vector2(0.5f, 0.5f), float orientationDegrees = 0.0f) noexcept;
+    Polygon2(int sides = 3, const Vector2& position = Vector2::Zero, const Vector2& half_extents = Vector2(0.5f, 0.5f), float orientationDegrees = 0.0f) noexcept;
     explicit Polygon2(const OBB2& obb) noexcept;
     //~Polygon2() = default;
 
@@ -44,7 +44,7 @@ private:
     int _sides = 3;
     float _orientationDegrees = 0.0f;
     Vector2 _half_extents = Vector2(0.5f, 0.5f);
-    Vector2 _position = Vector2::ZERO;
+    Vector2 _position = Vector2::Zero;
     std::vector<Vector2> _verts;
     std::vector<Vector2> _normals;
 };

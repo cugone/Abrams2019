@@ -43,9 +43,9 @@ public:
     const Vector3& GetEndScale() const;
 
 private:
-    Vector3 start_scale{Vector3::ONE};
-    Vector3 scale{Vector3::ONE};
-    Vector3 end_scale{Vector3::ONE};
+    Vector3 start_scale{Vector3::One};
+    Vector3 scale{Vector3::One};
+    Vector3 end_scale{Vector3::One};
     float start_age{1.0f};
     float age{1.0f};
     Rgba start_color{Rgba::White};

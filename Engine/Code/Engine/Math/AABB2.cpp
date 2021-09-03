@@ -5,8 +5,8 @@
 
 #include <algorithm>
 
-const AABB2 AABB2::ZERO_TO_ONE(0.0f, 0.0f, 1.0f, 1.0f);
-const AABB2 AABB2::NEG_ONE_TO_ONE(-1.0f, -1.0f, 1.0f, 1.0f);
+const AABB2 AABB2::Zero_to_One(0.0f, 0.0f, 1.0f, 1.0f);
+const AABB2 AABB2::Neg_One_to_One(-1.0f, -1.0f, 1.0f, 1.0f);
 
 AABB2::AABB2(float initialX, float initialY) noexcept
 : mins(initialX, initialY)

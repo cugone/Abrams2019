@@ -4,7 +4,7 @@
 
 class Plane3 {
 public:
-    Vector3 normal = Vector3::Z_AXIS;
+    Vector3 normal = Vector3::Z_Axis;
     float dist = 0.0f;
 
     Plane3() = default;

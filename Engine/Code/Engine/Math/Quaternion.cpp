@@ -6,11 +6,11 @@
 #include <cmath>
 #include <sstream>
 
-Quaternion Quaternion::I = Quaternion(1.0f, Vector3::ZERO);
+Quaternion Quaternion::I = Quaternion(1.0f, Vector3::Zero);
 
 Quaternion::Quaternion(const Matrix4& mat) noexcept
 : w(1.0f)
-, axis(Vector3::ZERO) {
+, axis(Vector3::Zero) {
     //From http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/
 
     const auto diag = mat.GetDiagonal();
@@ -369,7 +369,7 @@ Quaternion Quaternion::CalcInverse() const noexcept {
 }
 
 Quaternion Quaternion::CreateRealQuaternion(float scalar) noexcept {
-    return Quaternion(scalar, Vector3::ZERO);
+    return Quaternion(scalar, Vector3::Zero);
 }
 Quaternion Quaternion::CreatePureQuaternion(const Vector3& v) noexcept {
     return Quaternion(0.0f, v.GetNormalize());

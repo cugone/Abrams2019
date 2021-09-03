@@ -8,12 +8,12 @@ class IntVector3;
 
 class IntVector2 {
 public:
-    static const IntVector2 ZERO;
-    static const IntVector2 ONE;
-    static const IntVector2 X_AXIS;
-    static const IntVector2 Y_AXIS;
-    static const IntVector2 XY_AXIS;
-    static const IntVector2 YX_AXIS;
+    static const IntVector2 Zero;
+    static const IntVector2 One;
+    static const IntVector2 X_Axis;
+    static const IntVector2 Y_Axis;
+    static const IntVector2 XY_Axis;
+    static const IntVector2 YX_Axis;
 
     IntVector2() = default;
     ~IntVector2() = default;

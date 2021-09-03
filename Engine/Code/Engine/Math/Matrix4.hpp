@@ -81,9 +81,9 @@ public:
     ~Matrix4() = default;
 
     explicit Matrix4(const Quaternion& q) noexcept;
-    explicit Matrix4(const Vector2& iBasis, const Vector2& jBasis, const Vector2& translation = Vector2::ZERO) noexcept;
-    explicit Matrix4(const Vector3& iBasis, const Vector3& jBasis, const Vector3& kBasis, const Vector3& translation = Vector3::ZERO) noexcept;
-    explicit Matrix4(const Vector4& iBasis, const Vector4& jBasis, const Vector4& kBasis, const Vector4& translation = Vector4::ZERO_XYZ_ONE_W) noexcept;
+    explicit Matrix4(const Vector2& iBasis, const Vector2& jBasis, const Vector2& translation = Vector2::Zero) noexcept;
+    explicit Matrix4(const Vector3& iBasis, const Vector3& jBasis, const Vector3& kBasis, const Vector3& translation = Vector3::Zero) noexcept;
+    explicit Matrix4(const Vector4& iBasis, const Vector4& jBasis, const Vector4& kBasis, const Vector4& translation = Vector4::Zero_XYZ_One_W) noexcept;
     explicit Matrix4(const float* arrayOfFloats) noexcept;
 
     void Identity() noexcept;

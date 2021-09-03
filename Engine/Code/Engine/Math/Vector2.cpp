@@ -7,12 +7,12 @@
 #include <cmath>
 #include <sstream>
 
-const Vector2 Vector2::ZERO(0.0f, 0.0f);
-const Vector2 Vector2::X_AXIS(1.0f, 0.0f);
-const Vector2 Vector2::Y_AXIS(0.0f, 1.0f);
-const Vector2 Vector2::ONE(1.0f, 1.0);
-const Vector2 Vector2::XY_AXIS(1.0f, 1.0);
-const Vector2 Vector2::YX_AXIS(1.0f, 1.0);
+const Vector2 Vector2::Zero(0.0f, 0.0f);
+const Vector2 Vector2::X_Axis(1.0f, 0.0f);
+const Vector2 Vector2::Y_Axis(0.0f, 1.0f);
+const Vector2 Vector2::One(1.0f, 1.0);
+const Vector2 Vector2::XY_Axis(1.0f, 1.0);
+const Vector2 Vector2::YX_Axis(1.0f, 1.0);
 
 Vector2::Vector2(float initialX, float initialY) noexcept
 : x(initialX)
@@ -244,7 +244,7 @@ Vector2 Vector2::GetNormalize() const noexcept {
         const auto inv_length = 1.0f / length;
         return Vector2(x * inv_length, y * inv_length);
     }
-    return Vector2::ZERO;
+    return Vector2::Zero;
 }
 
 Vector2 Vector2::GetLeftHandNormal() const noexcept {

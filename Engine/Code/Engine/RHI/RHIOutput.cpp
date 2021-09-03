@@ -49,7 +49,7 @@ IntVector2 RHIOutput::GetDimensions() const noexcept {
     if(_window) {
         return _window->GetClientDimensions();
     } else {
-        return IntVector2::ZERO;
+        return IntVector2::Zero;
     }
 }
 

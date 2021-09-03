@@ -2,8 +2,8 @@
 
 #include <algorithm>
 
-const AABB3 AABB3::ZERO_TO_ONE(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
-const AABB3 AABB3::NEG_ONE_TO_ONE(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f);
+const AABB3 AABB3::Zero_to_One(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
+const AABB3 AABB3::Neg_One_to_One(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f);
 
 AABB3::AABB3(float initialX, float initialY, float initialZ) noexcept
 : mins(initialX, initialY, initialZ)

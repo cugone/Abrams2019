@@ -50,14 +50,14 @@ void RigidBody::Update(TimeUtils::FPSeconds deltaSeconds) {
         return;
     }
     const auto inv_mass = GetInverseMass();
-    const auto linear_impulse_sum = std::accumulate(std::begin(linear_impulses), std::end(linear_impulses), Vector2::ZERO);
+    const auto linear_impulse_sum = std::accumulate(std::begin(linear_impulses), std::end(linear_impulses), Vector2::Zero);
     const auto angular_impulse_sum = std::accumulate(std::begin(angular_impulses), std::end(angular_impulses), 0.0f);
     linear_impulses.clear();
     angular_impulses.clear();
 
     using LinearForceType = typename std::decay<decltype(*linear_forces.begin())>::type;
     const auto linear_acc = [](const LinearForceType& a, const LinearForceType& b) { return std::make_pair(a.first + b.first, TimeUtils::FPSeconds::zero()); };
-    const auto linear_force_sum = std::accumulate(std::begin(linear_forces), std::end(linear_forces), std::make_pair(Vector2::ZERO, TimeUtils::FPSeconds::zero()), linear_acc);
+    const auto linear_force_sum = std::accumulate(std::begin(linear_forces), std::end(linear_forces), std::make_pair(Vector2::Zero, TimeUtils::FPSeconds::zero()), linear_acc);
 
     using AngularForceType = typename std::decay<decltype(*angular_forces.begin())>::type;
     const auto angular_acc = [](const AngularForceType& a, const AngularForceType& b) { return std::make_pair(a.first + b.first, TimeUtils::FPSeconds::zero()); };
@@ -80,7 +80,7 @@ void RigidBody::Update(TimeUtils::FPSeconds deltaSeconds) {
         const bool is_nan = (std::isnan(new_position.x) || std::isnan(new_position.y));
         const bool should_clamp = is_near_zero || is_nan || is_inf;
         if(should_clamp) {
-            new_position = Vector2::ZERO;
+            new_position = Vector2::Zero;
         }
     }
     {
@@ -89,7 +89,7 @@ void RigidBody::Update(TimeUtils::FPSeconds deltaSeconds) {
         const bool is_nan = (std::isnan(new_acceleration.x) || std::isnan(new_acceleration.y));
         const bool should_clamp = is_near_zero || is_nan || is_inf;
         if(should_clamp) {
-            new_acceleration = Vector2::ZERO;
+            new_acceleration = Vector2::Zero;
         }
     }
     {
@@ -98,7 +98,7 @@ void RigidBody::Update(TimeUtils::FPSeconds deltaSeconds) {
         const bool is_nan = (std::isnan(new_velocity.x) || std::isnan(new_velocity.y));
         const bool should_clamp = is_near_zero || is_nan || is_inf;
         if(should_clamp) {
-            new_velocity = Vector2::ZERO;
+            new_velocity = Vector2::Zero;
         }
     }
 
@@ -361,7 +361,7 @@ Vector2 RigidBody::CalcDimensions() const {
     if(auto* const collider = GetCollider(); collider != nullptr) {
         return collider->CalcDimensions();
     }
-    return Vector2::ZERO;
+    return Vector2::Zero;
 }
 
 float RigidBody::GetOrientationDegrees() const {
@@ -406,11 +406,11 @@ void RigidBody::SetAcceleration(const Vector2& newAccleration) noexcept {
 
 Vector2 RigidBody::CalcForceVector() noexcept {
     const auto inv_mass = GetInverseMass();
-    const auto linear_impulse_sum = std::accumulate(std::begin(linear_impulses), std::end(linear_impulses), Vector2::ZERO);
+    const auto linear_impulse_sum = std::accumulate(std::begin(linear_impulses), std::end(linear_impulses), Vector2::Zero);
 
     using LinearForceType = typename std::decay<decltype(*linear_forces.begin())>::type;
     const auto linear_acc = [](const LinearForceType& a, const LinearForceType& b) { return std::make_pair(a.first + b.first, TimeUtils::FPSeconds::zero()); };
-    const auto linear_force_sum = std::accumulate(std::begin(linear_forces), std::end(linear_forces), std::make_pair(Vector2::ZERO, TimeUtils::FPSeconds::zero()), linear_acc);
+    const auto linear_force_sum = std::accumulate(std::begin(linear_forces), std::end(linear_forces), std::make_pair(Vector2::Zero, TimeUtils::FPSeconds::zero()), linear_acc);
 
     return linear_impulse_sum + linear_force_sum.first;
 }

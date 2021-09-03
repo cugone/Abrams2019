@@ -7,12 +7,12 @@
 #include <cmath>
 #include <sstream>
 
-const IntVector2 IntVector2::ZERO(0, 0);
-const IntVector2 IntVector2::ONE(1, 1);
-const IntVector2 IntVector2::X_AXIS(1, 0);
-const IntVector2 IntVector2::Y_AXIS(0, 1);
-const IntVector2 IntVector2::XY_AXIS(1, 1);
-const IntVector2 IntVector2::YX_AXIS(1, 1);
+const IntVector2 IntVector2::Zero(0, 0);
+const IntVector2 IntVector2::One(1, 1);
+const IntVector2 IntVector2::X_Axis(1, 0);
+const IntVector2 IntVector2::Y_Axis(0, 1);
+const IntVector2 IntVector2::XY_Axis(1, 1);
+const IntVector2 IntVector2::YX_Axis(1, 1);
 
 IntVector2::IntVector2(int initialX, int initialY) noexcept
 : x(initialX)

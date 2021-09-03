@@ -23,7 +23,7 @@ Vector2 InputSystem::GetCursorWindowPosition(const Window& window_ref) const noe
             return Vector2{static_cast<float>(p.x), static_cast<float>(p.y)};
         }
     }
-    return Vector2::ZERO;
+    return Vector2::Zero;
 }
 
 Vector2 InputSystem::GetCursorWindowPosition() noexcept {
@@ -36,7 +36,7 @@ Vector2 InputSystem::GetCursorScreenPosition() const noexcept {
     if(::GetCursorPos(&p)) {
         return Vector2{static_cast<float>(p.x), static_cast<float>(p.y)};
     }
-    return Vector2::ZERO;
+    return Vector2::Zero;
 }
 
 void InputSystem::SetCursorToScreenCenter() noexcept {
@@ -129,7 +129,7 @@ Vector2 InputSystem::GetScreenCenter() const noexcept {
         const auto center_y = desktopRect.top + (desktopRect.bottom - desktopRect.top) * 0.5f;
         return Vector2{center_x, center_y};
     }
-    return Vector2::ZERO;
+    return Vector2::Zero;
 }
 
 Vector2 InputSystem::GetWindowCenter() const noexcept {
@@ -145,7 +145,7 @@ Vector2 InputSystem::GetWindowCenter(const Window& window) const noexcept {
         const auto center_y = rect.top + (rect.bottom - rect.top) * 0.50f;
         return Vector2{center_x, center_y};
     }
-    return Vector2::ZERO;
+    return Vector2::Zero;
 }
 
 bool InputSystem::WasAnyControllerJustUsed() const noexcept {
@@ -995,7 +995,7 @@ void InputSystem::Render() const noexcept {
 }
 
 void InputSystem::EndFrame() noexcept {
-    _mouseDelta = Vector2::ZERO;
+    _mouseDelta = Vector2::Zero;
     _mousePrevCoords = _mouseCoords;
     _previousKeys = _currentKeys;
     _mouseWheelPosition = 0;

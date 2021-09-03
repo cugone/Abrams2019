@@ -7,7 +7,7 @@
 ParticleIntegrator Particle::semi_implicit_euler = [=](float /*time*/, const ParticleState& state) -> ParticleState {
     ParticleState dS = state;
     if(dS.mass > 0.0f) {
-        dS.acceleration = Vector3::ZERO;
+        dS.acceleration = Vector3::Zero;
         dS.velocity += state.acceleration;
         dS.position += state.velocity;
     }
@@ -102,7 +102,7 @@ void Particle::Render(Mesh::Builder& builder) const {
     switch(_renderState.shape) {
     case ParticleRenderState::ParticleShape::Quad: {
         builder.SetUV(tx_bl);
-        builder.SetNormal(Vector3::Z_AXIS);
+        builder.SetNormal(Vector3::Z_Axis);
         builder.AddVertex(vert_bl);
 
         builder.SetUV(tx_tl);
@@ -135,7 +135,7 @@ void Particle::Render(Mesh::Builder& builder) const {
         const Vector3 v_rdb = right + down + back;
 
         //Front
-        builder.SetNormal(-Vector3::Z_AXIS);
+        builder.SetNormal(-Vector3::Z_Axis);
         builder.AddVertex(v_rdf);
         builder.AddVertex(v_ldf);
         builder.AddVertex(v_luf);
@@ -143,7 +143,7 @@ void Particle::Render(Mesh::Builder& builder) const {
         builder.AddIndicies(Mesh::Builder::Primitive::Quad);
 
         //Back
-        builder.SetNormal(Vector3::Z_AXIS);
+        builder.SetNormal(Vector3::Z_Axis);
         builder.AddVertex(v_ldb);
         builder.AddVertex(v_rdb);
         builder.AddVertex(v_rub);
@@ -151,7 +151,7 @@ void Particle::Render(Mesh::Builder& builder) const {
         builder.AddIndicies(Mesh::Builder::Primitive::Quad);
 
         //Left
-        builder.SetNormal(-Vector3::X_AXIS);
+        builder.SetNormal(-Vector3::X_Axis);
         builder.AddVertex(v_ldf);
         builder.AddVertex(v_ldb);
         builder.AddVertex(v_lub);
@@ -159,7 +159,7 @@ void Particle::Render(Mesh::Builder& builder) const {
         builder.AddIndicies(Mesh::Builder::Primitive::Quad);
 
         //Right
-        builder.SetNormal(Vector3::X_AXIS);
+        builder.SetNormal(Vector3::X_Axis);
         builder.AddVertex(v_rdb);
         builder.AddVertex(v_rdf);
         builder.AddVertex(v_ruf);
@@ -167,7 +167,7 @@ void Particle::Render(Mesh::Builder& builder) const {
         builder.AddIndicies(Mesh::Builder::Primitive::Quad);
 
         //Top
-        builder.SetNormal(Vector3::Y_AXIS);
+        builder.SetNormal(Vector3::Y_Axis);
         builder.AddVertex(v_ruf);
         builder.AddVertex(v_luf);
         builder.AddVertex(v_lub);
@@ -175,7 +175,7 @@ void Particle::Render(Mesh::Builder& builder) const {
         builder.AddIndicies(Mesh::Builder::Primitive::Quad);
 
         //Bottom
-        builder.SetNormal(-Vector3::Y_AXIS);
+        builder.SetNormal(-Vector3::Y_Axis);
         builder.AddVertex(v_rdb);
         builder.AddVertex(v_ldb);
         builder.AddVertex(v_ldf);

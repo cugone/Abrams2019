@@ -10,7 +10,7 @@ class Quaternion {
 public:
     static Quaternion I;
     float w = 1.0f;
-    Vector3 axis = Vector3::ZERO;
+    Vector3 axis = Vector3::Zero;
 
     [[nodiscard]] static Quaternion CreateRealQuaternion(float scalar) noexcept;
     [[nodiscard]] static Quaternion CreatePureQuaternion(const Vector3& v) noexcept;

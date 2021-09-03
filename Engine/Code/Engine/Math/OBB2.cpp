@@ -97,7 +97,7 @@ void OBB2::Translate(const Vector2& translation) noexcept {
 
 Vector2 OBB2::GetRight() const noexcept {
     const auto R = Matrix4::Create2DRotationDegreesMatrix(orientationDegrees);
-    return R.TransformDirection(Vector2::X_AXIS);
+    return R.TransformDirection(Vector2::X_Axis);
 }
 
 Vector2 OBB2::GetUp() const noexcept {

@@ -1,11 +1,11 @@
 #include "Engine/Math/Capsule3.hpp"
 
-const Capsule3 Capsule3::UNIT_HORIZONTAL(0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f);
-const Capsule3 Capsule3::UNIT_VERTICAL(0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f);
-const Capsule3 Capsule3::UNIT_DEPTH(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f);
-const Capsule3 Capsule3::UNIT_CENTERED_HORIZONTAL(-0.5f, 0.0f, 0.0f, 0.5f, 0.0f, 0.0f, 1.0f);
-const Capsule3 Capsule3::UNIT_CENTERED_VERTICAL(0.0f, -0.5f, 0.0f, 0.5f, 0.0f, 0.0f, 1.0f);
-const Capsule3 Capsule3::UNIT_CENTERED_DEPTH(0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.5f, 1.0f);
+const Capsule3 Capsule3::Unit_Horizontal(0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f);
+const Capsule3 Capsule3::Unit_Vertical(0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f);
+const Capsule3 Capsule3::Unit_Depth(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f);
+const Capsule3 Capsule3::Unit_Centered_Horizontal(-0.5f, 0.0f, 0.0f, 0.5f, 0.0f, 0.0f, 1.0f);
+const Capsule3 Capsule3::Unit_Centered_Vertical(0.0f, -0.5f, 0.0f, 0.5f, 0.0f, 0.0f, 1.0f);
+const Capsule3 Capsule3::Unit_Centered_Depth(0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.5f, 1.0f);
 
 Capsule3::Capsule3(const LineSegment3& line, float radius) noexcept
 : line(line)

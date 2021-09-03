@@ -7,12 +7,12 @@ class IntVector2;
 
 class Vector2 {
 public:
-    static const Vector2 ONE;
-    static const Vector2 ZERO;
-    static const Vector2 X_AXIS;
-    static const Vector2 Y_AXIS;
-    static const Vector2 XY_AXIS;
-    static const Vector2 YX_AXIS;
+    static const Vector2 One;
+    static const Vector2 Zero;
+    static const Vector2 X_Axis;
+    static const Vector2 Y_Axis;
+    static const Vector2 XY_Axis;
+    static const Vector2 YX_Axis;
 
     [[nodiscard]] static Vector2 CreateFromPolarCoordinatesDegrees(float length, float directionDegrees);
     [[nodiscard]] static Vector2 CreateFromPolarCoordinatesRadians(float length, float directionRadians);

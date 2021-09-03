@@ -182,7 +182,7 @@ Vector2 UIElement::CalcLocalScale() const {
     const auto my_height = my_bounds.maxs.y - my_bounds.mins.y;
     const auto height_scale = my_height / parent_height;
     const auto* parent = GetParent();
-    return parent ? Vector2(width_scale, height_scale) : Vector2::ONE;
+    return parent ? Vector2(width_scale, height_scale) : Vector2::One;
 }
 
 Matrix4 UIElement::GetWorldTransform() const noexcept {
@@ -226,7 +226,7 @@ void UIElement::DebugRenderBounds() const {
 
 AABB2 UIElement::GetParentBounds() const noexcept {
     const auto* parent = GetParent();
-    return parent ? parent->_bounds : AABB2::ZERO_TO_ONE;
+    return parent ? parent->_bounds : AABB2::Zero_to_One;
 }
 
 UIPanel* UIElement::GetParent() const noexcept {
@@ -325,7 +325,7 @@ AABB2 UIElement::CalcRelativeBounds() const noexcept {
     Vector2 pivot_position = size * _pivot;
 
     AABB2 bounds;
-    bounds.StretchToIncludePoint(Vector2::ZERO);
+    bounds.StretchToIncludePoint(Vector2::Zero);
     bounds.StretchToIncludePoint(size);
     bounds.Translate(-pivot_position);
     return bounds;
@@ -334,7 +334,7 @@ AABB2 UIElement::CalcRelativeBounds() const noexcept {
 AABB2 UIElement::CalcAbsoluteBounds() const noexcept {
     const auto size = CalcDesiredSize();
     AABB2 bounds;
-    bounds.StretchToIncludePoint(Vector2::ZERO);
+    bounds.StretchToIncludePoint(Vector2::Zero);
     bounds.StretchToIncludePoint(size.GetZW());
     return CalcAlignedAbsoluteBounds();
 }
@@ -379,7 +379,7 @@ bool UIElement::IsChild() const {
 
 AABB2 UIElement::GetParentLocalBounds() const {
     const auto* parent = GetParent();
-    return parent ? parent->CalcLocalBounds() : AABB2(Vector2::ZERO, _bounds.CalcDimensions());
+    return parent ? parent->CalcLocalBounds() : AABB2(Vector2::Zero, _bounds.CalcDimensions());
 }
 
 AABB2 UIElement::GetParentRelativeBounds() const {

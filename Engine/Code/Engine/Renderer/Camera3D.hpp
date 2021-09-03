@@ -21,7 +21,7 @@ public:
     explicit Camera3D(const Camera2D& camera2D) noexcept;
     Camera3D& operator=(const Camera2D& camera2D) noexcept;
 
-    void SetupView(float fovVerticalDegrees, float aspectRatio = MathUtils::M_16_BY_9_RATIO, float nearDistance = 0.01f, float farDistance = 1.0f, const Vector3& worldUp = Vector3::Y_AXIS) noexcept;
+    void SetupView(float fovVerticalDegrees, float aspectRatio = MathUtils::M_16_BY_9_RATIO, float nearDistance = 0.01f, float farDistance = 1.0f, const Vector3& worldUp = Vector3::Y_Axis) noexcept;
     void Update(TimeUtils::FPSeconds deltaSeconds) noexcept;
 
     [[nodiscard]] const Vector3& GetPosition() const noexcept;
@@ -111,8 +111,8 @@ private:
     float far_view_height = 1600.0f;
     float near_distance = 0.01f;
     float far_distance = 1.0f;
-    Vector3 position = Vector3::ZERO;
-    Vector3 world_up = Vector3::Y_AXIS;
+    Vector3 position = Vector3::Zero;
+    Vector3 world_up = Vector3::Y_Axis;
 
     Matrix4 view_matrix = Matrix4::I;
     Matrix4 rotation_matrix = Matrix4::I;

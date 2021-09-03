@@ -112,44 +112,44 @@ struct time_buffer_t {
 };
 
 struct PointLightDesc {
-    Vector3 position = Vector3::ZERO;
-    Vector3 attenuation = Vector3::Z_AXIS;
+    Vector3 position = Vector3::Zero;
+    Vector3 attenuation = Vector3::Z_Axis;
     float intensity = 1.0f;
     Rgba color = Rgba::White;
 };
 
 struct DirectionalLightDesc {
-    Vector3 direction = Vector3::X_AXIS;
-    Vector3 attenuation = Vector3::X_AXIS;
+    Vector3 direction = Vector3::X_Axis;
+    Vector3 attenuation = Vector3::X_Axis;
     float intensity = 1.0f;
     Rgba color = Rgba::White;
 };
 
 struct SpotLightDesc {
-    Vector3 position = Vector3::ZERO;
-    Vector3 direction = Vector3::X_AXIS;
-    Vector3 attenuation = Vector3::Z_AXIS;
+    Vector3 position = Vector3::Zero;
+    Vector3 direction = Vector3::X_Axis;
+    Vector3 attenuation = Vector3::Z_Axis;
     Vector2 inner_outer_anglesDegrees = Vector2{30.0f, 60.0f};
     float intensity = 1.0f;
     Rgba color = Rgba::White;
 };
 
 struct light_t {
-    Vector4 position = Vector4::ZERO;
-    Vector4 color = Vector4::ONE_XYZ_ZERO_W;
-    Vector4 attenuation = Vector4::Z_AXIS;
-    Vector4 specAttenuation = Vector4::X_AXIS;
+    Vector4 position = Vector4::Zero;
+    Vector4 color = Vector4::One_XYZ_Zero_W;
+    Vector4 attenuation = Vector4::Z_Axis;
+    Vector4 specAttenuation = Vector4::X_Axis;
     Vector4 innerOuterDotThresholds = Vector4(-2.0f, -3.0f, 0.0f, 0.0f);
-    Vector4 direction = -Vector4::Z_AXIS;
+    Vector4 direction = -Vector4::Z_Axis;
 };
 
 constexpr const unsigned int max_light_count = 16;
 
 struct lighting_buffer_t {
     light_t lights[max_light_count] = {light_t{}};
-    Vector4 ambient = Vector4::ZERO;
+    Vector4 ambient = Vector4::Zero;
     Vector4 specular_glossy_emissive_factors = Vector4(1.0f, 8.0f, 0.0f, 1.0f);
-    Vector4 eye_position = Vector4::ZERO;
+    Vector4 eye_position = Vector4::Zero;
     int useVertexNormals = 0;
     float padding[3] = {0.0f, 0.0f, 0.0f};
 };
@@ -270,7 +270,7 @@ public:
     [[nodiscard]] std::shared_ptr<SpriteSheet> CreateSpriteSheet(const XMLElement& elem) noexcept override;
     [[nodiscard]] std::unique_ptr<AnimatedSprite> CreateAnimatedSprite(std::filesystem::path filepath) noexcept override;
     [[nodiscard]] std::unique_ptr<AnimatedSprite> CreateAnimatedSprite(const AnimatedSpriteDesc& desc) noexcept override;
-    [[nodiscard]] std::unique_ptr<AnimatedSprite> CreateAnimatedSprite(std::weak_ptr<SpriteSheet> sheet, const IntVector2& startSpriteCoords = IntVector2::ZERO) noexcept override;
+    [[nodiscard]] std::unique_ptr<AnimatedSprite> CreateAnimatedSprite(std::weak_ptr<SpriteSheet> sheet, const IntVector2& startSpriteCoords = IntVector2::Zero) noexcept override;
     [[nodiscard]] std::unique_ptr<AnimatedSprite> CreateAnimatedSprite(std::weak_ptr<SpriteSheet> sheet, const XMLElement& elem) noexcept override;
     [[nodiscard]] std::unique_ptr<AnimatedSprite> CreateAnimatedSprite(const XMLElement& elem) noexcept override;
 
@@ -309,8 +309,8 @@ public:
     void Present() noexcept override;
 
     void DrawPoint(const Vertex3D& point) noexcept override;
-    void DrawPoint(const Vector3& point, const Rgba& color = Rgba::White, const Vector2& tex_coords = Vector2::ZERO) noexcept override;
-    void DrawFrustum(const Frustum& frustum, const Rgba& color = Rgba::Yellow, const Vector2& tex_coords = Vector2::ZERO) noexcept override;
+    void DrawPoint(const Vector3& point, const Rgba& color = Rgba::White, const Vector2& tex_coords = Vector2::Zero) noexcept override;
+    void DrawFrustum(const Frustum& frustum, const Rgba& color = Rgba::Yellow, const Vector2& tex_coords = Vector2::Zero) noexcept override;
     void DrawWorldGridXZ(float radius = 500.0f, float major_gridsize = 20.0f, float minor_gridsize = 5.0f, const Rgba& major_color = Rgba::White, const Rgba& minor_color = Rgba::DarkGray) noexcept override;
     void DrawWorldGridXY(float radius = 500.0f, float major_gridsize = 20.0f, float minor_gridsize = 5.0f, const Rgba& major_color = Rgba::White, const Rgba& minor_color = Rgba::DarkGray) noexcept override;
     void DrawWorldGrid2D(const IntVector2& dimensions, const Rgba& color = Rgba::White) noexcept override;
@@ -428,16 +428,16 @@ public:
     void SetComputeConstantBuffer(unsigned int index, ConstantBuffer* buffer) noexcept override;
     void SetComputeStructuredBuffer(unsigned int index, StructuredBuffer* buffer) noexcept override;
 
-    void DrawCube(const Vector3& position = Vector3::ZERO, const Vector3& halfExtents = Vector3::ONE * 0.5f, const Rgba& color = Rgba::White) override;
-    void DrawQuad(const Vector3& position = Vector3::ZERO, const Vector3& halfExtents = Vector3::XY_AXIS * 0.5f, const Rgba& color = Rgba::White, const Vector4& texCoords = Vector4::ZW_AXIS, const Vector3& normalFront = Vector3::Z_AXIS, const Vector3& worldUp = Vector3::Y_AXIS) noexcept override;
-    void DrawQuad(const Rgba& frontColor, const Rgba& backColor, const Vector3& position = Vector3::ZERO, const Vector3& halfExtents = Vector3::XY_AXIS * 0.5f, const Vector4& texCoords = Vector4::ZW_AXIS, const Vector3& normalFront = Vector3::Z_AXIS, const Vector3& worldUp = Vector3::Y_AXIS) noexcept override;
+    void DrawCube(const Vector3& position = Vector3::Zero, const Vector3& halfExtents = Vector3::One * 0.5f, const Rgba& color = Rgba::White) override;
+    void DrawQuad(const Vector3& position = Vector3::Zero, const Vector3& halfExtents = Vector3::XY_Axis * 0.5f, const Rgba& color = Rgba::White, const Vector4& texCoords = Vector4::ZW_Axis, const Vector3& normalFront = Vector3::Z_Axis, const Vector3& worldUp = Vector3::Y_Axis) noexcept override;
+    void DrawQuad(const Rgba& frontColor, const Rgba& backColor, const Vector3& position = Vector3::Zero, const Vector3& halfExtents = Vector3::XY_Axis * 0.5f, const Vector4& texCoords = Vector4::ZW_Axis, const Vector3& normalFront = Vector3::Z_Axis, const Vector3& worldUp = Vector3::Y_Axis) noexcept override;
     void DrawPoint2D(float pointX, float pointY, const Rgba& color = Rgba::White) noexcept override;
     void DrawPoint2D(const Vector2& point, const Rgba& color = Rgba::White) noexcept override;
     void DrawLine2D(float startX, float startY, float endX, float endY, const Rgba& color = Rgba::White, float thickness = 0.0f) noexcept override;
     void DrawLine2D(const Vector2& start, const Vector2& end, const Rgba& color = Rgba::White, float thickness = 0.0f) noexcept override;
-    void DrawQuad2D(float left, float bottom, float right, float top, const Rgba& color = Rgba::White, const Vector4& texCoords = Vector4::ZW_AXIS) noexcept override;
-    void DrawQuad2D(const Vector2& position = Vector2::ZERO, const Vector2& halfExtents = Vector2(0.5f, 0.5f), const Rgba& color = Rgba::White, const Vector4& texCoords = Vector4::ZW_AXIS) noexcept override;
-    void DrawQuad2D(const Matrix4& transform, const Rgba& color = Rgba::White, const Vector4& texCoords = Vector4::ZW_AXIS) noexcept override;
+    void DrawQuad2D(float left, float bottom, float right, float top, const Rgba& color = Rgba::White, const Vector4& texCoords = Vector4::ZW_Axis) noexcept override;
+    void DrawQuad2D(const Vector2& position = Vector2::Zero, const Vector2& halfExtents = Vector2(0.5f, 0.5f), const Rgba& color = Rgba::White, const Vector4& texCoords = Vector4::ZW_Axis) noexcept override;
+    void DrawQuad2D(const Matrix4& transform, const Rgba& color = Rgba::White, const Vector4& texCoords = Vector4::ZW_Axis) noexcept override;
     void DrawQuad2D(const Rgba& color) noexcept override;
     void DrawQuad2D(const Vector4& texCoords) noexcept override;
     void DrawQuad2D(const Rgba& color, const Vector4& texCoords) noexcept override;
@@ -446,14 +446,14 @@ public:
     void DrawCircle2D(const Disc2& circle, const Rgba& color = Rgba::White) noexcept override;
     void DrawFilledCircle2D(const Disc2& circle, const Rgba& color = Rgba::White) noexcept override;
     void DrawFilledCircle2D(const Vector2& center, float radius, const Rgba& color = Rgba::White) noexcept override;
-    void DrawAABB2(const AABB2& bounds, const Rgba& edgeColor, const Rgba& fillColor, const Vector2& edgeHalfExtents = Vector2::ZERO) noexcept override;
+    void DrawAABB2(const AABB2& bounds, const Rgba& edgeColor, const Rgba& fillColor, const Vector2& edgeHalfExtents = Vector2::Zero) noexcept override;
     void DrawAABB2(const Rgba& edgeColor, const Rgba& fillColor) noexcept override;
     void DrawOBB2(float orientationDegrees, const Rgba& edgeColor, const Rgba& fillColor = Rgba::NoAlpha) noexcept override;
-    void DrawOBB2(const OBB2& obb, const Rgba& edgeColor, const Rgba& fillColor = Rgba::NoAlpha, const Vector2& edgeHalfExtents = Vector2::ZERO) noexcept override;
+    void DrawOBB2(const OBB2& obb, const Rgba& edgeColor, const Rgba& fillColor = Rgba::NoAlpha, const Vector2& edgeHalfExtents = Vector2::Zero) noexcept override;
     void DrawPolygon2D(float centerX, float centerY, float radius, std::size_t numSides = 3, const Rgba& color = Rgba::White) noexcept override;
     void DrawPolygon2D(const Vector2& center, float radius, std::size_t numSides = 3, const Rgba& color = Rgba::White) noexcept override;
     void DrawPolygon2D(const Polygon2& polygon, const Rgba& color = Rgba::White) override;
-    void DrawX2D(const Vector2& position = Vector2::ZERO, const Vector2& half_extents = Vector2(0.5f, 0.5f), const Rgba& color = Rgba::White) noexcept override;
+    void DrawX2D(const Vector2& position = Vector2::Zero, const Vector2& half_extents = Vector2(0.5f, 0.5f), const Rgba& color = Rgba::White) noexcept override;
     void DrawX2D(const Rgba& color) noexcept override;
     void DrawTextLine(const KerningFont* font, const std::string& text, const Rgba& color = Rgba::White) noexcept override;
     void DrawMultilineText(KerningFont* font, const std::string& text, const Rgba& color = Rgba::White) noexcept override;
@@ -629,7 +629,7 @@ private:
     RasterState* _current_raster_state = nullptr;
     Sampler* _current_sampler = nullptr;
     Material* _current_material = nullptr;
-    IntVector2 _window_dimensions = IntVector2::ZERO;
+    IntVector2 _window_dimensions = IntVector2::Zero;
     RHIOutputMode _current_outputMode = RHIOutputMode::Windowed;
     std::unique_ptr<VertexBuffer> _temp_vbo = nullptr;
     std::unique_ptr<VertexBufferInstanced> _temp_vbio = nullptr;

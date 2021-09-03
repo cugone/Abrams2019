@@ -4,13 +4,13 @@
 
 class LineSegment2 {
 public:
-    Vector2 start = Vector2::ZERO;
-    Vector2 end = Vector2::ZERO;
+    Vector2 start = Vector2::Zero;
+    Vector2 end = Vector2::Zero;
 
-    static const LineSegment2 UNIT_HORIZONTAL;
-    static const LineSegment2 UNIT_VERTICAL;
-    static const LineSegment2 UNIT_CENTERED_HORIZONTAL;
-    static const LineSegment2 UNIT_CENTERED_VERTICAL;
+    static const LineSegment2 Unit_Horizontal;
+    static const LineSegment2 Unit_Vertical;
+    static const LineSegment2 Unit_Centered_Horizontal;
+    static const LineSegment2 Unit_Centered_Vertical;
 
     LineSegment2() = default;
     LineSegment2(const LineSegment2& rhs) = default;

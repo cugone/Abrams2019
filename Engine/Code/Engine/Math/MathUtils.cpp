@@ -183,15 +183,15 @@ bool IsEquivalentToZero(long double a, long double epsilon /*= 0.0001L*/) noexce
 }
 
 bool IsEquivalentToZero(const Vector2& a, float epsilon /*= 0.0001f*/) noexcept {
-    return IsEquivalent(a, Vector2::ZERO, epsilon);
+    return IsEquivalent(a, Vector2::Zero, epsilon);
 }
 
 bool IsEquivalentToZero(const Vector3& a, float epsilon /*= 0.0001f*/) noexcept {
-    return IsEquivalent(a, Vector3::ZERO, epsilon);
+    return IsEquivalent(a, Vector3::Zero, epsilon);
 }
 
 bool IsEquivalentToZero(const Vector4& a, float epsilon /*= 0.0001f*/) noexcept {
-    return IsEquivalent(a, Vector4::ZERO, epsilon);
+    return IsEquivalent(a, Vector4::Zero, epsilon);
 }
 
 bool IsEquivalentToZero(const Quaternion& a, float epsilon /*= 0.0001f*/) noexcept {
@@ -845,7 +845,7 @@ Vector2 CalcClosestPoint(const Vector2& p, const AABB2& aabb) noexcept {
     if(aabb.maxs.y < p.y) {
         return Vector2(p.x, aabb.maxs.y);
     }
-    return Vector2::ZERO;
+    return Vector2::Zero;
 }
 
 Vector2 CalcClosestPoint(const Vector2& p, const OBB2& obb) noexcept {
@@ -1163,7 +1163,7 @@ bool DoPlaneOverlap(const Capsule2& a, const Plane2& b) noexcept {
     const auto both_capsule_points_in_back = IsPointBehindOfPlane(a.line.start, b) && IsPointBehindOfPlane(a.line.end, b);
 
     if(both_capsule_points_in_front || both_capsule_points_in_back) {
-        return CalcDistanceSquared(Vector2::ZERO, a.line) < (a.radius + b.dist) * (a.radius + b.dist);
+        return CalcDistanceSquared(Vector2::Zero, a.line) < (a.radius + b.dist) * (a.radius + b.dist);
     }
     return true;
 }
@@ -1173,7 +1173,7 @@ bool DoPlaneOverlap(const Capsule3& a, const Plane3& b) noexcept {
     const auto both_capsule_points_in_back = IsPointBehindOfPlane(a.line.start, b) && IsPointBehindOfPlane(a.line.end, b);
 
     if(both_capsule_points_in_front || both_capsule_points_in_back) {
-        return CalcDistanceSquared(Vector3::ZERO, a.line) < (a.radius + b.dist) * (a.radius + b.dist);
+        return CalcDistanceSquared(Vector3::Zero, a.line) < (a.radius + b.dist) * (a.radius + b.dist);
     }
     return true;
 }

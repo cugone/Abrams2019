@@ -2,12 +2,12 @@
 
 #include <cmath>
 
-const LineSegment3 LineSegment3::UNIT_HORIZONTAL(0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f);
-const LineSegment3 LineSegment3::UNIT_VERTICAL(0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-const LineSegment3 LineSegment3::UNIT_DEPTH(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
-const LineSegment3 LineSegment3::UNIT_CENTERED_HORIZONTAL(-0.5f, 0.0f, 0.0f, 0.5f, 0.0f, 0.0f);
-const LineSegment3 LineSegment3::UNIT_CENTERED_VERTICAL(0.0f, -0.5f, 0.0f, 0.0f, 0.5f, 0.0f);
-const LineSegment3 LineSegment3::UNIT_CENTERED_DEPTH(0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.5f);
+const LineSegment3 LineSegment3::Unit_Horizontal(0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f);
+const LineSegment3 LineSegment3::Unit_Vertical(0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+const LineSegment3 LineSegment3::Unit_Depth(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+const LineSegment3 LineSegment3::Unit_Centered_Horizontal(-0.5f, 0.0f, 0.0f, 0.5f, 0.0f, 0.0f);
+const LineSegment3 LineSegment3::Unit_Centered_Vertical(0.0f, -0.5f, 0.0f, 0.0f, 0.5f, 0.0f);
+const LineSegment3 LineSegment3::Unit_Centered_Depth(0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.5f);
 
 LineSegment3::LineSegment3(float startX, float startY, float startZ, float endX, float endY, float endZ) noexcept
 : start(startX, startY, startZ)

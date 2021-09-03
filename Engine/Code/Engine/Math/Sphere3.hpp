@@ -4,10 +4,10 @@
 
 class Sphere3 {
 public:
-    Vector3 center = Vector3::ZERO;
+    Vector3 center = Vector3::Zero;
     float radius = 0.0f;
 
-    static const Sphere3 UNIT_SPHERE;
+    static const Sphere3 Unit_Sphere;
 
     Sphere3() = default;
     Sphere3(const Sphere3& rhs) = default;

@@ -9,18 +9,18 @@ class Vector3;
 
 class IntVector3 {
 public:
-    static const IntVector3 ZERO;
-    static const IntVector3 ONE;
-    static const IntVector3 X_AXIS;
-    static const IntVector3 Y_AXIS;
-    static const IntVector3 Z_AXIS;
-    static const IntVector3 XY_AXIS;
-    static const IntVector3 XZ_AXIS;
-    static const IntVector3 YX_AXIS;
-    static const IntVector3 YZ_AXIS;
-    static const IntVector3 ZX_AXIS;
-    static const IntVector3 ZY_AXIS;
-    static const IntVector3 XYZ_AXIS;
+    static const IntVector3 Zero;
+    static const IntVector3 One;
+    static const IntVector3 X_Axis;
+    static const IntVector3 Y_Axis;
+    static const IntVector3 Z_Axis;
+    static const IntVector3 XY_Axis;
+    static const IntVector3 XZ_Axis;
+    static const IntVector3 YX_Axis;
+    static const IntVector3 YZ_Axis;
+    static const IntVector3 ZX_Axis;
+    static const IntVector3 ZY_Axis;
+    static const IntVector3 XYZ_Axis;
 
     IntVector3() = default;
     ~IntVector3() = default;

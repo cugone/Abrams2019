@@ -8,30 +8,30 @@
 #include <cmath>
 #include <sstream>
 
-const Vector4 Vector4::ZERO(0.0f, 0.0f, 0.0f, 0.0f);
-const Vector4 Vector4::ONE(1.0f, 1.0f, 1.0f, 1.0f);
-const Vector4 Vector4::ZERO_XYZ_ONE_W(0.0f, 0.0f, 0.0f, 1.0f);
-const Vector4 Vector4::ONE_XYZ_ZERO_W(1.0f, 1.0f, 1.0f, 0.0f);
-const Vector4 Vector4::X_AXIS(1.0f, 0.0f, 0.0f, 0.0f);
-const Vector4 Vector4::XY_AXIS(1.0f, 1.0f, 0.0f, 0.0f);
-const Vector4 Vector4::XZ_AXIS(1.0f, 0.0f, 1.0f, 0.0f);
-const Vector4 Vector4::XW_AXIS(1.0f, 0.0f, 0.0f, 1.0f);
-const Vector4 Vector4::Y_AXIS(0.0f, 1.0f, 0.0f, 0.0f);
-const Vector4 Vector4::YX_AXIS(1.0f, 1.0f, 0.0f, 0.0f);
-const Vector4 Vector4::YZ_AXIS(0.0f, 1.0f, 1.0f, 0.0f);
-const Vector4 Vector4::YW_AXIS(0.0f, 1.0f, 0.0f, 1.0f);
-const Vector4 Vector4::Z_AXIS(0.0f, 0.0f, 1.0f, 0.0f);
-const Vector4 Vector4::ZX_AXIS(1.0f, 0.0f, 1.0f, 0.0f);
-const Vector4 Vector4::ZY_AXIS(0.0f, 1.0f, 1.0f, 0.0f);
-const Vector4 Vector4::ZW_AXIS(0.0f, 0.0f, 1.0f, 1.0f);
-const Vector4 Vector4::W_AXIS(0.0f, 0.0f, 0.0f, 1.0f);
-const Vector4 Vector4::WX_AXIS(1.0f, 0.0f, 0.0f, 1.0f);
-const Vector4 Vector4::WY_AXIS(0.0f, 1.0f, 0.0f, 1.0f);
-const Vector4 Vector4::WZ_AXIS(0.0f, 0.0f, 1.0f, 1.0f);
-const Vector4 Vector4::XYZ_AXIS(1.0f, 1.0f, 1.0f, 0.0f);
-const Vector4 Vector4::YZW_AXIS(0.0f, 1.0f, 1.0f, 1.0f);
-const Vector4 Vector4::XZW_AXIS(1.0f, 0.0f, 1.0f, 1.0f);
-const Vector4 Vector4::XYW_AXIS(1.0f, 1.0f, 0.0f, 1.0f);
+const Vector4 Vector4::Zero(0.0f, 0.0f, 0.0f, 0.0f);
+const Vector4 Vector4::One(1.0f, 1.0f, 1.0f, 1.0f);
+const Vector4 Vector4::Zero_XYZ_One_W(0.0f, 0.0f, 0.0f, 1.0f);
+const Vector4 Vector4::One_XYZ_Zero_W(1.0f, 1.0f, 1.0f, 0.0f);
+const Vector4 Vector4::X_Axis(1.0f, 0.0f, 0.0f, 0.0f);
+const Vector4 Vector4::XY_Axis(1.0f, 1.0f, 0.0f, 0.0f);
+const Vector4 Vector4::XZ_Axis(1.0f, 0.0f, 1.0f, 0.0f);
+const Vector4 Vector4::XW_Axis(1.0f, 0.0f, 0.0f, 1.0f);
+const Vector4 Vector4::Y_Axis(0.0f, 1.0f, 0.0f, 0.0f);
+const Vector4 Vector4::YX_Axis(1.0f, 1.0f, 0.0f, 0.0f);
+const Vector4 Vector4::YZ_Axis(0.0f, 1.0f, 1.0f, 0.0f);
+const Vector4 Vector4::YW_Axis(0.0f, 1.0f, 0.0f, 1.0f);
+const Vector4 Vector4::Z_Axis(0.0f, 0.0f, 1.0f, 0.0f);
+const Vector4 Vector4::ZX_Axis(1.0f, 0.0f, 1.0f, 0.0f);
+const Vector4 Vector4::ZY_Axis(0.0f, 1.0f, 1.0f, 0.0f);
+const Vector4 Vector4::ZW_Axis(0.0f, 0.0f, 1.0f, 1.0f);
+const Vector4 Vector4::W_Axis(0.0f, 0.0f, 0.0f, 1.0f);
+const Vector4 Vector4::WX_Axis(1.0f, 0.0f, 0.0f, 1.0f);
+const Vector4 Vector4::WY_Axis(0.0f, 1.0f, 0.0f, 1.0f);
+const Vector4 Vector4::WZ_Axis(0.0f, 0.0f, 1.0f, 1.0f);
+const Vector4 Vector4::XYZ_Axis(1.0f, 1.0f, 1.0f, 0.0f);
+const Vector4 Vector4::YZW_Axis(0.0f, 1.0f, 1.0f, 1.0f);
+const Vector4 Vector4::XZW_Axis(1.0f, 0.0f, 1.0f, 1.0f);
+const Vector4 Vector4::XYW_Axis(1.0f, 1.0f, 0.0f, 1.0f);
 
 Vector4::Vector4(const Vector3& xyz, float initialW) noexcept
 : x(xyz.x)
@@ -286,7 +286,7 @@ Vector4 Vector4::GetNormalize4D() const noexcept {
         const auto inv_length = 1.0f / length;
         return Vector4(x * inv_length, y * inv_length, z * inv_length, w * inv_length);
     }
-    return Vector4::ZERO;
+    return Vector4::Zero;
 }
 
 Vector4 Vector4::GetNormalize3D() const noexcept {
@@ -295,7 +295,7 @@ Vector4 Vector4::GetNormalize3D() const noexcept {
         const auto inv_length = 1.0f / length;
         return Vector4(x * inv_length, y * inv_length, z * inv_length, w);
     }
-    return Vector4::ZERO_XYZ_ONE_W;
+    return Vector4::Zero_XYZ_One_W;
 }
 
 Vector4 Vector4::operator+(const Vector4& rhs) const noexcept {

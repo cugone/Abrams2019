@@ -214,8 +214,8 @@ void RodJoint::SolveVelocityConstraint() const noexcept {
     const auto mass_sum = m1 + m2;
     const auto mass1_ratio = m1 / mass_sum;
     const auto mass2_ratio = m2 / mass_sum;
-    auto v1 = first_body ? first_body->GetVelocity() : Vector2::ZERO;
-    auto v2 = second_body ? second_body->GetVelocity() : Vector2::ZERO;
+    auto v1 = first_body ? first_body->GetVelocity() : Vector2::Zero;
+    auto v2 = second_body ? second_body->GetVelocity() : Vector2::Zero;
     auto newVelocity1 = v1;
     auto newVelocity2 = v2;
     const auto length = _def.length;

@@ -43,7 +43,7 @@ public:
 
 protected:
     const RHIDevice& _device;
-    IntVector3 _dimensions = IntVector3::ZERO;
+    IntVector3 _dimensions = IntVector3::Zero;
     Microsoft::WRL::ComPtr<ID3D11DepthStencilView> _dsv{};
     Microsoft::WRL::ComPtr<ID3D11RenderTargetView> _rtv{};
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> _srv{};

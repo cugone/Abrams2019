@@ -21,7 +21,7 @@ GJKResult PhysicsUtils::GJK(const Collider& a, const Collider& b) {
     const auto support = [&](const Vector2& direction) { return calcMinkowskiDiff(direction, a) - calcMinkowskiDiff(-direction, b); };
     const auto initialDisplacement = b.CalcCenter() - a.CalcCenter();
     const auto initialDirection = initialDisplacement.GetNormalize();
-    auto A = support(Vector2::X_AXIS);
+    auto A = support(Vector2::X_Axis);
     Simplex simplex{Vector3{A}};
     auto D = Vector3{-A};
     const auto doSimplexLine = [&](Simplex& simplex, Vector3& D) {
@@ -117,7 +117,7 @@ EPAResult PhysicsUtils::EPA(GJKResult gjk, const Collider& a, const Collider& b)
     std::size_t minIndex = 0u;
     constexpr auto infinity = std::numeric_limits<float>::infinity();
     auto minDistance = infinity;
-    auto minNormal = Vector2::ZERO;
+    auto minNormal = Vector2::Zero;
     constexpr float epsilon = 0.0001f;
 
     while(minDistance == std::numeric_limits<float>::infinity()) {

@@ -10,7 +10,7 @@ GravityForceGenerator::GravityForceGenerator(const Vector2& gravity) noexcept
 }
 
 void GravityForceGenerator::notify([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) const noexcept {
-    if(g == Vector2::ZERO) {
+    if(g == Vector2::Zero) {
         return;
     }
     for(auto* body : _observers) {

@@ -10,14 +10,14 @@
 #include <cmath>
 #include <sstream>
 
-const Vector3 Vector3::ZERO(0.0f, 0.0f, 0.0f);
-const Vector3 Vector3::X_AXIS(1.0f, 0.0f, 0.0f);
-const Vector3 Vector3::Y_AXIS(0.0f, 1.0f, 0.0f);
-const Vector3 Vector3::Z_AXIS(0.0f, 0.0f, 1.0f);
-const Vector3 Vector3::XY_AXIS(1.0f, 1.0f, 0.0f);
-const Vector3 Vector3::XZ_AXIS(1.0f, 0.0f, 1.0f);
-const Vector3 Vector3::YZ_AXIS(0.0f, 1.0f, 1.0f);
-const Vector3 Vector3::ONE(1.0f, 1.0f, 1.0f);
+const Vector3 Vector3::Zero(0.0f, 0.0f, 0.0f);
+const Vector3 Vector3::X_Axis(1.0f, 0.0f, 0.0f);
+const Vector3 Vector3::Y_Axis(0.0f, 1.0f, 0.0f);
+const Vector3 Vector3::Z_Axis(0.0f, 0.0f, 1.0f);
+const Vector3 Vector3::XY_Axis(1.0f, 1.0f, 0.0f);
+const Vector3 Vector3::XZ_Axis(1.0f, 0.0f, 1.0f);
+const Vector3 Vector3::YZ_Axis(0.0f, 1.0f, 1.0f);
+const Vector3 Vector3::One(1.0f, 1.0f, 1.0f);
 
 Vector3::Vector3(float initialX, float initialY, float initialZ) noexcept
 : x(initialX)
@@ -233,7 +233,7 @@ Vector3 Vector3::GetNormalize() const noexcept {
         const auto inv_length = 1.0f / length;
         return Vector3(x * inv_length, y * inv_length, z * inv_length);
     }
-    return Vector3::ZERO;
+    return Vector3::Zero;
 }
 
 void Vector3::SetXYZ(float newX, float newY, float newZ) noexcept {

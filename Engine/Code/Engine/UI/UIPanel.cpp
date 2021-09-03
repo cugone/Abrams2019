@@ -43,7 +43,7 @@ void UIPanel::SetOwningWidget(UIWidget* owner) noexcept {
 }
 
 Vector4 UIPanel::CalcDesiredSize() const noexcept {
-    return Vector4::ZERO;
+    return Vector4::Zero;
 }
 
 void UIPanel::DebugRenderBottomUp() const {

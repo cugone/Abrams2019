@@ -2,7 +2,7 @@
 
 #include "Engine/Math/MathUtils.hpp"
 
-const Disc2 Disc2::UNIT_CIRCLE(0.0f, 0.0f, 1.0f);
+const Disc2 Disc2::Unit_Circle(0.0f, 0.0f, 1.0f);
 
 Disc2::Disc2(float initialX, float initialY, float initialRadius) noexcept
 : center(initialX, initialY)

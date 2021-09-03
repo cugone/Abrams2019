@@ -4,15 +4,15 @@
 
 class LineSegment3 {
 public:
-    Vector3 start = Vector3::ZERO;
-    Vector3 end = Vector3::ZERO;
+    Vector3 start = Vector3::Zero;
+    Vector3 end = Vector3::Zero;
 
-    static const LineSegment3 UNIT_HORIZONTAL;
-    static const LineSegment3 UNIT_VERTICAL;
-    static const LineSegment3 UNIT_DEPTH;
-    static const LineSegment3 UNIT_CENTERED_HORIZONTAL;
-    static const LineSegment3 UNIT_CENTERED_VERTICAL;
-    static const LineSegment3 UNIT_CENTERED_DEPTH;
+    static const LineSegment3 Unit_Horizontal;
+    static const LineSegment3 Unit_Vertical;
+    static const LineSegment3 Unit_Depth;
+    static const LineSegment3 Unit_Centered_Horizontal;
+    static const LineSegment3 Unit_Centered_Vertical;
+    static const LineSegment3 Unit_Centered_Depth;
 
     LineSegment3() = default;
     LineSegment3(const LineSegment3& rhs) = default;

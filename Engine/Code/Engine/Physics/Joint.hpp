@@ -30,7 +30,7 @@ public:
     Joint& operator=(Joint&& other) = default;
     virtual ~Joint() = default;
 
-    virtual void Attach(RigidBody* a, RigidBody* b, Vector2 localAnchorA = Vector2::ZERO, Vector2 localAnchorB = Vector2::ZERO) noexcept = 0;
+    virtual void Attach(RigidBody* a, RigidBody* b, Vector2 localAnchorA = Vector2::Zero, Vector2 localAnchorB = Vector2::Zero) noexcept = 0;
     virtual void Detach(const RigidBody* body) noexcept = 0;
     virtual void DetachAll() noexcept = 0;
     [[nodiscard]] virtual bool IsNotAttached() const noexcept = 0;

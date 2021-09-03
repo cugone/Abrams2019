@@ -8,18 +8,18 @@
 #include <cmath>
 #include <sstream>
 
-const IntVector3 IntVector3::ZERO(0, 0, 0);
-const IntVector3 IntVector3::ONE(1, 1, 1);
-const IntVector3 IntVector3::X_AXIS(1, 0, 0);
-const IntVector3 IntVector3::Y_AXIS(0, 1, 0);
-const IntVector3 IntVector3::Z_AXIS(0, 0, 1);
-const IntVector3 IntVector3::XY_AXIS(1, 1, 0);
-const IntVector3 IntVector3::XZ_AXIS(1, 0, 1);
-const IntVector3 IntVector3::YX_AXIS(1, 1, 0);
-const IntVector3 IntVector3::YZ_AXIS(0, 1, 1);
-const IntVector3 IntVector3::ZX_AXIS(1, 0, 1);
-const IntVector3 IntVector3::ZY_AXIS(0, 1, 1);
-const IntVector3 IntVector3::XYZ_AXIS(1, 1, 1);
+const IntVector3 IntVector3::Zero(0, 0, 0);
+const IntVector3 IntVector3::One(1, 1, 1);
+const IntVector3 IntVector3::X_Axis(1, 0, 0);
+const IntVector3 IntVector3::Y_Axis(0, 1, 0);
+const IntVector3 IntVector3::Z_Axis(0, 0, 1);
+const IntVector3 IntVector3::XY_Axis(1, 1, 0);
+const IntVector3 IntVector3::XZ_Axis(1, 0, 1);
+const IntVector3 IntVector3::YX_Axis(1, 1, 0);
+const IntVector3 IntVector3::YZ_Axis(0, 1, 1);
+const IntVector3 IntVector3::ZX_Axis(1, 0, 1);
+const IntVector3 IntVector3::ZY_Axis(0, 1, 1);
+const IntVector3 IntVector3::XYZ_Axis(1, 1, 1);
 
 IntVector3::IntVector3(int initialX, int initialY, int initialZ) noexcept
 : x(initialX)

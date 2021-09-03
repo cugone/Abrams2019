@@ -246,7 +246,7 @@ void Material::LoadTexture(const TextureID& slotId, std::filesystem::path p) noe
     auto& rs = ServiceLocator::get<IRendererService>();
     bool texture_not_loaded = rs.IsTextureNotLoaded(p_str);
     if(texture_not_loaded) {
-        texture_not_loaded = rs.CreateTexture(p.string(), IntVector3::XY_AXIS) ? false : true;
+        texture_not_loaded = rs.CreateTexture(p.string(), IntVector3::XY_Axis) ? false : true;
     }
     bool texture_not_exist = !empty_path && texture_not_loaded;
     bool invalid_src = empty_path || texture_not_exist;

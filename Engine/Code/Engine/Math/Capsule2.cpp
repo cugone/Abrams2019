@@ -1,9 +1,9 @@
 #include "Engine/Math/Capsule2.hpp"
 
-const Capsule2 Capsule2::UNIT_HORIZONTAL(0.0f, 0.0f, 1.0f, 0.0f, 1.0f);
-const Capsule2 Capsule2::UNIT_VERTICAL(0.0f, 0.0f, 0.0f, 1.0f, 1.0f);
-const Capsule2 Capsule2::UNIT_CENTERED_HORIZONTAL(-0.5f, 0.0f, 0.5f, 0.0f, 1.0f);
-const Capsule2 Capsule2::UNIT_CENTERED_VERTICAL(0.0f, -0.5f, 0.0f, 0.5f, 1.0f);
+const Capsule2 Capsule2::Unit_Horizontal(0.0f, 0.0f, 1.0f, 0.0f, 1.0f);
+const Capsule2 Capsule2::Unit_Vertical(0.0f, 0.0f, 0.0f, 1.0f, 1.0f);
+const Capsule2 Capsule2::Unit_Centered_Horizontal(-0.5f, 0.0f, 0.5f, 0.0f, 1.0f);
+const Capsule2 Capsule2::Unit_Centered_Vertical(0.0f, -0.5f, 0.0f, 0.5f, 1.0f);
 
 Capsule2::Capsule2(const LineSegment2& line, float radius) noexcept
 : line(line)

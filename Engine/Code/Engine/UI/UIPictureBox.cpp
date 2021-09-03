@@ -56,7 +56,7 @@ Vector4 UIPictureBox::CalcDesiredSize() const noexcept {
     const auto dims = _sprite->GetFrameDimensions();
     const auto w = static_cast<float>(dims.x);
     const auto h = static_cast<float>(dims.y);
-    return Vector4{Vector2::ZERO, Vector2{w, h}};
+    return Vector4{Vector2::Zero, Vector2{w, h}};
 }
 
 bool UIPictureBox::LoadFromXml(const XMLElement& elem) noexcept {

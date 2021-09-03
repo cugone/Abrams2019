@@ -311,7 +311,7 @@ void AnimatedSprite::LoadFromXml(const XMLElement& elem) noexcept {
 
     _start_index = DataUtils::ParseXmlAttribute(*xml_animset, "startindex", -1);
     if(_start_index == -1) {
-        const auto start_index_coords = DataUtils::ParseXmlAttribute(*xml_animset, "startindex", IntVector2::ZERO);
+        const auto start_index_coords = DataUtils::ParseXmlAttribute(*xml_animset, "startindex", IntVector2::Zero);
         _start_index = GetIndexFromCoords(start_index_coords);
     }
 

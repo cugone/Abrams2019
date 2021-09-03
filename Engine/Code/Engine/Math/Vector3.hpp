@@ -9,14 +9,14 @@ class Quaternion;
 
 class Vector3 {
 public:
-    static const Vector3 ONE;
-    static const Vector3 ZERO;
-    static const Vector3 X_AXIS;
-    static const Vector3 Y_AXIS;
-    static const Vector3 Z_AXIS;
-    static const Vector3 XY_AXIS;
-    static const Vector3 XZ_AXIS;
-    static const Vector3 YZ_AXIS;
+    static const Vector3 One;
+    static const Vector3 Zero;
+    static const Vector3 X_Axis;
+    static const Vector3 Y_Axis;
+    static const Vector3 Z_Axis;
+    static const Vector3 XY_Axis;
+    static const Vector3 XZ_Axis;
+    static const Vector3 YZ_Axis;
 
     Vector3() noexcept = default;
     explicit Vector3(const std::string& value) noexcept;

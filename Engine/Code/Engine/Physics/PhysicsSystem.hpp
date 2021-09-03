@@ -29,7 +29,7 @@
 class Joint;
 
 struct PhysicsSystemDesc {
-    AABB2 world_bounds{Vector2::ZERO, 500.0f, 500.0f};
+    AABB2 world_bounds{Vector2::Zero, 500.0f, 500.0f};
     Vector2 gravity{0.0f, 10.0f};
     Vector2 dragK1K2{1.0f, 1.0f};
     float world_scale{100.0f};
@@ -117,8 +117,8 @@ private:
     std::deque<CollisionData> _contacts{};
     std::vector<RigidBody*> _pending_removal{};
     std::vector<RigidBody*> _pending_addition{};
-    GravityForceGenerator _gravityFG{Vector2::ZERO};
-    DragForceGenerator _dragFG{Vector2::ZERO};
+    GravityForceGenerator _gravityFG{Vector2::Zero};
+    DragForceGenerator _dragFG{Vector2::Zero};
     QuadTree<RigidBody> _world_partition{};
     TimeUtils::FPSeconds _deltaSeconds = TimeUtils::FPSeconds::zero();
     bool _show_colliders = false;

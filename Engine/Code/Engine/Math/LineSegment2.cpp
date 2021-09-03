@@ -2,10 +2,10 @@
 
 #include "Engine/Math/MathUtils.hpp"
 
-const LineSegment2 LineSegment2::UNIT_HORIZONTAL(0.0f, 0.0f, 1.0f, 0.0f);
-const LineSegment2 LineSegment2::UNIT_VERTICAL(0.0f, 0.0f, 0.0f, 1.0f);
-const LineSegment2 LineSegment2::UNIT_CENTERED_HORIZONTAL(-0.5f, 0.0f, 0.5f, 0.0f);
-const LineSegment2 LineSegment2::UNIT_CENTERED_VERTICAL(0.0f, -0.5f, 0.0f, 0.5f);
+const LineSegment2 LineSegment2::Unit_Horizontal(0.0f, 0.0f, 1.0f, 0.0f);
+const LineSegment2 LineSegment2::Unit_Vertical(0.0f, 0.0f, 0.0f, 1.0f);
+const LineSegment2 LineSegment2::Unit_Centered_Horizontal(-0.5f, 0.0f, 0.5f, 0.0f);
+const LineSegment2 LineSegment2::Unit_Centered_Vertical(0.0f, -0.5f, 0.0f, 0.5f);
 
 LineSegment2::LineSegment2(float startX, float startY, float endX, float endY) noexcept
 : start(startX, startY)

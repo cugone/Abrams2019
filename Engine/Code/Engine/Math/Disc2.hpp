@@ -4,7 +4,7 @@
 
 class Disc2 {
 public:
-    static const Disc2 UNIT_CIRCLE;
+    static const Disc2 Unit_Circle;
 
     Disc2() = default;
     Disc2(const Disc2& rhs) = default;
@@ -23,7 +23,7 @@ public:
     Disc2& operator+=(const Vector2& translation) noexcept;
     Disc2& operator-=(const Vector2& antiTranslation) noexcept;
 
-    Vector2 center = Vector2::ZERO;
+    Vector2 center = Vector2::Zero;
     float radius = 0.0f;
 
 protected:

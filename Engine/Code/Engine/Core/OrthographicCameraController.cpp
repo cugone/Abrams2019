@@ -21,9 +21,9 @@ OrthographicCameraController::OrthographicCameraController(float aspectRatio) no
 void OrthographicCameraController::Update([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept {
     auto& input = ServiceLocator::get<IInputService>();
     if(input.IsKeyDown(KeyCode::RButton)) {
-        const auto up = -Vector2::Y_AXIS * m_translationSpeed * deltaSeconds.count();
+        const auto up = -Vector2::Y_Axis * m_translationSpeed * deltaSeconds.count();
         const auto down = -up;
-        const auto left = -Vector2::X_AXIS * m_translationSpeed * deltaSeconds.count();
+        const auto left = -Vector2::X_Axis * m_translationSpeed * deltaSeconds.count();
         const auto right = -left;
         if(input.IsKeyDown(KeyCode::W)) {
             Translate(up);

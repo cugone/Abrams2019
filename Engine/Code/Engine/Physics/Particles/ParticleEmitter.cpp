@@ -189,7 +189,7 @@ void ParticleEmitter::SpawnParticle(const Vector3& initialPosition, const Vector
     initialState.mass = initialMass;
     initialState.position = initialPosition;
     initialState.velocity = initialVelocity;
-    initialState.acceleration = Vector3::ZERO;
+    initialState.acceleration = Vector3::Zero;
 
     ParticleRenderState initialRender;
     initialRender.SetColors(color, endColor);
