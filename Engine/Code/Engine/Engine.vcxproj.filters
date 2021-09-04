@@ -535,6 +535,9 @@
     <ClCompile Include="Core\EngineConfig.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Audio\Audio3DEmitter.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vector2.hpp">
@@ -1058,6 +1061,9 @@
     </ClInclude>
     <ClInclude Include="Services\IPhysicsService.hpp">
       <Filter>Services</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio\Audio3DEmitter.hpp">
+      <Filter>Audio</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
