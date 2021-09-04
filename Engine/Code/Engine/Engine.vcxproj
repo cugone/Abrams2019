@@ -29,6 +29,7 @@
     <ClCompile Include="..\Thirdparty\ImGui\imgui_widgets.cpp" />
     <ClCompile Include="..\Thirdparty\stb\stb.cpp" />
     <ClCompile Include="..\Thirdparty\TinyXML2\tinyxml2.cpp" />
+    <ClCompile Include="Audio\Audio3DCone.cpp" />
     <ClCompile Include="Audio\Audio3DEmitter.cpp" />
     <ClCompile Include="Audio\Audio3DListener.cpp" />
     <ClCompile Include="Audio\AudioSystem.cpp" />
@@ -190,6 +191,7 @@
     <ClInclude Include="..\Thirdparty\stb\stb_image.h" />
     <ClInclude Include="..\Thirdparty\stb\stb_image_write.h" />
     <ClInclude Include="..\Thirdparty\TinyXML2\tinyxml2.h" />
+    <ClInclude Include="Audio\Audio3DCone.hpp" />
     <ClInclude Include="Audio\Audio3DEmitter.hpp" />
     <ClInclude Include="Audio\Audio3DListener.hpp" />
     <ClInclude Include="Audio\AudioSystem.hpp" />
