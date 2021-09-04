@@ -15,7 +15,18 @@
 
 #include <algorithm>
 
-AudioSystem::AudioSystem(std::size_t max_channels /*= 1024*/)
+AudioSystem::AudioSystem() noexcept
+: EngineSubsystem()
+, IAudioService()
+{
+    bool co_init_succeeded = SUCCEEDED(::CoInitializeEx(nullptr, COINIT_MULTITHREADED));
+    GUARANTEE_OR_DIE(co_init_succeeded, "Failed to setup Audio System.");
+    bool xaudio2_create_succeeded = SUCCEEDED(::XAudio2Create(&_xaudio2));
+    GUARANTEE_OR_DIE(xaudio2_create_succeeded, "Failed to create Audio System.");
+    ::X3DAudioInitialize(2, 343.0f, _x3daudio);
+}
+
+AudioSystem::AudioSystem(std::size_t max_channels) noexcept
 : EngineSubsystem()
 , IAudioService()
 , _max_channels(max_channels) {

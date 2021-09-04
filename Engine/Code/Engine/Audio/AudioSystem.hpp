@@ -168,7 +168,8 @@ private:
     };
 
 public:
-    explicit AudioSystem(std::size_t max_channels = 1024);
+    AudioSystem() noexcept;
+    explicit AudioSystem(std::size_t max_channels) noexcept;
     AudioSystem(const AudioSystem& other) = delete;
     AudioSystem(AudioSystem&& other) = delete;
     AudioSystem& operator=(const AudioSystem& rhs) = delete;
@@ -220,7 +221,7 @@ private:
     void DeactivateChannel(Channel& channel) noexcept;
     WAVEFORMATEXTENSIBLE _audio_format_ex{};
     std::size_t _sound_count{};
-    std::size_t _max_channels{};
+    std::size_t _max_channels{1024u};
     std::vector<std::pair<std::filesystem::path, std::unique_ptr<FileUtils::Wav>>> _wave_files{};
     std::vector<std::pair<std::filesystem::path, std::unique_ptr<Sound>>> _sounds{};
     std::vector<std::pair<std::filesystem::path, std::unique_ptr<ChannelGroup>>> _channel_groups{};
