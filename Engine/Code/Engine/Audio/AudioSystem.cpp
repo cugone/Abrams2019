@@ -23,7 +23,6 @@ AudioSystem::AudioSystem() noexcept
     GUARANTEE_OR_DIE(co_init_succeeded, "Failed to setup Audio System.");
     bool xaudio2_create_succeeded = SUCCEEDED(::XAudio2Create(&_xaudio2));
     GUARANTEE_OR_DIE(xaudio2_create_succeeded, "Failed to create Audio System.");
-    ::X3DAudioInitialize(2, 343.0f, _x3daudio);
 }
 
 AudioSystem::AudioSystem(std::size_t max_channels) noexcept
@@ -34,7 +33,6 @@ AudioSystem::AudioSystem(std::size_t max_channels) noexcept
     GUARANTEE_OR_DIE(co_init_succeeded, "Failed to setup Audio System.");
     bool xaudio2_create_succeeded = SUCCEEDED(::XAudio2Create(&_xaudio2));
     GUARANTEE_OR_DIE(xaudio2_create_succeeded, "Failed to create Audio System.");
-    ::X3DAudioInitialize(2, 343.0f, _x3daudio);
 }
 
 AudioSystem::~AudioSystem() noexcept {
@@ -93,6 +91,11 @@ void AudioSystem::Initialize() noexcept {
     _xaudio2->SetDebugConfiguration(&config);
 #endif
     _xaudio2->CreateMasteringVoice(&_master_voice);
+
+    DWORD dwChannelMask;
+    _master_voice->GetChannelMask(&dwChannelMask);
+    ::X3DAudioInitialize(dwChannelMask, X3DAUDIO_SPEED_OF_SOUND, _x3daudio);
+
     _idle_channels.reserve(_max_channels);
     _active_channels.reserve(_max_channels);
 
