@@ -538,6 +538,9 @@
     <ClCompile Include="Audio\Audio3DEmitter.cpp">
       <Filter>Audio</Filter>
     </ClCompile>
+    <ClCompile Include="Audio\Audio3DListener.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vector2.hpp">
@@ -1063,6 +1066,9 @@
       <Filter>Services</Filter>
     </ClInclude>
     <ClInclude Include="Audio\Audio3DEmitter.hpp">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio\Audio3DListener.hpp">
       <Filter>Audio</Filter>
     </ClInclude>
   </ItemGroup>
