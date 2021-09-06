@@ -544,6 +544,9 @@
     <ClCompile Include="Audio\Audio3DCone.cpp">
       <Filter>Audio</Filter>
     </ClCompile>
+    <ClCompile Include="Audio\XAudio.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vector2.hpp">
@@ -1075,6 +1078,9 @@
       <Filter>Audio</Filter>
     </ClInclude>
     <ClInclude Include="Audio\Audio3DCone.hpp">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio\XAudio.hpp">
       <Filter>Audio</Filter>
     </ClInclude>
   </ItemGroup>

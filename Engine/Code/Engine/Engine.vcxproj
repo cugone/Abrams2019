@@ -34,6 +34,7 @@
     <ClCompile Include="Audio\Audio3DListener.cpp" />
     <ClCompile Include="Audio\AudioSystem.cpp" />
     <ClCompile Include="Audio\Wav.cpp" />
+    <ClCompile Include="Audio\XAudio.cpp" />
     <ClCompile Include="Core\App.cpp" />
     <ClCompile Include="Core\Argb.cpp" />
     <ClCompile Include="Core\ArgumentParser.cpp" />
@@ -196,6 +197,7 @@
     <ClInclude Include="Audio\Audio3DListener.hpp" />
     <ClInclude Include="Audio\AudioSystem.hpp" />
     <ClInclude Include="Audio\Wav.hpp" />
+    <ClInclude Include="Audio\XAudio.hpp" />
     <ClInclude Include="Core\App.hpp" />
     <ClInclude Include="Core\Argb.hpp" />
     <ClInclude Include="Core\ArgumentParser.hpp" />
