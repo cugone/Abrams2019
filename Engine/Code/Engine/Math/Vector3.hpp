@@ -60,8 +60,6 @@ public:
     friend std::ostream& operator<<(std::ostream& out_stream, const Vector3& v) noexcept;
     friend std::istream& operator>>(std::istream& in_stream, Vector3& v) noexcept;
 
-    //TODO: Consider removing Vector3::GetXYZ(float&, float&, float&)
-    void GetXYZ(float& outX, float& outY, float& outZ) const noexcept;
     [[nodiscard]] Vector2 GetXY() const noexcept;
     [[nodiscard]] Vector3 GetXYZ() const noexcept;
     [[nodiscard]] const float* GetAsFloatArray() const noexcept;

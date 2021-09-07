@@ -152,9 +152,8 @@ Vector2 Vector2::CreateFromPolarCoordinatesRadians(float length, float direction
     return Vector2{length * std::cos(directionRadians), length * std::sin(directionRadians)};
 }
 
-void Vector2::GetXY(float& outX, float& outY) const noexcept {
-    outX = x;
-    outY = y;
+std::tuple<float, float> Vector2::GetXY() const noexcept {
+    return std::make_tuple(x, y);
 }
 
 const float* Vector2::GetAsFloatArray() const noexcept {

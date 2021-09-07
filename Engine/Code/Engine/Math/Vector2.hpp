@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <tuple>
 
 class Vector3;
 class IntVector2;
@@ -55,8 +56,7 @@ public:
     friend std::ostream& operator<<(std::ostream& out_stream, const Vector2& v) noexcept;
     friend std::istream& operator>>(std::istream& in_stream, Vector2& v) noexcept;
 
-    //TODO: Vector2::GetXY should return a tuple
-    void GetXY(float& outX, float& outY) const noexcept;
+    std::tuple<float, float> GetXY() const noexcept;
     [[nodiscard]] const float* GetAsFloatArray() const noexcept;
     [[nodiscard]] float* GetAsFloatArray() noexcept;
 

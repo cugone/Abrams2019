@@ -189,12 +189,6 @@ std::istream& operator>>(std::istream& in_stream, Vector3& v) noexcept {
     return in_stream;
 }
 
-void Vector3::GetXYZ(float& outX, float& outY, float& outZ) const noexcept {
-    outX = x;
-    outY = y;
-    outZ = z;
-}
-
 Vector3 Vector3::GetXYZ() const noexcept {
     return Vector3{x, y, z};
 }

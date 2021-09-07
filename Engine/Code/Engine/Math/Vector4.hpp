@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <tuple>
 
 class Vector2;
 class Vector3;
@@ -76,9 +77,8 @@ public:
     [[nodiscard]] Vector2 GetXY() const noexcept;
     [[nodiscard]] Vector2 GetZW() const noexcept;
 
-    //TODO: These should return tuples
-    void GetXYZ(float& out_x, float& out_y, float& out_z) const noexcept;
-    void GetXYZW(float& out_x, float& out_y, float& out_z, float& out_w) const noexcept;
+    std::tuple<float, float, float> GetXYZ() const noexcept;
+    std::tuple<float, float, float, float> GetXYZW() const noexcept;
 
     void SetXYZ(float newX, float newY, float newZ) noexcept;
     void SetXYZW(float newX, float newY, float newZ, float newW) noexcept;

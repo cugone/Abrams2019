@@ -153,17 +153,12 @@ Vector2 Vector4::GetZW() const noexcept {
     return Vector2(z, w);
 }
 
-void Vector4::GetXYZ(float& out_x, float& out_y, float& out_z) const noexcept {
-    out_x = x;
-    out_y = y;
-    out_z = z;
+std::tuple<float, float, float> Vector4::GetXYZ() const noexcept {
+    return std::make_tuple(x, y, z);
 }
 
-void Vector4::GetXYZW(float& out_x, float& out_y, float& out_z, float& out_w) const noexcept {
-    out_x = x;
-    out_y = y;
-    out_z = z;
-    out_w = w;
+std::tuple<float, float, float, float> Vector4::GetXYZW() const noexcept {
+    return std::make_tuple(x, y, z, w);
 }
 
 void Vector4::SetXYZ(float newX, float newY, float newZ) noexcept {
