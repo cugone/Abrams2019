@@ -18,6 +18,14 @@ public:
     [[nodiscard]] static Vector2 CreateFromPolarCoordinatesRadians(float length, float directionRadians);
 
     Vector2() noexcept = default;
+    Vector2(const Vector2& other) noexcept = default;
+    Vector2(Vector2&& other) noexcept = default;
+
+    Vector2& operator=(const Vector2& rhs) noexcept = default;
+    Vector2& operator=(Vector2&& rhs) noexcept = default;
+
+    ~Vector2() noexcept = default;
+
     explicit Vector2(const std::string& value) noexcept;
     explicit Vector2(float initialX, float initialY) noexcept;
     explicit Vector2(const Vector3& rhs) noexcept;

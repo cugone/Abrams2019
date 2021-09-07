@@ -36,6 +36,14 @@ public:
     [[nodiscard]] static Vector4 CalcHomogeneous(const Vector4& v) noexcept;
 
     Vector4() noexcept = default;
+    Vector4(const Vector4& other) noexcept = default;
+    Vector4(Vector4&& other) noexcept = default;
+
+    Vector4& operator=(const Vector4& rhs) noexcept = default;
+    Vector4& operator=(Vector4&& rhs) noexcept = default;
+
+    ~Vector4() noexcept = default;
+
     explicit Vector4(const std::string& value) noexcept;
     explicit Vector4(const IntVector4& intvec4) noexcept;
     explicit Vector4(const Vector3& xyz, float initialW) noexcept;
