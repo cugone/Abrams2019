@@ -15,9 +15,11 @@
 #endif
 
 std::ostream& System::OS::operator<<(std::ostream& out, const System::OS::OsDesc& os) noexcept {
+    const auto entry_name_field_width = std::size_t{40u};
+    const auto entry_field_width = std::size_t{35u};
     const auto old_fmt = out.flags();
     const auto old_w = out.width();
-    out << std::left << std::setw(25) << "Operating System:" << std::right << std::setw(27) << os.VersionFriendly << '\n';
+    out << std::left << std::setw(entry_name_field_width) << "Operating System:" << std::right << std::setw(entry_field_width) << os.VersionFriendly << '\n';
     out.flags(old_fmt);
     out.width(old_w);
     return out;

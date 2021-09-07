@@ -179,19 +179,22 @@ DeviceInfo RHIDevice::CreateDeviceFromFirstAdapter(const std::vector<AdapterInfo
 }
 
 void RHIDevice::OutputAdapterInfo(const std::vector<AdapterInfo>& adapters) const noexcept {
+    const auto section_break_field_width = std::size_t{80u};
+    const auto entry_name_field_width = std::size_t{40u};
+    const auto entry_field_width = std::size_t{35u};
     std::ostringstream ss;
     ss << "ADAPTERS\n";
     std::size_t monitor_count{0u};
     for(const auto& adapter : adapters) {
-        ss << std::right << std::setw(60) << std::setfill('-') << '\n'
+        ss << std::right << std::setw(section_break_field_width) << std::setfill('-') << '\n'
            << std::setfill(' ');
         ss << AdapterInfoToGraphicsCardDesc(adapter) << '\n';
         const auto outputs = GetOutputsFromAdapter(adapter);
         monitor_count += outputs.size();
-        ss << "Monitors connected to this adapter: " << std::left << std::setw(22) << std::to_string(outputs.size()) + '\n';
+        ss << std::left << std::setw(entry_name_field_width) << "Monitors connected to this adapter: " << std::right << std::setw(entry_field_width) << outputs.size() << '\n';
     }
-    ss << "Total Monitor count: " << std::to_string(monitor_count) << '\n';
-    ss << std::right << std::setw(60) << std::setfill('-') << '\n';
+    ss << std::left << std::setw(entry_name_field_width) << "Total Monitor count: " << std::right << std::setw(entry_field_width) << monitor_count << '\n';
+    ss << std::right << std::setw(section_break_field_width) << std::setfill('-') << '\n';
     ss << std::flush;
     DebuggerPrintf(ss.str().c_str());
 }

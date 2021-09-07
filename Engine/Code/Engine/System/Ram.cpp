@@ -9,10 +9,12 @@ unsigned long long GetPhysicalRam() noexcept;
 unsigned long long GetAvailableRam() noexcept;
 
 std::ostream& System::Ram::operator<<(std::ostream& out, const System::Ram::RamDesc& desc) noexcept {
+    const auto entry_name_field_width = std::size_t{40u};
+    const auto entry_field_width = std::size_t{35u};
     const auto old_fmt = out.flags();
     const auto old_w = out.width();
-    out << std::left << std::setw(22) << "Installed RAM:" << std::right << std::setw(30) << std::fixed << std::setprecision(1) << static_cast<long double>(desc.installed) * MathUtils::GIB_BYTES_RATIO.num / MathUtils::GIB_BYTES_RATIO.den << " GB\n";
-    out << std::left << std::setw(22) << "Available RAM:" << std::right << std::setw(30) << std::fixed << std::setprecision(1) << static_cast<long double>(desc.available) * MathUtils::GIB_BYTES_RATIO.num / MathUtils::GIB_BYTES_RATIO.den << " GB\n";
+    out << std::left << std::setw(entry_name_field_width) << "Installed RAM:" << std::right << std::setw(entry_field_width) << std::fixed << std::setprecision(1) << static_cast<long double>(desc.installed) * MathUtils::GIB_BYTES_RATIO.num / MathUtils::GIB_BYTES_RATIO.den << " GB\n";
+    out << std::left << std::setw(entry_name_field_width) << "Available RAM:" << std::right << std::setw(entry_field_width) << std::fixed << std::setprecision(1) << static_cast<long double>(desc.available) * MathUtils::GIB_BYTES_RATIO.num / MathUtils::GIB_BYTES_RATIO.den << " GB\n";
     out.flags(old_fmt);
     out.width(old_w);
     return out;
