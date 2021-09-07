@@ -64,6 +64,7 @@ public:
     void GetXYZ(float& outX, float& outY, float& outZ) const noexcept;
     [[nodiscard]] Vector2 GetXY() const noexcept;
     [[nodiscard]] Vector3 GetXYZ() const noexcept;
+    [[nodiscard]] const float* GetAsFloatArray() const noexcept;
     [[nodiscard]] float* GetAsFloatArray() noexcept;
 
     [[nodiscard]] float CalcLength() const noexcept;

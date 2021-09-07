@@ -203,6 +203,10 @@ Vector2 Vector3::GetXY() const noexcept {
     return Vector2{x, y};
 }
 
+const float* Vector3::GetAsFloatArray() const noexcept {
+    return &x;
+}
+
 float* Vector3::GetAsFloatArray() noexcept {
     return &x;
 }
