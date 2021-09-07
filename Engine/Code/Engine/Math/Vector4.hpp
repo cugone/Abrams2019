@@ -83,6 +83,7 @@ public:
     void SetXYZ(float newX, float newY, float newZ) noexcept;
     void SetXYZW(float newX, float newY, float newZ, float newW) noexcept;
 
+    [[nodiscard]] const float* GetAsFloatArray() const noexcept;
     [[nodiscard]] float* GetAsFloatArray() noexcept;
 
     [[nodiscard]] float CalcLength3D() const noexcept;

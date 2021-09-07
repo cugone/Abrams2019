@@ -179,6 +179,10 @@ void Vector4::SetXYZW(float newX, float newY, float newZ, float newW) noexcept {
     w = newW;
 }
 
+const float* Vector4::GetAsFloatArray() const noexcept {
+    return &x;
+}
+
 float* Vector4::GetAsFloatArray() noexcept {
     return &x;
 }

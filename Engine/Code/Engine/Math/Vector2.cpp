@@ -157,6 +157,10 @@ void Vector2::GetXY(float& outX, float& outY) const noexcept {
     outY = y;
 }
 
+const float* Vector2::GetAsFloatArray() const noexcept {
+    return &x;
+}
+
 float* Vector2::GetAsFloatArray() noexcept {
     return &x;
 }

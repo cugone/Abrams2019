@@ -57,6 +57,7 @@ public:
 
     //TODO: Vector2::GetXY should return a tuple
     void GetXY(float& outX, float& outY) const noexcept;
+    [[nodiscard]] const float* GetAsFloatArray() const noexcept;
     [[nodiscard]] float* GetAsFloatArray() noexcept;
 
     [[nodiscard]] float CalcHeadingRadians() const noexcept;
