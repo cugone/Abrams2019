@@ -7,6 +7,7 @@
 /************************************************/
 
 #include "Engine/Audio/Wav.hpp"
+#include "Engine/Audio/XAudio.hpp"
 
 #include "Engine/Core/EngineSubsystem.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
@@ -14,22 +15,22 @@
 
 #include "Engine/Services/IAudioService.hpp"
 
-#include <Xaudio2.h>
 #include <filesystem>
 #include <functional>
 #include <iomanip>
 #include <memory>
 #include <mutex>
 #include <sstream>
+#include <thread>
 #include <utility>
 #include <vector>
-#include <x3daudio.h>
-
-#pragma comment(lib, "Xaudio2.lib")
 
 namespace FileUtils {
 class Wav;
 }
+
+class Audio3DEmitter;
+class Audio3DListener;
 
 class AudioSystem : public EngineSubsystem, public IAudioService {
 private:
@@ -41,8 +42,8 @@ public:
     public:
         virtual ~EngineCallback() {
         }
-        virtual void STDMETHODCALLTYPE OnProcessingPassStart() override{};
-        virtual void STDMETHODCALLTYPE OnProcessingPassEnd() override{};
+        virtual void STDMETHODCALLTYPE OnProcessingPassStart() override {};
+        virtual void STDMETHODCALLTYPE OnProcessingPassEnd() override {};
         virtual void STDMETHODCALLTYPE OnCriticalError(HRESULT error) override;
     };
     class Sound {
@@ -87,13 +88,13 @@ private:
         public:
             virtual ~VoiceCallback() {
             }
-            virtual void STDMETHODCALLTYPE OnVoiceProcessingPassStart(uint32_t /*bytesRequired*/) override{};
-            virtual void STDMETHODCALLTYPE OnVoiceProcessingPassEnd() override{};
-            virtual void STDMETHODCALLTYPE OnStreamEnd() override{};
-            virtual void STDMETHODCALLTYPE OnBufferStart(void* /*pBufferContext*/) override{};
+            virtual void STDMETHODCALLTYPE OnVoiceProcessingPassStart(uint32_t /*bytesRequired*/) override {};
+            virtual void STDMETHODCALLTYPE OnVoiceProcessingPassEnd() override {};
+            virtual void STDMETHODCALLTYPE OnStreamEnd() override {};
+            virtual void STDMETHODCALLTYPE OnBufferStart(void* /*pBufferContext*/) override {};
             virtual void STDMETHODCALLTYPE OnBufferEnd(void* pBufferContext) override;
             virtual void STDMETHODCALLTYPE OnLoopEnd(void* pBufferContext) override;
-            virtual void STDMETHODCALLTYPE OnVoiceError(void* /*pBufferContext*/, HRESULT /*Error*/) override{};
+            virtual void STDMETHODCALLTYPE OnVoiceError(void* /*pBufferContext*/, HRESULT /*Error*/) override {};
         };
         struct ChannelDesc {
             ChannelDesc() = default;
@@ -115,11 +116,15 @@ private:
         };
         explicit Channel(AudioSystem& audioSystem, const ChannelDesc& desc) noexcept;
         ~Channel() noexcept;
+
+        void SetDSPSettings(AudioDSPResults& settings);
+
         void Play(Sound& snd) noexcept;
         void Stop() noexcept;
         void Pause() noexcept;
         void SetStopWhenFinishedLooping(bool value);
 
+        void SetDSPSettings(AudioDSPResults& settings, uint32_t operationSetId);
         void Play(Sound& snd, uint32_t operationSetId) noexcept;
         void Stop(uint32_t operationSetId) noexcept;
         void Pause(uint32_t operationSetId) noexcept;
@@ -191,9 +196,13 @@ public:
     void RegisterWavFilesFromFolder(std::filesystem::path folderpath, bool recursive = false) noexcept;
     void RegisterWavFile(std::filesystem::path filepath) noexcept;
 
+    void Register3DAudioEmitter(Audio3DEmitter* emitter) noexcept override;
+    void Register3DAudioListener(Audio3DListener* listener) noexcept override;
+
     void Play(Sound& snd, SoundDesc desc = SoundDesc{}) noexcept;
     void Play(std::filesystem::path filepath, SoundDesc desc = SoundDesc{}) noexcept;
 
+    void SetDSPSettings(const AudioDSPSettings& newSettings) noexcept;
 
     [[nodiscard]] Sound* CreateSound(std::filesystem::path filepath) noexcept;
     [[nodiscard]] Sound* CreateSoundInstance(std::filesystem::path filepath) noexcept;
@@ -216,9 +225,18 @@ public:
     [[nodiscard]] const WAVEFORMATEXTENSIBLE& GetFormat() const noexcept;
     [[nodiscard]] FileUtils::Wav::WavFormatChunk GetLoadedWavFileFormat() const noexcept;
 
+    AudioDSPResults CalculateDSP(const Audio3DEmitter& emitter, const Audio3DListener& listener, const AudioDSPSettings& settings) const noexcept;
+
 protected:
 private:
+    void InitializeAudioSystem() noexcept;
+
     void DeactivateChannel(Channel& channel) noexcept;
+
+    void EmitterListenerDSP_worker() noexcept;
+
+    bool IsRunning() const noexcept;
+
     WAVEFORMATEXTENSIBLE _audio_format_ex{};
     std::size_t _sound_count{};
     std::size_t _max_channels{1024u};
@@ -227,10 +245,17 @@ private:
     std::vector<std::pair<std::filesystem::path, std::unique_ptr<ChannelGroup>>> _channel_groups{};
     std::vector<std::unique_ptr<Channel>> _active_channels{};
     std::vector<std::unique_ptr<Channel>> _idle_channels{};
+    std::vector<Audio3DEmitter*> _emitters{};
+    std::vector<Audio3DListener*> _listeners{};
     std::atomic_uint32_t _operationID{};
     IXAudio2* _xaudio2 = nullptr;
     X3DAUDIO_HANDLE _x3daudio;
     IXAudio2MasteringVoice* _master_voice{};
     EngineCallback _engine_callback{};
+    uint32_t _input_channels{};
     mutable std::mutex _cs{};
+    std::thread _dsp_thread{};
+    AudioDSPSettings _dsp_settings{};
+    std::atomic_bool _is_running{false};
+    std::condition_variable _signal{};
 };

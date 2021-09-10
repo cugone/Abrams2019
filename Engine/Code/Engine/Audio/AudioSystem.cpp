@@ -1,10 +1,13 @@
 #include "Engine/Audio/AudioSystem.hpp"
 
 #include "Engine/Audio/Wav.hpp"
+#include "Engine/Audio/Audio3DEmitter.hpp"
+#include "Engine/Audio/Audio3DListener.hpp"
 
 #include "Engine/Core/BuildConfig.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/FileUtils.hpp"
+#include "Engine/Core/ThreadUtils.hpp"
 
 #include "Engine/Input/InputSystem.hpp"
 
@@ -15,27 +18,58 @@
 
 #include <algorithm>
 
+void AudioSystem::EmitterListenerDSP_worker() noexcept {
+    while(IsRunning()) {
+        static thread_local auto updateAudioThisFrame = uint8_t{0u};
+        std::unique_lock<std::mutex> lock(_cs);
+        //Condition to wake up: not running or should update this frame.
+        _signal.wait(lock, [this]() -> bool { return !_is_running || !!updateAudioThisFrame; });
+        if(!!updateAudioThisFrame) {
+            for(auto& active : _active_channels) {
+                for(auto& emitter : _emitters) {
+                    for(auto& listener : _listeners) {
+                        const auto old_freq = active->GetFrequency();
+                        auto dsp = CalculateDSP(*emitter, *listener, _dsp_settings);
+                        active->SetDSPSettings(dsp);
+                    }
+                }
+            }
+        }
+        ++updateAudioThisFrame;
+        updateAudioThisFrame &= 1;
+    }
+}
+
+bool AudioSystem::IsRunning() const noexcept {
+    bool running = false;
+    {
+        std::scoped_lock<std::mutex> lock(_cs);
+        running = _is_running;
+    }
+    return running;
+}
+
 AudioSystem::AudioSystem() noexcept
 : EngineSubsystem()
 , IAudioService()
 {
-    bool co_init_succeeded = SUCCEEDED(::CoInitializeEx(nullptr, COINIT_MULTITHREADED));
-    GUARANTEE_OR_DIE(co_init_succeeded, "Failed to setup Audio System.");
-    bool xaudio2_create_succeeded = SUCCEEDED(::XAudio2Create(&_xaudio2));
-    GUARANTEE_OR_DIE(xaudio2_create_succeeded, "Failed to create Audio System.");
+    InitializeAudioSystem();
 }
 
 AudioSystem::AudioSystem(std::size_t max_channels) noexcept
 : EngineSubsystem()
 , IAudioService()
-, _max_channels(max_channels) {
-    bool co_init_succeeded = SUCCEEDED(::CoInitializeEx(nullptr, COINIT_MULTITHREADED));
-    GUARANTEE_OR_DIE(co_init_succeeded, "Failed to setup Audio System.");
-    bool xaudio2_create_succeeded = SUCCEEDED(::XAudio2Create(&_xaudio2));
-    GUARANTEE_OR_DIE(xaudio2_create_succeeded, "Failed to create Audio System.");
+, _max_channels(max_channels)
+{
+    InitializeAudioSystem();
 }
 
 AudioSystem::~AudioSystem() noexcept {
+    _is_running = false;
+    _signal.notify_one();
+
+    _dsp_thread.join();
+
     for(auto& group : _channel_groups) {
         if(group.second) {
             group.second->Stop();
@@ -79,6 +113,13 @@ AudioSystem::~AudioSystem() noexcept {
     ::CoUninitialize();
 }
 
+void AudioSystem::InitializeAudioSystem() noexcept {
+    bool co_init_succeeded = SUCCEEDED(::CoInitializeEx(nullptr, COINIT_MULTITHREADED));
+    GUARANTEE_OR_DIE(co_init_succeeded, "Failed to setup Audio System.");
+    bool xaudio2_create_succeeded = SUCCEEDED(::XAudio2Create(&_xaudio2));
+    GUARANTEE_OR_DIE(xaudio2_create_succeeded, "Failed to create Audio System.");
+}
+
 void AudioSystem::Initialize() noexcept {
 #ifdef AUDIO_DEBUG
     XAUDIO2_DEBUG_CONFIGURATION config{};
@@ -92,8 +133,15 @@ void AudioSystem::Initialize() noexcept {
 #endif
     _xaudio2->CreateMasteringVoice(&_master_voice);
 
+    XAUDIO2_VOICE_DETAILS details{};
+    _master_voice->GetVoiceDetails(&details);
+    _input_channels = details.InputChannels;
+
+    DebuggerPrintf("Mastering voice expects %i input channels.\n", details.InputChannels);
+
     DWORD dwChannelMask;
     _master_voice->GetChannelMask(&dwChannelMask);
+
     ::X3DAudioInitialize(dwChannelMask, X3DAUDIO_SPEED_OF_SOUND, _x3daudio);
 
     _idle_channels.reserve(_max_channels);
@@ -109,6 +157,10 @@ void AudioSystem::Initialize() noexcept {
     SetFormat(fmt);
 
     SetEngineCallback(&_engine_callback);
+    _is_running = true;
+
+    _dsp_thread = std::thread(&AudioSystem::EmitterListenerDSP_worker, this);
+    ThreadUtils::SetThreadDescription(_dsp_thread, std::string{"AudioSystem Updater"});
 }
 
 AudioSystem::ChannelGroup* AudioSystem::GetChannelGroup(const std::string& name) const noexcept {
@@ -221,12 +273,45 @@ FileUtils::Wav::WavFormatChunk AudioSystem::GetLoadedWavFileFormat() const noexc
     return _wave_files.begin()->second->GetFormatChunk();
 }
 
+AudioDSPResults AudioSystem::CalculateDSP(const Audio3DEmitter& emitter, const Audio3DListener& listener, const AudioDSPSettings& settings) const noexcept {
+    X3DAUDIO_EMITTER x3daudio_emitter{};
+    X3DAUDIO_CONE emitter_cone{};
+    if(const auto is_emitter_omniDirectional = emitter.IsOmniDirectional()) {
+        emitter_cone = GetDefaultOmniDirectionalX3DAudioCone();
+    } else {
+        emitter_cone = Audio3DConeToX3DAudioCone(emitter.Get3DCone());
+    }
+
+    const auto& x3daudio_listener = listener.GetX3DAudioListener();
+
+    uint32_t flags = AudioDSPSettingsToX3DAudioDSPFlags(settings);
+
+    X3DAUDIO_DSP_SETTINGS dsp_settings{};
+    dsp_settings.pMatrixCoefficients = settings.use_matrix_table ? new float[_input_channels * _max_channels] : nullptr;
+    dsp_settings.pDelayTimes = settings.use_delay_array && _input_channels > 1 ? new float[_max_channels] : nullptr;
+    dsp_settings.SrcChannelCount = 1;
+    dsp_settings.DstChannelCount = _input_channels * static_cast<uint32_t>(_max_channels);
+
+    ::X3DAudioCalculate(_x3daudio, &x3daudio_listener, &x3daudio_emitter, flags, &dsp_settings);
+    
+    AudioDSPResults results{};
+    results.dopplerFactor = dsp_settings.DopplerFactor;
+    results.emitterToListenerAngleRadians = dsp_settings.EmitterToListenerAngle;
+    results.emitterToListenerDistance = dsp_settings.EmitterToListenerDistance;
+    results.emitterVelocityComponent = dsp_settings.EmitterVelocityComponent;
+    results.lowPassFilterDirectCoefficient = dsp_settings.LPFDirectCoefficient;
+    results.lowPassFilterReverbCoefficient = dsp_settings.LPFReverbCoefficient;
+    results.pMatrixCoefficients = &dsp_settings.pMatrixCoefficients;
+
+    return results;
+}
+
 void AudioSystem::BeginFrame() noexcept {
     /* DO NOTHING */
 }
 
 void AudioSystem::Update([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept {
-    /* DO NOTHING */
+
 }
 
 void AudioSystem::Render() const noexcept {
@@ -343,6 +428,10 @@ void AudioSystem::Play(const std::size_t id, const bool looping) noexcept {
     Play(_sounds[id].first, desc);
 }
 
+void AudioSystem::SetDSPSettings(const AudioDSPSettings& newSettings) noexcept {
+    _dsp_settings = newSettings;
+}
+
 void AudioSystem::Stop(const std::filesystem::path& filepath) noexcept {
     const auto& found = std::find_if(std::cbegin(_sounds), std::cend(_sounds), [&filepath](const auto& snd) { return snd.first == filepath; });
     if(found != std::cend(_sounds)) {
@@ -436,6 +525,14 @@ void AudioSystem::RegisterWavFile(std::filesystem::path filepath) noexcept {
     }
 }
 
+void AudioSystem::Register3DAudioEmitter(Audio3DEmitter* emitter) noexcept {
+    _emitters.emplace_back(emitter);
+}
+
+void AudioSystem::Register3DAudioListener(Audio3DListener* listener) noexcept {
+    _listeners.emplace_back(listener);
+}
+
 void STDMETHODCALLTYPE AudioSystem::Channel::VoiceCallback::OnBufferEnd(void* pBufferContext) {
     Channel& channel = *static_cast<Channel*>(pBufferContext);
     channel.Stop();
@@ -470,6 +567,30 @@ AudioSystem::Channel::~Channel() noexcept {
         Stop();
         _voice->DestroyVoice();
         _voice = nullptr;
+    }
+}
+
+void AudioSystem::Channel::SetDSPSettings(AudioDSPResults& settings) {
+    if(this && _voice) {
+        if(settings.pMatrixCoefficients && *settings.pMatrixCoefficients) {
+            _voice->SetOutputMatrix(_audio_system->_master_voice, 1, _audio_system->_input_channels, *settings.pMatrixCoefficients);
+            delete[] *settings.pMatrixCoefficients;
+            *settings.pMatrixCoefficients = nullptr;
+        }
+        XAUDIO2_FILTER_PARAMETERS filterParameters{XAUDIO2_FILTER_TYPE::LowPassFilter, 2.0f * std::sin(MathUtils::M_1PI_6 * settings.lowPassFilterDirectCoefficient)};
+        _voice->SetFilterParameters(&filterParameters);
+    }
+}
+
+void AudioSystem::Channel::SetDSPSettings(AudioDSPResults& settings, uint32_t operationSetId) {
+    if(_voice) {
+        if(settings.pMatrixCoefficients && *settings.pMatrixCoefficients) {
+            _voice->SetOutputMatrix(_audio_system->_master_voice, 1, _audio_system->_input_channels, *settings.pMatrixCoefficients, operationSetId);
+            delete[] *settings.pMatrixCoefficients;
+            *settings.pMatrixCoefficients = nullptr;
+        }
+        XAUDIO2_FILTER_PARAMETERS filterParameters{XAUDIO2_FILTER_TYPE::LowPassFilter, 2.0f * std::sin(MathUtils::M_1PI_6 * settings.lowPassFilterDirectCoefficient)};
+        _voice->SetFilterParameters(&filterParameters, operationSetId);
     }
 }
 
