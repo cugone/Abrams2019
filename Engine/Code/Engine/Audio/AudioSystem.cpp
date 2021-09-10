@@ -276,11 +276,12 @@ FileUtils::Wav::WavFormatChunk AudioSystem::GetLoadedWavFileFormat() const noexc
 AudioDSPResults AudioSystem::CalculateDSP(const Audio3DEmitter& emitter, const Audio3DListener& listener, const AudioDSPSettings& settings) const noexcept {
     X3DAUDIO_EMITTER x3daudio_emitter{};
     X3DAUDIO_CONE emitter_cone{};
-    if(const auto is_emitter_omniDirectional = emitter.IsOmniDirectional()) {
+    if(const auto is_emitter_omniDirectional = emitter.IsOmniDirectional(); is_emitter_omniDirectional) {
         emitter_cone = GetDefaultOmniDirectionalX3DAudioCone();
     } else {
         emitter_cone = Audio3DConeToX3DAudioCone(emitter.Get3DCone());
     }
+    x3daudio_emitter.pCone = &emitter_cone;
 
     const auto& x3daudio_listener = listener.GetX3DAudioListener();
 
