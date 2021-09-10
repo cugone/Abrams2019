@@ -4,6 +4,7 @@
 
 #include <ctime>
 #include <iomanip>
+#include <string_view>
 #include <sstream>
 
 namespace TimeUtils {
@@ -14,7 +15,7 @@ enum class FormatType {
     Both
 };
 
-std::string GetFormatStringFromOptions(const DateTimeStampOptions& options, FormatType type);
+std::string_view GetFormatStringFromOptions(const DateTimeStampOptions& options, FormatType type);
 void AppendMilliseconds(std::ostringstream& msg, const DateTimeStampOptions& options, const std::chrono::time_point<std::chrono::system_clock> now);
 void AppendStamp(std::ostringstream& msg, const DateTimeStampOptions& options, const std::chrono::time_point<std::chrono::system_clock> now);
 
@@ -55,11 +56,11 @@ void AppendStamp(std::ostringstream& msg, const DateTimeStampOptions& options, c
     auto t = system_clock::to_time_t(now);
     std::tm tm;
     ::localtime_s(&tm, &t);
-    std::string fmt = GetFormatStringFromOptions(options, FormatType::Both);
-    msg << std::put_time(&tm, fmt.c_str());
+    const auto fmt = GetFormatStringFromOptions(options, FormatType::Both);
+    msg << std::put_time(&tm, fmt.data());
 }
 
-std::string GetFormatStringFromOptions(const DateTimeStampOptions& options, FormatType type) {
+std::string_view GetFormatStringFromOptions(const DateTimeStampOptions& options, FormatType type) {
     switch(type) {
     case FormatType::Date:
         return options.use_separator ? "%Y-%m-%d" : "%Y%m%d";
