@@ -830,7 +830,7 @@ bool KerningFont::LoadFromBinary(std::vector<unsigned char>& buffer) noexcept {
         }
     }
     if(successful_block_reads < BLOCK_ID_KERNINGS) {
-        DebuggerPrintf("No kerning paris found in font \"%s\"\n", _name.c_str());
+        DebuggerPrintf("No kerning pairs found in font \"%s\"\n", _name.c_str());
     }
     return true;
 }
