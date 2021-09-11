@@ -23,7 +23,7 @@ ParticleEffectDefinition* ParticleSystem::GetEffectDefinition(const std::string&
 void ParticleSystem::RegisterEffectsFromFolder(std::filesystem::path folderpath, bool recursive /*= false*/) {
     namespace FS = std::filesystem;
     if(!FS::exists(folderpath)) {
-        DebuggerPrintf("Attempting to Register Materials from unknown path: %s", FS::absolute(folderpath).string().c_str());
+        DebuggerPrintf("Attempting to Register Materials from unknown path: %s\n", FS::absolute(folderpath).string().c_str());
         return;
     }
     folderpath = FS::canonical(folderpath);
