@@ -3631,7 +3631,7 @@ bool Renderer::RegisterMaterial(std::filesystem::path filepath) noexcept {
 void Renderer::RegisterMaterialsFromFolder(std::filesystem::path folderpath, bool recursive /*= false*/) noexcept {
     namespace FS = std::filesystem;
     if(!FS::exists(folderpath)) {
-        DebuggerPrintf("Attempting to Register Materials from unknown path: %s", FS::absolute(folderpath).string().c_str());
+        DebuggerPrintf("Attempting to Register Materials from unknown path: %s\n", FS::absolute(folderpath).string().c_str());
         return;
     }
     folderpath = FS::canonical(folderpath);
