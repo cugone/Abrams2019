@@ -382,7 +382,7 @@ void App<T>::RunFrame() {
 template<typename T>
 void App<T>::LogSystemDescription() const {
     const auto section_break_field_width = std::size_t{80u};
-    auto system = System::GetSystemDesc();
+    const auto system = System::GetSystemDesc();
     std::ostringstream ss;
     ss << std::right << std::setfill('-') << std::setw(section_break_field_width) << '\n';
     ss << StringUtils::to_string(system);
