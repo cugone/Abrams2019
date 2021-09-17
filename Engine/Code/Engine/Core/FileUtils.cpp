@@ -182,9 +182,11 @@ bool IsContentPathId(const KnownPathID& pathid) noexcept {
         case KnownPathID::GameData: return true;
         case KnownPathID::GameFonts: return true;
         case KnownPathID::GameMaterials: return true;
+        case KnownPathID::GameLogs: return true;
         case KnownPathID::EngineData: return true;
         case KnownPathID::EngineFonts: return true;
         case KnownPathID::EngineMaterials: return true;
+        case KnownPathID::EngineLogs: return true;
         case KnownPathID::None: return false;
         case KnownPathID::Max: return false;
         default:
@@ -200,9 +202,11 @@ bool IsSystemPathId(const KnownPathID& pathid) noexcept {
     case KnownPathID::GameData: return false;
     case KnownPathID::GameFonts: return false;
     case KnownPathID::GameMaterials: return false;
+    case KnownPathID::GameLogs: return false;
     case KnownPathID::EngineData: return false;
     case KnownPathID::EngineFonts: return false;
     case KnownPathID::EngineMaterials: return false;
+    case KnownPathID::EngineLogs: return false;
     case KnownPathID::Max: return false;
 #if defined(PLATFORM_WINDOWS)
     case KnownPathID::Windows_AppDataRoaming: return true;
@@ -277,6 +281,11 @@ std::filesystem::path GetKnownFolderPath(const KnownPathID& pathid) noexcept {
         if(FS::exists(p)) {
             p = FS::canonical(p);
         }
+    } else if(pathid == KnownPathID::GameLogs) {
+        p = GetWorkingDirectory() / FS::path{"Data/Logs/"};
+        if(FS::exists(p)) {
+            p = FS::canonical(p);
+        }
     } else if(pathid == KnownPathID::EngineData) {
         p = GetWorkingDirectory() / FS::path{"Engine/"};
         if(FS::exists(p)) {
@@ -292,7 +301,13 @@ std::filesystem::path GetKnownFolderPath(const KnownPathID& pathid) noexcept {
         if(FS::exists(p)) {
             p = FS::canonical(p);
         }
+    } else if(pathid == KnownPathID::EngineLogs) {
+        p = GetWorkingDirectory() / FS::path{"Engine/Logs/"};
+        if(FS::exists(p)) {
+            p = FS::canonical(p);
+        }
     } else {
+#ifdef PLATFORM_WINDOWS
         {
             PWSTR ppszPath = nullptr;
             const auto hr_path = ::SHGetKnownFolderPath(GetKnownPathIdForOS(pathid), KF_FLAG_DEFAULT, nullptr, &ppszPath);
@@ -303,6 +318,7 @@ std::filesystem::path GetKnownFolderPath(const KnownPathID& pathid) noexcept {
                 p = FS::canonical(p);
             }
         }
+#endif
     }
     p.make_preferred();
     return p;

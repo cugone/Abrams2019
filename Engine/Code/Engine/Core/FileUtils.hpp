@@ -70,9 +70,11 @@ enum class KnownPathID {
     GameData,
     GameFonts,
     GameMaterials,
+    GameLogs,
     EngineData,
     EngineFonts,
     EngineMaterials,
+    EngineLogs,
     Max
 };
 
