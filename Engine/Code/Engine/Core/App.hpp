@@ -387,7 +387,7 @@ void App<T>::LogSystemDescription() const {
     ss << std::right << std::setfill('-') << std::setw(section_break_field_width) << '\n';
     ss << StringUtils::to_string(system);
     ss << std::right << std::setfill('-') << std::setw(section_break_field_width) << '\n';
-    DebuggerPrintf(ss.str().c_str());
+    g_theFileLogger->LogAndFlush(ss.str());
 }
 
 template<typename T>
