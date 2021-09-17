@@ -110,35 +110,6 @@ bool Riff::ParseDataIntoChunks(std::vector<unsigned char>& buffer) noexcept {
     return true;
 }
 
-void Riff::ShowRiffChunkHeaders() const noexcept {
-#ifdef AUDIO_DEBUG
-    std::ostringstream ss;
-    ss << "Chunks:\n";
-    for(auto&& chunk : _chunks) {
-        ss << "Chunk ID: ";
-        ss << chunk->header.fourcc[0]
-           << chunk->header.fourcc[1]
-           << chunk->header.fourcc[2]
-           << chunk->header.fourcc[3]
-           << '\n';
-        ss << "Length: " << chunk->header.length << '\n';
-        if(chunk->data) {
-            ss << "------------\n";
-            ss << "SubChunk ID: ";
-            ss << chunk->data->fourcc[0]
-               << chunk->data->fourcc[1]
-               << chunk->data->fourcc[2]
-               << chunk->data->fourcc[3];
-            ss << '\n';
-            ss << "Length: " << chunk->data->subdata_length << '\n';
-        }
-        ss << "------------\n";
-    }
-    ss.flush();
-    DebuggerPrintf(ss.str().c_str());
-#endif
-}
-
 Riff::RiffChunk* Riff::GetNextChunk() const noexcept {
     if(_current_chunk == _chunks.end()) {
         return nullptr;
@@ -162,7 +133,6 @@ unsigned int Riff::Load(const std::vector<unsigned char>& data) noexcept {
     if(!ParseDataIntoChunks(buffer)) {
         return RIFF_ERROR_NOT_A_RIFF;
     }
-    ShowRiffChunkHeaders();
     return RIFF_SUCCESS;
 }
 

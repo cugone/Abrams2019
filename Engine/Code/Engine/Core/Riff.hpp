@@ -49,7 +49,6 @@ protected:
 private:
     [[nodiscard]] bool ParseDataIntoChunks(std::vector<unsigned char>& buffer) noexcept;
 
-    void ShowRiffChunkHeaders() const noexcept;
     std::vector<std::unique_ptr<RiffChunk>> _chunks{};
     mutable decltype(_chunks)::iterator _current_chunk{};
 
