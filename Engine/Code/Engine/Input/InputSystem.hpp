@@ -112,8 +112,6 @@ private:
     void AdjustMouseCoords(float offsetX, float offsetY) noexcept;
     void AdjustMouseCoords(Vector2 offset) noexcept;
 
-    //static inline FileLogger& _fileLogger = ServiceLocator::get<FileLogger>();
-    //static inline Renderer& _renderer = ServiceLocator::get<Renderer>();
     std::array<XboxController, 4> _xboxControllers{};
     std::bitset<(std::size_t)KeyCode::Max> _previousKeys{};
     std::bitset<(std::size_t)KeyCode::Max> _currentKeys{};
