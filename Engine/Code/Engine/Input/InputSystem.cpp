@@ -182,7 +182,7 @@ void InputSystem::ToggleMouseCursorVisibility() noexcept {
 }
 
 void InputSystem::SetCursorWindowPosition(const Window& window, const Vector2& window_pos) noexcept {
-    POINT p;
+    POINT p{};
     p.x = static_cast<long>(window_pos.x);
     p.y = static_cast<long>(window_pos.y);
     if(::ClientToScreen(static_cast<HWND>(window.GetWindowHandle()), &p)) {
