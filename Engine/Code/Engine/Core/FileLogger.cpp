@@ -112,7 +112,8 @@ void FileLogger::FinalizeLog() noexcept {
     TimeUtils::DateTimeStampOptions opts;
     opts.use_separator = true;
     opts.is_filename = true;
-    to_p.replace_filename(logname + "_" + TimeUtils::GetDateTimeStampFromNow(opts) + ".log");
+    to_p.replace_filename(logname + "_" + TimeUtils::GetDateTimeStampFromNow(opts));
+    to_p.replace_extension(".log");
     //Canonicalizing output file that doesn't already exist is an error.
     to_p.make_preferred();
     _stream << "Copied log to: " << to_p << "...\n";
