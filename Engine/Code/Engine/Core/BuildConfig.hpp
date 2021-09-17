@@ -44,39 +44,30 @@
         #error "This program only compiles in C++"
     #endif
 
-    #if defined(__APPLE__) || defined(__MACH__)
-        #if defined(__clang__)
+    #if defined(__clang__)
+        #ifndef PLATFORM_CLANG
             #define PLATFORM_CLANG
-            #define PLATFORM_APPLE
-        #elif defined(__GNUC__) || defined(__GNUG__)
+        #endif
+    #elif defined(__GNUC__) || defined(__GNUG__)
+        #ifndef PLATFORM_GNUC
             #define PLATFORM_GNUC
-            #define PLATFORM_APPLE
         #endif
     #endif
-    #if defined(__clang__)
-        #define PLATFORM_CLANG
-        #define PLATFORM_LINUX
-    #elif defined(__GNUC__) || defined(__GNUG__)
-        #define PLATFORM_GNUC
-        #define PLATFORM_LINUX
-    #endif
 
-    #if defined(_WIN64) || defined(_WIN32)
+    #if defined(__APPLE__) || defined(__MACH__)
+        #ifndef PLATFORM_APPLE
+            #define PLATFORM_APPLE
+        #endif
+    #elif !(defined(_WIN64) || defined(_WIN32))
+        #ifndef PLATFORM_LINUX
+            #define PLATFORM_LINUX
+        #endif
+    #elif defined(_WIN64) || defined(_WIN32)
         #ifndef PLATFORM_WINDOWS
             #define PLATFORM_WINDOWS
         #endif
-    #endif
-
-    #if defined(_WIN64)
-        #ifdef PROFILE_BUILD
-            #define MAX_PROFILE_HISTORY 0xFFull
-            #define MAX_PROFILE_TREES 50ull
-        #endif
-    #elif defined(_WIN32)
-        #ifdef PROFILE_BUILD
-            #define MAX_PROFILE_HISTORY 0xFFu
-            #define MAX_PROFILE_TREES 50u
-        #endif
+    #else
+        #error "Unknown or unsupported platform."
     #endif
 
 #endif
