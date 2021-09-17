@@ -128,23 +128,23 @@ void FileLogger::Initialize(const std::string& log_name) noexcept {
         return;
     }
     namespace FS = std::filesystem;
-    std::string folder_str = "Data/Logs/";
-    std::string log_str = folder_str + log_name + ".log";
-    FS::path folder_p{folder_str};
-    FS::path log_p{log_str};
-    if(FS::exists(log_p)) {
-        log_p = FS::canonical(log_p);
-        log_p.make_preferred();
-    } else {
-        log_p = FS::path{folder_p / std::string{log_name + ".log"}};
-        log_p.make_preferred();
-    }
-    folder_p.make_preferred();
+    const auto folder_p = FileUtils::GetKnownFolderPath(FileUtils::KnownPathID::GameLogs);
+    const auto extension = FS::path{".log"};
+    const auto log_p = [&]() {
+        FS::path result = (folder_p / log_name).replace_extension(extension);
+        if(FS::exists(result)) {
+            result = FS::canonical(result);
+        } else {
+            result = FS::absolute(result);
+        }
+        result.make_preferred();
+        return result;
+    }();
     _current_log_path = log_p;
     FileUtils::CreateFolders(folder_p); //I don't care if this returns false when the folders already exist.
     //Removes only if it exists.
     FS::remove(log_p);
-    FileUtils::RemoveExceptMostRecentFiles(folder_p, MAX_LOGS, ".log");
+    FileUtils::RemoveExceptMostRecentFiles(folder_p, MAX_LOGS, extension.string());
     _is_running = true;
     _stream.open(_current_log_path);
     if(_stream.fail()) {
