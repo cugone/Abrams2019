@@ -3,6 +3,9 @@
 #include "Engine/Core/Win.hpp"
 #include "Engine/Math/MathUtils.hpp"
 
+#include "Engine/Services/ServiceLocator.hpp"
+#include "Engine/Services/IFileLoggerService.hpp"
+
 bool XboxController::WasAnyButtonJustPressed() const noexcept {
     return (_previousButtonState.to_ulong() < _currentButtonState.to_ulong());
 }
@@ -65,6 +68,7 @@ bool XboxController::IsDisconnected() const noexcept {
 
 void XboxController::Update(int controller_number) noexcept {
     XINPUT_STATE state{};
+
     const auto error_status = ::XInputGetState(controller_number, &state);
     _previousPacketNumber = _currentPacketNumber;
     _currentPacketNumber = state.dwPacketNumber;
@@ -75,44 +79,52 @@ void XboxController::Update(int controller_number) noexcept {
         return;
     }
 
-    if(error_status == ERROR_SUCCESS) {
-        _previousActiveState[(std::size_t)ActiveState::Connected] = _currentActiveState[(std::size_t)ActiveState::Connected];
-        if(!_currentActiveState[(std::size_t)ActiveState::Connected]) {
-            _currentActiveState[(std::size_t)ActiveState::Connected] = true;
-        }
+    if(error_status != ERROR_SUCCESS) {
+        auto& logger = ServiceLocator::get<IFileLoggerService>();
+        logger.LogErrorLine("XInputGetState returned: " + std::to_string(error_status));
+        return;
+    }
 
-        _previousRawInput = _currentRawInput;
-        _currentRawInput = state.Gamepad.wButtons;
+    _previousActiveState[(std::size_t)ActiveState::Connected] = _currentActiveState[(std::size_t)ActiveState::Connected];
+    if(!_currentActiveState[(std::size_t)ActiveState::Connected]) {
+        _currentActiveState[(std::size_t)ActiveState::Connected] = true;
+    }
 
-        UpdateState();
+    if(_previousPacketNumber == _currentPacketNumber) {
+        return;
+    }
 
-        _leftThumbDistance = Vector2(state.Gamepad.sThumbLX, state.Gamepad.sThumbLY);
-        _rightThumbDistance = Vector2(state.Gamepad.sThumbRX, state.Gamepad.sThumbRY);
-        _triggerDistances = Vector2(state.Gamepad.bLeftTrigger, state.Gamepad.bRightTrigger);
+    _previousRawInput = _currentRawInput;
+    _currentRawInput = state.Gamepad.wButtons;
 
-        auto leftRadius = _leftThumbDistance.CalcLength();
+    UpdateState();
 
-        leftRadius = MathUtils::RangeMap<float>(leftRadius, XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE, 32000, 0.0f, 1.0f);
-        leftRadius = std::clamp(leftRadius, 0.0f, 1.0f);
+    _leftThumbDistance = Vector2(state.Gamepad.sThumbLX, state.Gamepad.sThumbLY);
+    _rightThumbDistance = Vector2(state.Gamepad.sThumbRX, state.Gamepad.sThumbRY);
+    _triggerDistances = Vector2(state.Gamepad.bLeftTrigger, state.Gamepad.bRightTrigger);
 
-        _leftThumbDistance.SetLength(leftRadius);
+    auto leftRadius = _leftThumbDistance.CalcLength();
 
-        auto rightRadius = _rightThumbDistance.CalcLength();
+    leftRadius = MathUtils::RangeMap<float>(leftRadius, XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE, 32000, 0.0f, 1.0f);
+    leftRadius = std::clamp(leftRadius, 0.0f, 1.0f);
 
-        rightRadius = MathUtils::RangeMap<float>(rightRadius, XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE, 32000, 0.0f, 1.0f);
-        rightRadius = std::clamp(rightRadius, 0.0f, 1.0f);
+    _leftThumbDistance.SetLength(leftRadius);
 
-        _rightThumbDistance.SetLength(rightRadius);
+    auto rightRadius = _rightThumbDistance.CalcLength();
 
-        _triggerDistances.x = MathUtils::RangeMap<float>(_triggerDistances.x, static_cast<float>(XINPUT_GAMEPAD_TRIGGER_THRESHOLD), 255.0f, 0.0f, 1.0f);
-        _triggerDistances.x = std::clamp(_triggerDistances.x, 0.0f, 1.0f);
-        _triggerDistances.y = MathUtils::RangeMap<float>(_triggerDistances.y, static_cast<float>(XINPUT_GAMEPAD_TRIGGER_THRESHOLD), 255.0f, 0.0f, 1.0f);
-        _triggerDistances.y = std::clamp(_triggerDistances.y, 0.0f, 1.0f);
+    rightRadius = MathUtils::RangeMap<float>(rightRadius, XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE, 32000, 0.0f, 1.0f);
+    rightRadius = std::clamp(rightRadius, 0.0f, 1.0f);
 
-        if(DidMotorStateChange()) {
-            SetMotorSpeed(controller_number, Motor::Left, _leftMotorState);
-            SetMotorSpeed(controller_number, Motor::Right, _rightMotorState);
-        }
+    _rightThumbDistance.SetLength(rightRadius);
+
+    _triggerDistances.x = MathUtils::RangeMap<float>(_triggerDistances.x, static_cast<float>(XINPUT_GAMEPAD_TRIGGER_THRESHOLD), 255.0f, 0.0f, 1.0f);
+    _triggerDistances.x = std::clamp(_triggerDistances.x, 0.0f, 1.0f);
+    _triggerDistances.y = MathUtils::RangeMap<float>(_triggerDistances.y, static_cast<float>(XINPUT_GAMEPAD_TRIGGER_THRESHOLD), 255.0f, 0.0f, 1.0f);
+    _triggerDistances.y = std::clamp(_triggerDistances.y, 0.0f, 1.0f);
+
+    if(DidMotorStateChange()) {
+        SetMotorSpeed(controller_number, Motor::Left, _leftMotorState);
+        SetMotorSpeed(controller_number, Motor::Right, _rightMotorState);
     }
 }
 
@@ -209,20 +221,12 @@ void XboxController::SetBothMotorSpeedAsPercent(float speed) noexcept {
 
 void XboxController::UpdateConnectedState(int controller_number) noexcept {
     XINPUT_STATE state{};
-    auto error_status = ::XInputGetState(controller_number, &state);
-    _previousPacketNumber = _currentPacketNumber;
-    _currentPacketNumber = state.dwPacketNumber;
-    if(_previousPacketNumber == _currentPacketNumber) {
-        return;
-    }
+    const auto error_status = ::XInputGetState(controller_number, &state);
 
     if(error_status == ERROR_DEVICE_NOT_CONNECTED) {
         _previousActiveState[(std::size_t)ActiveState::Connected] = _currentActiveState[(std::size_t)ActiveState::Connected];
         _currentActiveState[(std::size_t)ActiveState::Connected] = false;
-        return;
-    }
-
-    if(error_status == ERROR_SUCCESS) {
+    } else if(error_status == ERROR_SUCCESS) {
         _previousActiveState[(std::size_t)ActiveState::Connected] = _currentActiveState[(std::size_t)ActiveState::Connected];
         if(!_currentActiveState[(std::size_t)ActiveState::Connected]) {
             _currentActiveState[(std::size_t)ActiveState::Connected] = true;
