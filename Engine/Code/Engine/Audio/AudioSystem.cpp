@@ -509,17 +509,18 @@ void AudioSystem::RegisterWavFile(std::filesystem::path filepath) noexcept {
            }
        }(); //IIIL
        wav_result != FileUtils::Wav::WAV_SUCCESS) {
+        auto& logger = ServiceLocator::get<IFileLoggerService>();
         switch(wav_result) {
         case FileUtils::Wav::WAV_ERROR_NOT_A_WAV: {
-            DebuggerPrintf("%s is not a .wav file.\n", filepath.string().c_str());
+            logger.LogErrorLine(filepath.string() + " is not a .wav file.");
             break;
         }
         case FileUtils::Wav::WAV_ERROR_BAD_FILE: {
-            DebuggerPrintf("%s is improperly formatted.\n", filepath.string().c_str());
+            logger.LogErrorLine(filepath.string() + " is improperly formatted.");
             break;
         }
         default: {
-            DebuggerPrintf("Unknown error attempting to load %s\n", filepath.string().c_str());
+            logger.LogErrorLine("Unknown error attempting to load " + filepath.string());
             break;
         }
         }
