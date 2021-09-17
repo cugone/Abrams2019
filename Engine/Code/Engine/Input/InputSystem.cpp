@@ -80,12 +80,8 @@ void InputSystem::SetCursorScreenPosition(const Vector2& screen_pos) noexcept {
 }
 
 void InputSystem::UpdateXboxConnectedState() noexcept {
-    _connected_controller_count = 0;
-    for(int i = 0; i < 4; ++i) {
+    for(int i = 0; i < _max_controller_count; ++i) {
         _xboxControllers[i].UpdateConnectedState(i);
-        if(_xboxControllers[i].WasJustConnected() || _xboxControllers[i].IsConnected()) {
-            ++_connected_controller_count;
-        }
     }
 }
 
@@ -150,7 +146,7 @@ Vector2 InputSystem::GetWindowCenter(const Window& window) const noexcept {
 
 bool InputSystem::WasAnyControllerJustUsed() const noexcept {
     bool result = false;
-    for(int i = 0; i < _connected_controller_count; ++i) {
+    for(int i = 0; i < _max_controller_count; ++i) {
         result |= _xboxControllers[i].IsAnyButtonDown();
         result |= _xboxControllers[i].GetLeftThumbPosition().CalcLengthSquared() > 0.0f;
         result |= _xboxControllers[i].GetRightThumbPosition().CalcLengthSquared() > 0.0f;
@@ -981,7 +977,7 @@ void InputSystem::BeginFrame() noexcept {
     if(_connection_poll.CheckAndReset()) {
         UpdateXboxConnectedState();
     }
-    for(int i = 0; i < _connected_controller_count; ++i) {
+    for(int i = 0; i < _max_controller_count; ++i) {
         _xboxControllers[i].Update(i);
     }
 }

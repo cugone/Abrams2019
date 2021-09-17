@@ -123,7 +123,7 @@ private:
     Stopwatch _connection_poll = Stopwatch(TimeUtils::FPSeconds{1.0f});
     int _mouseWheelPosition = 0;
     int _mouseWheelHPosition = 0;
-    int _connected_controller_count = 0;
+    const int _max_controller_count = 4;
     bool _cursor_visible = true;
     mutable bool _should_clip_cursor = false;
 };
