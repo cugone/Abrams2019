@@ -58,11 +58,9 @@ unsigned int Wav::Load(std::filesystem::path filepath) noexcept {
                     break;
                 }
                 default: {
-                    {
-                        DebuggerPrintf("Unknown WAV Chunk ID: %c%c%c%c Length: %u\n", cur_header.fourcc[0], cur_header.fourcc[1], cur_header.fourcc[2], cur_header.fourcc[3], cur_header.length);
-                    }
                     ss.seekp(cur_header.length, std::ios_base::cur);
                     ss.seekg(cur_header.length, std::ios_base::cur);
+                    break;
                 }
                 }
             }
