@@ -6,7 +6,8 @@
 
 // clang-format off
 enum class WindowsSystemMessage : unsigned int {
-    Clipboard_Clear
+    App_DeviceChanged
+    , Clipboard_Clear
     , Clipboard_Copy
     , Clipboard_Cut
     , Clipboard_Paste

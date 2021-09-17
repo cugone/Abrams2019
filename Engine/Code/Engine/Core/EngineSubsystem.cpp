@@ -31,6 +31,7 @@ WindowResizeType EngineSubsystem::GetResizeTypeFromWmSize(const EngineMessage& m
 
 WindowsSystemMessage EngineSubsystem::GetWindowsSystemMessageFromUintMessage(unsigned int wmMessage) noexcept {
     switch(wmMessage) {
+    case WM_DEVICECHANGE: return WindowsSystemMessage::App_DeviceChanged;
     case WM_CLEAR: return WindowsSystemMessage::Clipboard_Clear;
     case WM_COPY: return WindowsSystemMessage::Clipboard_Copy;
     case WM_CUT: return WindowsSystemMessage::Clipboard_Cut;
