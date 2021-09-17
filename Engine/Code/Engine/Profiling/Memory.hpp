@@ -190,7 +190,7 @@ public:
 
 protected:
 private:
-    inline static bool _active = true;
+    inline static bool _active = false;
     inline static bool _trace = false;
 };
 
