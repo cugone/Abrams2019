@@ -1,16 +1,14 @@
 //-----------------------------------------------------------------------------------------------
 // ErrorWarningAssert.cpp
 //
-#include "Engine/Core/ErrorWarningAssert.hpp"
-//-----------------------------------------------------------------------------------------------
-#if defined(_WIN32)
-    #define PLATFORM_WINDOWS
-    #define WIN32_LEAN_AND_MEAN
-    #include <Windows.h>
-#endif
 
-//-----------------------------------------------------------------------------------------------
+#include "Engine/Core/ErrorWarningAssert.hpp"
+#include "Engine/Core/Win.hpp"
+#include "Engine/Core/BuildConfig.hpp"
 #include "Engine/Core/StringUtils.hpp"
+
+#include "Engine/Services/ServiceLocator.hpp"
+#include "Engine/Services/IFileLoggerService.hpp"
 
 #include <filesystem>
 #include <iostream>
@@ -176,7 +174,10 @@ int SystemDialogue_YesNoCancel(const std::string& messageTitle, const std::strin
     DebuggerPrintf("%s(%d): %s\n", filePath, lineNum, errorMessage.c_str()); // Use this specific format so Visual Studio users can double-click to jump to file-and-line of error
     DebuggerPrintf("==============================================================================\n\n");
 
-    std::cout << fullMessageText;
+    auto& logger = ServiceLocator::get<IFileLoggerService>();
+    logger.LogError(fullMessageText);
+    logger.LogLineAndFlush("Shutting down");
+    logger.SaveLog();
 
     if(isDebuggerPresent) {
         bool isAnswerYes = SystemDialogue_YesNo(fullMessageTitle, fullMessageText, SeverityLevel::Fatal);
@@ -227,13 +228,17 @@ void RecoverableWarning(const char* filePath, const char* functionName, int line
     DebuggerPrintf("%s(%d): %s\n", filePath, lineNum, errorMessage.c_str()); // Use this specific format so Visual Studio users can double-click to jump to file-and-line of error
     DebuggerPrintf("------------------------------------------------------------------------------\n\n");
 
-    std::cout << fullMessageText;
+
+    auto& logger = ServiceLocator::get<IFileLoggerService>();
+    logger.LogWarnLine(fullMessageText);
 
     if(isDebuggerPresent) {
         int answerCode = SystemDialogue_YesNoCancel(fullMessageTitle, fullMessageText, SeverityLevel::Warning);
         ShowCursor(TRUE);
         if(answerCode == 0) // "NO"
         {
+            logger.LogLineAndFlush("Shutting down");
+            logger.SaveLog();
             exit(0);
         } else if(answerCode == -1) // "CANCEL"
         {
@@ -243,6 +248,8 @@ void RecoverableWarning(const char* filePath, const char* functionName, int line
         bool isAnswerYes = SystemDialogue_YesNo(fullMessageTitle, fullMessageText, SeverityLevel::Warning);
         ShowCursor(TRUE);
         if(!isAnswerYes) {
+            logger.LogLineAndFlush("Shutting down");
+            logger.SaveLog();
             exit(0);
         }
     }
