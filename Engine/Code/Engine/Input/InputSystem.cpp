@@ -969,8 +969,6 @@ InputSystem::~InputSystem() noexcept {
 
 void InputSystem::Initialize() noexcept {
     UpdateXboxConnectedState();
-    auto ss = std::to_string(_connected_controller_count) + " Xbox controllers detected!";
-    ServiceLocator::get<IFileLoggerService>().LogLineAndFlush(ss);
 }
 
 void InputSystem::BeginFrame() noexcept {
