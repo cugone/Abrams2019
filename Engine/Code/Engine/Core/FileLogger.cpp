@@ -41,7 +41,7 @@ void FileLogger::Log_worker() noexcept {
         //Condition to wake up: not running or queue has jobs.
         _signal.wait(lock, [this]() -> bool { return !_is_running || !_queue.empty(); });
         if(!_queue.empty()) {
-            const auto& str = _queue.front();
+            const std::string str = _queue.front();
             _queue.pop();
             _stream << str;
             RequestFlush();
