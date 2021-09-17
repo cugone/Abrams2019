@@ -270,6 +270,10 @@ void InputSystem::RegisterKeyUp(unsigned char keyIndex) noexcept {
 
 bool InputSystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {
     switch(msg.wmMessageCode) {
+    case WindowsSystemMessage::App_DeviceChanged: {
+        UpdateXboxConnectedState();
+        return false;
+    }
     case WindowsSystemMessage::Keyboard_Help: {
         //TODO: Event system should push a "Help" event.
         return false;
