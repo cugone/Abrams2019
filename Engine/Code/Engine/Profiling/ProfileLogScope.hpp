@@ -1,10 +1,8 @@
 #pragma once
 
 #include "Engine/Core/BuildConfig.hpp"
-#include "Engine/Core/TimeUtils.hpp"
 
 #include <chrono>
-#include <string>
 
 class ProfileLogScope {
 public:

@@ -1,11 +1,7 @@
 #include "Engine/Profiling/ProfileLogScope.hpp"
 
-#include "Engine/Core/BuildConfig.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/TimeUtils.hpp"
-
-#include <iomanip>
-#include <sstream>
 
 ProfileLogScope::ProfileLogScope(const char* scopeName) noexcept
 : _scope_name(scopeName)
