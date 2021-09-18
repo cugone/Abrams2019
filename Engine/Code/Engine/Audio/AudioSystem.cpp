@@ -351,7 +351,8 @@ void AudioSystem::SetFormat(const FileUtils::Wav::WavFormatChunk& format) noexce
 void AudioSystem::RegisterWavFilesFromFolder(std::filesystem::path folderpath, bool recursive /*= false*/) noexcept {
     namespace FS = std::filesystem;
     if(!FS::exists(folderpath)) {
-        DebuggerPrintf("Attempting to Register Wav Files from unknown path: %s\n", FS::absolute(folderpath).string().c_str());
+        auto& logger = ServiceLocator::get<IFileLoggerService>();
+        logger.LogErrorLine("Attempting to Register Wav Files from unknown path: " + FS::absolute(folderpath).string());
         return;
     }
     folderpath = FS::canonical(folderpath);
@@ -461,7 +462,8 @@ void AudioSystem::StopAll() noexcept {
 AudioSystem::Sound* AudioSystem::CreateSound(std::filesystem::path filepath) noexcept {
     namespace FS = std::filesystem;
     if(!FS::exists(filepath)) {
-        DebuggerPrintf("Could not find file: %s\n", filepath.string().c_str());
+        auto& logger = ServiceLocator::get<IFileLoggerService>();
+        logger.LogErrorLine("Could not find file: " + filepath.string());
         return nullptr;
     }
 
@@ -479,7 +481,8 @@ AudioSystem::Sound* AudioSystem::CreateSound(std::filesystem::path filepath) noe
 AudioSystem::Sound* AudioSystem::CreateSoundInstance(std::filesystem::path filepath) noexcept {
     namespace FS = std::filesystem;
     if(!FS::exists(filepath)) {
-        DebuggerPrintf("Could not find file: %s\n", filepath.string().c_str());
+        auto& logger = ServiceLocator::get<IFileLoggerService>();
+        logger.LogErrorLine("Could not find file: " + filepath.string());
         return nullptr;
     }
     filepath = FS::canonical(filepath);
@@ -491,7 +494,8 @@ AudioSystem::Sound* AudioSystem::CreateSoundInstance(std::filesystem::path filep
 void AudioSystem::RegisterWavFile(std::filesystem::path filepath) noexcept {
     namespace FS = std::filesystem;
     if(!FS::exists(filepath)) {
-        DebuggerPrintf("Attempting to register wav file that does not exist: %s\n", filepath.string().c_str());
+        auto& logger = ServiceLocator::get<IFileLoggerService>();
+        logger.LogErrorLine("Attempting to register wav file that does not exist: " + filepath.string());
         return;
     }
     filepath = FS::canonical(filepath);
