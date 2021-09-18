@@ -39,6 +39,9 @@ bool Config::AppendFromFile(const std::filesystem::path& filepath) noexcept {
         KeyValueParser kvp(filepath);
         const auto&& new_entries = std::move(kvp.Release());
         for(const auto& [key, value] : new_entries) {
+            if(HasKey(key)) {
+                continue;
+            }
             SetValue(key, value);
         }
         return true;
