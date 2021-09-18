@@ -115,8 +115,13 @@ void PhysicsSystem::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
         return;
     }
     _deltaSeconds = deltaSeconds;
-    ApplyGravityAndDrag(deltaSeconds);
-    ApplyCustomAndJointForces(deltaSeconds);
+    _accumulatedTime += _deltaSeconds;
+    if(_accumulatedTime >= _targetFrameRate) {
+        _accumulatedTime -= _targetFrameRate;
+        return;
+    }
+    ApplyGravityAndDrag(_targetFrameRate);
+    ApplyCustomAndJointForces(_targetFrameRate);
     auto& renderer = ServiceLocator::get<IRendererService>();
     const auto camera_position = Vector2(renderer.GetCamera().GetPosition());
     const auto half_extents = Vector2(renderer.GetOutput()->GetDimensions()) * 0.5f;
@@ -125,7 +130,7 @@ void PhysicsSystem::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
     const auto actual_collisions = NarrowPhaseCollision(potential_collisions, PhysicsUtils::GJK, PhysicsUtils::EPA);
     SolveCollision(actual_collisions);
     SolveConstraints();
-    UpdateBodiesInBounds(deltaSeconds);
+    UpdateBodiesInBounds(_targetFrameRate);
     SolveConstraints();
 }
 

@@ -121,6 +121,8 @@ private:
     DragForceGenerator _dragFG{Vector2::Zero};
     QuadTree<RigidBody> _world_partition{};
     TimeUtils::FPSeconds _deltaSeconds = TimeUtils::FPSeconds::zero();
+    TimeUtils::FPSeconds _accumulatedTime = TimeUtils::FPSeconds::zero();
+    TimeUtils::FPFrames _targetFrameRate = TimeUtils::FPFrames{1};
     bool _show_colliders = false;
     bool _show_object_bounds = false;
     bool _show_world_partition = false;
