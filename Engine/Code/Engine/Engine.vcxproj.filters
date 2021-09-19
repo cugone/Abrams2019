@@ -346,7 +346,7 @@
     <ClCompile Include="System\System.cpp">
       <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="Profiling\Memory.cpp">
+    <ClCompile Include="Profiling\AllocationTracker.cpp">
       <Filter>Profiling</Filter>
     </ClCompile>
     <ClCompile Include="Renderer\RenderTargetStack.cpp">
@@ -828,7 +828,7 @@
     <ClInclude Include="System\System.hpp">
       <Filter>System</Filter>
     </ClInclude>
-    <ClInclude Include="Profiling\Memory.hpp">
+    <ClInclude Include="Profiling\AllocationTracker.hpp">
       <Filter>Profiling</Filter>
     </ClInclude>
     <ClInclude Include="Memory\MemoryPool.hpp">

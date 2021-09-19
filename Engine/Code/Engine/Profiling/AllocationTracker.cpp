@@ -1,4 +1,4 @@
-#include "Engine/Profiling/Memory.hpp"
+#include "Engine/Profiling/AllocationTracker.hpp"
 
 #ifdef TRACK_MEMORY
 
@@ -9,19 +9,19 @@
     #endif
 
 void* operator new(std::size_t size) {
-    return Memory::allocate(size);
+    return AllocationTracker::allocate(size);
 }
 
 void* operator new[](std::size_t size) {
-    return Memory::allocate(size);
+    return AllocationTracker::allocate(size);
 }
 
 void operator delete(void* ptr, std::size_t size) noexcept {
-    Memory::deallocate(ptr, size);
+    AllocationTracker::deallocate(ptr, size);
 }
 
 void operator delete[](void* ptr, std::size_t size) noexcept {
-    Memory::deallocate(ptr, size);
+    AllocationTracker::deallocate(ptr, size);
 }
 
     #if defined(_MSC_VER)

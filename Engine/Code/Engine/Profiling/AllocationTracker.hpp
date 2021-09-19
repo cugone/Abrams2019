@@ -15,7 +15,7 @@
 #include <string>
 #include <string_view>
 
-class Memory {
+class AllocationTracker {
 public:
     struct status_t {
         std::size_t leaked_objs = 0u;
@@ -132,7 +132,7 @@ public:
     static void tick() noexcept {
 #ifdef TRACK_MEMORY
         if(is_enabled()) {
-            if(auto f = Memory::frame_status()) {
+            if(auto f = AllocationTracker::frame_status()) {
                 std::cout << f << '\n';
             }
             ++frameCounter;

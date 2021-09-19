@@ -118,7 +118,7 @@
     <ClCompile Include="Physics\RigidBody.cpp" />
     <ClCompile Include="Physics\RodJoint.cpp" />
     <ClCompile Include="Physics\SpringJoint.cpp" />
-    <ClCompile Include="Profiling\Memory.cpp" />
+    <ClCompile Include="Profiling\AllocationTracker.cpp" />
     <ClCompile Include="Profiling\ProfileLogScope.cpp" />
     <ClCompile Include="Profiling\StackTrace.cpp" />
     <ClCompile Include="Renderer\AnimatedSprite.cpp" />
@@ -285,7 +285,7 @@
     <ClInclude Include="Physics\RigidBody.hpp" />
     <ClInclude Include="Physics\RodJoint.hpp" />
     <ClInclude Include="Physics\SpringJoint.hpp" />
-    <ClInclude Include="Profiling\Memory.hpp" />
+    <ClInclude Include="Profiling\AllocationTracker.hpp" />
     <ClInclude Include="Profiling\ProfileLogScope.hpp" />
     <ClInclude Include="Profiling\StackTrace.hpp" />
     <ClInclude Include="Renderer\AnimatedSprite.hpp" />

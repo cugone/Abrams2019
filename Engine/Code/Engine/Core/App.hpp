@@ -16,7 +16,7 @@
 #include "Engine/Input/InputSystem.hpp"
 
 #include "Engine/Physics/PhysicsSystem.hpp"
-#include "Engine/Profiling/Memory.hpp"
+#include "Engine/Profiling/AllocationTracker.hpp"
 
 #include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Renderer/Window.hpp"
@@ -376,7 +376,7 @@ void App<T>::RunFrame() {
     Update(deltaSeconds);
     Render();
     EndFrame();
-    Memory::tick();
+    AllocationTracker::tick();
 }
 
 template<typename T>

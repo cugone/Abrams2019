@@ -7,7 +7,7 @@
 #include "Engine/Core/ThreadUtils.hpp"
 #include "Engine/Core/TimeUtils.hpp"
 #include "Engine/Core/Win.hpp"
-#include "Engine/Profiling/Memory.hpp"
+#include "Engine/Profiling/AllocationTracker.hpp"
 
 #include "Engine/Services/IJobSystemService.hpp"
 #include "Engine/Services/ServiceLocator.hpp"
@@ -165,8 +165,8 @@ void FileLogger::Shutdown() noexcept {
     if(IsRunning()) {
         {
             auto ss = std::ostringstream{};
-            if(Memory::is_enabled()) {
-                ss << Memory::status() << "\n";
+            if(AllocationTracker::is_enabled()) {
+                ss << AllocationTracker::status() << "\n";
             }
             ss << std::string{"Shutting down Logger: "} << _current_log_path.string() << "...";
             LogLine(ss.str().c_str());
