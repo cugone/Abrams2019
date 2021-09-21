@@ -56,9 +56,6 @@
     <Filter Include="Thirdparty\TinyXML">
       <UniqueIdentifier>{fc6e0dc4-15c5-48ae-8ba2-c91568d1c50c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Video">
-      <UniqueIdentifier>{269d4b3d-4871-4e4e-a782-77b22e4c9736}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Physics">
       <UniqueIdentifier>{e6b637d5-e9d2-41b2-954d-50d2aa587ec4}</UniqueIdentifier>
     </Filter>
