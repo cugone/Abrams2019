@@ -58,9 +58,7 @@
     #endif
 
     #if defined(__APPLE__) || defined(__MACH__)
-        #ifndef PLATFORM_APPLE
-            #define PLATFORM_APPLE
-        #endif
+        #error "Apple or Mac-specific compilers are not supported."
     #elif !(defined(_WIN64) || defined(_WIN32))
         #ifndef PLATFORM_LINUX
             #define PLATFORM_LINUX
