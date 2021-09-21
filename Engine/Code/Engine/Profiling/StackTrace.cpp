@@ -3,7 +3,7 @@
 #include "Engine/Core/BuildConfig.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Core/StringUtils.hpp"
-#include "Engine/Core/Win.hpp"
+#include "Engine/Platform/Win.hpp"
 
 #include <algorithm>
 #include <cstdint>

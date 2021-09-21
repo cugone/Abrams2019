@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Engine/Core/Win.hpp"
+#include "Engine/Platform/Win.hpp"
 
 #include <XInput.h>
 #pragma comment(lib, "Xinput.lib")

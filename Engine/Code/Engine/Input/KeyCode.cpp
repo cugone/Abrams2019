@@ -1,6 +1,6 @@
 #include "Engine/Input/KeyCode.hpp"
 
-#include "Engine/Core/Win.hpp"
+#include "Engine/Platform/Win.hpp"
 
 unsigned char ConvertKeyCodeToWinVK(const KeyCode& code) noexcept {
     switch(code) {

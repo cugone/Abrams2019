@@ -9,7 +9,7 @@
 #include "Engine/Core/Image.hpp"
 #include "Engine/Core/KerningFont.hpp"
 #include "Engine/Core/StringUtils.hpp"
-#include "Engine/Core/Win.hpp"
+#include "Engine/Platform/Win.hpp"
 #include "Engine/Input/KeyCode.hpp"
 #include "Engine/Math/IntVector2.hpp"
 #include "Engine/Math/MathUtils.hpp"

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Engine/Core/Win.hpp"
+#include "Engine/Platform/Win.hpp"
 #include "Engine/Math/IntVector2.hpp"
 #include "Engine/RHI/RHITypes.hpp"
 

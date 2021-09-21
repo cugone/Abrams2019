@@ -7,7 +7,7 @@
 
 #ifdef PLATFORM_WINDOWS
     #define HAS_VERSION_HELPERS
-    #include "Engine/Core/Win.hpp"
+    #include "Engine/Platform/Win.hpp"
 
     #include <VersionHelpers.h>
     #include <processthreadsapi.h>
