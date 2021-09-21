@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Thirdparty">
@@ -94,6 +94,9 @@
     </Filter>
     <Filter Include="Thirdparty\Yaml-Cpp\src\contrib">
       <UniqueIdentifier>{6acf61e3-0313-4874-bd8d-524928abd592}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{4d5a5f00-29b8-4a08-8f7c-6c118ff722f7}</UniqueIdentifier>
     </Filter>
     <Filter Include="ECS">
       <UniqueIdentifier>{854facc1-081f-45c6-b12e-452abb50f872}</UniqueIdentifier>
@@ -660,6 +663,9 @@
     </ClCompile>
     <ClCompile Include="..\Thirdparty\yaml-cpp\src\contrib\graphbuilderadapter.cpp">
       <Filter>Thirdparty\Yaml-Cpp\src\contrib</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\Scene.cpp">
+      <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="ECS\ECS.cpp">
       <Filter>ECS</Filter>
@@ -1373,6 +1379,9 @@
     </ClInclude>
     <ClInclude Include="..\Thirdparty\yaml-cpp\src\contrib\graphbuilderadapter.h">
       <Filter>Thirdparty\Yaml-Cpp\src\contrib</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\Scene.hpp">
+      <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="ECS\ECS.hpp">
       <Filter>ECS</Filter>

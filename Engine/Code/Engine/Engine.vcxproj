@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="DebugProfile|x64">
@@ -193,6 +193,7 @@
     <ClCompile Include="RHI\RHIInstance.cpp" />
     <ClCompile Include="RHI\RHIOutput.cpp" />
     <ClCompile Include="RHI\RHITypes.cpp" />
+    <ClCompile Include="Scene\Scene.cpp" />
     <ClCompile Include="Services\ServiceLocator.cpp" />
     <ClCompile Include="System\Cpu.cpp" />
     <ClCompile Include="System\OS.cpp" />
@@ -422,6 +423,7 @@
     <ClInclude Include="RHI\RHIInstance.hpp" />
     <ClInclude Include="RHI\RHIOutput.hpp" />
     <ClInclude Include="RHI\RHITypes.hpp" />
+    <ClInclude Include="Scene\Scene.hpp" />
     <ClInclude Include="Services\IAppService.hpp" />
     <ClInclude Include="Services\IAudioService.hpp" />
     <ClInclude Include="Services\IConfigService.hpp" />
