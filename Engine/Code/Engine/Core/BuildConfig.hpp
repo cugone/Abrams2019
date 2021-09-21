@@ -15,7 +15,9 @@
         #define PHYSICS_DEBUG
         #define UI_DEBUG
         #define PROFILE_BUILD
+        #undef DISABLE_ASSERTS
     #elif defined(FINAL_BUILD)
+        #define DISABLE_ASSERTS
         #undef TRACK_MEMORY
         #undef DEBUG_BUILD
         #undef AUDIO_DEBUG
@@ -31,6 +33,7 @@
         #define PHYSICS_DEBUG
         #define UI_DEBUG
         #define PROFILE_BUILD
+        #undef DISABLE_ASSERTS
     #endif
 
     #define MAX_LOGS 3u
