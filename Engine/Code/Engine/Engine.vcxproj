@@ -97,7 +97,7 @@
     <ClCompile Include="Core\ThreadUtils.cpp" />
     <ClCompile Include="Core\TimeUtils.cpp" />
     <ClCompile Include="Core\Utilities.cpp" />
-    <ClCompile Include="Core\Win.cpp" />
+    <ClCompile Include="ECS\ECS.cpp" />
     <ClCompile Include="Game\GameBase.cpp" />
     <ClCompile Include="Game\GameSettings.cpp" />
     <ClCompile Include="Input\InputSystem.cpp" />
@@ -321,7 +321,7 @@
     <ClInclude Include="Core\TimeUtils.hpp" />
     <ClInclude Include="Core\TypeUtils.hpp" />
     <ClInclude Include="Core\Utilities.hpp" />
-    <ClInclude Include="Core\Win.hpp" />
+    <ClInclude Include="ECS\ECS.hpp" />
     <ClInclude Include="Game\GameBase.hpp" />
     <ClInclude Include="Game\GameSettings.hpp" />
     <ClInclude Include="Input\InputSystem.hpp" />

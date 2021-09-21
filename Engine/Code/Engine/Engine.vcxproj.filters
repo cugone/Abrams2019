@@ -95,6 +95,9 @@
     <Filter Include="Thirdparty\Yaml-Cpp\src\contrib">
       <UniqueIdentifier>{6acf61e3-0313-4874-bd8d-524928abd592}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ECS">
+      <UniqueIdentifier>{854facc1-081f-45c6-b12e-452abb50f872}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Platform">
       <UniqueIdentifier>{a963c7c1-d5b7-4b79-98ba-3339e7d7e142}</UniqueIdentifier>
     </Filter>
@@ -502,9 +505,6 @@
     <ClCompile Include="Math\Rotator.cpp">
       <Filter>Math</Filter>
     </ClCompile>
-    <ClCompile Include="Core\Win.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="Services\ServiceLocator.cpp">
       <Filter>Services</Filter>
     </ClCompile>
@@ -661,6 +661,9 @@
     <ClCompile Include="..\Thirdparty\yaml-cpp\src\contrib\graphbuilderadapter.cpp">
       <Filter>Thirdparty\Yaml-Cpp\src\contrib</Filter>
     </ClCompile>
+    <ClCompile Include="ECS\ECS.cpp">
+      <Filter>ECS</Filter>
+    </ClCompile>
     <ClCompile Include="Platform\Win.cpp">
       <Filter>Platform</Filter>
     </ClCompile>
@@ -752,9 +755,6 @@
     </ClInclude>
     <ClInclude Include="Renderer\Window.hpp">
       <Filter>Renderer\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\Win.hpp">
-      <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="RHI\RHIInstance.hpp">
       <Filter>RHI</Filter>
@@ -1373,6 +1373,9 @@
     </ClInclude>
     <ClInclude Include="..\Thirdparty\yaml-cpp\src\contrib\graphbuilderadapter.h">
       <Filter>Thirdparty\Yaml-Cpp\src\contrib</Filter>
+    </ClInclude>
+    <ClInclude Include="ECS\ECS.hpp">
+      <Filter>ECS</Filter>
     </ClInclude>
     <ClInclude Include="Platform\Win.hpp">
       <Filter>Platform</Filter>
