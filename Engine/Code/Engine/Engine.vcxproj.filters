@@ -412,9 +412,6 @@
     <ClCompile Include="..\Thirdparty\Imgui\imgui_stdlib.cpp">
       <Filter>Thirdparty\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="Video\Avi.cpp">
-      <Filter>Video</Filter>
-    </ClCompile>
     <ClCompile Include="System\OS.cpp">
       <Filter>System</Filter>
     </ClCompile>
@@ -1001,9 +998,6 @@
     </ClInclude>
     <ClInclude Include="..\Thirdparty\Imgui\imgui_stdlib.h">
       <Filter>Thirdparty\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="Video\Avi.hpp">
-      <Filter>Video</Filter>
     </ClInclude>
     <ClInclude Include="System\OS.hpp">
       <Filter>System</Filter>

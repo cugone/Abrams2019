@@ -206,7 +206,6 @@
     <ClCompile Include="UI\UITypes.cpp" />
     <ClCompile Include="UI\UISystem.cpp" />
     <ClCompile Include="UI\UIWidget.cpp" />
-    <ClCompile Include="Video\Avi.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Thirdparty\EnTT\EnTT.hpp" />
@@ -445,7 +444,6 @@
     <ClInclude Include="UI\UITypes.hpp" />
     <ClInclude Include="UI\UISystem.hpp" />
     <ClInclude Include="UI\UIWidget.hpp" />
-    <ClInclude Include="Video\Avi.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="..\Thirdparty\yaml-cpp\src\contrib\yaml-cpp.natvis" />
