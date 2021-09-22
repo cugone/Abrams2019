@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine/Math/Matrix4.hpp"
+#include "Engine/Renderer/Mesh.hpp"
 
 #include <string>
 
@@ -28,5 +29,23 @@ struct TransformComponent {
 
     operator const Matrix4&() const noexcept { return Transform; }
     operator Matrix4&() noexcept { return Transform; }
+
+};
+
+struct MeshComponent {
+    Mesh mesh{};
+
+    MeshComponent() noexcept = default;
+    MeshComponent(const MeshComponent& other) noexcept = default;
+    MeshComponent(MeshComponent&& r_other) noexcept = default;
+    MeshComponent(const Mesh& newMesh) noexcept
+    : mesh{newMesh} {}
+
+    operator const Mesh&() const noexcept {
+        return mesh;
+    }
+    operator Mesh&() noexcept {
+        return mesh;
+    }
 
 };
