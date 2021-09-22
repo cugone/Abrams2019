@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Engine/Math/Matrix4.hpp"
+
 #include <string>
 
 struct TagComponent {
@@ -12,4 +14,19 @@ struct TagComponent {
 
     operator const std::string&() const noexcept { return Tag; }
     operator std::string&() noexcept { return Tag; }
+};
+
+struct TransformComponent {
+    Matrix4 Transform{};
+
+    TransformComponent() noexcept = default;
+    TransformComponent(const TransformComponent& other) noexcept = default;
+    TransformComponent(TransformComponent&& r_other) noexcept = default;
+    TransformComponent(const Matrix4& transform) noexcept
+    : Transform{transform} {
+    }
+
+    operator const Matrix4&() const noexcept { return Transform; }
+    operator Matrix4&() noexcept { return Transform; }
+
 };
