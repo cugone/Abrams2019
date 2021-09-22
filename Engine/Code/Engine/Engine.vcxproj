@@ -192,6 +192,7 @@
     <ClCompile Include="RHI\RHIInstance.cpp" />
     <ClCompile Include="RHI\RHIOutput.cpp" />
     <ClCompile Include="RHI\RHITypes.cpp" />
+    <ClCompile Include="Scene\Components.cpp" />
     <ClCompile Include="Scene\ECS.cpp" />
     <ClCompile Include="Scene\Entity.cpp" />
     <ClCompile Include="Scene\Scene.cpp" />
@@ -423,6 +424,7 @@
     <ClInclude Include="RHI\RHIInstance.hpp" />
     <ClInclude Include="RHI\RHIOutput.hpp" />
     <ClInclude Include="RHI\RHITypes.hpp" />
+    <ClInclude Include="Scene\Components.hpp" />
     <ClInclude Include="Scene\ECS.hpp" />
     <ClInclude Include="Scene\Entity.hpp" />
     <ClInclude Include="Scene\Scene.hpp" />
