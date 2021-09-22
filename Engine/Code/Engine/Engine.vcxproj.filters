@@ -98,9 +98,6 @@
     <Filter Include="Scene">
       <UniqueIdentifier>{4d5a5f00-29b8-4a08-8f7c-6c118ff722f7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ECS">
-      <UniqueIdentifier>{854facc1-081f-45c6-b12e-452abb50f872}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Platform">
       <UniqueIdentifier>{a963c7c1-d5b7-4b79-98ba-3339e7d7e142}</UniqueIdentifier>
     </Filter>
@@ -666,9 +663,6 @@
     </ClCompile>
     <ClCompile Include="Scene\Scene.cpp">
       <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="ECS\ECS.cpp">
-      <Filter>ECS</Filter>
     </ClCompile>
     <ClCompile Include="Platform\Win.cpp">
       <Filter>Platform</Filter>
@@ -1382,9 +1376,6 @@
     </ClInclude>
     <ClInclude Include="Scene\Scene.hpp">
       <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="ECS\ECS.hpp">
-      <Filter>ECS</Filter>
     </ClInclude>
     <ClInclude Include="Platform\Win.hpp">
       <Filter>Platform</Filter>
