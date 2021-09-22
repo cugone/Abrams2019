@@ -667,6 +667,9 @@
     <ClCompile Include="Platform\Win.cpp">
       <Filter>Platform</Filter>
     </ClCompile>
+    <ClCompile Include="Scene\Entity.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vector2.hpp">
@@ -1379,6 +1382,9 @@
     </ClInclude>
     <ClInclude Include="Platform\Win.hpp">
       <Filter>Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\Entity.hpp">
+      <Filter>Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
