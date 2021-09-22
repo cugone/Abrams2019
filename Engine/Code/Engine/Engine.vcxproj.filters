@@ -670,6 +670,9 @@
     <ClCompile Include="Scene\Entity.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
+    <ClCompile Include="Scene\ECS.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vector2.hpp">
@@ -1384,6 +1387,9 @@
       <Filter>Platform</Filter>
     </ClInclude>
     <ClInclude Include="Scene\Entity.hpp">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\ECS.hpp">
       <Filter>Scene</Filter>
     </ClInclude>
   </ItemGroup>
