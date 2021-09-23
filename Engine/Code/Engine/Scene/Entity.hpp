@@ -25,6 +25,9 @@ public:
     [[nodiscard]] bool HasParent() const noexcept;
     [[nodiscard]] Entity* GetParent() const noexcept;
 
+    Entity AddChild(Entity&& entity) noexcept;
+    Entity AddChild(const Entity& entity) noexcept;
+
     [[nodiscard]] bool HasChildren() const noexcept;
     [[nodiscard]] const std::vector<Entity>& GetChildren() const noexcept;
     [[nodiscard]] std::vector<Entity>& GetChildren() noexcept;
