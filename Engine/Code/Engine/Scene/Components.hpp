@@ -60,3 +60,16 @@ struct SceneComponent {
     : Transform{transform} {}
 
 };
+
+struct RenderComponent {
+    std::string MaterialName{"_2D"};
+    Rgba Tint{};
+
+    RenderComponent() noexcept = default;
+    RenderComponent(const RenderComponent& other) noexcept = default;
+    RenderComponent(RenderComponent&& r_other) noexcept = default;
+    RenderComponent(std::string materialName, Rgba tint) noexcept
+    : MaterialName{materialName}
+    , Tint{tint} {}
+
+};
