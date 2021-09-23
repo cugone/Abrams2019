@@ -20,7 +20,6 @@ bool operator!=(const ViewportDesc& a, const ViewportDesc& b) noexcept {
 }
 
 std::ostream& operator<<(std::ostream& out_stream, const GraphicsCardDesc& graphicsCardDesc) noexcept {
-    const auto section_break_field_width = std::size_t{80u};
     const auto entry_name_field_width = std::size_t{40u};
     const auto entry_field_width = std::size_t{35u};
     std::string name = graphicsCardDesc.Description;
