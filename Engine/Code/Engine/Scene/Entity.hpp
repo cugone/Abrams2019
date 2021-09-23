@@ -3,10 +3,9 @@
 #include "Engine/Core/ErrorWarningAssert.hpp"
 
 #include "Engine/Scene/ECS.hpp"
+#include "Engine/Scene/Scene.hpp"
 
 #include <memory>
-
-class Scene;
 
 class Entity {
 public:
