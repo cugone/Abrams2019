@@ -38,13 +38,13 @@ public:
     template<typename... Component>
     [[nodiscard]] bool HasAllOfComponents() const noexcept {
         GUARANTEE_OR_DIE(!m_Scene.expired(), "Entity scene context has expired!");
-        return m_Scene.lock()->m_registry.all_of<Component...>();
+        return m_Scene.lock()->m_registry.all_of<Component...>(m_id);
     }
     
     template<typename... Component>
     [[nodiscard]] bool HasAnyOfComponents() const noexcept {
         GUARANTEE_OR_DIE(!m_Scene.expired(), "Entity scene context has expired!");
-        return m_Scene.lock()->m_registry.any_of<Component...>();
+        return m_Scene.lock()->m_registry.any_of<Component...>(m_id);
     }
 
     template<typename Component>
