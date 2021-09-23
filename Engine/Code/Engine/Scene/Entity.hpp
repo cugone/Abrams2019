@@ -74,10 +74,10 @@ public:
     }
     
     template<typename Component>
-    void RemoveComponent() noexcept {
+    std::size_t RemoveComponent() noexcept {
         GUARANTEE_OR_DIE(!m_Scene.expired(), "Entity scene context has expired!");
         GUARANTEE_OR_DIE(HasComponent<Component>(), "Entity does not have specified component!");
-        m_Scene.lock()->m_registry.remove<Component>(m_id);
+        return m_Scene.lock()->m_registry.remove<Component>(m_id);
     }
 
 protected:
