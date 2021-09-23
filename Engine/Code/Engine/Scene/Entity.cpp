@@ -23,11 +23,11 @@ bool Entity::HasChildren() const noexcept {
     return m_children.empty();
 }
 
-const std::vector<Entity*>& Entity::GetChildren() const noexcept {
+const std::vector<Entity>& Entity::GetChildren() const noexcept {
     return m_children;
 }
 
-std::vector<Entity*>& Entity::GetChildren() noexcept {
+std::vector<Entity>& Entity::GetChildren() noexcept {
     return m_children;
 }
 

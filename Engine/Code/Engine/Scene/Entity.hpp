@@ -27,8 +27,8 @@ public:
     [[nodiscard]] Entity* GetParent() const noexcept;
 
     [[nodiscard]] bool HasChildren() const noexcept;
-    [[nodiscard]] const std::vector<Entity*>& GetChildren() const noexcept;
-    [[nodiscard]] std::vector<Entity*>& GetChildren() noexcept;
+    [[nodiscard]] const std::vector<Entity>& GetChildren() const noexcept;
+    [[nodiscard]] std::vector<Entity>& GetChildren() noexcept;
 
 
     [[nodiscard]] bool HasComponents() const noexcept;
@@ -76,7 +76,7 @@ private:
     entt::entity m_id{entt::null};
     std::weak_ptr<Scene> m_Scene{};
     Entity* m_parent{nullptr};
-    std::vector<Entity*> m_children{};
+    std::vector<Entity> m_children{};
 
     friend class Scene;
 };
