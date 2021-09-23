@@ -49,3 +49,14 @@ struct MeshComponent {
     }
 
 };
+
+struct SceneComponent {
+    TransformComponent Transform{};
+
+    SceneComponent() noexcept = default;
+    SceneComponent(const SceneComponent& other) noexcept = default;
+    SceneComponent(SceneComponent&& r_other) noexcept = default;
+    SceneComponent(const TransformComponent& transform) noexcept
+    : Transform{transform} {}
+
+};
