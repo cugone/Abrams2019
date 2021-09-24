@@ -81,9 +81,10 @@ public:
     }
 
 protected:
+    std::weak_ptr<Scene> m_Scene{};
 private:
     entt::entity m_id{entt::null};
-    std::weak_ptr<Scene> m_Scene{};
+
     Entity* m_parent{nullptr};
     std::vector<Entity> m_children{};
 
