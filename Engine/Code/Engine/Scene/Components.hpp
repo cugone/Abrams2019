@@ -81,7 +81,7 @@ struct RenderComponent {
     RenderComponent& operator=(const RenderComponent& rhs) noexcept = default;
     RenderComponent& operator=(RenderComponent&& rhs) noexcept = default;
     ~RenderComponent() noexcept = default;
-    RenderComponent(const std::string& materialName, Rgba tint) noexcept
+    RenderComponent(const std::string& materialName, const Rgba& tint = Rgba::White) noexcept
     : MaterialName{materialName}
     , Tint{tint} {}
 
