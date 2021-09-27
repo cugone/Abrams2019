@@ -11,6 +11,20 @@ Entity::Entity(std::uint32_t handle, std::weak_ptr<Scene> scene) noexcept
     m_Scene = scene;
 }
 
+Scene* Entity::GetScene() const noexcept {
+    if(auto scene = m_Scene.lock(); scene) {
+        return scene.get();
+    }
+    return nullptr;
+}
+
+Scene* Entity::GetScene() noexcept {
+    if(auto scene = m_Scene.lock(); scene) {
+        return scene.get();
+    }
+    return nullptr;
+}
+
 bool Entity::HasParent() const noexcept {
     return m_parent != nullptr;
 }

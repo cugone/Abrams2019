@@ -22,6 +22,9 @@ public:
         return m_id != entt::null;
     }
 
+    [[nodiscard]] Scene* GetScene() const noexcept;
+    [[nodiscard]] Scene* GetScene() noexcept;
+
     [[nodiscard]] bool HasParent() const noexcept;
     [[nodiscard]] Entity* GetParent() const noexcept;
 
