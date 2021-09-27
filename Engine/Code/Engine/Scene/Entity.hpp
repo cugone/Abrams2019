@@ -59,7 +59,10 @@ public:
     Component& AddComponent(Args&&... args) noexcept {
         GUARANTEE_OR_DIE(!m_Scene.expired(), "Entity scene context has expired!");
         GUARANTEE_OR_DIE(!HasComponent<Component>(), "Entity already has specified component!");
-        return m_Scene.lock()->m_registry.emplace<Component>(m_id, std::forward<Args>(args)...);
+        auto& r = m_Scene.lock()->m_registry;
+        return r.emplace<Component>(r.create(), std::forward<Args>(args)...);
+    }
+
     }
 
     template<typename Component>
