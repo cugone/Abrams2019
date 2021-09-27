@@ -100,3 +100,20 @@ struct RenderComponent {
     , Tint{tint} {}
 
 };
+
+struct CircleComponent {
+    Vector2 Position{};
+    float Radius{1.0f};
+
+    CircleComponent() noexcept = default;
+    CircleComponent(const CircleComponent& other) noexcept = default;
+    CircleComponent(CircleComponent&& r_other) noexcept = default;
+    CircleComponent& operator=(const CircleComponent& rhs) noexcept = default;
+    CircleComponent& operator=(CircleComponent&& rhs) noexcept = default;
+    ~CircleComponent() noexcept = default;
+    CircleComponent(const Vector2& position, float radius) noexcept
+    : Position{position}
+    , Radius{radius} {
+    }
+
+};
