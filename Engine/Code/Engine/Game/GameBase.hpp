@@ -4,6 +4,10 @@
 
 #include "Engine/Game/GameSettings.hpp"
 
+#include <memory>
+
+class Scene;
+
 class GameBase {
 public:
     GameBase() noexcept = default;
@@ -21,8 +25,11 @@ public:
 
     virtual GameSettings& GetSettings() noexcept;
 
+    std::weak_ptr<Scene> GetActiveScene() const noexcept;
+
 protected:
     static inline GameSettings defaultSettings{};
+    std::shared_ptr<Scene> m_ActiveScene{};
 private:
     
 };

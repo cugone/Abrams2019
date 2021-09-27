@@ -27,3 +27,7 @@ void GameBase::EndFrame() noexcept {
 GameSettings& GameBase::GetSettings() noexcept {
     return defaultSettings;
 }
+
+std::weak_ptr<Scene> GameBase::GetActiveScene() const noexcept {
+    return m_ActiveScene;
+}
