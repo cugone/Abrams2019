@@ -63,8 +63,6 @@ public:
         return r.emplace<Component>(r.create(), std::forward<Args>(args)...);
     }
 
-    }
-
     template<typename Component>
     [[nodiscard]] const Component& GetComponent() const noexcept {
         GUARANTEE_OR_DIE(!m_Scene.expired(), "Entity scene context has expired!");
