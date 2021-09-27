@@ -71,6 +71,20 @@ struct SceneComponent {
 
 };
 
+struct SpriteSheetComponent {
+    AnimatedSpriteDesc AnimatedSprite{};
+
+    SpriteSheetComponent() noexcept = default;
+    SpriteSheetComponent(const SpriteSheetComponent& other) noexcept = default;
+    SpriteSheetComponent(SpriteSheetComponent&& r_other) noexcept = default;
+    SpriteSheetComponent& operator=(const SpriteSheetComponent& rhs) noexcept = default;
+    SpriteSheetComponent& operator=(SpriteSheetComponent&& rhs) noexcept = default;
+    ~SpriteSheetComponent() noexcept = default;
+    SpriteSheetComponent(const AnimatedSpriteDesc& desc) noexcept
+    : AnimatedSprite{desc} {}
+
+};
+
 struct RenderComponent {
     std::string MaterialName{"_2D"};
     Rgba Tint{};
