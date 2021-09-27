@@ -37,7 +37,7 @@ void SetRandomEngineSeed(unsigned int seed) noexcept {
         GetMT64RandomEngine(MT_RANDOM_SEED).seed(MT_RANDOM_SEED);
     } else {
         MT_RANDOM_SEED = GetRandomDevice()();
-        GetMT64RandomEngine().seed(MT_RANDOM_SEED);
+        GetMT64RandomEngine(MT_RANDOM_SEED).seed(MT_RANDOM_SEED);
     }
 }
 
