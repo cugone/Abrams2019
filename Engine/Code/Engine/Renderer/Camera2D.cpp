@@ -123,7 +123,7 @@ const RenderTargetStack::Node& Camera2D::GetRenderTarget() const noexcept {
 }
 
 RenderTargetStack::Node& Camera2D::GetRenderTarget() noexcept {
-    return const_cast<RenderTargetStack::Node&>(std::as_const(*this).GetRenderTarget());
+    return _render_target;
 }
 
 Vector2 Camera2D::GetViewDimensions() const noexcept {

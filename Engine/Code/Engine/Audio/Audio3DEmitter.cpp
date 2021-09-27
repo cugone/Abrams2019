@@ -3,12 +3,14 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Math/Matrix4.hpp"
 
+#include <utility>
+
 const Audio3DCone& Audio3DEmitter::Get3DCone() const noexcept {
     return m_cone;
 }
 
 Audio3DCone& Audio3DEmitter::Get3DCone() noexcept {
-    return const_cast<Audio3DCone&>(static_cast<const Audio3DEmitter&>(*this).Get3DCone());
+    return m_cone;
 }
 
 void Audio3DEmitter::SetOmniDirectional(bool newOmniDirectional) noexcept {

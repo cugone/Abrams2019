@@ -19,3 +19,11 @@ std::weak_ptr<const Scene> Scene::get() const noexcept {
 std::weak_ptr<Scene> Scene::get() noexcept {
     return weak_from_this();
 }
+
+const entt::registry& Scene::GetRegistry() const noexcept {
+    return m_registry;
+}
+
+entt::registry& Scene::GetRegistry() noexcept {
+    return m_registry;
+}

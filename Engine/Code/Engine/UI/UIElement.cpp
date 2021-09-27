@@ -48,7 +48,7 @@ const UIPanelSlot* const UIElement::GetSlot() const noexcept {
 }
 
 UIPanelSlot* UIElement::GetSlot() noexcept {
-    return const_cast<UIPanelSlot*>(static_cast<const UIElement&>(*this).GetSlot());
+    return _slot;
 }
 
 void UIElement::SetBorderColor(const Rgba& color) {
@@ -290,7 +290,7 @@ const std::string& UIElement::GetName() const {
 }
 
 std::string& UIElement::GetName() {
-    return const_cast<std::string&>(static_cast<const UIElement&>(*this).GetName());
+    return _name;
 }
 
 void UIElement::CalcBounds() noexcept {

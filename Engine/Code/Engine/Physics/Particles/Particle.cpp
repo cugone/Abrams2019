@@ -37,7 +37,7 @@ const ParticleState& Particle::GetState() const {
 }
 
 ParticleState& Particle::GetState() {
-    return const_cast<ParticleState&>(static_cast<const Particle&>(*this).GetState());
+    return _nextState;
 }
 
 const ParticleRenderState& Particle::GetRenderState() const {
@@ -45,7 +45,7 @@ const ParticleRenderState& Particle::GetRenderState() const {
 }
 
 ParticleRenderState& Particle::GetRenderState() {
-    return const_cast<ParticleRenderState&>(static_cast<const Particle&>(*this).GetRenderState());
+    return _renderState;
 }
 
 void Particle::SetIntegrationModel(const ParticleIntegrator& model) {
@@ -207,7 +207,7 @@ const Matrix4& Particle::GetParentTransform() const {
 }
 
 Matrix4& Particle::GetParentTransform() {
-    return const_cast<Matrix4&>(static_cast<const Particle&>(*this).GetParentTransform());
+    return _parentTransform;
 }
 
 void Particle::SetParentTransform(const Matrix4& transform) {
@@ -240,7 +240,7 @@ const Rgba& ParticleRenderState::GetColor() const {
 }
 
 Rgba& ParticleRenderState::GetColor() {
-    return const_cast<Rgba&>(static_cast<const ParticleRenderState&>(*this).GetColor());
+    return color;
 }
 
 void ParticleRenderState::SetMaterial(Material* material) {

@@ -98,7 +98,7 @@ const std::vector<ParticleEmitter>& ParticleEffect::GetEmitters() const {
 }
 
 std::vector<ParticleEmitter>& ParticleEffect::GetEmitters() {
-    return const_cast<std::vector<ParticleEmitter>&>(static_cast<const ParticleEffect&>(*this).GetEmitters());
+    return _emitters;
 }
 
 void ParticleEffect::LoadFromXml(const XMLElement& element) {
