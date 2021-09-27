@@ -676,6 +676,9 @@
     <ClCompile Include="Scene\Components.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
+    <ClCompile Include="Scene\World.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\Vector2.hpp">
@@ -1396,6 +1399,9 @@
       <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="Scene\Components.hpp">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\World.hpp">
       <Filter>Scene</Filter>
     </ClInclude>
   </ItemGroup>

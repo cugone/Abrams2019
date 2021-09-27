@@ -196,6 +196,7 @@
     <ClCompile Include="Scene\ECS.cpp" />
     <ClCompile Include="Scene\Entity.cpp" />
     <ClCompile Include="Scene\Scene.cpp" />
+    <ClCompile Include="Scene\World.cpp" />
     <ClCompile Include="Services\ServiceLocator.cpp" />
     <ClCompile Include="System\Cpu.cpp" />
     <ClCompile Include="System\OS.cpp" />
@@ -428,6 +429,7 @@
     <ClInclude Include="Scene\ECS.hpp" />
     <ClInclude Include="Scene\Entity.hpp" />
     <ClInclude Include="Scene\Scene.hpp" />
+    <ClInclude Include="Scene\World.hpp" />
     <ClInclude Include="Services\IAppService.hpp" />
     <ClInclude Include="Services\IAudioService.hpp" />
     <ClInclude Include="Services\IConfigService.hpp" />
