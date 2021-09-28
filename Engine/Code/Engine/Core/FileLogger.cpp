@@ -78,8 +78,8 @@ void FileLogger::DoCopyLog() noexcept {
         from_p = FS::canonical(from_p);
         from_p.make_preferred();
         auto to_p = from_p.parent_path();
-        to_p = to_p / TimeUtils::GetDateTimeStampFromNow() / ".log";
-        to_p = FS::canonical(to_p);
+        to_p = to_p / std::filesystem::path{_logName + "_" + TimeUtils::GetDateTimeStampFromNow({true})}.replace_extension(".log");
+        to_p = FS::absolute(to_p);
         to_p.make_preferred();
         job_data->to = to_p;
         job_data->from = from_p;
