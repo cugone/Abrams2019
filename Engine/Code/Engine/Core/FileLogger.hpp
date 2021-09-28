@@ -60,6 +60,7 @@ private:
     void FinalizeLog() noexcept;
     mutable std::mutex _cs{};
     std::ofstream _stream{};
+    std::string _logName{};
     std::filesystem::path _current_log_path{};
     std::streambuf* _old_cout{};
     std::thread _worker{};

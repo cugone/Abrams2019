@@ -131,6 +131,7 @@ void FileLogger::Initialize(const std::string& log_name) noexcept {
     namespace FS = std::filesystem;
     const auto folder_p = FileUtils::GetKnownFolderPath(FileUtils::KnownPathID::GameLogs);
     const auto extension = FS::path{".log"};
+    _logName = log_name;
     const auto log_p = [&]() {
         FS::path result = (folder_p / log_name).replace_extension(extension);
         if(FS::exists(result)) {
