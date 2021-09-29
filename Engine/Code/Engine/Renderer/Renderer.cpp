@@ -1459,10 +1459,60 @@ void Renderer::DrawTextLine(const KerningFont* font, const std::string& text, co
     auto texture_w = static_cast<float>(font->GetCommonDef().scale.x);
     auto texture_h = static_cast<float>(font->GetCommonDef().scale.y);
     std::size_t text_size = text.size();
-    std::vector<Vertex3D> vbo;
-    vbo.reserve(text_size * 4);
-    std::vector<unsigned int> ibo;
-    ibo.reserve(text_size * 6);
+
+    Mesh::Builder builder;
+    builder.verticies.reserve(text_size * 4);
+    builder.indicies.reserve(text_size * 6);
+
+    builder.Begin(PrimitiveType::Triangles);
+    
+    builder.SetColor(color);
+
+    for(auto text_iter = text.begin(); text_iter != text.end(); /* DO NOTHING */) {
+        KerningFont::CharDef current_def = font->GetCharDef(*text_iter);
+        float char_uvl = current_def.position.x / texture_w;
+        float char_uvt = current_def.position.y / texture_h;
+        float char_uvr = char_uvl + (current_def.dimensions.x / texture_w);
+        float char_uvb = char_uvt + (current_def.dimensions.y / texture_h);
+
+        float quad_top = line_top + current_def.offsets.y;
+        float quad_bottom = quad_top + current_def.dimensions.y;
+        float quad_left = cursor_x - current_def.offsets.x;
+        float quad_right = quad_left + current_def.dimensions.x;
+
+        builder.SetUV(Vector2{char_uvl, char_uvb});
+        builder.AddVertex(Vector2(quad_left, quad_bottom));
+
+        builder.SetUV(Vector2{char_uvl, char_uvt});
+        builder.AddVertex(Vector2(quad_left, quad_top));
+
+        builder.SetUV(Vector2{char_uvr, char_uvt});
+        builder.AddVertex(Vector2(quad_right, quad_top));
+
+        builder.SetUV(Vector2{char_uvr, char_uvb});
+        builder.AddVertex(Vector2{quad_right, quad_bottom});
+
+        builder.AddIndicies(Mesh::Builder::Primitive::Quad);
+
+        std::string::const_iterator previous_char = text_iter;
+        ++text_iter;
+        if(text_iter != text.end()) {
+            int kern_value = font->GetKerningValue(*previous_char, *text_iter);
+            cursor_x += (current_def.xadvance + kern_value);
+        }
+    }
+
+    builder.End(font->GetMaterial());
+    const auto& cbs = font->GetMaterial()->GetShader()->GetConstantBuffers();
+    auto has_constant_buffers = !cbs.empty();
+    if(has_constant_buffers) {
+        auto& font_cb = cbs[0].get();
+        Vector4 channel{1.0f, 1.0f, 1.0f, 1.0f};
+        font_cb.Update(*_rhi_context, &channel);
+    }
+    Mesh::Render(builder);
+}
+
 
     for(auto text_iter = text.begin(); text_iter != text.end(); /* DO NOTHING */) {
         KerningFont::CharDef current_def = font->GetCharDef(*text_iter);
