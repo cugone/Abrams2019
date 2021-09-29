@@ -76,7 +76,7 @@ double Combination_multiset(const int n, const int k) noexcept {
 }
 
 float SineWave(float t, float period /*= 1.0f*/, float phase /*= 0.0f*/) noexcept {
-    return (0.5f + std::sin(MathUtils::M_2PI * t * (1.0f / period) + phase) * 0.5f);
+    return ((1.0f + std::sin(MathUtils::M_2PI * t * (1.0f / period) + phase)) * 0.5f);
 }
 
 float SineWaveDegrees(float t, float period /*= 1.0f*/, float phaseDegrees /*= 0.0f*/) noexcept {
