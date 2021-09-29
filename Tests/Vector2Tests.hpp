@@ -11,85 +11,85 @@
 #include <sstream>
 
 TEST(Vector2Statics, ZeroSetsMembersToZero) {
-    auto a = Vector2::ZERO;
+    auto a = Vector2::Zero;
     EXPECT_FLOAT_EQ(a.x, 0.0f);
     EXPECT_FLOAT_EQ(a.y, 0.0f);
 }
 
 TEST(Vector2Statics, ZeroEqualsDefaultCtor) {
-    auto a = Vector2::ZERO;
+    auto a = Vector2::Zero;
     auto b = Vector2{};
     EXPECT_FLOAT_EQ(a.x, b.x);
     EXPECT_FLOAT_EQ(a.y, b.y);
 }
 
 TEST(Vector2Statics, ZeroEquals2ArgInitCtor) {
-    auto a = Vector2::ZERO;
+    auto a = Vector2::Zero;
     auto b = Vector2{ 0.0f, 0.0f };
     EXPECT_FLOAT_EQ(a.x, b.x);
     EXPECT_FLOAT_EQ(a.y, b.y);
 }
 
 TEST(Vector2Statics, XAxisSetsXToOneYToZero) {
-    auto a = Vector2::X_AXIS;
+    auto a = Vector2::X_Axis;
     EXPECT_FLOAT_EQ(a.x, 1.0f);
     EXPECT_FLOAT_EQ(a.y, 0.0f);
 }
 
 TEST(Vector2Statics, XAxisEquals2ArgInitCtor) {
-    auto a = Vector2::X_AXIS;
+    auto a = Vector2::X_Axis;
     auto b = Vector2{ 1.0f, 0.0f };
     EXPECT_FLOAT_EQ(a.x, b.x);
     EXPECT_FLOAT_EQ(a.y, b.y);
 }
 
 TEST(Vector2Statics, YAxisSetsXToZeroYToOne) {
-    auto a = Vector2::Y_AXIS;
+    auto a = Vector2::Y_Axis;
     EXPECT_FLOAT_EQ(a.x, 0.0f);
     EXPECT_FLOAT_EQ(a.y, 1.0f);
 }
 
 TEST(Vector2Statics, YAxisEquals2ArgInitCtor) {
-    auto a = Vector2::Y_AXIS;
+    auto a = Vector2::Y_Axis;
     auto b = Vector2{ 0.0f, 1.0f };
     EXPECT_FLOAT_EQ(a.x, b.x);
     EXPECT_FLOAT_EQ(a.y, b.y);
 }
 
 TEST(Vector2Statics, XYAxisSetsXToOneYToOne) {
-    auto a = Vector2::XY_AXIS;
+    auto a = Vector2::XY_Axis;
     EXPECT_FLOAT_EQ(a.x, 1.0f);
     EXPECT_FLOAT_EQ(a.y, 1.0f);
 }
 
 TEST(Vector2Statics, XYAxisEquals2ArgInitCtor) {
-    auto a = Vector2::XY_AXIS;
+    auto a = Vector2::XY_Axis;
     auto b = Vector2{ 1.0f, 1.0f };
     EXPECT_FLOAT_EQ(a.x, b.x);
     EXPECT_FLOAT_EQ(a.y, b.y);
 }
 
 TEST(Vector2Statics, YXAxisSetsXToOneYToOne) {
-    auto a = Vector2::YX_AXIS;
+    auto a = Vector2::YX_Axis;
     EXPECT_FLOAT_EQ(a.x, 1.0f);
     EXPECT_FLOAT_EQ(a.y, 1.0f);
 }
 
 TEST(Vector2Statics, YXAxisEquals2ArgInitCtor) {
-    auto a = Vector2::XY_AXIS;
+    auto a = Vector2::XY_Axis;
     auto b = Vector2{ 1.0f, 1.0f };
     EXPECT_FLOAT_EQ(a.x, b.x);
     EXPECT_FLOAT_EQ(a.y, b.y);
 }
 
 TEST(Vector2Statics, OneSetsMembersToOne) {
-    auto a = Vector2::ONE;
+    auto a = Vector2::One;
     EXPECT_FLOAT_EQ(a.x, 1.0f);
     EXPECT_FLOAT_EQ(a.y, 1.0f);
 }
 
 TEST(Vector2Statics, OneEquals2ArgInitCtor) {
-    auto a = Vector2::ONE;
+    auto a = Vector2::One;
     auto b = Vector2{ 1.0f, 1.0f };
     EXPECT_FLOAT_EQ(a.x, b.x);
     EXPECT_FLOAT_EQ(a.y, b.y);
@@ -110,7 +110,7 @@ TEST(Vector2Construction, CopyCtor) {
 
 TEST(Vector2Construction, MoveCtor) {
     auto a = Vector2{ 1.0f, 2.0f };
-    auto b = Vector2{ std::move(a) };
+    Vector2 b{std::move(a)};
     EXPECT_FLOAT_EQ(a.x, b.x);
     EXPECT_FLOAT_EQ(a.y, b.y);
 }
@@ -178,7 +178,7 @@ TEST(Vector2Operators, Inequality) {
 
 TEST(Vector2Operators, Add) {
     auto a = Vector2{ 1.0f, 2.0f };
-    auto b = Vector2::ONE;
+    auto b = Vector2::One;
     auto c = a + b;
     EXPECT_FLOAT_EQ(a.x + b.x, c.x);
     EXPECT_FLOAT_EQ(a.y + b.y, c.y);
@@ -186,7 +186,7 @@ TEST(Vector2Operators, Add) {
 
 TEST(Vector2Operators, AddAssign) {
     auto a = Vector2{ 1.0f, 2.0f };
-    auto b = Vector2::ONE;
+    auto b = Vector2::One;
     a += b;
     EXPECT_FLOAT_EQ(a.x, 2.0f);
     EXPECT_FLOAT_EQ(a.y, 3.0f);
@@ -194,7 +194,7 @@ TEST(Vector2Operators, AddAssign) {
 
 TEST(Vector2Operators, Subtract) {
     auto a = Vector2{ 1.0f, 2.0f };
-    auto b = Vector2::ONE;
+    auto b = Vector2::One;
     auto c = a - b;
     EXPECT_FLOAT_EQ(a.x - b.x, c.x);
     EXPECT_FLOAT_EQ(a.y - b.y, c.y);
@@ -202,7 +202,7 @@ TEST(Vector2Operators, Subtract) {
 
 TEST(Vector2Operators, SubtractAssign) {
     auto a = Vector2{ 1.0f, 2.0f };
-    auto b = Vector2::ONE;
+    auto b = Vector2::One;
     a -= b;
     EXPECT_FLOAT_EQ(a.x, 0.0f);
     EXPECT_FLOAT_EQ(a.y, 1.0f);
@@ -216,35 +216,35 @@ TEST(Vector2Operators, Negate) {
 }
 
 TEST(Vector2Operators, MultiplyRHSScalar) {
-    auto a = Vector2::ONE;
+    auto a = Vector2::One;
     auto c = a * 2.0f;
     EXPECT_FLOAT_EQ(a.x * 2.0f, c.x);
     EXPECT_FLOAT_EQ(a.y * 2.0f, c.y);
 }
 
 TEST(Vector2Operators, MultiplyAssignScalar) {
-    auto a = Vector2::ONE;
+    auto a = Vector2::One;
     a *= 2.0f;
     EXPECT_FLOAT_EQ(a.x, 2.0f);
     EXPECT_FLOAT_EQ(a.y, 2.0f);
 }
 
 TEST(Vector2Operators, MultiplyLHSScalar) {
-    auto a = Vector2::ONE;
+    auto a = Vector2::One;
     auto c = 2.0f * a;
     EXPECT_FLOAT_EQ(a.x * 2.0f, c.x);
     EXPECT_FLOAT_EQ(a.y * 2.0f, c.y);
 }
 
 TEST(Vector2Operators, MultiplyLHSAndRHSScalar) {
-    auto a = Vector2::ONE;
+    auto a = Vector2::One;
     auto c = 2.0f * a * 2.0f;
     EXPECT_FLOAT_EQ(a.x * 4.0f, c.x);
     EXPECT_FLOAT_EQ(a.y * 4.0f, c.y);
 }
 
 TEST(Vector2Operators, MultiplyVector2) {
-    auto a = Vector2::ONE * 2.0f;
+    auto a = Vector2::One * 2.0f;
     auto b = Vector2{ 2.0f, 3.0f };
     auto c = a * b;
     EXPECT_FLOAT_EQ(a.x * b.x, c.x);
@@ -260,21 +260,21 @@ TEST(Vector2Operators, MultiplyAssignVector2) {
 }
 
 TEST(Vector2Operators, DivideRHSScalar) {
-    auto a = Vector2::ONE;
+    auto a = Vector2::One;
     auto c = a / 2.0f;
     EXPECT_FLOAT_EQ(a.x / 2.0f, c.x);
     EXPECT_FLOAT_EQ(a.y / 2.0f, c.y);
 }
 
 TEST(Vector2Operators, DivideAssignScalar) {
-    auto a = Vector2::ONE;
+    auto a = Vector2::One;
     a /= 2.0f;
     EXPECT_FLOAT_EQ(a.x, 1.0f / 2.0f);
     EXPECT_FLOAT_EQ(a.y, 1.0f / 2.0f);
 }
 
 TEST(Vector2Operators, DivideVector2) {
-    auto a = Vector2::ONE * 2.0f;
+    auto a = Vector2::One * 2.0f;
     auto b = Vector2{ 2.0f, 3.0f };
     auto c = a / b;
     EXPECT_FLOAT_EQ(a.x / b.x, c.x);
@@ -328,10 +328,8 @@ TEST(Vector2Operators, StreamOut) {
 
 
 TEST(Vector2MemberFunctions, GetXY) {
-    auto a = Vector2{ 2.0f, 3.0f };
-    auto x = 0.0f;
-    auto y = 0.0f;
-    a.GetXY(x, y);
+    const auto a = Vector2{ 2.0f, 3.0f };
+    const auto& [x,y] = a.GetXY();
     EXPECT_FLOAT_EQ(a.x, x);
     EXPECT_FLOAT_EQ(a.y, y);
 }
@@ -404,25 +402,25 @@ TEST(Vector2MemberFunctions, CalcHeadingRadians) {
 }
 
 TEST(Vector2MemberFunctions, CalcHeadingDegrees) {
-    auto a = Vector2::X_AXIS;
+    auto a = Vector2::X_Axis;
     auto expected = 0.0f;
     EXPECT_FLOAT_EQ(a.CalcHeadingDegrees(), expected);
     a = Vector2{ 1.0f, 1.0f };
     expected = 45.0f;
     EXPECT_FLOAT_EQ(a.CalcHeadingDegrees(), expected);
-    a = Vector2::Y_AXIS;
+    a = Vector2::Y_Axis;
     expected = 90.0f;
     EXPECT_FLOAT_EQ(a.CalcHeadingDegrees(), expected);
     a = Vector2{-1.0f, 1.0f};
     expected = 135.0f;
     EXPECT_FLOAT_EQ(a.CalcHeadingDegrees(), expected);
-    a = -Vector2::X_AXIS;
+    a = -Vector2::X_Axis;
     expected = -180.0f;
     EXPECT_FLOAT_EQ(a.CalcHeadingDegrees(), expected);
     a = Vector2{ -1.0f, -1.0f };
     expected = -135.0f;
     EXPECT_FLOAT_EQ(a.CalcHeadingDegrees(), expected);
-    a = -Vector2::Y_AXIS;
+    a = -Vector2::Y_Axis;
     expected = -90.0f;
     EXPECT_FLOAT_EQ(a.CalcHeadingDegrees(), expected);
 }

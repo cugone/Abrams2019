@@ -11,14 +11,14 @@
 #include <sstream>
 
 TEST(Vector3Statics, ZeroSetsMembersToZero) {
-    auto a = Vector3::ZERO;
+    auto a = Vector3::Zero;
     EXPECT_FLOAT_EQ(a.x, 0.0f);
     EXPECT_FLOAT_EQ(a.y, 0.0f);
     EXPECT_FLOAT_EQ(a.z, 0.0f);
 }
 
 TEST(Vector3Statics, ZeroEqualsDefaultCtor) {
-    auto a = Vector3::ZERO;
+    auto a = Vector3::Zero;
     auto b = Vector3{};
     EXPECT_FLOAT_EQ(a.x, b.x);
     EXPECT_FLOAT_EQ(a.y, b.y);
@@ -26,7 +26,7 @@ TEST(Vector3Statics, ZeroEqualsDefaultCtor) {
 }
 
 TEST(Vector3Statics, ZeroEquals3ArgInitCtor) {
-    auto a = Vector3::ZERO;
+    auto a = Vector3::Zero;
     auto b = Vector3{ 0.0f, 0.0f, 0.0f };
     EXPECT_FLOAT_EQ(a.x, b.x);
     EXPECT_FLOAT_EQ(a.y, b.y);
@@ -34,14 +34,14 @@ TEST(Vector3Statics, ZeroEquals3ArgInitCtor) {
 }
 
 TEST(Vector3Statics, XAxisSetsXToOneYToZeroZToZero) {
-    auto a = Vector3::X_AXIS;
+    auto a = Vector3::X_Axis;
     EXPECT_FLOAT_EQ(a.x, 1.0f);
     EXPECT_FLOAT_EQ(a.y, 0.0f);
     EXPECT_FLOAT_EQ(a.z, 0.0f);
 }
 
 TEST(Vector3Statics, XAxisEquals3ArgInitCtor) {
-    auto a = Vector3::X_AXIS;
+    auto a = Vector3::X_Axis;
     auto b = Vector3{ 1.0f, 0.0f, 0.0f };
     EXPECT_FLOAT_EQ(a.x, b.x);
     EXPECT_FLOAT_EQ(a.y, b.y);
@@ -49,14 +49,14 @@ TEST(Vector3Statics, XAxisEquals3ArgInitCtor) {
 }
 
 TEST(Vector3Statics, XYAxisSetsXToOneYToOneZToZero) {
-    auto a = Vector3::XY_AXIS;
+    auto a = Vector3::XY_Axis;
     EXPECT_FLOAT_EQ(a.x, 1.0f);
     EXPECT_FLOAT_EQ(a.y, 1.0f);
     EXPECT_FLOAT_EQ(a.z, 0.0f);
 }
 
 TEST(Vector3Statics, XYAxisEquals3ArgInitCtor) {
-    auto a = Vector3::XY_AXIS;
+    auto a = Vector3::XY_Axis;
     auto b = Vector3{ 1.0f, 1.0f, 0.0f };
     EXPECT_FLOAT_EQ(a.x, b.x);
     EXPECT_FLOAT_EQ(a.y, b.y);
@@ -64,14 +64,14 @@ TEST(Vector3Statics, XYAxisEquals3ArgInitCtor) {
 }
 
 TEST(Vector3Statics, XZAxisSetsXToOneYToZeroZToOne) {
-    auto a = Vector3::XZ_AXIS;
+    auto a = Vector3::XZ_Axis;
     EXPECT_FLOAT_EQ(a.x, 1.0f);
     EXPECT_FLOAT_EQ(a.y, 0.0f);
     EXPECT_FLOAT_EQ(a.z, 1.0f);
 }
 
 TEST(Vector3Statics, XZAxisEquals3ArgInitCtor) {
-    auto a = Vector3::XZ_AXIS;
+    auto a = Vector3::XZ_Axis;
     auto b = Vector3{ 1.0f, 0.0f, 1.0f };
     EXPECT_FLOAT_EQ(a.x, b.x);
     EXPECT_FLOAT_EQ(a.y, b.y);
@@ -79,14 +79,14 @@ TEST(Vector3Statics, XZAxisEquals3ArgInitCtor) {
 }
 
 TEST(Vector3Statics, YAxisSetsXToZeroYToOneZToZero) {
-    auto a = Vector3::Y_AXIS;
+    auto a = Vector3::Y_Axis;
     EXPECT_FLOAT_EQ(a.x, 0.0f);
     EXPECT_FLOAT_EQ(a.y, 1.0f);
     EXPECT_FLOAT_EQ(a.z, 0.0f);
 }
 
 TEST(Vector3Statics, YAxisEquals3ArgInitCtor) {
-    auto a = Vector3::Y_AXIS;
+    auto a = Vector3::Y_Axis;
     auto b = Vector3{ 0.0f, 1.0f, 0.0f };
     EXPECT_FLOAT_EQ(a.x, b.x);
     EXPECT_FLOAT_EQ(a.y, b.y);
@@ -94,14 +94,14 @@ TEST(Vector3Statics, YAxisEquals3ArgInitCtor) {
 }
 
 TEST(Vector3Statics, YZAxisSetsXToZeroYToOneZToOne) {
-    auto a = Vector3::YZ_AXIS;
+    auto a = Vector3::YZ_Axis;
     EXPECT_FLOAT_EQ(a.x, 0.0f);
     EXPECT_FLOAT_EQ(a.y, 1.0f);
     EXPECT_FLOAT_EQ(a.z, 1.0f);
 }
 
 TEST(Vector3Statics, YZAxisEquals3ArgInitCtor) {
-    auto a = Vector3::YZ_AXIS;
+    auto a = Vector3::YZ_Axis;
     auto b = Vector3{ 0.0f, 1.0f, 1.0f };
     EXPECT_FLOAT_EQ(a.x, b.x);
     EXPECT_FLOAT_EQ(a.y, b.y);
@@ -109,14 +109,14 @@ TEST(Vector3Statics, YZAxisEquals3ArgInitCtor) {
 }
 
 TEST(Vector3Statics, ZAxisSetsXToZeroYToZeroZToOne) {
-    auto a = Vector3::Z_AXIS;
+    auto a = Vector3::Z_Axis;
     EXPECT_FLOAT_EQ(a.x, 0.0f);
     EXPECT_FLOAT_EQ(a.y, 0.0f);
     EXPECT_FLOAT_EQ(a.z, 1.0f);
 }
 
 TEST(Vector3Statics, ZAxisEquals3ArgInitCtor) {
-    auto a = Vector3::Z_AXIS;
+    auto a = Vector3::Z_Axis;
     auto b = Vector3{ 0.0f, 0.0f, 1.0f };
     EXPECT_FLOAT_EQ(a.x, b.x);
     EXPECT_FLOAT_EQ(a.y, b.y);
@@ -124,14 +124,14 @@ TEST(Vector3Statics, ZAxisEquals3ArgInitCtor) {
 }
 
 TEST(Vector3Statics, OneSetsMembersToOne) {
-    auto a = Vector3::ONE;
+    auto a = Vector3::One;
     EXPECT_FLOAT_EQ(a.x, 1.0f);
     EXPECT_FLOAT_EQ(a.y, 1.0f);
     EXPECT_FLOAT_EQ(a.z, 1.0f);
 }
 
 TEST(Vector3Statics, OneEquals3ArgInitCtor) {
-    auto a = Vector3::ONE;
+    auto a = Vector3::One;
     auto b = Vector3{ 1.0f, 1.0f, 1.0f };
     EXPECT_FLOAT_EQ(a.x, b.x);
     EXPECT_FLOAT_EQ(a.y, b.y);
@@ -155,7 +155,7 @@ TEST(Vector3Construction, CopyCtor) {
 
 TEST(Vector3Construction, MoveCtor) {
     auto a = Vector3{ 1.0f, 2.0f, 3.0f };
-    auto b = Vector3{ std::move(a) };
+    Vector3 b{std::move(a)};
     EXPECT_FLOAT_EQ(a.x, b.x);
     EXPECT_FLOAT_EQ(a.y, b.y);
     EXPECT_FLOAT_EQ(a.z, b.z);
@@ -238,7 +238,7 @@ TEST(Vector3Operators, Inequality) {
 
 TEST(Vector3Operators, Add) {
     auto a = Vector3{ 1.0f, 2.0f, 3.0f };
-    auto b = Vector3::ONE;
+    auto b = Vector3::One;
     auto c = a + b;
     EXPECT_FLOAT_EQ(a.x + b.x, c.x);
     EXPECT_FLOAT_EQ(a.y + b.y, c.y);
@@ -247,7 +247,7 @@ TEST(Vector3Operators, Add) {
 
 TEST(Vector3Operators, AddAssign) {
     auto a = Vector3{ 1.0f, 2.0f, 3.0f };
-    auto b = Vector3::ONE;
+    auto b = Vector3::One;
     a += b;
     EXPECT_FLOAT_EQ(a.x, 2.0f);
     EXPECT_FLOAT_EQ(a.y, 3.0f);
@@ -256,7 +256,7 @@ TEST(Vector3Operators, AddAssign) {
 
 TEST(Vector3Operators, Subtract) {
     auto a = Vector3{ 1.0f, 2.0f, 3.0f };
-    auto b = Vector3::ONE;
+    auto b = Vector3::One;
     auto c = a - b;
     EXPECT_FLOAT_EQ(a.x - b.x, c.x);
     EXPECT_FLOAT_EQ(a.y - b.y, c.y);
@@ -265,7 +265,7 @@ TEST(Vector3Operators, Subtract) {
 
 TEST(Vector3Operators, SubtractAssign) {
     auto a = Vector3{ 1.0f, 2.0f, 3.0f };
-    auto b = Vector3::ONE;
+    auto b = Vector3::One;
     a -= b;
     EXPECT_FLOAT_EQ(a.x, 0.0f);
     EXPECT_FLOAT_EQ(a.y, 1.0f);
@@ -281,7 +281,7 @@ TEST(Vector3Operators, Negate) {
 }
 
 TEST(Vector3Operators, MultiplyRHSScalar) {
-    auto a = Vector3::ONE;
+    auto a = Vector3::One;
     auto c = a * 2.0f;
     EXPECT_FLOAT_EQ(a.x * 2.0f, c.x);
     EXPECT_FLOAT_EQ(a.y * 2.0f, c.y);
@@ -289,7 +289,7 @@ TEST(Vector3Operators, MultiplyRHSScalar) {
 }
 
 TEST(Vector3Operators, MultiplyAssignScalar) {
-    auto a = Vector3::ONE;
+    auto a = Vector3::One;
     a *= 2.0f;
     EXPECT_FLOAT_EQ(a.x, 2.0f);
     EXPECT_FLOAT_EQ(a.y, 2.0f);
@@ -297,7 +297,7 @@ TEST(Vector3Operators, MultiplyAssignScalar) {
 }
 
 TEST(Vector3Operators, MultiplyLHSScalar) {
-    auto a = Vector3::ONE;
+    auto a = Vector3::One;
     auto c = 2.0f * a;
     EXPECT_FLOAT_EQ(a.x * 2.0f, c.x);
     EXPECT_FLOAT_EQ(a.y * 2.0f, c.y);
@@ -305,7 +305,7 @@ TEST(Vector3Operators, MultiplyLHSScalar) {
 }
 
 TEST(Vector3Operators, MultiplyLHSAndRHSScalar) {
-    auto a = Vector3::ONE;
+    auto a = Vector3::One;
     auto c = 2.0f * a * 2.0f;
     EXPECT_FLOAT_EQ(a.x * 4.0f, c.x);
     EXPECT_FLOAT_EQ(a.y * 4.0f, c.y);
@@ -313,7 +313,7 @@ TEST(Vector3Operators, MultiplyLHSAndRHSScalar) {
 }
 
 TEST(Vector3Operators, MultiplyVector3) {
-    auto a = Vector3::ONE * 2.0f;
+    auto a = Vector3::One * 2.0f;
     auto b = Vector3{ 2.0f, 3.0f, 4.0f };
     auto c = a * b;
     EXPECT_FLOAT_EQ(a.x * b.x, c.x);
@@ -331,7 +331,7 @@ TEST(Vector3Operators, MultiplyAssignVector3) {
 }
 
 TEST(Vector3Operators, DivideRHSScalar) {
-    auto a = Vector3::ONE;
+    auto a = Vector3::One;
     auto c = a / 2.0f;
     EXPECT_FLOAT_EQ(a.x / 2.0f, c.x);
     EXPECT_FLOAT_EQ(a.y / 2.0f, c.y);
@@ -339,7 +339,7 @@ TEST(Vector3Operators, DivideRHSScalar) {
 }
 
 TEST(Vector3Operators, DivideAssignScalar) {
-    auto a = Vector3::ONE;
+    auto a = Vector3::One;
     a /= 2.0f;
     EXPECT_FLOAT_EQ(a.x, 1.0f / 2.0f);
     EXPECT_FLOAT_EQ(a.y, 1.0f / 2.0f);
@@ -347,7 +347,7 @@ TEST(Vector3Operators, DivideAssignScalar) {
 }
 
 TEST(Vector3Operators, DivideVector3) {
-    auto a = Vector3::ONE * 2.0f;
+    auto a = Vector3::One * 2.0f;
     auto b = Vector3{ 2.0f, 3.0f, 4.0f };
     auto c = a / b;
     EXPECT_FLOAT_EQ(a.x / b.x, c.x);
