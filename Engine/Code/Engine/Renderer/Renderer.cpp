@@ -1513,6 +1513,27 @@ void Renderer::DrawTextLine(const KerningFont* font, const std::string& text, co
     Mesh::Render(builder);
 }
 
+void Renderer::DrawTextLine(const Matrix4& transform, const KerningFont* font, const std::string& text, const Rgba& color /*= Rgba::WHITE*/) noexcept {
+    if(font == nullptr) {
+        return;
+    }
+    if(text.empty()) {
+        return;
+    }
+    float cursor_x = 0.0f;
+    float cursor_y = 0.0f;
+    float line_top = cursor_y - font->GetCommonDef().base;
+    auto texture_w = static_cast<float>(font->GetCommonDef().scale.x);
+    auto texture_h = static_cast<float>(font->GetCommonDef().scale.y);
+    std::size_t text_size = text.size();
+
+    Mesh::Builder builder;
+    builder.verticies.reserve(text_size * 4);
+    builder.indicies.reserve(text_size * 6);
+
+    builder.Begin(PrimitiveType::Triangles);
+
+    builder.SetColor(color);
 
     for(auto text_iter = text.begin(); text_iter != text.end(); /* DO NOTHING */) {
         KerningFont::CharDef current_def = font->GetCharDef(*text_iter);
@@ -1526,18 +1547,19 @@ void Renderer::DrawTextLine(const KerningFont* font, const std::string& text, co
         float quad_left = cursor_x - current_def.offsets.x;
         float quad_right = quad_left + current_def.dimensions.x;
 
-        vbo.emplace_back(Vector3(quad_left, quad_bottom, 0.0f), color, Vector2(char_uvl, char_uvb));
-        vbo.emplace_back(Vector3(quad_left, quad_top, 0.0f), color, Vector2(char_uvl, char_uvt));
-        vbo.emplace_back(Vector3(quad_right, quad_top, 0.0f), color, Vector2(char_uvr, char_uvt));
-        vbo.emplace_back(Vector3(quad_right, quad_bottom, 0.0f), color, Vector2(char_uvr, char_uvb));
+        builder.SetUV(Vector2{char_uvl, char_uvb});
+        builder.AddVertex(Vector2(quad_left, quad_bottom));
 
-        const auto s = static_cast<unsigned int>(vbo.size());
-        ibo.push_back(s - 4);
-        ibo.push_back(s - 3);
-        ibo.push_back(s - 2);
-        ibo.push_back(s - 4);
-        ibo.push_back(s - 2);
-        ibo.push_back(s - 1);
+        builder.SetUV(Vector2{char_uvl, char_uvt});
+        builder.AddVertex(Vector2(quad_left, quad_top));
+
+        builder.SetUV(Vector2{char_uvr, char_uvt});
+        builder.AddVertex(Vector2(quad_right, quad_top));
+
+        builder.SetUV(Vector2{char_uvr, char_uvb});
+        builder.AddVertex(Vector2{quad_right, quad_bottom});
+
+        builder.AddIndicies(Mesh::Builder::Primitive::Quad);
 
         std::string::const_iterator previous_char = text_iter;
         ++text_iter;
@@ -1546,6 +1568,8 @@ void Renderer::DrawTextLine(const KerningFont* font, const std::string& text, co
             cursor_x += (current_def.xadvance + kern_value);
         }
     }
+
+    builder.End(font->GetMaterial());
     const auto& cbs = font->GetMaterial()->GetShader()->GetConstantBuffers();
     auto has_constant_buffers = !cbs.empty();
     if(has_constant_buffers) {
@@ -1553,8 +1577,8 @@ void Renderer::DrawTextLine(const KerningFont* font, const std::string& text, co
         Vector4 channel{1.0f, 1.0f, 1.0f, 1.0f};
         font_cb.Update(*_rhi_context, &channel);
     }
-    SetMaterial(font->GetMaterial());
-    DrawIndexed(PrimitiveType::Triangles, vbo, ibo);
+    SetModelMatrix(transform);
+    Mesh::Render(builder);
 }
 
 void Renderer::DrawMultilineText(KerningFont* font, const std::string& text, const Rgba& color /*= Rgba::WHITE*/) noexcept {
