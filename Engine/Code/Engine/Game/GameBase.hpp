@@ -23,6 +23,7 @@ public:
     virtual void Render() const noexcept;
     virtual void EndFrame() noexcept;
 
+    virtual const GameSettings& GetSettings() const noexcept;
     virtual GameSettings& GetSettings() noexcept;
 
     std::weak_ptr<Scene> GetActiveScene() const noexcept;

@@ -24,6 +24,10 @@ void GameBase::EndFrame() noexcept {
     /* DO NOTHING */
 }
 
+const GameSettings& GameBase::GetSettings() const noexcept {
+    return defaultSettings;
+}
+
 GameSettings& GameBase::GetSettings() noexcept {
     return defaultSettings;
 }
