@@ -13,6 +13,7 @@ public:
 
     UUID(uint64_t uuid) noexcept;
 
+    operator uint64_t() const noexcept { return m_UUID; }
 
 protected:
 private:
