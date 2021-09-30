@@ -24,7 +24,7 @@ namespace std {
     template<>
     struct hash<UUID> {
         std::size_t operator()(const UUID& uuid) const noexcept {
-            return hash<uint64_t>()((uint64_t)uuid);
+            return hash<uint64_t>()(uuid);
         }
     };
 }
