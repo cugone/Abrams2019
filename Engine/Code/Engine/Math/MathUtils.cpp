@@ -860,15 +860,19 @@ Vector2 CalcClosestPoint(const Vector2& p, const OBB2& obb) noexcept {
     const auto u1 = M.TransformDirection(Vector2(0.0f, obb.half_extents.y).GetNormalize());
 
     auto x_distance = MathUtils::DotProduct(u0, displacement);
-    if(x_distance > obb.half_extents.x)
+    if(x_distance > obb.half_extents.x) {
         x_distance = obb.half_extents.x;
-    if(x_distance < -obb.half_extents.x)
+    }
+    if(x_distance < -obb.half_extents.x) {
         x_distance = -obb.half_extents.x;
+    }
     auto y_distance = MathUtils::DotProduct(u1, displacement);
-    if(y_distance > obb.half_extents.y)
+    if(y_distance > obb.half_extents.y) {
         y_distance = obb.half_extents.y;
-    if(y_distance < -obb.half_extents.y)
+    }
+    if(y_distance < -obb.half_extents.y) {
         y_distance = -obb.half_extents.y;
+    }
     return M.TransformPosition(Vector2{x_distance, y_distance});
 }
 
