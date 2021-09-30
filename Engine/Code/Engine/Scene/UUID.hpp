@@ -15,5 +15,5 @@ public:
 
 protected:
 private:
-    uint64_t id{};
+    uint64_t m_UUID{};
 };

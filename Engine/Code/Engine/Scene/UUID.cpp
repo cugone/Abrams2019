@@ -7,9 +7,9 @@
 UUID::UUID() noexcept {
     static thread_local std::random_device rd{};
     static thread_local std::mt19937_64 e{rd()};
-    id = std::uniform_int_distribution<uint64_t>{}(e);
+    m_UUID = std::uniform_int_distribution<uint64_t>{}(e);
 }
 
 const uint64_t& UUID::GetID() const noexcept {
-    return id;
+    return m_UUID;
 }
