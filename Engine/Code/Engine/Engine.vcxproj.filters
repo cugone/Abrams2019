@@ -679,8 +679,8 @@
     <ClCompile Include="Scene\World.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Scene\UUID.cpp">
-      <Filter>Scene</Filter>
+    <ClCompile Include="Core\UUID.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1407,8 +1407,8 @@
     <ClInclude Include="Scene\World.hpp">
       <Filter>Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Scene\UUID.hpp">
-      <Filter>Scene</Filter>
+    <ClInclude Include="Core\UUID.hpp">
+      <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

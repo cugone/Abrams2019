@@ -97,6 +97,7 @@
     <ClCompile Include="Core\ThreadUtils.cpp" />
     <ClCompile Include="Core\TimeUtils.cpp" />
     <ClCompile Include="Core\Utilities.cpp" />
+    <ClCompile Include="Core\UUID.cpp" />
     <ClCompile Include="Game\GameBase.cpp" />
     <ClCompile Include="Game\GameSettings.cpp" />
     <ClCompile Include="Input\InputSystem.cpp" />
@@ -196,7 +197,6 @@
     <ClCompile Include="Scene\ECS.cpp" />
     <ClCompile Include="Scene\Entity.cpp" />
     <ClCompile Include="Scene\Scene.cpp" />
-    <ClCompile Include="Scene\UUID.cpp" />
     <ClCompile Include="Scene\World.cpp" />
     <ClCompile Include="Services\ServiceLocator.cpp" />
     <ClCompile Include="System\Cpu.cpp" />
@@ -326,6 +326,7 @@
     <ClInclude Include="Core\TimeUtils.hpp" />
     <ClInclude Include="Core\TypeUtils.hpp" />
     <ClInclude Include="Core\Utilities.hpp" />
+    <ClInclude Include="Core\UUID.hpp" />
     <ClInclude Include="Game\GameBase.hpp" />
     <ClInclude Include="Game\GameSettings.hpp" />
     <ClInclude Include="Input\InputSystem.hpp" />
@@ -430,7 +431,6 @@
     <ClInclude Include="Scene\ECS.hpp" />
     <ClInclude Include="Scene\Entity.hpp" />
     <ClInclude Include="Scene\Scene.hpp" />
-    <ClInclude Include="Scene\UUID.hpp" />
     <ClInclude Include="Scene\World.hpp" />
     <ClInclude Include="Services\IAppService.hpp" />
     <ClInclude Include="Services\IAudioService.hpp" />
