@@ -885,10 +885,10 @@ Vector2 CalcClosestPoint(const Vector2& p, const Polygon2& poly2) noexcept {
         return p;
     }
     const auto& edges = poly2.GetEdges();
-    const auto segment_with_min_distance = *std::min_element(std::cbegin(edges), std::cend(edges), [&](const LineSegment2& a, const LineSegment2& b) {
+    const auto iter = std::min_element(std::cbegin(edges), std::cend(edges), [&](const LineSegment2& a, const LineSegment2& b) {
         return MathUtils::CalcDistanceSquared(p, a) < MathUtils::CalcDistanceSquared(p, b);
     });
-    return MathUtils::CalcClosestPoint(p, segment_with_min_distance);
+    return MathUtils::CalcClosestPoint(p, *iter);
 }
 
 Vector2 CalcClosestPoint(const Vector2& p, const Disc2& disc) noexcept {
