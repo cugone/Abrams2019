@@ -3,6 +3,8 @@
 #include "Engine/Core/UUID.hpp"
 
 #include "Engine/Math/Matrix4.hpp"
+
+#include "Engine/Renderer/AnimatedSprite.hpp"
 #include "Engine/Renderer/Mesh.hpp"
 
 #include <string>
