@@ -6,7 +6,9 @@
 #include <memory>
 
 Entity Scene::CreateEntity() noexcept {
-    return {static_cast<std::uint32_t>(m_registry.create()), weak_from_this() };
+    Entity entity = {static_cast<std::uint32_t>(m_registry.create()), weak_from_this() };
+    entity.AddComponent<IdComponent>();
+}
 
 Entity Scene::CreateEntityWithUUID(UUID uuid) noexcept {
     Entity entity = {static_cast<std::uint32_t>(m_registry.create()), weak_from_this()};
