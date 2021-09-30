@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Engine/Core/UUID.hpp"
+
 #include "Engine/Scene/ECS.hpp"
 
 #include <memory>
@@ -16,6 +18,7 @@ public:
     ~Scene() = default;
 
     Entity CreateEntity() noexcept;
+    Entity CreateEntityWithUUID(UUID uuid) noexcept;
     void DestroyEntity(Entity e) noexcept;
 
     std::weak_ptr<const Scene> get() const noexcept;
