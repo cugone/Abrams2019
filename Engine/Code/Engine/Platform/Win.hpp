@@ -1,9 +1,10 @@
 #pragma once
 
 #include "Engine/Core/BuildConfig.hpp"
-#include "Engine/Math/AABB2.hpp"
 
 #if defined(PLATFORM_WINDOWS)
+
+#include "Engine/Math/AABB2.hpp"
 
     #define WIN32_LEAN_AND_MEAN
     #define NOMINMAX
