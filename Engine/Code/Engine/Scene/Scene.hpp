@@ -17,6 +17,7 @@ public:
     Scene& operator=(Scene&& other) = default;
     ~Scene() = default;
 
+    Entity CreateEntity() noexcept;
     Entity CreateEntity(const std::string& name) noexcept;
     Entity CreateEntityWithUUID(UUID uuid, const std::string& name) noexcept;
     void DestroyEntity(Entity e) noexcept;

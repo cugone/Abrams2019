@@ -5,6 +5,10 @@
 
 #include <memory>
 
+Entity Scene::CreateEntity() noexcept {
+    return CreateEntity("Entity");
+}
+
 Entity Scene::CreateEntity(const std::string& name) noexcept {
     return CreateEntityWithUUID(UUID(), name);
 }
