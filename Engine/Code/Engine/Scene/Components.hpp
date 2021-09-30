@@ -1,9 +1,24 @@
 #pragma once
 
+#include "Engine/Core/UUID.hpp"
+
 #include "Engine/Math/Matrix4.hpp"
 #include "Engine/Renderer/Mesh.hpp"
 
 #include <string>
+
+struct IdComponent {
+    UUID ID;
+
+    IdComponent() noexcept = default;
+    IdComponent(const IdComponent& other) noexcept = default;
+    IdComponent(IdComponent&& r_other) noexcept = default;
+    IdComponent& operator=(const IdComponent& rhs) noexcept = default;
+    IdComponent& operator=(IdComponent&& rhs) noexcept = default;
+    ~IdComponent() noexcept = default;
+
+    explicit IdComponent(const UUID& uuid) noexcept : ID{uuid} {}
+};
 
 struct TagComponent {
     std::string Tag{};
