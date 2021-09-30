@@ -5,14 +5,15 @@
 
 #include <memory>
 
-Entity Scene::CreateEntity() noexcept {
-    Entity entity = {static_cast<std::uint32_t>(m_registry.create()), weak_from_this() };
-    entity.AddComponent<IdComponent>();
+Entity Scene::CreateEntity(const std::string& name) noexcept {
+    return CreateEntityWithUUID(UUID(), name);
 }
 
-Entity Scene::CreateEntityWithUUID(UUID uuid) noexcept {
+Entity Scene::CreateEntityWithUUID(UUID uuid, const std::string& name) noexcept {
     Entity entity = {static_cast<std::uint32_t>(m_registry.create()), weak_from_this()};
     entity.AddComponent<IdComponent>(uuid);
+    entity.AddComponent<TagComponent>(name);
+    return entity;
 }
 
 void Scene::DestroyEntity(Entity e) noexcept {
