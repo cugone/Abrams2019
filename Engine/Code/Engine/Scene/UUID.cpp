@@ -1,7 +1,5 @@
 #include "Engine/Scene/UUID.hpp"
 
-#include "Engine/Math/MathUtils.hpp"
-
 #include <random>
 
 UUID::UUID() noexcept {
@@ -10,6 +8,8 @@ UUID::UUID() noexcept {
     m_UUID = std::uniform_int_distribution<uint64_t>{}(e);
 }
 
-const uint64_t& UUID::GetID() const noexcept {
-    return m_UUID;
+UUID::UUID(uint64_t uuid) noexcept
+    : m_UUID{uuid}
+{
+    /* DO NOTHING */
 }

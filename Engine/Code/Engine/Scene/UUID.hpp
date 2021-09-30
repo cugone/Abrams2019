@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cstdint>
+#include <functional>
 
 class UUID {
 public:
@@ -11,7 +11,8 @@ public:
     UUID& operator=(UUID&& other) noexcept = default;
     ~UUID() noexcept = default;
 
-    const uint64_t& GetID() const noexcept;
+    UUID(uint64_t uuid) noexcept;
+
 
 protected:
 private:
