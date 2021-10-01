@@ -377,7 +377,7 @@ void AudioSystem::DeactivateChannel(Channel& channel) noexcept {
 
 void AudioSystem::Play(Sound& snd, SoundDesc desc /* = SoundDesc{}*/) noexcept {
     std::scoped_lock<std::mutex> lock(_cs);
-    if(_max_channels <= _idle_channels.size()) {
+    if(_idle_channels.empty()) {
         return;
     }
     if(_max_channels <= _active_channels.size()) {
