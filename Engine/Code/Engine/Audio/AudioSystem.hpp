@@ -239,7 +239,7 @@ private:
 
     WAVEFORMATEXTENSIBLE _audio_format_ex{};
     std::size_t _sound_count{};
-    std::size_t _max_channels{1024u};
+    std::size_t _max_channels{64u};
     std::vector<std::pair<std::filesystem::path, std::unique_ptr<FileUtils::Wav>>> _wave_files{};
     std::vector<std::pair<std::filesystem::path, std::unique_ptr<Sound>>> _sounds{};
     std::vector<std::pair<std::filesystem::path, std::unique_ptr<ChannelGroup>>> _channel_groups{};
