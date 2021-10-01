@@ -70,12 +70,6 @@ AudioSystem::~AudioSystem() noexcept {
 
     _dsp_thread.join();
 
-    for(auto& group : _channel_groups) {
-        if(group.second) {
-            group.second->Stop();
-        }
-    }
-
     for(auto& channel : _active_channels) {
         channel->Stop();
     }
@@ -161,13 +155,10 @@ void AudioSystem::Initialize() noexcept {
 
     _dsp_thread = std::thread(&AudioSystem::EmitterListenerDSP_worker, this);
     ThreadUtils::SetThreadDescription(_dsp_thread, std::string{"AudioSystem Updater"});
-}
 
-AudioSystem::ChannelGroup* AudioSystem::GetChannelGroup(const std::string& name) const noexcept {
-    if(const auto found = std::find_if(std::cbegin(_channel_groups), std::cend(_channel_groups), [&name](const auto& group) { return group.first.string() == name; }); found != std::cend(_channel_groups)) {
-        return found->second.get();
+    for(std::size_t i = 0; i < _max_channels; ++i) {
+        _idle_channels.push_back(std::make_unique<Channel>(*this, AudioSystem::Channel::ChannelDesc{this}));
     }
-    return nullptr;
 }
 
 const std::atomic_uint32_t& AudioSystem::GetOperationSetId() const noexcept {
@@ -184,72 +175,6 @@ void AudioSystem::IncrementOperationSetId() noexcept {
 
 void AudioSystem::SubmitDeferredOperation(uint32_t operationSetId) noexcept {
     _xaudio2->CommitChanges(operationSetId);
-}
-
-void AudioSystem::AddChannelGroup(const std::string& name) noexcept {
-    if(const auto found = std::find_if(std::cbegin(_channel_groups), std::cend(_channel_groups), [&name](const auto& group) { return group.first.string() == name; }); found != std::cend(_channel_groups)) {
-        return;
-    }
-    auto group = std::make_unique<ChannelGroup>(*this, name);
-    auto channel = std::make_unique<Channel>(*this, AudioSystem::Channel::ChannelDesc{});
-    auto* channel_ptr = channel.get();
-    _idle_channels.push_back(std::move(channel));
-    group->AddChannel(channel_ptr);
-    _channel_groups.emplace_back(std::make_pair(name, std::move(group)));
-}
-
-void AudioSystem::RemoveChannelGroup(const std::string& name) noexcept {
-    if(auto found = std::find_if(std::begin(_channel_groups), std::end(_channel_groups), [&name](const auto& group) { return group.first.string() == name; }); found != std::end(_channel_groups)) {
-        for(auto* channel : found->second->channels) {
-            DeactivateChannel(*channel);
-        }
-        found->second.reset(nullptr);
-        _channel_groups.erase(found);
-    }
-}
-
-void AudioSystem::AddSoundToChannelGroup(const std::string& channelGroupName, Sound* snd) noexcept {
-    if(!snd) {
-        return;
-    }
-    if(auto* group = GetChannelGroup(channelGroupName); group != nullptr) {
-        for(auto* channel : group->channels) {
-            snd->AddChannel(channel);
-        }
-        for(auto* channel : snd->GetChannels()) {
-            group->AddChannel(channel);
-        }
-    }
-}
-
-void AudioSystem::AddSoundToChannelGroup(const std::string& channelGroupName, const std::filesystem::path& filepath) noexcept {
-    if(auto* group = GetChannelGroup(channelGroupName); group != nullptr) {
-        auto* snd = CreateSound(filepath);
-        AddSoundToChannelGroup(channelGroupName, snd);
-    }
-}
-
-void AudioSystem::RemoveSoundFromChannelGroup(const std::string& channelGroupName, Sound* snd) noexcept {
-    if(!snd) {
-        return;
-    }
-    if(auto* group = GetChannelGroup(channelGroupName); group != nullptr) {
-        for(auto* channel : snd->GetChannels()) {
-            group->RemoveChannel(channel);
-        }
-        for(auto* channel : group->channels) {
-            snd->RemoveChannel(channel);
-        }
-    }
-}
-
-void AudioSystem::RemoveSoundFromChannelGroup(const std::string& channelGroupName, const std::filesystem::path& filepath) noexcept {
-    if(const auto* group = GetChannelGroup(channelGroupName); group != nullptr) {
-        if(const auto found_iter = std::find_if(std::begin(_sounds), std::end(_sounds), [&filepath](const auto& a) { return a.first == filepath;  }); found_iter != std::end(_sounds)) {
-            auto* snd = found_iter->second.get();
-            RemoveSoundFromChannelGroup(channelGroupName, snd);
-        }
-    }
 }
 
 void AudioSystem::SetEngineCallback(EngineCallback* callback) noexcept {
@@ -380,21 +305,6 @@ void AudioSystem::Play(Sound& snd, SoundDesc desc /* = SoundDesc{}*/) noexcept {
     if(_idle_channels.empty()) {
         return;
     }
-    if(_max_channels <= _active_channels.size()) {
-        return;
-    }
-    if(auto* group = GetChannelGroup(desc.groupName)) {
-        const auto groupvolume = group->GetVolume();
-        if(desc.volume == 1.0f) {
-            desc.volume = groupvolume;
-        }
-    }
-    if(MathUtils::IsEquivalentToZero(desc.volume)) {
-        return;
-    }
-    auto channelDesc = AudioSystem::Channel::ChannelDesc{this};
-    channelDesc = desc;
-    _idle_channels.push_back(std::make_unique<Channel>(*this, channelDesc));
     _active_channels.push_back(std::move(_idle_channels.back()));
     _idle_channels.pop_back();
     auto& inserted_channel = _active_channels.back();
@@ -783,73 +693,4 @@ void STDMETHODCALLTYPE AudioSystem::EngineCallback::OnCriticalError(HRESULT erro
     ss << "The Audio System encountered a fatal error: ";
     ss << "0x" << std::hex << std::setw(8) << std::setfill('0') << error;
     ERROR_AND_DIE(ss.str().c_str());
-}
-
-AudioSystem::ChannelGroup::ChannelGroup(AudioSystem& parentAudioSystem) noexcept
-: AudioSystem::ChannelGroup::ChannelGroup(parentAudioSystem, _name) {
-}
-
-AudioSystem::ChannelGroup::ChannelGroup(AudioSystem& parentAudioSystem, std::string name) noexcept
-: _audio_system{parentAudioSystem}
-, _name{name} {
-    const auto sampleRate = _audio_system.GetLoadedWavFileFormat().samplesPerSecond;
-    const auto channelCount = _audio_system.GetLoadedWavFileFormat().channelCount;
-    auto hr = _audio_system._xaudio2->CreateSubmixVoice(&_groupVoice, channelCount, sampleRate, 0, 0, nullptr, nullptr);
-    const auto error_msg = [&]() {
-        std::string result{"AudioSystem failed to create channel group " + name + "\nError:\n"};
-        switch(hr) {
-        case XAUDIO2_E_INVALID_CALL:
-            result += "Invalid Call. Check run-time parameters.";
-            break;
-        case XAUDIO2_E_XMA_DECODER_ERROR:
-            result += "The Xbox 360 XMA hardware suffered an unrecoverable error.";
-            break;
-        case XAUDIO2_E_XAPO_CREATION_FAILED:
-            result += "An effect failed to instantiate.";
-            break;
-        case XAUDIO2_E_DEVICE_INVALIDATED:
-            result += "An audio device became unusable through being unplugged or some other event.";
-            break;
-        }
-        return result;
-    }(); //IIIL
-    GUARANTEE_OR_DIE(hr == S_OK, error_msg.c_str());
-}
-
-void AudioSystem::ChannelGroup::AddChannel(Channel* channel) noexcept {
-    if(channel == nullptr || channel->_voice == nullptr || _groupVoice == nullptr) {
-        return;
-    }
-    auto SFXSend = XAUDIO2_SEND_DESCRIPTOR{0, _groupVoice};
-    auto SFXSendList = XAUDIO2_VOICE_SENDS{1, &SFXSend};
-    channel->_voice->SetOutputVoices(&SFXSendList);
-    channels.push_back(channel);
-}
-
-void AudioSystem::ChannelGroup::RemoveChannel(Channel* channel) noexcept {
-    if(channel == nullptr || channel->_voice == nullptr) {
-        return;
-    }
-    channel->_voice->SetOutputVoices(nullptr); //Removes from group, still sends to master
-    if(auto found = std::find(std::begin(channels), std::end(channels), channel); found != std::end(channels)) {
-        channels.push_back(channel);
-    }
-}
-
-void AudioSystem::ChannelGroup::SetVolume(float newVolume) noexcept {
-    _groupVoice->SetVolume(newVolume);
-}
-
-float AudioSystem::ChannelGroup::GetVolume() const noexcept {
-    float v{0.0f};
-    _groupVoice->GetVolume(&v);
-    return v;
-}
-
-void AudioSystem::ChannelGroup::Stop() noexcept {
-    const auto& opId = _audio_system.IncrementAndGetOperationSetId();
-    for(auto* channel : channels) {
-        channel->Stop(opId);
-    }
-    _audio_system.SubmitDeferredOperation(opId);
 }

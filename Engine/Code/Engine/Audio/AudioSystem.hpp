@@ -152,25 +152,6 @@ private:
         friend class VoiceCallback;
         friend class ChannelGroup;
     };
-    class ChannelGroup {
-    public:
-        ChannelGroup() = delete;
-        explicit ChannelGroup(AudioSystem& parentAudioSystem) noexcept;
-        explicit ChannelGroup(AudioSystem& parentAudioSystem, std::string name) noexcept;
-
-        std::vector<Channel*> channels{};
-
-        void AddChannel(Channel* channel) noexcept;
-        void RemoveChannel(Channel* channel) noexcept;
-        void SetVolume(float newVolume) noexcept;
-        [[nodiscard]] float GetVolume() const noexcept;
-        void Stop() noexcept;
-    private:
-        AudioSystem& _audio_system;
-        std::string _name{"UNNAMED CHANNEL GROUP"};
-        IXAudio2SubmixVoice* _groupVoice{};
-        mutable std::mutex _cs{};
-    };
 
 public:
     AudioSystem() noexcept;
@@ -214,13 +195,6 @@ public:
     const std::atomic_uint32_t& IncrementAndGetOperationSetId() noexcept;
     void IncrementOperationSetId() noexcept;
 
-    void AddChannelGroup(const std::string& name) noexcept;
-    void RemoveChannelGroup(const std::string& name) noexcept;
-    void AddSoundToChannelGroup(const std::string& channelGroupName, Sound* snd) noexcept;
-    void AddSoundToChannelGroup(const std::string& channelGroupName, const std::filesystem::path& filepath) noexcept;
-    void RemoveSoundFromChannelGroup(const std::string& channelGroupName, Sound* snd) noexcept;
-    void RemoveSoundFromChannelGroup(const std::string& channelGroupName, const std::filesystem::path& filepath) noexcept;
-
     void SetEngineCallback(EngineCallback* callback) noexcept;
     [[nodiscard]] const WAVEFORMATEXTENSIBLE& GetFormat() const noexcept;
     [[nodiscard]] FileUtils::Wav::WavFormatChunk GetLoadedWavFileFormat() const noexcept;
@@ -242,7 +216,6 @@ private:
     std::size_t _max_channels{64u};
     std::vector<std::pair<std::filesystem::path, std::unique_ptr<FileUtils::Wav>>> _wave_files{};
     std::vector<std::pair<std::filesystem::path, std::unique_ptr<Sound>>> _sounds{};
-    std::vector<std::pair<std::filesystem::path, std::unique_ptr<ChannelGroup>>> _channel_groups{};
     std::vector<std::unique_ptr<Channel>> _active_channels{};
     std::vector<std::unique_ptr<Channel>> _idle_channels{};
     std::vector<Audio3DEmitter*> _emitters{};
