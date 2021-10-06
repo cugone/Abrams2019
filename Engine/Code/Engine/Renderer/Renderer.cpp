@@ -518,7 +518,7 @@ void Renderer::BeginRender(Texture* color_target /*= nullptr*/, const Rgba& clea
     SetViewportAsPercent();
 }
 
-void Renderer::BeginRenderToBackbuffer(const Rgba& clear_color /*= Rgba::Black*/) {
+void Renderer::BeginRenderToBackbuffer(const Rgba& clear_color /*= Rgba::Black*/) noexcept {
     BeginRender(nullptr, clear_color);
 }
 
