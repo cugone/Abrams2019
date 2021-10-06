@@ -103,6 +103,7 @@ bool ShaderProgram::HasCS() const noexcept {
 
 ShaderProgramDesc::ShaderProgramDesc(ShaderProgramDesc&& other) noexcept {
     name = std::move(other.name);
+    other.name = std::string{};
 
     input_layout = std::move(other.input_layout);
     other.input_layout = nullptr;
@@ -143,6 +144,7 @@ ShaderProgramDesc::ShaderProgramDesc(ShaderProgramDesc&& other) noexcept {
 
 ShaderProgramDesc& ShaderProgramDesc::operator=(ShaderProgramDesc&& other) noexcept {
     name = std::move(other.name);
+    other.name = std::string{};
 
     input_layout = std::move(other.input_layout);
     other.input_layout = nullptr;
@@ -184,6 +186,7 @@ ShaderProgramDesc& ShaderProgramDesc::operator=(ShaderProgramDesc&& other) noexc
 }
 
 ShaderProgramDesc::~ShaderProgramDesc() noexcept {
+    name = std::string{};
     if(vs_bytecode) {
         vs_bytecode->Release();
         vs_bytecode = nullptr;
