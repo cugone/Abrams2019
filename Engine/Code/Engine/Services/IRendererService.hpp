@@ -50,7 +50,7 @@ public:
     virtual ~IRendererService() noexcept {}
 
     virtual void BeginRender(Texture* color_target = nullptr, const Rgba& clear_color = Rgba::Black, Texture* depthstencil_target = nullptr) noexcept = 0;
-    virtual void BeginRenderToBackbuffer(const Rgba& clear_color = Rgba::Black) = 0;
+    virtual void BeginRenderToBackbuffer(const Rgba& clear_color = Rgba::Black) noexcept = 0;
     virtual void BeginHUDRender(Camera2D& ui_camera, const Vector2& camera_position, float window_height) noexcept = 0;
 
     [[nodiscard]] virtual TimeUtils::FPSeconds GetGameFrameTime() const noexcept = 0;
@@ -348,7 +348,7 @@ public:
     virtual ~NullRendererService() noexcept {};
 
     void BeginRender([[maybe_unused]] Texture* color_target = nullptr, [[maybe_unused]] const Rgba& clear_color = Rgba::Black, [[maybe_unused]] Texture* depthstencil_target = nullptr) noexcept override {}
-    void BeginRenderToBackbuffer([[maybe_unused]] const Rgba& clear_color = Rgba::Black) override {}
+    void BeginRenderToBackbuffer([[maybe_unused]] const Rgba& clear_color = Rgba::Black) noexcept override {}
     void BeginHUDRender([[maybe_unused]] Camera2D& ui_camera, [[maybe_unused]] const Vector2& camera_position, [[maybe_unused]] float window_height) noexcept override {}
 
     [[nodiscard]] TimeUtils::FPSeconds GetGameFrameTime() const noexcept override {}
