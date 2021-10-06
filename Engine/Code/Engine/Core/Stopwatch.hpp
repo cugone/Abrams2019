@@ -14,6 +14,7 @@ public:
     Stopwatch& operator=(Stopwatch&& rhs) = default;
     explicit Stopwatch(const TimeUtils::FPSeconds& seconds) noexcept;
     explicit Stopwatch(unsigned int frequency) noexcept;
+    explicit Stopwatch(float seconds) noexcept;
     ~Stopwatch() = default;
 
     void SetSeconds(const TimeUtils::FPSeconds& seconds) noexcept;

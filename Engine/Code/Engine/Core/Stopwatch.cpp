@@ -9,6 +9,11 @@ Stopwatch::Stopwatch(const TimeUtils::FPSeconds& seconds) noexcept {
     SetSeconds(seconds);
 }
 
+Stopwatch::Stopwatch(float seconds) noexcept
+: Stopwatch(TimeUtils::FPSeconds(seconds)) {
+    /* DO NOTHING */
+}
+
 void Stopwatch::SetSeconds(const TimeUtils::FPSeconds& seconds) noexcept {
     interval_time = seconds;
     target_time = TimeUtils::FPSeconds{TimeUtils::GetCurrentTimeElapsed()
