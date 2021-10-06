@@ -417,46 +417,43 @@ std::vector<std::unique_ptr<ConstantBuffer>> RHIDevice::CreateConstantBuffersUsi
             continue;
         }
         for(auto cbuffer_idx = 0u; cbuffer_idx < shader_desc.ConstantBuffers; ++cbuffer_idx) {
-            ID3D11ShaderReflectionConstantBuffer* reflected_cbuffer = nullptr;
-            if(nullptr == (reflected_cbuffer = cbufferReflection.GetConstantBufferByIndex(cbuffer_idx))) {
-                continue;
-            }
-            D3D11_SHADER_BUFFER_DESC buffer_desc{};
-            if(FAILED(reflected_cbuffer->GetDesc(&buffer_desc))) {
-                continue;
-            }
-            if(buffer_desc.Type != D3D_CBUFFER_TYPE::D3D11_CT_CBUFFER) {
-                continue;
-            }
-            std::string buffer_name{buffer_desc.Name ? buffer_desc.Name : ""};
-            std::string input_name{input_desc.Name ? input_desc.Name : ""};
-            if(buffer_name != input_name) {
-                continue;
-            }
-            std::size_t cbuffer_size = 0u;
-            std::vector<std::size_t> var_offsets{};
-            for(auto variable_idx = 0u; variable_idx < buffer_desc.Variables; ++variable_idx) {
-                ID3D11ShaderReflectionVariable* reflected_variable = nullptr;
-                if(nullptr == (reflected_variable = reflected_cbuffer->GetVariableByIndex(variable_idx))) {
+            auto cbuffer_size = std::size_t{0u};
+            if(auto* reflected_cbuffer = cbufferReflection.GetConstantBufferByIndex(cbuffer_idx)) {
+                D3D11_SHADER_BUFFER_DESC buffer_desc{};
+                if(FAILED(reflected_cbuffer->GetDesc(&buffer_desc))) {
                     continue;
                 }
-                D3D11_SHADER_VARIABLE_DESC variable_desc{};
-                if(FAILED(reflected_variable->GetDesc(&variable_desc))) {
+                if(buffer_desc.Type != D3D_CBUFFER_TYPE::D3D11_CT_CBUFFER) {
                     continue;
                 }
-                std::size_t variable_size = variable_desc.Size;
-                std::size_t offset = variable_desc.StartOffset;
-                if(auto* shader_reflection_type = reflected_variable->GetType()) {
-                    D3D11_SHADER_TYPE_DESC type_desc{};
-                    if(FAILED(shader_reflection_type->GetDesc(&type_desc))) {
+                {
+                    std::string buffer_name{buffer_desc.Name ? buffer_desc.Name : ""};
+                    std::string input_name{input_desc.Name ? input_desc.Name : ""};
+                    if(buffer_name != input_name) {
                         continue;
                     }
-                    cbuffer_size += variable_size;
-                    var_offsets.push_back(offset);
+                }
+                std::vector<std::size_t> var_offsets{};
+                for(auto variable_idx = 0u; variable_idx < buffer_desc.Variables; ++variable_idx) {
+                    if(auto* reflected_variable = reflected_cbuffer->GetVariableByIndex(variable_idx)) {
+                        D3D11_SHADER_VARIABLE_DESC variable_desc{};
+                        if(FAILED(reflected_variable->GetDesc(&variable_desc))) {
+                            continue;
+                        }
+                        std::size_t variable_size = variable_desc.Size;
+                        std::size_t offset = variable_desc.StartOffset;
+                        if(auto* shader_reflection_type = reflected_variable->GetType()) {
+                            D3D11_SHADER_TYPE_DESC type_desc{};
+                            if(FAILED(shader_reflection_type->GetDesc(&type_desc))) {
+                                continue;
+                            }
+                            cbuffer_size += variable_size;
+                            var_offsets.push_back(offset);
+                        }
+                    }
                 }
             }
-            std::vector<std::byte> cbuffer_memory{};
-            cbuffer_memory.resize(cbuffer_size);
+            std::vector<std::byte> cbuffer_memory(cbuffer_size, std::byte{});
             result.push_back(device.CreateConstantBuffer(cbuffer_memory.data(), cbuffer_memory.size(), BufferUsage::Dynamic, BufferBindUsage::Constant_Buffer));
         }
     }
