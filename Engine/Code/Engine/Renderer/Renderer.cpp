@@ -2109,7 +2109,7 @@ float4 PixelFunction(ps_in_t input_pixel) : SV_Target0 {
         desc.ps = ps;
         desc.ps_bytecode = blob;
     }
-    return std::make_unique<ShaderProgram>(std::move(desc));
+    return std::move(std::make_unique<ShaderProgram>(std::move(desc)));
 }
 
 std::unique_ptr<ShaderProgram> Renderer::CreateDefaultUnlitShaderProgram() noexcept {
