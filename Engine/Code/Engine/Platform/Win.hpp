@@ -10,6 +10,7 @@
     #define NOMINMAX
     #include <windows.h>
     #include <windowsx.h>
+    #include <ShObjIdl.h>
 
     #ifdef NETWORKING
         #include <WS2tcpip.h>
