@@ -1413,6 +1413,9 @@
     <ClInclude Include="Core\UUID.hpp">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="Platform\PlatformUtils.hpp">
+      <Filter>Platform</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="..\Thirdparty\yaml-cpp\src\contrib\yaml-cpp.natvis">

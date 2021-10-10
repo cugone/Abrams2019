@@ -380,6 +380,7 @@
     <ClInclude Include="Physics\RigidBody.hpp" />
     <ClInclude Include="Physics\RodJoint.hpp" />
     <ClInclude Include="Physics\SpringJoint.hpp" />
+    <ClInclude Include="Platform\PlatformUtils.hpp" />
     <ClInclude Include="Platform\Win.hpp" />
     <ClInclude Include="Profiling\AllocationTracker.hpp" />
     <ClInclude Include="Profiling\ProfileLogScope.hpp" />
