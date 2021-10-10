@@ -17,7 +17,9 @@
         #define PROFILE_BUILD
         #undef DISABLE_ASSERTS
     #elif defined(FINAL_BUILD)
-        #define DISABLE_ASSERTS
+        #ifndef DISABLE_ASSERTS
+            #define DISABLE_ASSERTS
+        #endif
         #undef TRACK_MEMORY
         #undef DEBUG_BUILD
         #undef AUDIO_DEBUG
