@@ -22,6 +22,8 @@
 #include <map>
 #include <memory>
 
+#include "Engine/Platform/Win.hpp"
+
 class UIWidget;
 class Renderer;
 class FileLogger;
