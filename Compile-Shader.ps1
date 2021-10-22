@@ -168,7 +168,7 @@ if(!$validPath) {
 
 $validArgs = Test-Args -vs $vs -hs $hs -ds $ds -gs $gs -ps $ps -cs $cs
 if($validArgs) {
-    $file = $Path.Substring(0, $Path.LastIndexOf('.'))
+    $file = (Get-Item $Path).BaseName #$Path.Substring(0, $Path.LastIndexOf('.'))
     $ShaderArgs = Get-StagesFromArgs -vs $vs -hs $hs -ds $ds -gs $gs -ps $ps -cs $cs
     if($d) {
         Write-Output "Debug mode."
