@@ -101,9 +101,6 @@
     <Filter Include="Platform">
       <UniqueIdentifier>{a963c7c1-d5b7-4b79-98ba-3339e7d7e142}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Editor">
-      <UniqueIdentifier>{cbc9b06a-34bc-441b-9086-a250d0ce6e53}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Math\Vector2.cpp">
