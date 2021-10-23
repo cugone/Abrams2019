@@ -76,12 +76,11 @@ public:
     using CharMap = std::map<int, CharDef>;
     using KerningMap = std::map<std::pair<int, int>, int>;
 
-    KerningFont() = delete;
+    KerningFont() = default;
     KerningFont(const KerningFont& font) = default;
     KerningFont(KerningFont&& font) = default;
     KerningFont& operator=(KerningFont&& font) = default;
     KerningFont& operator=(const KerningFont& font) = default;
-    explicit KerningFont(Renderer& renderer) noexcept;
     ~KerningFont() = default;
 
     [[nodiscard]] static float CalculateTextWidth(const KerningFont& font, const std::string& text, float scale = 1.0f) noexcept;
@@ -133,7 +132,6 @@ private:
     [[nodiscard]] bool ParseKerningsLine(const std::string& kerningsLine) noexcept;
     [[nodiscard]] bool ParseKerningLine(const std::string& kerningLine) noexcept;
 
-    Renderer& _renderer;
     Material* _material = nullptr;
     std::string _name{};
     std::vector<std::string> _image_paths{};

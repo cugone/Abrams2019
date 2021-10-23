@@ -11,11 +11,6 @@
 #include <filesystem>
 #include <sstream>
 
-KerningFont::KerningFont(Renderer& renderer) noexcept
-: _renderer(renderer) {
-    /* DO NOTHING */
-}
-
 float KerningFont::CalculateTextWidth(const KerningFont& font, const std::string& text, float scale /*= 1.0f*/) noexcept {
     if(text.find('\n') != std::string::npos) {
         return CalculateLongestMultiline(font, text, scale);
