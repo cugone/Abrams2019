@@ -179,10 +179,12 @@ bool CreateFolders(const std::filesystem::path& filepath) noexcept {
 bool IsContentPathId(const KnownPathID& pathid) noexcept {
     if(!IsSystemPathId(pathid)) {
         switch(pathid) {
+        case KnownPathID::GameConfig: return true;
         case KnownPathID::GameData: return true;
         case KnownPathID::GameFonts: return true;
         case KnownPathID::GameMaterials: return true;
         case KnownPathID::GameLogs: return true;
+        case KnownPathID::EngineConfig: return true;
         case KnownPathID::EngineData: return true;
         case KnownPathID::EngineFonts: return true;
         case KnownPathID::EngineMaterials: return true;
@@ -199,10 +201,12 @@ bool IsContentPathId(const KnownPathID& pathid) noexcept {
 bool IsSystemPathId(const KnownPathID& pathid) noexcept {
     switch(pathid) {
     case KnownPathID::None: return false;
+    case KnownPathID::GameConfig: return false;
     case KnownPathID::GameData: return false;
     case KnownPathID::GameFonts: return false;
     case KnownPathID::GameMaterials: return false;
     case KnownPathID::GameLogs: return false;
+    case KnownPathID::EngineConfig: return false;
     case KnownPathID::EngineData: return false;
     case KnownPathID::EngineFonts: return false;
     case KnownPathID::EngineMaterials: return false;
@@ -266,7 +270,15 @@ std::filesystem::path GetKnownFolderPath(const KnownPathID& pathid) noexcept {
     if(!(IsSystemPathId(pathid) || IsContentPathId(pathid))) {
         return p;
     }
-    if(pathid == KnownPathID::GameData) {
+    if(pathid == KnownPathID::GameConfig) {
+        p = GetWorkingDirectory() / FS::path{"Data/Config/"};
+        if(FS::exists(p)) {
+            p = FS::canonical(p);
+        } else {
+            FileUtils::CreateFolders(GetWorkingDirectory() / FS::path{"Data/Config/"});
+            p = GetKnownFolderPath(pathid);
+        }
+    } else if(pathid == KnownPathID::GameData) {
         p = GetWorkingDirectory() / FS::path{"Data/"};
         if(FS::exists(p)) {
             p = FS::canonical(p);
@@ -285,6 +297,14 @@ std::filesystem::path GetKnownFolderPath(const KnownPathID& pathid) noexcept {
         p = GetWorkingDirectory() / FS::path{"Data/Logs/"};
         if(FS::exists(p)) {
             p = FS::canonical(p);
+        }
+    } else if(pathid == KnownPathID::EngineConfig) {
+        p = GetWorkingDirectory() / FS::path{"Engine/Config/"};
+        if(FS::exists(p)) {
+            p = FS::canonical(p);
+        } else {
+            FileUtils::CreateFolders(GetWorkingDirectory() / FS::path{"Engine/Config/"});
+            p = GetKnownFolderPath(pathid);
         }
     } else if(pathid == KnownPathID::EngineData) {
         p = GetWorkingDirectory() / FS::path{"Engine/"};
