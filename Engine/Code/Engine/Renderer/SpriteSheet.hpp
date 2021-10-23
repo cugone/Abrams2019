@@ -36,4 +36,5 @@ private:
     IntVector2 _spriteLayout{1, 1};
 
     friend class Renderer;
+    friend class MapEditor;
 };
