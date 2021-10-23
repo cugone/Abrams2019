@@ -132,6 +132,10 @@ void OrthographicCameraController::SetMaxZoomLevel(float maximumValue) noexcept 
     m_maxZoomLevel = maximumValue;
 }
 
+AABB2 OrthographicCameraController::GetBounds() const noexcept {
+    return AABB2{m_Camera.GetPosition(), m_Camera.GetViewWidth(), m_Camera.GetViewWidth()};
+}
+
 const Camera2D& OrthographicCameraController::GetCamera() const noexcept {
     return m_Camera;
 }
@@ -142,4 +146,14 @@ Camera2D& OrthographicCameraController::GetCamera() noexcept {
 
 float OrthographicCameraController::GetShake() const noexcept {
     return m_Camera.trauma * m_Camera.trauma;
+}
+
+Vector2 OrthographicCameraController::ConvertScreenToWorldCoords(Vector2 screenCoords) const noexcept {
+    const auto& renderer = ServiceLocator::get<IRendererService>();
+    return renderer.ConvertScreenToWorldCoords(m_Camera, screenCoords);
+}
+
+Vector2 OrthographicCameraController::ConvertWorldToScreenCoords(Vector2 worldCoords) const noexcept {
+    const auto& renderer = ServiceLocator::get<IRendererService>();
+    return renderer.ConvertWorldToScreenCoords(m_Camera, worldCoords);
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine/Core/TimeUtils.hpp"
+#include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Renderer/Camera2D.hpp"
 
@@ -38,6 +39,8 @@ public:
     void SetMinZoomLevel(float minimumLevel) noexcept;
     void SetMaxZoomLevel(float maximumValue) noexcept;
 
+    AABB2 GetBounds() const noexcept;
+
     [[nodiscard]] const Camera2D& GetCamera() const noexcept;
     [[nodiscard]] Camera2D& GetCamera() noexcept;
 
@@ -47,6 +50,9 @@ public:
     void DoCameraShake(F&& f) {
         m_Camera.trauma = std::invoke(std::forward<F>(f));
     }
+
+    Vector2 ConvertScreenToWorldCoords(Vector2 screenCoords) const noexcept;
+    Vector2 ConvertWorldToScreenCoords(Vector2 worldCoords) const noexcept;
 
 protected:
 private:
