@@ -52,6 +52,8 @@ public:
     void SetMaterial(Material* mat) noexcept;
     [[nodiscard]] Material* GetMaterial() const noexcept;
 
+    const SpriteAnimMode& GetPlaybackMode() const noexcept;
+
 protected:
 private:
     AnimatedSprite(std::weak_ptr<SpriteSheet> spriteSheet, TimeUtils::FPSeconds durationSeconds, int startSpriteIndex, int frameLength, SpriteAnimMode playbackMode = SpriteAnimMode::Looping) noexcept;

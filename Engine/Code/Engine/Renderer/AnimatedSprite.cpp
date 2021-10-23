@@ -274,6 +274,10 @@ Material* AnimatedSprite::GetMaterial() const noexcept {
     return _material;
 }
 
+const AnimatedSprite::SpriteAnimMode& AnimatedSprite::GetPlaybackMode() const noexcept {
+    return _playback_mode;
+}
+
 AnimatedSprite::SpriteAnimMode AnimatedSprite::GetAnimModeFromOptions(bool looping, bool backwards, bool ping_pong /*= false*/) noexcept {
     if(ping_pong) {
         return SpriteAnimMode::Ping_Pong;
