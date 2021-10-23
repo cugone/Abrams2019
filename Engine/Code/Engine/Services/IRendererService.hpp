@@ -287,6 +287,7 @@ public:
     virtual void DrawQuad2D(const Vector4& texCoords) noexcept = 0;
     virtual void DrawQuad2D(const Rgba& color, const Vector4& texCoords) noexcept = 0;
     virtual void DrawCircle2D(float centerX, float centerY, float radius, const Rgba& color = Rgba::White) noexcept = 0;
+    virtual void DrawCircle2D(const Matrix4& transform, float thickness, const Rgba& color /*= Rgba::WHITE*/) noexcept = 0;
     virtual void DrawCircle2D(const Vector2& center, float radius, const Rgba& color = Rgba::White) noexcept = 0;
     virtual void DrawCircle2D(const Disc2& circle, const Rgba& color = Rgba::White) noexcept = 0;
     virtual void DrawFilledCircle2D(const Disc2& circle, const Rgba& color = Rgba::White) noexcept = 0;
@@ -587,6 +588,7 @@ public:
     void DrawQuad2D([[maybe_unused]] const Vector4& texCoords) noexcept override {}
     void DrawQuad2D([[maybe_unused]] const Rgba& color, [[maybe_unused]] const Vector4& texCoords) noexcept override {}
     void DrawCircle2D([[maybe_unused]] float centerX, [[maybe_unused]] float centerY, [[maybe_unused]] float radius, [[maybe_unused]] const Rgba& color = Rgba::White) noexcept override {}
+    void DrawCircle2D([[maybe_unused]] const Matrix4& transform, [[maybe_unused]] float thickness, [[maybe_unused]] const Rgba& color = Rgba::White) noexcept override {}
     void DrawCircle2D([[maybe_unused]] const Vector2& center, [[maybe_unused]] float radius, [[maybe_unused]] const Rgba& color = Rgba::White) noexcept override {}
     void DrawCircle2D([[maybe_unused]] const Disc2& circle, [[maybe_unused]] const Rgba& color = Rgba::White) noexcept override {}
     void DrawFilledCircle2D([[maybe_unused]] const Disc2& circle, [[maybe_unused]] const Rgba& color = Rgba::White) noexcept override {}

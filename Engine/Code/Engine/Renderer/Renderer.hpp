@@ -442,6 +442,7 @@ public:
     void DrawQuad2D(const Vector4& texCoords) noexcept override;
     void DrawQuad2D(const Rgba& color, const Vector4& texCoords) noexcept override;
     void DrawCircle2D(float centerX, float centerY, float radius, const Rgba& color = Rgba::White) noexcept override;
+    void DrawCircle2D(const Matrix4& transform, float thickness, const Rgba& color = Rgba::White) noexcept override;
     void DrawCircle2D(const Vector2& center, float radius, const Rgba& color = Rgba::White) noexcept override;
     void DrawCircle2D(const Disc2& circle, const Rgba& color = Rgba::White) noexcept override;
     void DrawFilledCircle2D(const Disc2& circle, const Rgba& color = Rgba::White) noexcept override;
@@ -547,11 +548,13 @@ private:
     [[nodiscard]] std::unique_ptr<ShaderProgram> CreateDefaultNormalShaderProgram() noexcept;
     [[nodiscard]] std::unique_ptr<ShaderProgram> CreateDefaultNormalMapShaderProgram() noexcept;
     [[nodiscard]] std::unique_ptr<ShaderProgram> CreateDefaultFontShaderProgram() noexcept;
+    [[nodiscard]] std::unique_ptr<ShaderProgram> CreateDefaultCircle2DShaderProgram() noexcept;
 
     [[nodiscard]] void CreateAndRegisterDefaultShaders() noexcept;
     [[nodiscard]] std::unique_ptr<Shader> CreateDefaultShader() noexcept;
     [[nodiscard]] std::unique_ptr<Shader> CreateDefaultUnlitShader() noexcept;
     [[nodiscard]] std::unique_ptr<Shader> CreateDefault2DShader() noexcept;
+    [[nodiscard]] std::unique_ptr<Shader> CreateDefaultCircle2DShader() noexcept;
     [[nodiscard]] std::unique_ptr<Shader> CreateDefaultNormalShader() noexcept;
     [[nodiscard]] std::unique_ptr<Shader> CreateDefaultNormalMapShader() noexcept;
     [[nodiscard]] std::unique_ptr<Shader> CreateDefaultInvalidShader() noexcept;
@@ -565,6 +568,7 @@ private:
     [[nodiscard]] std::unique_ptr<Material> CreateDefaultNormalMaterial() noexcept;
     [[nodiscard]] std::unique_ptr<Material> CreateDefaultNormalMapMaterial() noexcept;
     [[nodiscard]] std::unique_ptr<Material> CreateDefaultInvalidMaterial() noexcept;
+    [[nodiscard]] std::unique_ptr<Material> CreateDefaultCircle2DMaterial() noexcept;
 
     void CreateAndRegisterDefaultEngineFonts() noexcept;
 
