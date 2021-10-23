@@ -117,28 +117,39 @@ void UISystem::Initialize() noexcept {
     auto* hwnd = renderer.GetOutput()->GetWindow()->GetWindowHandle();
     auto* dx_device = renderer.GetDevice()->GetDxDevice();
     auto* dx_context = renderer.GetDeviceContext()->GetDxContext();
-    ImGui_ImplWin32_Init(hwnd);
-    ImGui_ImplDX11_Init(dx_device, dx_context);
+
     const auto dims = Vector2{renderer.GetOutput()->GetDimensions()};
     auto& io = ImGui::GetIO();
     io.DisplaySize.x = dims.x;
     io.DisplaySize.y = dims.y;
     ImGui::StyleColorsDark();
 
-    io.IniFilename = "Engine/Config/ui.ini";
+    io.IniFilename = nullptr;
+    io.LogFilename = nullptr;
+
+    _ini_saveTimer.SetSeconds(TimeUtils::FPSeconds{io.IniSavingRate});
 
     io.ConfigWindowsResizeFromEdges = true;
+    io.ConfigDockingWithShift = true;
     io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableSetMousePos;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableSetMousePos | ImGuiConfigFlags_ViewportsEnable | ImGuiConfigFlags_DockingEnable;
+
+    ImGui_ImplWin32_Init(hwnd);
+    ImGui_ImplDX11_Init(dx_device, dx_context);
+
 }
 
 void UISystem::BeginFrame() noexcept {
     ImGui_ImplDX11_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
+    if(_ini_saveTimer.CheckAndReset()) {
+        ImGui::SaveIniSettingsToDisk(_ini_filepath.string().c_str());
+    }
 }
 
 void UISystem::Update(TimeUtils::FPSeconds /*deltaSeconds*/) noexcept {
+
 #if !defined(IMGUI_DISABLE_DEMO_WINDOWS)
     if(show_imgui_demo_window) {
         ImGui::ShowDemoWindow(&show_imgui_demo_window);
@@ -180,6 +191,7 @@ void UISystem::Render() const noexcept {
 
 void UISystem::EndFrame() noexcept {
     ImGui::EndFrame();
+    ImGui::UpdatePlatformWindows();
 }
 
 bool UISystem::ProcessSystemMessage(const EngineMessage& msg) noexcept {

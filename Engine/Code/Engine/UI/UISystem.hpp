@@ -22,6 +22,8 @@
 #include <map>
 #include <memory>
 
+#include "Engine/Core/FileUtils.hpp"
+#include "Engine/Core/Stopwatch.hpp"
 #include "Engine/Platform/Win.hpp"
 
 class UIWidget;
@@ -75,10 +77,11 @@ private:
     mutable Camera2D _ui_camera{};
     std::map<std::string, std::unique_ptr<UIWidget>> _widgets{};
     std::vector<UIWidget*> _active_widgets{};
-    std::filesystem::path _ini_filepath{"Engine/Config/ui.ini"};
-    std::filesystem::path _log_filepath{"Engine/Config/ui.log"};
+    std::filesystem::path _ini_filepath{FileUtils::GetKnownFolderPath(FileUtils::KnownPathID::EngineConfig) / "ui.ini"};
+    Stopwatch _ini_saveTimer{};
     bool show_imgui_demo_window = false;
     bool show_imgui_metrics_window = false;
+    bool save_settings_to_disk = false;
 };
 
 class Texture;
