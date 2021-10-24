@@ -26,7 +26,7 @@ RECT AABB2ToRect(const AABB2& aabb2) noexcept {
 
 std::string FileDialogs::OpenFile(const char* filter = "All Files\0*.*\0\0") noexcept {
     OPENFILENAMEA ofn{};
-    CHAR szFile[260] = {0};
+    CHAR szFile[MAX_PATH] = {0};
     ZeroMemory(&ofn, sizeof(OPENFILENAME));
     ofn.lStructSize = sizeof(OPENFILENAME);
 
@@ -46,7 +46,7 @@ std::string FileDialogs::OpenFile(const char* filter = "All Files\0*.*\0\0") noe
 
 std::string FileDialogs::SaveFile(const char* filter = "All Files\0*.*\0\0") noexcept {
     OPENFILENAMEA ofn{};
-    CHAR szFile[260] = {0};
+    CHAR szFile[MAX_PATH] = {0};
     ZeroMemory(&ofn, sizeof(OPENFILENAME));
     ofn.lStructSize = sizeof(OPENFILENAME);
 
