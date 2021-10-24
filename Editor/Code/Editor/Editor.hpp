@@ -15,5 +15,10 @@ public:
 
 protected:
 private:
-    
+    void DoFileNew() noexcept;
+    void DoFileOpen() noexcept;
+    void DoFileSaveAs() noexcept;
+    void DoFileSave() noexcept;
+
+    void HandleMenuKeyboardInput() noexcept;
 };
