@@ -70,13 +70,13 @@ void Editor::DoFileNew() noexcept {
 }
 
 void Editor::DoFileOpen() noexcept {
-    if(auto path = FileDialogs::OpenFile("Abrams Scene (*.abr)\0(*.abr)\0All Files (*.*)\0(*.*)\0\0"); !path.empty()) {
+    if(auto path = FileDialogs::OpenFile("Abrams Scene (*.abr)\0*.abr\0All Files (*.*)\0*.*\0\0"); !path.empty()) {
 
     }
 }
 
 void Editor::DoFileSaveAs() noexcept {
-    if(auto path = FileDialogs::SaveFile("Abrams Scene(*.abr)\0(*.abr)\0All Files (*.*)\0(*.*)\0\0"); !path.empty()) {
+    if(auto path = FileDialogs::SaveFile("Abrams Scene (*.abr)\0*.abr\0All Files (*.*)\0*.*\0\0"); !path.empty()) {
     }
 }
 
