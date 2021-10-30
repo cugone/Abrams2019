@@ -30,6 +30,7 @@
 #include "Engine/Renderer/ConstantBuffer.hpp"
 #include "Engine/Renderer/DepthStencilState.hpp"
 #include "Engine/Renderer/DirectX/DX11.hpp"
+#include "Engine/Renderer/FrameBuffer.hpp"
 #include "Engine/Renderer/InputLayout.hpp"
 #include "Engine/Renderer/InputLayoutInstanced.hpp"
 #include "Engine/Renderer/Material.hpp"
@@ -4437,6 +4438,10 @@ void Renderer::ClearRenderTargets(const RenderTargetType& rtt) noexcept {
         return;
     }
     _rhi_context->GetDxContext()->OMSetRenderTargets(1, &rtv, dsv);
+}
+
+void Renderer::SetRenderTarget(FrameBuffer& frameBuffer) noexcept {
+    frameBuffer.Bind();
 }
 
 void Renderer::SetRenderTarget(Texture* color_target /*= nullptr*/, Texture* depthstencil_target /*= nullptr*/) noexcept {

@@ -40,6 +40,7 @@ class DepthStencilState;
 struct DepthStencilDesc;
 class Disc2;
 class Frustum;
+class FrameBuffer;
 class IndexBuffer;
 class IntVector3;
 class KerningFont;
@@ -275,6 +276,7 @@ public:
     [[nodiscard]] std::unique_ptr<AnimatedSprite> CreateAnimatedSprite(const XMLElement& elem) noexcept override;
 
     void ClearRenderTargets(const RenderTargetType& rtt) noexcept override;
+    void SetRenderTarget(FrameBuffer& frameBuffer) noexcept override;
     void SetRenderTarget(Texture* color_target = nullptr, Texture* depthstencil_target = nullptr) noexcept override;
     void SetRenderTargetsToBackBuffer() noexcept override;
     [[nodiscard]] ViewportDesc GetCurrentViewport() const override;

@@ -149,6 +149,7 @@
     <ClCompile Include="Physics\RigidBody.cpp" />
     <ClCompile Include="Physics\RodJoint.cpp" />
     <ClCompile Include="Physics\SpringJoint.cpp" />
+    <ClCompile Include="Platform\DirectX\DirectX11FrameBuffer.cpp" />
     <ClCompile Include="Platform\Win.cpp" />
     <ClCompile Include="Profiling\AllocationTracker.cpp" />
     <ClCompile Include="Profiling\ProfileLogScope.cpp" />
@@ -164,6 +165,7 @@
     <ClCompile Include="Renderer\DepthStencilState.cpp" />
     <ClCompile Include="Renderer\DirectX\DX11.cpp" />
     <ClCompile Include="Renderer\DrawInstruction.cpp" />
+    <ClCompile Include="Renderer\FrameBuffer.cpp" />
     <ClCompile Include="Renderer\IndexBuffer.cpp" />
     <ClCompile Include="Renderer\InputLayout.cpp" />
     <ClCompile Include="Renderer\InputLayoutInstanced.cpp" />
@@ -380,6 +382,7 @@
     <ClInclude Include="Physics\RigidBody.hpp" />
     <ClInclude Include="Physics\RodJoint.hpp" />
     <ClInclude Include="Physics\SpringJoint.hpp" />
+    <ClInclude Include="Platform\DirectX\DirectX11FrameBuffer.hpp" />
     <ClInclude Include="Platform\PlatformUtils.hpp" />
     <ClInclude Include="Platform\Win.hpp" />
     <ClInclude Include="Profiling\AllocationTracker.hpp" />
@@ -396,6 +399,7 @@
     <ClInclude Include="Renderer\DepthStencilState.hpp" />
     <ClInclude Include="Renderer\DirectX\DX11.hpp" />
     <ClInclude Include="Renderer\DrawInstruction.hpp" />
+    <ClInclude Include="Renderer\FrameBuffer.hpp" />
     <ClInclude Include="Renderer\IndexBuffer.hpp" />
     <ClInclude Include="Renderer\InputLayout.hpp" />
     <ClInclude Include="Renderer\InputLayoutInstanced.hpp" />

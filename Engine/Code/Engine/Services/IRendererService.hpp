@@ -25,6 +25,7 @@ class Frustum;
 class Camera2D;
 class SpriteSheet;
 class AnimatedSprite;
+class FrameBuffer;
 
 class RHIDeviceContext;
 class RHIDevice;
@@ -122,6 +123,7 @@ public:
     [[nodiscard]] virtual std::unique_ptr<AnimatedSprite> CreateAnimatedSprite(const XMLElement& elem) noexcept = 0;
 
     virtual void ClearRenderTargets(const RenderTargetType& rtt) noexcept = 0;
+    virtual void SetRenderTarget(FrameBuffer& frameBuffer) noexcept = 0;
     virtual void SetRenderTarget(Texture* color_target = nullptr, Texture* depthstencil_target = nullptr) noexcept = 0;
     virtual void SetRenderTargetsToBackBuffer() noexcept = 0;
     [[nodiscard]] virtual ViewportDesc GetCurrentViewport() const = 0;
@@ -422,6 +424,7 @@ public:
     [[nodiscard]] std::unique_ptr<AnimatedSprite> CreateAnimatedSprite([[maybe_unused]] const XMLElement& elem) noexcept override {}
 
     void ClearRenderTargets([[maybe_unused]] const RenderTargetType& rtt) noexcept override {}
+    void SetRenderTarget([[maybe_unused]] FrameBuffer& frameBuffer) noexcept override {}
     void SetRenderTarget([[maybe_unused]] Texture* color_target = nullptr, [[maybe_unused]] Texture* depthstencil_target = nullptr) noexcept override {}
     void SetRenderTargetsToBackBuffer() noexcept override {}
     [[nodiscard]] ViewportDesc GetCurrentViewport() const noexcept override {}
