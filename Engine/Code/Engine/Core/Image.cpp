@@ -12,6 +12,9 @@
 #include "Engine/Renderer/Texture2D.hpp"
 #include "Engine/Renderer/Texture3D.hpp"
 
+#include "Engine/Services/ServiceLocator.hpp"
+#include "Engine/Services/IRendererService.hpp"
+
 #include <Thirdparty/stb/stb_image.h>
 #include <Thirdparty/stb/stb_image_write.h>
 
@@ -86,7 +89,13 @@ Image::Image(Image&& img) noexcept
     m_texelBytes = std::move(img.m_texelBytes);
 }
 
-Image::Image(const Texture* tex, const Renderer* renderer) noexcept {
+Image::Image(const Texture* tex, const Renderer* /*renderer*/) noexcept
+    : Image(tex)
+{
+    /* DO NOTHING */
+}
+
+Image::Image(const Texture* tex) noexcept {
     auto* tex2d = tex->GetDxResourceAs<ID3D11Texture2D>();
     D3D11_TEXTURE2D_DESC desc{};
     tex2d->GetDesc(&desc);
@@ -95,11 +104,12 @@ Image::Image(const Texture* tex, const Renderer* renderer) noexcept {
     m_bytesPerTexel = 4;
     const auto size = desc.Width * desc.Height * m_bytesPerTexel;
     m_texelBytes.resize(size);
-    auto stage = renderer->Create2DTextureFromMemory(m_texelBytes.data(), desc.Width, desc.Height, BufferUsage::Staging);
-    renderer->CopyTexture(tex, stage.get());
+    const auto& renderer = ServiceLocator::get<IRendererService>();
+    auto stage = renderer.Create2DTextureFromMemory(m_texelBytes.data(), desc.Width, desc.Height, BufferUsage::Staging);
+    renderer.CopyTexture(tex, stage.get());
 
     D3D11_MAPPED_SUBRESOURCE resource{};
-    auto* dc = renderer->GetDeviceContext();
+    auto* dc = renderer.GetDeviceContext();
     auto* dc_dx = dc->GetDxContext();
     auto hr = dc_dx->Map(stage->GetDxResource(), 0u, D3D11_MAP_READ, 0u, &resource);
     GUARANTEE_OR_DIE(SUCCEEDED(hr), StringUtils::FormatWindowsMessage(hr));

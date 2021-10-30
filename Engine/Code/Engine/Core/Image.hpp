@@ -22,6 +22,7 @@ public:
     ~Image() = default;
 
     explicit Image(const Texture* tex, const Renderer* renderer) noexcept;
+    explicit Image(const Texture* tex) noexcept;
     Image(unsigned char* data, unsigned int width, unsigned int height) noexcept;
     Image(Rgba* data, unsigned int width, unsigned int height) noexcept;
     Image(unsigned int width, unsigned int height) noexcept;
