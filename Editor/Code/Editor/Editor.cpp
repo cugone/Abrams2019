@@ -213,7 +213,7 @@ Texture* Editor::GetAssetTextureFromType(const std::filesystem::path& path) cons
             return false;
         };
         if(std::filesystem::is_directory(path)) {
-            p = BuildPath("Icons/Folder.png");
+            p = BuildPath("Icons/FolderAsset.png");
         } else if(e == ".txt") {
             p = BuildPath("Icons/TextAsset.png");
         } else if(e == ".ascene") {
