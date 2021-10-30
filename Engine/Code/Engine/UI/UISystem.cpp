@@ -34,6 +34,25 @@ void Image(Texture* texture, const Vector2& size, const Vector2& uv0, const Vect
     const auto&& [br, bg, bb, ba] = border_col.GetAsFloats();
     ImGui::Image(static_cast<void*>(texture->GetShaderResourceView()), size, uv0, uv1, Vector4{tr, tg, tb, ta}, Vector4{br, bg, bb, ba});
 }
+
+bool ImageButton(const Texture* texture, const Vector2& size, const Vector2& uv0, const Vector2& uv1, int frame_padding, const Rgba& bg_col, const Rgba& tint_col) noexcept {
+    if(texture) {
+        const auto&& [tr, tg, tb, ta] = tint_col.GetAsFloats();
+        const auto&& [br, bg, bb, ba] = bg_col.GetAsFloats();
+        return ImGui::ImageButton(static_cast<void*>(texture->GetShaderResourceView()), size, uv0, uv1, frame_padding, Vector4{br, bg, bb, ba}, Vector4{tr, tg, tb, ta});
+    }
+    return false;
+}
+bool ImageButton(Texture* texture, const Vector2& size, const Vector2& uv0, const Vector2& uv1, int frame_padding, const Rgba& bg_col, const Rgba& tint_col) noexcept {
+    if(texture) {
+        const auto&& [tr, tg, tb, ta] = tint_col.GetAsFloats();
+        const auto&& [br, bg, bb, ba] = bg_col.GetAsFloats();
+        return ImGui::ImageButton(static_cast<void*>(texture->GetShaderResourceView()), size, uv0, uv1, frame_padding, Vector4{br, bg, bb, ba}, Vector4{tr, tg, tb, ta});
+    }
+    return false;
+}
+
+
 bool ColorEdit3(const char* label, Rgba& color, ImGuiColorEditFlags flags /*= 0*/) noexcept {
     const auto&& [r, g, b, _] = color.GetAsFloats();
     Vector4 colorAsFloats{r, g, b, 1.0f};
