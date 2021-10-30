@@ -1,6 +1,14 @@
 #pragma once
 
+#include "Engine/Core/Stopwatch.hpp"
 #include "Engine/Game/GameBase.hpp"
+
+#include "Engine/Renderer/FrameBuffer.hpp"
+
+#include <filesystem>
+#include <vector>
+
+class Texture;
 
 class Editor : public GameBase {
 public:
@@ -20,5 +28,22 @@ private:
     void DoFileSaveAs() noexcept;
     void DoFileSave() noexcept;
 
+    void ShowMainImage() noexcept;
+    void ShowContentBrowserWindow() noexcept;
     void HandleMenuKeyboardInput() noexcept;
+
+    bool HasAssetExtension(const std::filesystem::path& path) const noexcept;
+    bool IsAssetExtension(const std::filesystem::path& ext) const noexcept;
+    Texture* GetAssetTextureFromType(const std::filesystem::path& path) const noexcept;
+
+
+    void update_paths(std::vector<std::filesystem::path>& cache);
+    void poll_paths(std::vector<std::filesystem::path>& cache);
+
+    std::filesystem::path m_ContentBrowserCurrentDirectory{};
+
+    Stopwatch m_ContentBrowserUpdatePoll{1.0f};
+    std::vector<std::filesystem::path> m_ContentBrowserPathsCache{};
+    bool m_CacheNeedsImmediateUpdate{true};
+    //std::unique_ptr<FrameBuffer> buffer{};
 };
