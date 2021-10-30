@@ -233,6 +233,7 @@ public:
     [[nodiscard]] Texture* GetFullscreenTexture() const noexcept override;
     [[nodiscard]] Texture* GetTexture(const std::string& nameOrFile) noexcept override;
 
+    //TODO: [[nodiscard]] std::unique_ptr<Texture> CreateDepthStencil(const RHIDevice& owner, uint32_t width, uint32_t height) noexcept override;
     [[nodiscard]] std::unique_ptr<Texture> CreateDepthStencil(const RHIDevice& owner, const IntVector2& dimensions) noexcept override;
     [[nodiscard]] std::unique_ptr<Texture> CreateRenderableDepthStencil(const RHIDevice& owner, const IntVector2& dimensions) noexcept override;
 

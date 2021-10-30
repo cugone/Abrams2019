@@ -80,6 +80,7 @@ public:
     [[nodiscard]] virtual Texture* GetFullscreenTexture() const noexcept = 0;
     [[nodiscard]] virtual Texture* GetTexture(const std::string& nameOrFile) noexcept = 0;
 
+    //TODO: [[nodiscard]] virtual std::unique_ptr<Texture> CreateDepthStencil(const RHIDevice& owner, uint32_t width, uint32_t height) noexcept = 0;
     [[nodiscard]] virtual std::unique_ptr<Texture> CreateDepthStencil(const RHIDevice& owner, const IntVector2& dimensions) noexcept = 0;
     [[nodiscard]] virtual std::unique_ptr<Texture> CreateRenderableDepthStencil(const RHIDevice& owner, const IntVector2& dimensions) noexcept = 0;
 
