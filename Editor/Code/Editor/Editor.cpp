@@ -218,6 +218,8 @@ Texture* Editor::GetAssetTextureFromType(const std::filesystem::path& path) cons
             p = BuildPath("Icons/TextAsset.png");
         } else if(e == ".ascene") {
             p = BuildPath("Icons/SceneAsset.png");
+        } else if(e == ".log") {
+            p = BuildPath("Icons/LogAsset.png");
         } else if(IsImageAsset(e)) {
             return renderer.CreateOrGetTexture(path, IntVector3::XY_Axis);
         }
