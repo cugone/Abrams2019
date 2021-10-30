@@ -25,14 +25,18 @@ IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARA
 
 namespace ImGui {
 void Image(const Texture* texture, const Vector2& size, const Vector2& uv0, const Vector2& uv1, const Rgba& tint_col, const Rgba& border_col) noexcept {
-    const auto&& [tr, tg, tb, ta] = tint_col.GetAsFloats();
-    const auto&& [br, bg, bb, ba] = border_col.GetAsFloats();
-    ImGui::Image(static_cast<void*>(texture->GetShaderResourceView()), size, uv0, uv1, Vector4{tr, tg, tb, ta}, Vector4{br, bg, bb, ba});
+    if(texture) {
+        const auto&& [tr, tg, tb, ta] = tint_col.GetAsFloats();
+        const auto&& [br, bg, bb, ba] = border_col.GetAsFloats();
+        ImGui::Image(static_cast<void*>(texture->GetShaderResourceView()), size, uv0, uv1, Vector4{tr, tg, tb, ta}, Vector4{br, bg, bb, ba});
+    }
 }
 void Image(Texture* texture, const Vector2& size, const Vector2& uv0, const Vector2& uv1, const Rgba& tint_col, const Rgba& border_col) noexcept {
-    const auto&& [tr, tg, tb, ta] = tint_col.GetAsFloats();
-    const auto&& [br, bg, bb, ba] = border_col.GetAsFloats();
-    ImGui::Image(static_cast<void*>(texture->GetShaderResourceView()), size, uv0, uv1, Vector4{tr, tg, tb, ta}, Vector4{br, bg, bb, ba});
+    if(texture) {
+        const auto&& [tr, tg, tb, ta] = tint_col.GetAsFloats();
+        const auto&& [br, bg, bb, ba] = border_col.GetAsFloats();
+        ImGui::Image(static_cast<void*>(texture->GetShaderResourceView()), size, uv0, uv1, Vector4{tr, tg, tb, ta}, Vector4{br, bg, bb, ba});
+    }
 }
 
 bool ImageButton(const Texture* texture, const Vector2& size, const Vector2& uv0, const Vector2& uv1, int frame_padding, const Rgba& bg_col, const Rgba& tint_col) noexcept {
@@ -145,6 +149,12 @@ void UISystem::Initialize() noexcept {
 
     io.IniFilename = nullptr;
     io.LogFilename = nullptr;
+
+    if(std::filesystem::exists(_ini_filepath)) {
+        ImGui::LoadIniSettingsFromDisk(_ini_filepath.string().c_str());
+    } else {
+        ImGui::SaveIniSettingsToDisk(_ini_filepath.string().c_str());
+    }
 
     _ini_saveTimer.SetSeconds(TimeUtils::FPSeconds{io.IniSavingRate});
 
