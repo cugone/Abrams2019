@@ -28,7 +28,7 @@ void Editor::UpdateContentBrowserPaths(std::vector<std::filesystem::path>& cache
     }
 };
 
-void Editor::poll_paths(std::vector<std::filesystem::path>& cache) {
+void Editor::PollContentBrowserPaths(std::vector<std::filesystem::path>& cache) {
     if(m_ContentBrowserUpdatePoll.CheckAndReset()) {
         UpdateContentBrowserPaths(cache);
     }
@@ -128,7 +128,7 @@ void Editor::ShowContentBrowserWindow() noexcept {
     if(m_CacheNeedsImmediateUpdate) {
         UpdateContentBrowserPaths(m_ContentBrowserPathsCache);
     } else {
-        poll_paths(m_ContentBrowserPathsCache);
+        PollContentBrowserPaths(m_ContentBrowserPathsCache);
     }
     ImGui::Begin("Content Browser");
     {

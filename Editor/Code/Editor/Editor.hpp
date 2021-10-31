@@ -38,7 +38,7 @@ private:
 
 
     void UpdateContentBrowserPaths(std::vector<std::filesystem::path>& cache);
-    void poll_paths(std::vector<std::filesystem::path>& cache);
+    void PollContentBrowserPaths(std::vector<std::filesystem::path>& cache);
 
     std::filesystem::path m_ContentBrowserCurrentDirectory{};
 
