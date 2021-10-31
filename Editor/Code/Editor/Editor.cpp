@@ -21,7 +21,7 @@
 #include <algorithm>
 #include <numeric>
 
-void Editor::update_paths(std::vector<std::filesystem::path>& cache) {
+void Editor::UpdateContentBrowserPaths(std::vector<std::filesystem::path>& cache) {
     cache.clear();
     for(const auto& p : std::filesystem::directory_iterator{m_ContentBrowserCurrentDirectory}) {
         cache.emplace_back(p.path());
@@ -30,7 +30,7 @@ void Editor::update_paths(std::vector<std::filesystem::path>& cache) {
 
 void Editor::poll_paths(std::vector<std::filesystem::path>& cache) {
     if(m_ContentBrowserUpdatePoll.CheckAndReset()) {
-        update_paths(cache);
+        UpdateContentBrowserPaths(cache);
     }
 };
 
@@ -40,7 +40,7 @@ void Editor::Initialize() noexcept {
     m_ContentBrowserCurrentDirectory = FileUtils::GetKnownFolderPath(FileUtils::KnownPathID::GameData);
     renderer.RegisterTexturesFromFolder(m_ContentBrowserCurrentDirectory / std::filesystem::path{"Images"}, true);
     renderer.RegisterTexturesFromFolder(m_ContentBrowserCurrentDirectory / std::filesystem::path{"Icons"}, true);
-    update_paths(m_ContentBrowserPathsCache);
+    UpdateContentBrowserPaths(m_ContentBrowserPathsCache);
 }
 
 void Editor::BeginFrame() noexcept {
@@ -126,7 +126,7 @@ void Editor::ShowMainImage() noexcept {
 
 void Editor::ShowContentBrowserWindow() noexcept {
     if(m_CacheNeedsImmediateUpdate) {
-        update_paths(m_ContentBrowserPathsCache);
+        UpdateContentBrowserPaths(m_ContentBrowserPathsCache);
     } else {
         poll_paths(m_ContentBrowserPathsCache);
     }

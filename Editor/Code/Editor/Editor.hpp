@@ -37,7 +37,7 @@ private:
     Texture* GetAssetTextureFromType(const std::filesystem::path& path) const noexcept;
 
 
-    void update_paths(std::vector<std::filesystem::path>& cache);
+    void UpdateContentBrowserPaths(std::vector<std::filesystem::path>& cache);
     void poll_paths(std::vector<std::filesystem::path>& cache);
 
     std::filesystem::path m_ContentBrowserCurrentDirectory{};
