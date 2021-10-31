@@ -73,7 +73,7 @@ void Editor::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
         ImGui::EndMainMenuBar();
     }
     ShowContentBrowserWindow();
-    ShowMainImage();
+    ShowMainViewport();
     HandleMenuKeyboardInput();
 }
 
@@ -118,7 +118,7 @@ void Editor::DoFileSave() noexcept {
     /* DO NOTHING */
 }
 
-void Editor::ShowMainImage() noexcept {
+void Editor::ShowMainViewport() noexcept {
     //ImGui::Begin("SceneViewport", nullptr, ImGuiWindowFlags_NoTitleBar);
     //ImGui::Image(buffer->GetTexture(), ImGui::GetWindowSize(), Vector2::Zero, Vector2::One, Rgba::NoAlpha, Rgba::NoAlpha);
     //ImGui::End();

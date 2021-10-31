@@ -28,7 +28,7 @@ private:
     void DoFileSaveAs() noexcept;
     void DoFileSave() noexcept;
 
-    void ShowMainImage() noexcept;
+    void ShowMainViewport() noexcept;
     void ShowContentBrowserWindow() noexcept;
     void HandleMenuKeyboardInput() noexcept;
 
