@@ -1,7 +1,7 @@
 #include "Engine/Game/GameBase.hpp"
 
 GameBase::~GameBase() noexcept {
-    /* DO NOTHING */
+    m_ActiveScene.reset();
 }
 
 void GameBase::Initialize() noexcept {
