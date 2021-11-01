@@ -2,29 +2,34 @@
 
 #include <functional>
 
-class UUID {
-public:
-    UUID() noexcept;
-    UUID(const UUID& other) noexcept = default;
-    UUID(UUID&& other) noexcept = default;
-    UUID& operator=(const UUID& other) noexcept = default;
-    UUID& operator=(UUID&& other) noexcept = default;
-    ~UUID() noexcept = default;
+namespace a2de {
 
-    UUID(uint64_t uuid) noexcept;
+    class UUID {
+    public:
+        UUID() noexcept;
+        UUID(const UUID& other) noexcept = default;
+        UUID(UUID&& other) noexcept = default;
+        UUID& operator=(const UUID& other) noexcept = default;
+        UUID& operator=(UUID&& other) noexcept = default;
+        ~UUID() noexcept = default;
 
-    operator uint64_t() const noexcept { return m_UUID; }
+        UUID(uint64_t uuid) noexcept;
 
-protected:
-private:
-    uint64_t m_UUID{};
-};
+        operator uint64_t() const noexcept { return m_UUID; }
+
+    protected:
+    private:
+        uint64_t m_UUID{};
+    };
+
+} //namespace a2de
+
 
 namespace std {
-    template<>
-    struct hash<UUID> {
-        std::size_t operator()(const UUID& uuid) const noexcept {
-            return hash<uint64_t>()(uuid);
-        }
-    };
-}
+template<>
+struct hash<a2de::UUID> {
+    std::size_t operator()(const a2de::UUID& uuid) const noexcept {
+        return hash<uint64_t>()(uuid);
+    }
+};
+} // namespace std

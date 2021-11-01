@@ -10,7 +10,7 @@
 #include <string>
 
 struct IdComponent {
-    UUID ID;
+    a2de::UUID ID;
 
     IdComponent() noexcept = default;
     IdComponent(const IdComponent& other) noexcept = default;
@@ -19,7 +19,7 @@ struct IdComponent {
     IdComponent& operator=(IdComponent&& rhs) noexcept = default;
     ~IdComponent() noexcept = default;
 
-    explicit IdComponent(const UUID& uuid) noexcept : ID{uuid} {}
+    explicit IdComponent(const a2de::UUID& uuid) noexcept : ID{uuid} {}
 };
 
 struct TagComponent {

@@ -10,10 +10,10 @@ Entity Scene::CreateEntity() noexcept {
 }
 
 Entity Scene::CreateEntity(const std::string& name) noexcept {
-    return CreateEntityWithUUID(UUID(), name);
+    return CreateEntityWithUUID(a2de::UUID(), name);
 }
 
-Entity Scene::CreateEntityWithUUID(UUID uuid, const std::string& name) noexcept {
+Entity Scene::CreateEntityWithUUID(a2de::UUID uuid, const std::string& name) noexcept {
     Entity entity = {static_cast<std::uint32_t>(m_registry.create()), weak_from_this()};
     entity.AddComponent<IdComponent>(uuid);
     entity.AddComponent<TagComponent>(name);

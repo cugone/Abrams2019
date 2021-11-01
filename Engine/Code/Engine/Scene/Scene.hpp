@@ -19,7 +19,7 @@ public:
 
     Entity CreateEntity() noexcept;
     Entity CreateEntity(const std::string& name) noexcept;
-    Entity CreateEntityWithUUID(UUID uuid, const std::string& name) noexcept;
+    Entity CreateEntityWithUUID(a2de::UUID uuid, const std::string& name) noexcept;
     void DestroyEntity(Entity e) noexcept;
 
     std::weak_ptr<const Scene> get() const noexcept;
@@ -50,6 +50,7 @@ public:
 
 protected:
 private:
+
     entt::registry m_registry{};
     
     friend class Entity;
