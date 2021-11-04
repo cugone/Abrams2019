@@ -314,7 +314,7 @@ bool App<T>::ProcessSystemMessage(const EngineMessage& msg) noexcept {
             _current_focus = true;
             _previous_focus = false;
         }
-        return true;
+        return false;
     }
     case WindowsSystemMessage::Keyboard_Activate: {
         WPARAM wp = msg.wparam;
