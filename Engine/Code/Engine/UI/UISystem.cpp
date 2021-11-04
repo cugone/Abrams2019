@@ -178,6 +178,9 @@ void UISystem::BeginFrame() noexcept {
 }
 
 void UISystem::Update(TimeUtils::FPSeconds /*deltaSeconds*/) noexcept {
+    const auto& app = ServiceLocator::get<IAppService>();
+    auto& io = ImGui::GetIO();
+    io.AddFocusEvent(app.HasFocus());
 
 #if !defined(IMGUI_DISABLE_DEMO_WINDOWS)
     if(show_imgui_demo_window) {
