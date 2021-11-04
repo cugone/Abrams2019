@@ -146,6 +146,7 @@ void UISystem::Initialize() noexcept {
     auto& io = ImGui::GetIO();
     io.DisplaySize.x = dims.x;
     io.DisplaySize.y = dims.y;
+
     ImGui::StyleColorsDark();
 
     io.IniFilename = nullptr;
