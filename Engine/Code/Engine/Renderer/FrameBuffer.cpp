@@ -2,7 +2,9 @@
 
 #include "Engine/Platform/DirectX/DirectX11FrameBuffer.hpp"
 
-std::shared_ptr<FrameBuffer> FrameBuffer::Create(FrameBufferDesc& desc) noexcept {
+FrameBuffer::~FrameBuffer() noexcept {
+    /* DO NOTHING */
+}
 
 std::shared_ptr<FrameBuffer> FrameBuffer::Create(const FrameBufferDesc& desc) noexcept {
     //TODO: API selection
