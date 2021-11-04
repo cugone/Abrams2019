@@ -24,9 +24,16 @@ const FrameBufferDesc& DirectX11FrameBuffer::GetSpecification() const {
 }
 
 void DirectX11FrameBuffer::Resize(uint32_t newWidth, uint32_t newHeight) noexcept {
-    m_Desc.width = newWidth;
-    m_Desc.height = newHeight;
-    Invalidate();
+    if(newWidth && newHeight) {
+        m_Desc.width = newWidth;
+        m_Desc.height = newHeight;
+        Invalidate();
+    } else {
+        if(m_Texture || m_DepthStencil) {
+            m_Texture.reset();
+            m_DepthStencil.reset();
+        }
+    }
 }
 
 void DirectX11FrameBuffer::Invalidate() noexcept {
