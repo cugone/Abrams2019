@@ -8,6 +8,7 @@
 #include "Engine/Services/IRendererService.hpp"
 
 DirectX11FrameBuffer::~DirectX11FrameBuffer() noexcept {
+    Unbind();
     m_Texture.reset();
     m_DepthStencil.reset();
 }
