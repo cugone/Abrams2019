@@ -11,6 +11,7 @@
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/Window.hpp"
 
+#include "Engine/Services/IAppService.hpp"
 #include "Engine/Services/IRendererService.hpp"
 #include "Engine/Services/IInputService.hpp"
 #include "Engine/Services/ServiceLocator.hpp"
