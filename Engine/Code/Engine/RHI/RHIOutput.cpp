@@ -18,6 +18,7 @@
 RHIOutput::RHIOutput(const RHIDevice& parent, std::unique_ptr<Window> wnd) noexcept
 : _parent_device(parent)
 , _window(std::move(wnd)) {
+    SetDisplayMode(_window->GetDisplayMode());
     CreateBuffers();
 }
 

@@ -321,6 +321,8 @@ void Renderer::Initialize() noexcept {
         config.GetValue("height", height);
     }
     std::tie(_rhi_output, _rhi_context) = _rhi_device->CreateOutputAndContext(windowDesc);
+    
+    GetOutput()->GetWindow()->SetDisplayMode(windowDesc.mode);
 
     LogAvailableDisplays();
     CreateWorkingVboAndIbo();
