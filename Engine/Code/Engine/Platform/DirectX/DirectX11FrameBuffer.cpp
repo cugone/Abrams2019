@@ -38,10 +38,9 @@ void DirectX11FrameBuffer::Invalidate() noexcept {
     auto& renderer = ServiceLocator::get<IRendererService>();
     const auto data = std::vector<Rgba>(m_Desc.width * m_Desc.height, Rgba::Periwinkle);
     const auto usage = BufferBindUsage::Shader_Resource | BufferBindUsage::Render_Target;
-    m_Texture.reset();
-    m_DepthStencil.reset();
-    m_Texture = renderer.Create2DTextureFromMemory(data, m_Desc.width, m_Desc.height, BufferUsage::Dynamic, usage, m_Desc.format);
+    m_Texture = renderer.Create2DTextureFromMemory(data, m_Desc.width, m_Desc.height, BufferUsage::Default, usage, m_Desc.format);
     m_DepthStencil = renderer.CreateDepthStencil(*renderer.GetDevice(), IntVector2{(int)m_Desc.width, (int)m_Desc.height});
+
 }
 
 void DirectX11FrameBuffer::Bind() noexcept {
