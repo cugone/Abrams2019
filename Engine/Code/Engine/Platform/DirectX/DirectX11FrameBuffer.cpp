@@ -36,7 +36,7 @@ void DirectX11FrameBuffer::Invalidate() noexcept {
         m_DepthStencil.reset();
     }
     auto& renderer = ServiceLocator::get<IRendererService>();
-    const auto data = std::vector<Rgba>(m_Desc.width * m_Desc.height, Rgba::Black);
+    const auto data = std::vector<Rgba>(m_Desc.width * m_Desc.height, Rgba::Periwinkle);
     const auto usage = BufferBindUsage::Shader_Resource | BufferBindUsage::Render_Target;
     m_Texture.reset();
     m_DepthStencil.reset();
