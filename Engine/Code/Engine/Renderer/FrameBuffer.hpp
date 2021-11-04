@@ -25,6 +25,7 @@ public:
     virtual void Bind() noexcept = 0;
     virtual void Unbind() noexcept = 0;
 
+    virtual void Resize(uint32_t newWidth, uint32_t newHeight) noexcept = 0;
     virtual const Texture* GetTexture() const noexcept = 0;
     virtual Texture* GetTexture() noexcept = 0;
 

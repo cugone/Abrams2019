@@ -17,7 +17,7 @@ public:
     const FrameBufferDesc& GetSpecification() const override;
     //FrameBufferDesc& GetSpecification() override;
 
-    void Resize(uint32_t newWidth, uint32_t newHeight) noexcept;
+    void Resize(uint32_t newWidth, uint32_t newHeight) noexcept override;
     void Invalidate() noexcept;
 
     void Bind() noexcept override;
