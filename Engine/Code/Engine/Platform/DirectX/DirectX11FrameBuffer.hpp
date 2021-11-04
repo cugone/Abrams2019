@@ -18,7 +18,7 @@ public:
     //FrameBufferDesc& GetSpecification() override;
 
     void Resize(uint32_t newWidth, uint32_t newHeight) noexcept override;
-    void Invalidate() noexcept;
+    void Invalidate() noexcept override;
 
     void Bind() noexcept override;
     void Unbind() noexcept override;
