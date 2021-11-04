@@ -20,7 +20,7 @@ public:
     virtual const FrameBufferDesc& GetSpecification() const = 0;
     //virtual FrameBufferDesc& GetSpecification() = 0;
 
-    static std::shared_ptr<FrameBuffer> Create(FrameBufferDesc& desc) noexcept;
+    static std::shared_ptr<FrameBuffer> Create(const FrameBufferDesc& desc) noexcept;
 
     virtual void Bind() noexcept = 0;
     virtual void Unbind() noexcept = 0;
