@@ -33,6 +33,9 @@ std::string FileDialogs::OpenFile(const char* filter = "All Files (*.*)\0*.*\0\0
     const auto& renderer = ServiceLocator::get<IRendererService>();
     ofn.hwndOwner = reinterpret_cast<HWND>(renderer.GetOutput()->GetWindow()->GetWindowHandle());
 
+    static const auto initial_dir = FileUtils::GetKnownFolderPath(FileUtils::KnownPathID::GameData);
+    static const auto initial_dir_str = initial_dir.string();
+    ofn.lpstrInitialDir = initial_dir_str.c_str();
     ofn.lpstrFile = szFile;
     ofn.nMaxFile = sizeof(szFile);
     ofn.lpstrFilter = filter;
@@ -53,6 +56,9 @@ std::string FileDialogs::SaveFile(const char* filter = "All Files (*.*)\0*.*\0\0
     const auto& renderer = ServiceLocator::get<IRendererService>();
     ofn.hwndOwner = reinterpret_cast<HWND>(renderer.GetOutput()->GetWindow()->GetWindowHandle());
 
+    static const auto initial_dir = FileUtils::GetKnownFolderPath(FileUtils::KnownPathID::GameData);
+    static const auto initial_dir_str = initial_dir.string();
+    ofn.lpstrInitialDir = initial_dir_str.c_str();
     ofn.lpstrFile = szFile;
     ofn.nMaxFile = sizeof(szFile);
     ofn.lpstrFilter = filter;
