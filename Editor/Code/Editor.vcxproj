@@ -155,7 +155,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Editor\ContentBrowserPanel.cpp" />
     <ClCompile Include="Editor\Editor.cpp" />
+    <ClCompile Include="Editor\IGPanel.cpp" />
     <ClCompile Include="Main_Win32.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -164,7 +166,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Editor\ContentBrowserPanel.hpp" />
     <ClInclude Include="Editor\Editor.hpp" />
+    <ClInclude Include="Editor\IGPanel.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

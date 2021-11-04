@@ -7,6 +7,8 @@
 
 #include "Engine/Renderer/FrameBuffer.hpp"
 
+#include "Editor/ContentBrowserPanel.hpp"
+
 #include <filesystem>
 #include <vector>
 
@@ -24,6 +26,7 @@ public:
     const GameSettings& GetSettings() const noexcept override;
     GameSettings& GetSettings() noexcept override;
 
+    Texture* GetAssetTextureFromType(const std::filesystem::path& path) const noexcept;
 protected:
 private:
 
@@ -48,20 +51,11 @@ private:
     bool HasAssetExtension(const std::filesystem::path& path) const noexcept;
     bool IsAssetExtension(const std::filesystem::path& ext) const noexcept;
     bool IsImageAssetExtension(const std::filesystem::path& ext) const noexcept;
-    Texture* GetAssetTextureFromType(const std::filesystem::path& path) const noexcept;
-
-    void UpdateContentBrowserPaths(std::vector<std::filesystem::path>& cache);
-    void PollContentBrowserPaths(std::vector<std::filesystem::path>& cache);
-
-    std::filesystem::path m_ContentBrowserCurrentDirectory{};
 
     OrthographicCameraController m_editorCamera{};
-    Stopwatch m_ContentBrowserUpdatePoll{1.0f};
-    std::vector<std::filesystem::path> m_ContentBrowserPathsCache{};
-    uint32_t m_ContentBrowserPanelWidth{1600u};
+    ContentBrowserPanel m_ContentBrowser{};
     uint32_t m_ViewportWidth{1600u};
     uint32_t m_ViewportHeight{900u};
-    bool m_CacheNeedsImmediateUpdate{true};
     bool m_IsViewportWindowActive{false};
     std::shared_ptr<FrameBuffer> buffer{};
 };

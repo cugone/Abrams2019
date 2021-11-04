@@ -25,19 +25,6 @@
 #include <numeric>
 #include <sstream>
 
-void Editor::UpdateContentBrowserPaths(std::vector<std::filesystem::path>& cache) {
-    cache.clear();
-    for(const auto& p : std::filesystem::directory_iterator{m_ContentBrowserCurrentDirectory}) {
-        cache.emplace_back(p.path());
-    }
-};
-
-void Editor::PollContentBrowserPaths(std::vector<std::filesystem::path>& cache) {
-    if(m_ContentBrowserUpdatePoll.CheckAndReset()) {
-        UpdateContentBrowserPaths(cache);
-    }
-};
-
 void Editor::ShowSelectedEntityComponents(TimeUtils::FPSeconds deltaSeconds) noexcept {
     /* DO NOTHING */
 }
@@ -53,10 +40,10 @@ bool Editor::IsSceneLoaded() const noexcept {
 
 void Editor::Initialize() noexcept {
     auto& renderer = ServiceLocator::get<IRendererService>();
-    m_ContentBrowserCurrentDirectory = FileUtils::GetKnownFolderPath(FileUtils::KnownPathID::GameData);
-    renderer.RegisterTexturesFromFolder(m_ContentBrowserCurrentDirectory / std::filesystem::path{"Images"}, true);
-    renderer.RegisterTexturesFromFolder(m_ContentBrowserCurrentDirectory / std::filesystem::path{"Resources/Icons"}, true);
-    UpdateContentBrowserPaths(m_ContentBrowserPathsCache);
+    m_ContentBrowser.currentDirectory = FileUtils::GetKnownFolderPath(FileUtils::KnownPathID::GameData);
+    renderer.RegisterTexturesFromFolder(m_ContentBrowser.currentDirectory / std::filesystem::path{"Images"}, true);
+    renderer.RegisterTexturesFromFolder(m_ContentBrowser.currentDirectory / std::filesystem::path{"Resources/Icons"}, true);
+    m_ContentBrowser.UpdateContentBrowserPaths();
     buffer = FrameBuffer::Create(FrameBufferDesc{});
 }
 
@@ -214,64 +201,7 @@ void Editor::ShowMainViewport(TimeUtils::FPSeconds deltaSeconds) noexcept {
 }
 
 void Editor::ShowContentBrowserWindow(TimeUtils::FPSeconds deltaSeconds) noexcept {
-    if(m_CacheNeedsImmediateUpdate) {
-        UpdateContentBrowserPaths(m_ContentBrowserPathsCache);
-    } else {
-        PollContentBrowserPaths(m_ContentBrowserPathsCache);
-    }
-    ImGui::Begin("Content Browser");
-    {
-        auto& renderer = ServiceLocator::get<IRendererService>();
-        if(m_ContentBrowserCurrentDirectory != FileUtils::GetKnownFolderPath(FileUtils::KnownPathID::GameData)) {
-            if(ImGui::ArrowButton("Back##LEFT", ImGuiDir_Left)) {
-                m_ContentBrowserCurrentDirectory = m_ContentBrowserCurrentDirectory.parent_path();
-                m_CacheNeedsImmediateUpdate = true;
-            }
-        }
-        const auto padding = 16.0f;
-        const auto& config = ServiceLocator::get<IConfigService>();
-        static auto scale = 0.5f;
-        if(config.HasKey("UIScale")) {
-            config.GetValue("UIScale", scale);
-        }
-        scale = std::clamp(scale, 0.125f, 2.0f);
-        const auto thumbnailSize = (std::max)(32.0f, 256.0f * scale);
-        const auto cellSize = thumbnailSize + padding;
-        const auto panelWidth = static_cast<uint32_t>(std::floor(ImGui::GetContentRegionAvail().x));
-        if(panelWidth != m_ContentBrowserPanelWidth) {
-            m_ContentBrowserPanelWidth = panelWidth;
-        }
-        const auto columnCount = (std::min)((std::max)(1, static_cast<int>(m_ContentBrowserPanelWidth / cellSize)), 64);
-        ImGui::BeginTable("##ContentBrowser", columnCount, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ContextMenuInBody);
-        {
-            auto id = 0u;
-            for(auto& p : m_ContentBrowserPathsCache) {
-                ImGui::TableNextColumn();
-                const auto icon = GetAssetTextureFromType(p);
-                ImGui::BeginGroup();
-                ImGui::PushStyleColor(ImGuiCol_Button, Vector4::Zero);
-                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, Vector4::Zero);
-                ImGui::PushID(id++);
-                if(std::filesystem::is_directory(p)) {
-                    if(ImGui::ImageButton(icon, Vector2{thumbnailSize, thumbnailSize}, Vector2::Zero, Vector2::One, 0, Rgba::NoAlpha, Rgba::White)) {
-                        m_ContentBrowserCurrentDirectory /= p.filename();
-                        m_CacheNeedsImmediateUpdate = true;
-                    }
-                } else {
-                    ImGui::Image(icon, Vector2{thumbnailSize, thumbnailSize}, Vector2::Zero, Vector2::One, Rgba::White, Rgba::NoAlpha);
-                }
-                ImGui::PopID();
-                ImGui::PopStyleColor();
-                ImGui::PopStyleColor();
-                const auto filename_string = p.filename().string();
-                const auto filename_size = ImGui::CalcTextSize(filename_string.c_str(), nullptr);
-                ImGui::TextWrapped(filename_string.c_str());
-                ImGui::EndGroup();
-            }
-        }
-        ImGui::EndTable();
-    }
-    ImGui::End();
+    m_ContentBrowser.Update(deltaSeconds);
 }
 
 void Editor::HandleMenuKeyboardInput(TimeUtils::FPSeconds deltaSeconds) noexcept {
