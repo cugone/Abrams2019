@@ -16,6 +16,7 @@ struct FrameBufferDesc {
 
 class FrameBuffer {
 public:
+    virtual ~FrameBuffer() noexcept = 0;
     virtual const FrameBufferDesc& GetSpecification() const = 0;
     //virtual FrameBufferDesc& GetSpecification() = 0;
 
