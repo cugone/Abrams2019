@@ -20,6 +20,10 @@ public:
     void SetAspectRatio(float aspectRatio) noexcept;
     [[nodiscard]] float GetAspectRatio() const noexcept;
 
+    void ResetSpeedMultiplier() noexcept;
+    void SetSpeedMultiplier(int newSpeedMultiplier) noexcept;
+    int GetSpeedMultiplier() const noexcept;
+
     void SetPosition(const Vector2& newPosition) noexcept;
     void Translate(const Vector2& offset) noexcept;
     void TranslateTo(const Vector2& position, TimeUtils::FPSeconds t) noexcept;
@@ -67,7 +71,11 @@ private:
     float m_maxShakeOffsetHorizontal{10.0f};
     float m_maxShakeOffsetVertical{10.0f};
     float m_maxShakeAngle{25.0f};
+    float m_defaultTranslationSpeed = 5.0f;
     float m_translationSpeed = 5.0f;
+    int m_defaultTranslationSpeedMultiplier = 1;
+    int m_translationSpeedMultiplier = 1;
+    float m_defaultRotationSpeed = 180.0f;
     float m_rotationSpeed = 180.0f;
     float m_zoomSpeed = 8.0f;
     float m_maxZoomSpeed = 24.0f;
