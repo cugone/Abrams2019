@@ -162,6 +162,15 @@ void Editor::ShowMainMenu(TimeUtils::FPSeconds deltaSeconds) noexcept {
                     }
                     m_editorCamera.SetSpeedMultiplier(cameraSpeedMultiplier);
                 }
+                ImGui::SameLine();
+                ImGui::TextDisabled("(?)");
+                if(ImGui::IsItemHovered()) {
+                    ImGui::BeginTooltip();
+                    ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+                    ImGui::TextUnformatted("Multiply speed by this value.");
+                    ImGui::PopTextWrapPos();
+                    ImGui::EndTooltip();
+                }
                 ImGui::EndMenu();
             }
             ImGui::EndMenu();
