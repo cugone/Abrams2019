@@ -109,6 +109,7 @@ void Editor::DoFileSave() noexcept {
 
 void Editor::ShowUI(TimeUtils::FPSeconds deltaSeconds) noexcept {
     ShowMainMenu(deltaSeconds);
+    ShowWorldInspectorWindow(deltaSeconds);
     ShowSettingsWindow(deltaSeconds);
     ShowPropertiesWindow(deltaSeconds);
     ShowContentBrowserWindow(deltaSeconds);
@@ -160,6 +161,14 @@ void Editor::ShowMainMenu(TimeUtils::FPSeconds deltaSeconds) noexcept {
         }
         ImGui::EndMainMenuBar();
     }
+}
+
+void Editor::ShowWorldInspectorWindow(TimeUtils::FPSeconds deltaSeconds) noexcept {
+    ImGui::Begin("World Inspector");
+    {
+        
+    }
+    ImGui::End();
 }
 
 void Editor::ShowSettingsWindow(TimeUtils::FPSeconds deltaSeconds) noexcept {

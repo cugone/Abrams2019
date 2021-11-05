@@ -32,6 +32,7 @@ private:
 
     void ShowUI([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept;
     void ShowMainMenu([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept;
+    void ShowWorldInspectorWindow([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept;
     void ShowSettingsWindow([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept;
     void ShowSelectedEntityComponents([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept;
     void ShowPropertiesWindow([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept;
