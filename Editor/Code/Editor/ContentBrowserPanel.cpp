@@ -41,7 +41,6 @@ void ContentBrowserPanel::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
         const auto columnCount = (std::min)((std::max)(1, static_cast<int>(m_PanelWidth / cellSize)), 64);
         ImGui::BeginTable("##ContentBrowser", columnCount, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ContextMenuInBody);
         {
-            auto id = 0u;
             for(auto& p : m_PathsCache) {
                 ImGui::TableNextColumn();
                 const auto* editor = GetGameAs<Editor>();
@@ -49,7 +48,8 @@ void ContentBrowserPanel::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
                 ImGui::BeginGroup();
                 ImGui::PushStyleColor(ImGuiCol_Button, Vector4::Zero);
                 ImGui::PushStyleColor(ImGuiCol_ButtonHovered, Vector4::Zero);
-                ImGui::PushID(id++);
+                const std::string str_id = p.string();
+                ImGui::PushID(str_id.c_str());
                 if(std::filesystem::is_directory(p)) {
                     if(ImGui::ImageButton(icon, Vector2{thumbnailSize, thumbnailSize}, Vector2::Zero, Vector2::One, 0, Rgba::NoAlpha, Rgba::White)) {
                         currentDirectory /= p.filename();
