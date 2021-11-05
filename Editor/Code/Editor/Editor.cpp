@@ -116,8 +116,6 @@ void Editor::ShowUI(TimeUtils::FPSeconds deltaSeconds) noexcept {
     ShowMainViewport(deltaSeconds);
 }
 
-static int cameraSpeedMultiplier = 1;
-
 void Editor::ShowMainMenu(TimeUtils::FPSeconds deltaSeconds) noexcept {
     ImGui::BeginMainMenuBar();
     {
@@ -152,7 +150,16 @@ void Editor::ShowMainMenu(TimeUtils::FPSeconds deltaSeconds) noexcept {
         }
         if(ImGui::BeginMenu("Camera")) {
             if(ImGui::BeginMenu("Camera Speed")) {
-                if(ImGui::SliderInt("Speed##CameraSpeedSlider", &cameraSpeedMultiplier, 1, 10, "%d", ImGuiSliderFlags_AlwaysClamp | ImGuiSliderFlags_NoInput)) {
+                static int cameraTranslationMultiplier = 1;
+                static int cameraSpeedMultiplier = 1;
+                if(ImGui::SliderInt("Speed##CameraSpeedSlider", &cameraTranslationMultiplier, 1, 10, "%d", ImGuiSliderFlags_AlwaysClamp | ImGuiSliderFlags_NoInput)) {
+                    m_editorCamera.SetTranslationMultiplier(cameraTranslationMultiplier);
+                }
+                if(ImGui::InputInt("Multiplier##CameraSpeedMultipler", &cameraSpeedMultiplier, 1, ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CharsNoBlank | ImGuiInputTextFlags_NoUndoRedo )) {
+                    cameraSpeedMultiplier = (std::max)(1, cameraSpeedMultiplier);
+                    if(!ImGui::IsItemDeactivatedAfterEdit()) {
+                        cameraSpeedMultiplier = (std::max)(1, cameraSpeedMultiplier);
+                    }
                     m_editorCamera.SetSpeedMultiplier(cameraSpeedMultiplier);
                 }
                 ImGui::EndMenu();

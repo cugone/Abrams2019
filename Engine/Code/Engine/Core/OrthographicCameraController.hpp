@@ -24,6 +24,10 @@ public:
     void SetSpeedMultiplier(int newSpeedMultiplier) noexcept;
     int GetSpeedMultiplier() const noexcept;
 
+    void ResetTranslationMultiplier() noexcept;
+    void SetTranslationMultiplier(int newTranslationMultiplier) noexcept;
+    int GetTranslationMultiplier() const noexcept;
+
     void SetPosition(const Vector2& newPosition) noexcept;
     void Translate(const Vector2& offset) noexcept;
     void TranslateTo(const Vector2& position, TimeUtils::FPSeconds t) noexcept;
@@ -75,6 +79,8 @@ private:
     float m_translationSpeed = 5.0f;
     int m_defaultTranslationSpeedMultiplier = 1;
     int m_translationSpeedMultiplier = 1;
+    int m_defaultCameraSpeedMultiplier = 1;
+    int m_cameraSpeedMultiplier = 1;
     float m_defaultRotationSpeed = 180.0f;
     float m_rotationSpeed = 180.0f;
     float m_zoomSpeed = 8.0f;

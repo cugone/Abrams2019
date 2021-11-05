@@ -21,9 +21,9 @@ OrthographicCameraController::OrthographicCameraController(float aspectRatio) no
 void OrthographicCameraController::Update([[maybe_unused]] TimeUtils::FPSeconds deltaSeconds) noexcept {
     auto& input = ServiceLocator::get<IInputService>();
     if(input.IsKeyDown(KeyCode::RButton)) {
-        const auto up = -Vector2::Y_Axis * static_cast<float>(m_translationSpeedMultiplier) * m_translationSpeed * deltaSeconds.count();
+        const auto up = -Vector2::Y_Axis * static_cast<float>(m_translationSpeedMultiplier * m_cameraSpeedMultiplier) * m_translationSpeed * deltaSeconds.count();
         const auto down = -up;
-        const auto left = -Vector2::X_Axis * static_cast<float>(m_translationSpeedMultiplier) * m_translationSpeed * deltaSeconds.count();
+        const auto left = -Vector2::X_Axis * static_cast<float>(m_translationSpeedMultiplier * m_cameraSpeedMultiplier) * m_translationSpeed * deltaSeconds.count();
         const auto right = -left;
         if(input.IsKeyDown(KeyCode::W)) {
             Translate(up);
@@ -67,15 +67,27 @@ float OrthographicCameraController::GetAspectRatio() const noexcept {
 }
 
 void OrthographicCameraController::ResetSpeedMultiplier() noexcept {
-    m_translationSpeedMultiplier = m_defaultTranslationSpeedMultiplier;
+    m_cameraSpeedMultiplier = m_defaultCameraSpeedMultiplier;
 }
 
 int OrthographicCameraController::GetSpeedMultiplier() const noexcept {
-    return m_translationSpeedMultiplier;
+    return m_cameraSpeedMultiplier;
 }
 
 void OrthographicCameraController::SetSpeedMultiplier(int newSpeedMultiplier) noexcept {
-    m_translationSpeedMultiplier = newSpeedMultiplier;
+    m_cameraSpeedMultiplier = newSpeedMultiplier;
+}
+
+void OrthographicCameraController::ResetTranslationMultiplier() noexcept {
+    m_translationSpeedMultiplier = m_defaultTranslationSpeedMultiplier;
+}
+
+void OrthographicCameraController::SetTranslationMultiplier(int newTranslationMultiplier) noexcept {
+    m_translationSpeedMultiplier = newTranslationMultiplier;
+}
+
+int OrthographicCameraController::GetTranslationMultiplier() const noexcept {
+    return m_translationSpeedMultiplier;
 }
 
 void OrthographicCameraController::SetPosition(const Vector2& newPosition) noexcept {
