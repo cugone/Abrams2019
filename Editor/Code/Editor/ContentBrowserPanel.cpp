@@ -4,12 +4,17 @@
 #include "Engine/Core/FileUtils.hpp"
 #include "Engine/Core/Rgba.hpp"
 
+#include "Engine/Platform/PlatformUtils.hpp"
+#include "Engine/Platform/Win.hpp"
+
 #include "Engine/Services/ServiceLocator.hpp"
 #include "Engine/Services/IConfigService.hpp"
 
 #include "Engine/UI/UISystem.hpp"
 
 #include "Editor/Editor.hpp"
+
+#include <string>
 
 void ContentBrowserPanel::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
     if(m_CacheNeedsImmediateUpdate) {
@@ -19,7 +24,11 @@ void ContentBrowserPanel::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
     }
     ImGui::Begin("Content Browser");
     {
-        if(currentDirectory != FileUtils::GetKnownFolderPath(FileUtils::KnownPathID::GameData)) {
+        ShowContextMenuOnEmptySpace();
+
+        //ImGui::BeginPopupContextItem("##ImportAsset");
+        //ImGui::BeginPopupContextVoid();
+        if(currentDirectory != FileUtils::GetKnownFolderPath(FileUtils::KnownPathID::EditorContent)) {
             if(ImGui::ArrowButton("Back##LEFT", ImGuiDir_Left)) {
                 currentDirectory = currentDirectory.parent_path();
                 m_CacheNeedsImmediateUpdate = true;
@@ -70,6 +79,28 @@ void ContentBrowserPanel::Update(TimeUtils::FPSeconds deltaSeconds) noexcept {
         ImGui::EndTable();
     }
     ImGui::End();
+}
+
+void ContentBrowserPanel::ShowContextMenuOnEmptySpace() noexcept {
+    if(ImGui::BeginPopupContextWindow("##ContentBrowserContextWindow", ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverExistingPopup)) {
+        if(ImGui::MenuItem("Create Folder")) {
+            int count = 0;
+            while(!FileUtils::CreateFolders(count ? (currentDirectory / std::filesystem::path{StringUtils::Stringf("New folder (%d)", count + 1)}) : (currentDirectory / "New folder"))) {
+                ++count;
+            }
+            ImGui::CloseCurrentPopup();
+        }
+        if(ImGui::BeginMenu("Import Asset")) {
+            ImGui::Text("Texture");
+            if(ImGui::IsItemClicked(ImGuiMouseButton_Left)) {
+                ImGui::CloseCurrentPopup();
+                if(auto path = FileDialogs::OpenFile("PNG file (*.png)\0*.png\0All Files (*.*)\0*.*\0\0"); !path.empty()) {
+                }
+            }
+            ImGui::EndMenu();
+        }
+        ImGui::EndPopup();
+    }
 }
 
 void ContentBrowserPanel::UpdateContentBrowserPaths() noexcept {

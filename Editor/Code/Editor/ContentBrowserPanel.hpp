@@ -19,6 +19,7 @@ public:
     std::filesystem::path currentDirectory{};
 protected:
 private:
+    void ShowContextMenuOnEmptySpace() noexcept;
 
     std::vector<std::filesystem::path> m_PathsCache{};
     Stopwatch m_UpdatePoll{1.0f};
