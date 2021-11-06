@@ -83,8 +83,6 @@ struct SceneComponent {
     SceneComponent& operator=(const SceneComponent& rhs) noexcept = default;
     SceneComponent& operator=(SceneComponent&& rhs) noexcept = default;
     ~SceneComponent() noexcept = default;
-    explicit SceneComponent(const TransformComponent& transform) noexcept
-    : Transform{transform} {}
 
 };
 
@@ -97,8 +95,6 @@ struct SpriteSheetComponent {
     SpriteSheetComponent& operator=(const SpriteSheetComponent& rhs) noexcept = default;
     SpriteSheetComponent& operator=(SpriteSheetComponent&& rhs) noexcept = default;
     ~SpriteSheetComponent() noexcept = default;
-    SpriteSheetComponent(const AnimatedSpriteDesc& desc) noexcept
-    : AnimatedSprite{desc} {}
 
 };
 
@@ -112,9 +108,6 @@ struct RenderComponent {
     RenderComponent& operator=(const RenderComponent& rhs) noexcept = default;
     RenderComponent& operator=(RenderComponent&& rhs) noexcept = default;
     ~RenderComponent() noexcept = default;
-    RenderComponent(const std::string& materialName, const Rgba& tint = Rgba::White) noexcept
-    : MaterialName{materialName}
-    , Tint{tint} {}
 
 };
 
@@ -128,9 +121,11 @@ struct CircleComponent {
     CircleComponent& operator=(const CircleComponent& rhs) noexcept = default;
     CircleComponent& operator=(CircleComponent&& rhs) noexcept = default;
     ~CircleComponent() noexcept = default;
-    CircleComponent(const Vector2& position, float radius) noexcept
-    : Position{position}
-    , Radius{radius} {
-    }
+
+};
+
+
+
+
 
 };
