@@ -83,6 +83,7 @@ private:
     void Render() const noexcept override;
     void EndFrame() noexcept override;
     bool ProcessSystemMessage(const EngineMessage& msg) noexcept override;
+    void HandleResize([[maybe_unused]] unsigned int newWidth, [[maybe_unused]] unsigned int newHeight) noexcept;
 
     void LogSystemDescription() const;
 
@@ -333,14 +334,14 @@ bool App<T>::ProcessSystemMessage(const EngineMessage& msg) noexcept {
             return false;
         }
     }
-        //case WindowsSystemMessage::Window_Size:
-        //{
-        //    LPARAM lp = msg.lparam;
-        //    const auto w = HIWORD(lp);
-        //    const auto h = LOWORD(lp);
-        //    g_theRenderer->ResizeBuffers();
-        //    return true;
-        //}
+    case WindowsSystemMessage::Window_Size:
+    {
+        LPARAM lp = msg.lparam;
+        const auto w = HIWORD(lp);
+        const auto h = LOWORD(lp);
+        HandleResize(w, h);
+        return true;
+    }
     default:
         return false;
     }
@@ -418,5 +419,11 @@ void App<T>::RunMessagePump() const {
             ::DispatchMessage(&msg);
         }
     }
+}
+
+template<typename T>
+void App<T>::HandleResize(unsigned int newWidth, unsigned int newHeight) noexcept {
+    g_theRenderer->ResizeBuffers();
+    GetGameAs<T>()->HandleWindowResize(newWidth, newHeight);
 }
 

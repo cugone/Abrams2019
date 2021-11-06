@@ -24,6 +24,10 @@ void GameBase::EndFrame() noexcept {
     /* DO NOTHING */
 }
 
+void GameBase::HandleWindowResize([[maybe_unused]] unsigned int newWidth, [[maybe_unused]] unsigned int newHeight) noexcept {
+    /* DO NOTHING */
+}
+
 const GameSettings& GameBase::GetSettings() const noexcept {
     return defaultSettings;
 }

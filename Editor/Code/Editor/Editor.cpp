@@ -80,6 +80,10 @@ void Editor::EndFrame() noexcept {
     /* DO NOTHING */
 }
 
+void Editor::HandleWindowResize(unsigned int newWidth, unsigned int newHeight) noexcept {
+    buffer->Resize(newWidth, newHeight);
+}
+
 const GameSettings& Editor::GetSettings() const noexcept {
     return GameBase::GetSettings();
 }

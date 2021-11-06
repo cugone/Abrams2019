@@ -23,6 +23,8 @@ public:
     void Render() const noexcept override;
     void EndFrame() noexcept override;
 
+    void HandleWindowResize(unsigned int newWidth, unsigned int newHeight) noexcept override;
+
     const GameSettings& GetSettings() const noexcept override;
     GameSettings& GetSettings() noexcept override;
 
