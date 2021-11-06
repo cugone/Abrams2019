@@ -12,14 +12,13 @@ class ContentBrowserPanel : public IGPanel {
 public:
     virtual ~ContentBrowserPanel() = default;
     void Update(TimeUtils::FPSeconds deltaSeconds) noexcept override;
-
     void UpdateContentBrowserPaths() noexcept;
-    void PollContentBrowserPaths() noexcept;
 
     std::filesystem::path currentDirectory{};
 protected:
 private:
     void ShowContextMenuOnEmptySpace() noexcept;
+    void PollContentBrowserPaths() noexcept;
 
     std::vector<std::filesystem::path> m_PathsCache{};
     Stopwatch m_UpdatePoll{1.0f};
