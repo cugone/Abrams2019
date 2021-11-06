@@ -120,7 +120,7 @@ struct RenderComponent {
 
 struct CircleComponent {
     Vector2 Position{};
-    float Radius{1.0f};
+    float Radius{0.5f};
 
     CircleComponent() noexcept = default;
     CircleComponent(const CircleComponent& other) noexcept = default;
