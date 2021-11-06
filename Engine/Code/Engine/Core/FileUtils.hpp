@@ -77,6 +77,7 @@ enum class KnownPathID {
     EngineFonts,
     EngineMaterials,
     EngineLogs,
+    EditorContent,
     Max
 };
 

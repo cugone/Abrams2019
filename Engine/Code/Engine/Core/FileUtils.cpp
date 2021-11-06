@@ -189,6 +189,7 @@ bool IsContentPathId(const KnownPathID& pathid) noexcept {
         case KnownPathID::EngineFonts: return true;
         case KnownPathID::EngineMaterials: return true;
         case KnownPathID::EngineLogs: return true;
+        case KnownPathID::EditorContent: return true;
         case KnownPathID::None: return false;
         case KnownPathID::Max: return false;
         default:
@@ -211,6 +212,7 @@ bool IsSystemPathId(const KnownPathID& pathid) noexcept {
     case KnownPathID::EngineFonts: return false;
     case KnownPathID::EngineMaterials: return false;
     case KnownPathID::EngineLogs: return false;
+    case KnownPathID::EditorContent: return false;
     case KnownPathID::Max: return false;
 #if defined(PLATFORM_WINDOWS)
     case KnownPathID::Windows_AppDataRoaming: return true;
@@ -323,6 +325,12 @@ std::filesystem::path GetKnownFolderPath(const KnownPathID& pathid) noexcept {
         }
     } else if(pathid == KnownPathID::EngineLogs) {
         p = GetWorkingDirectory() / FS::path{"Engine/Logs/"};
+        if(FS::exists(p)) {
+            p = FS::canonical(p);
+        }
+    } else if(pathid == KnownPathID::EditorContent) {
+        p = GetWorkingDirectory() / FS::path{"Content"};
+        FileUtils::CreateFolders(p);
         if(FS::exists(p)) {
             p = FS::canonical(p);
         }

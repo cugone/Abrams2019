@@ -41,8 +41,8 @@ bool Editor::IsSceneLoaded() const noexcept {
 void Editor::Initialize() noexcept {
     auto& renderer = ServiceLocator::get<IRendererService>();
     m_ContentBrowser.currentDirectory = FileUtils::GetKnownFolderPath(FileUtils::KnownPathID::GameData);
-    renderer.RegisterTexturesFromFolder(m_ContentBrowser.currentDirectory / std::filesystem::path{"Images"}, true);
     renderer.RegisterTexturesFromFolder(m_ContentBrowser.currentDirectory / std::filesystem::path{"Resources/Icons"}, true);
+    m_ContentBrowser.currentDirectory = FileUtils::GetKnownFolderPath(FileUtils::KnownPathID::EditorContent);
     m_ContentBrowser.UpdateContentBrowserPaths();
     buffer = FrameBuffer::Create(FrameBufferDesc{});
 }
