@@ -124,8 +124,16 @@ struct CircleComponent {
 
 };
 
+struct CircleRendererComponent {
+    Rgba Color{Rgba::White};
+    float Thickness{1.0f};
+    float Fade{0.005f};
 
-
-
+    CircleRendererComponent() noexcept = default;
+    CircleRendererComponent(const CircleRendererComponent& other) noexcept = default;
+    CircleRendererComponent(CircleRendererComponent&& r_other) noexcept = default;
+    CircleRendererComponent& operator=(const CircleRendererComponent& rhs) noexcept = default;
+    CircleRendererComponent& operator=(CircleRendererComponent&& rhs) noexcept = default;
+    ~CircleRendererComponent() noexcept = default;
 
 };
