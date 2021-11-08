@@ -1732,11 +1732,6 @@ void Renderer::CopyTexture(const Texture* src, Texture* dst) const noexcept {
 }
 
 void Renderer::ResizeBuffers() noexcept {
-    _materials_need_updating = true;
-    UnbindWorkingVboAndIbo();
-    UnbindAllShaderResources();
-    UnbindAllConstantBuffers();
-    ClearState();
     GetOutput()->ResetBackbuffer();
 }
 

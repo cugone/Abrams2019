@@ -90,6 +90,8 @@ private:
     bool _isQuitting = false;
     bool _current_focus = false;
     bool _previous_focus = false;
+    bool _enteredSizeMove = false;
+    bool _doneSizeMove = false;
 
     std::string _title{"UNTITLED GAME"};
 
@@ -334,13 +336,31 @@ bool App<T>::ProcessSystemMessage(const EngineMessage& msg) noexcept {
             return false;
         }
     }
+    case WindowsSystemMessage::Window_EnterSizeMove:
+    {
+        _enteredSizeMove = true;
+        return true;
+    }
+    case WindowsSystemMessage::Window_ExitSizeMove:
+    {
+        if(_enteredSizeMove) {
+            _doneSizeMove = true;
+            return true;
+        }
+        return false;
+    }
     case WindowsSystemMessage::Window_Size:
     {
-        LPARAM lp = msg.lparam;
-        const auto w = HIWORD(lp);
-        const auto h = LOWORD(lp);
-        HandleResize(w, h);
-        return true;
+        if(_enteredSizeMove && _doneSizeMove) {
+            _enteredSizeMove = false;
+            _doneSizeMove = false;
+            LPARAM lp = msg.lparam;
+            const auto w = HIWORD(lp);
+            const auto h = LOWORD(lp);
+            HandleResize(w, h);
+            return true;
+        }
+        return false;
     }
     default:
         return false;
