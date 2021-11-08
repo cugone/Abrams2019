@@ -22,7 +22,6 @@ public:
 
     [[nodiscard]] Texture* GetBackBuffer() const noexcept;
     [[nodiscard]] Texture* GetDepthStencil() const noexcept;
-    [[nodiscard]] Texture* GetFullscreenTexture() const noexcept;
 
     void ResetBackbuffer() noexcept;
 
@@ -47,7 +46,6 @@ protected:
     std::unique_ptr<Window> _window = nullptr;
     std::unique_ptr<Texture> _back_buffer = nullptr;
     std::unique_ptr<Texture> _depthstencil = nullptr;
-    std::unique_ptr<Texture> _fullscreen = nullptr;
 
 private:
 };

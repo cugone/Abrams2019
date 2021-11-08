@@ -230,7 +230,6 @@ public:
     [[nodiscard]] bool RegisterTexture(const std::string& name, std::unique_ptr<Texture> texture) noexcept override;
     void SetTexture(Texture* texture, unsigned int registerIndex = 0) noexcept override;
 
-    [[nodiscard]] Texture* GetFullscreenTexture() const noexcept override;
     [[nodiscard]] Texture* GetTexture(const std::string& nameOrFile) noexcept override;
 
     //TODO: [[nodiscard]] std::unique_ptr<Texture> CreateDepthStencil(const RHIDevice& owner, uint32_t width, uint32_t height) noexcept override;
@@ -496,7 +495,6 @@ protected:
 private:
 
     [[nodiscard]] Image GetBackbufferAsImage() const noexcept;
-    [[nodiscard]] Image GetFullscreenTextureAsImage() const noexcept;
 
     [[nodiscard]] static std::vector<std::unique_ptr<ConstantBuffer>> CreateConstantBuffersFromShaderProgram(RHIDevice& device, const ShaderProgram* _shader_program) noexcept;
     [[nodiscard]] static std::vector<std::unique_ptr<ConstantBuffer>> CreateComputeConstantBuffersFromShaderProgram(RHIDevice& device, const ShaderProgram* shaderProgram) noexcept;

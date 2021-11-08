@@ -602,9 +602,6 @@ Texture* Renderer::GetTexture(const std::string& nameOrFile) noexcept {
         p = FS::canonical(p);
     }
     p.make_preferred();
-    if(p.string() == "__fullscreen") {
-        return GetFullscreenTexture();
-    }
     auto found_texture = std::find_if(std::cbegin(_textures), std::cend(_textures), [&p](const auto& t) { return t.first == p.string(); });
     if(found_texture == _textures.end()) {
         return nullptr;
@@ -1824,30 +1821,20 @@ Image Renderer::GetBackbufferAsImage() const noexcept {
     return Image{bb, this};
 }
 
-Image Renderer::GetFullscreenTextureAsImage() const noexcept {
-    std::scoped_lock lock(_cs);
-    std::vector<Rgba> data{};
-    const auto* fs = GetFullscreenTexture();
-    return Image{fs, this};
-}
-
 void Renderer::FulfillScreenshotRequest() noexcept {
     if(_screenshot && !_last_screenshot_location.empty()) {
         //TODO: Make this a job so game doesn't lag
         //const auto cb = [this](void*) {
-        auto img = GetFullscreenTextureAsImage();
-        if(!img.Export(_screenshot)) {
-            const auto err = "Could not export to \"" + _screenshot.operator std::string() + "\".\n";
-            ServiceLocator::get<IFileLoggerService>().LogAndFlush(err);
-        }
-        _screenshot.clear();
+        //TODO: Replace with FrameBuffer object
+        //auto img = GetFullscreenTextureAsImage();
+        //if(!img.Export(_screenshot)) {
+        //    const auto err = "Could not export to \"" + _screenshot.operator std::string() + "\".\n";
+        //    ServiceLocator::get<IFileLoggerService>().LogAndFlush(err);
+        //}
+        //_screenshot.clear();
         //};
         //_jobSystem.Run(JobType::Generic, cb, nullptr);
     }
-}
-
-Texture* Renderer::GetFullscreenTexture() const noexcept {
-    return _rhi_output->GetFullscreenTexture();
 }
 
 void Renderer::DispatchComputeJob(const ComputeJob& job) noexcept {
@@ -4119,10 +4106,6 @@ bool Renderer::IsTextureLoaded(const std::string& nameOrFile) const noexcept {
         if(ec) {
             return false;
         }
-    }
-    const auto is_fullscreen = p.string() == "__fullscreen";
-    if(is_fullscreen) {
-        return GetFullscreenTexture() != nullptr;
     }
     const auto found_iter = std::find_if(std::cbegin(_textures), std::cend(_textures), [&p](const auto& t) { return t.first == p.string(); });
     return found_iter != std::cend(_textures);

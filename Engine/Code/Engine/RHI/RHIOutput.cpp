@@ -42,10 +42,6 @@ Texture* RHIOutput::GetDepthStencil() const noexcept {
     return _depthstencil.get();
 }
 
-Texture* RHIOutput::GetFullscreenTexture() const noexcept {
-    return _fullscreen.get();
-}
-
 IntVector2 RHIOutput::GetDimensions() const noexcept {
     if(_window) {
         return _window->GetClientDimensions();
@@ -121,8 +117,6 @@ void RHIOutput::CreateBuffers() noexcept {
     _depthstencil = CreateDepthStencil();
     _depthstencil->SetDebugName("__default_depthstencil");
 
-    _fullscreen = CreateFullscreenTexture();
-    _fullscreen->SetDebugName("__fullscreen");
 }
 
 std::unique_ptr<Texture> RHIOutput::CreateBackbuffer() noexcept {
@@ -225,7 +219,6 @@ void RHIOutput::SetTitle(const std::string& newTitle) const noexcept {
 void RHIOutput::ResetBackbuffer() noexcept {
     _back_buffer.reset();
     _depthstencil.reset();
-    _fullscreen.reset();
     _parent_device.ResetSwapChainForHWnd();
     CreateBuffers();
 }

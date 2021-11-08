@@ -77,7 +77,6 @@ public:
     [[nodiscard]] virtual bool RegisterTexture(const std::string& name, std::unique_ptr<Texture> texture) noexcept = 0;
     virtual void SetTexture(Texture* texture, unsigned int registerIndex = 0) noexcept = 0;
 
-    [[nodiscard]] virtual Texture* GetFullscreenTexture() const noexcept = 0;
     [[nodiscard]] virtual Texture* GetTexture(const std::string& nameOrFile) noexcept = 0;
 
     //TODO: [[nodiscard]] virtual std::unique_ptr<Texture> CreateDepthStencil(const RHIDevice& owner, uint32_t width, uint32_t height) noexcept = 0;
@@ -379,7 +378,6 @@ public:
     [[nodiscard]] bool RegisterTexture([[maybe_unused]] const std::string& name, [[maybe_unused]] std::unique_ptr<Texture> texture) noexcept override {}
     void SetTexture([[maybe_unused]] Texture* texture, [[maybe_unused]] unsigned int registerIndex = 0) noexcept override {}
 
-    [[nodiscard]] Texture* GetFullscreenTexture() const noexcept override {}
     [[nodiscard]] Texture* GetTexture([[maybe_unused]] const std::string& nameOrFile) noexcept override {}
 
     [[nodiscard]] std::unique_ptr<Texture> CreateDepthStencil([[maybe_unused]] const RHIDevice& owner, [[maybe_unused]] const IntVector2& dimensions) noexcept override {}
