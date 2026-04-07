@@ -1,3 +1,5 @@
+## This repo has been archived in favor of the most recent version. Please fork or contribute to that version instead.
+
 # Abrams2019
 
 Version 2019 Abrams Game Engine for VS2019
